@@ -1,0 +1,9 @@
+src/configdialog.cpp
+src/dxirc.cpp
+src/ircsocket.cpp
+src/irctabitem.cpp
+src/serverdialog.cpp
+src/help.h
+
+
+

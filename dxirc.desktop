@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=dxirc
+Comment=simple IRC client
+Comment[cs]=jednoduchý IRC klient
+TryExec=dxirc
+Exec=dxirc
+Icon=dxirc.png
+Terminal=false
+Type=Application
+Categories=Application;Network;

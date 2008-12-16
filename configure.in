@@ -1,0 +1,85 @@
+dnl
+dnl Script for autoconf 2.57
+dnl !!! Do not use with earlier versions of autoconf !!!
+dnl
+
+dnl Initialize
+AC_INIT(src/dxirc.cpp)
+AM_INIT_AUTOMAKE(dxirc,0.10)
+AM_CONFIG_HEADER(config.h)
+
+dnl Is this really necessary?
+dnl AC_GNU_SOURCE
+
+AC_USE_SYSTEM_EXTENSIONS
+
+dnl Prevents setting compilation flags
+CXXFLAGS=""
+
+dnl Checks for compilers
+AC_PROG_MAKE_SET
+AC_PROG_CC
+AC_PROG_CXX
+AC_PROG_INSTALL
+dnl AC_PROG_LIBTOOL
+
+dnl Large files support
+AC_SYS_LARGEFILE
+
+dnl Internationalisation
+AM_GNU_GETTEXT
+
+dnl Check for FOX 1.6
+AC_CHECK_LIB(FOX-1.6,fxfindfox,,AC_MSG_ERROR("libFOX-1.6 not found"))
+
+dnl Check for FOX 1.6 header files
+AC_HEADER_STDC
+AC_LANG_CPLUSPLUS
+AC_CHECK_HEADERS(fox-1.6/fx.h,,AC_MSG_ERROR("fox-1.6/fx.h not found"))
+
+dnl Check if fox-config exists
+AC_CHECK_PROGS(FOX_CONFIG,fox-config-1.6 fox-1.6-config fox-config)
+if test no"$FOX_CONFIG" = no ; then
+	AC_MSG_ERROR("fox-config not found")               
+fi
+
+dnl Include flags for the FOX library
+FOXCFLAGS=`$FOX_CONFIG --cflags`
+CXXFLAGS="${CXXFLAGS} $FOXCFLAGS"
+
+dnl Check for libPNG
+AC_CHECK_LIB(png, png_read_info,,AC_MSG_ERROR("libPNG not found"))
+AC_CHECK_HEADERS(png.h,,AC_MSG_ERROR("png.h not found"))
+
+dnl Debugging turned on
+AC_MSG_CHECKING(for debugging)
+AC_ARG_ENABLE(debug,[  --enable-debug          compile for debugging])
+AC_MSG_RESULT([$enable_debug])
+if test "x$enable_debug" = "xyes" ; then
+	CXXFLAGS="${CXXFLAGS} -Wall -g -DDEBUG"
+else
+	CXXFLAGS="-O2 ${CXXFLAGS}"
+fi
+
+dnl Building for release
+AC_MSG_CHECKING(for release build)
+AC_ARG_ENABLE(release,[  --enable-release        compile for release (advanced optimizations)])
+AC_MSG_RESULT([$enable_release])
+if test "x$enable_release" = "xyes" ; then
+	CXXFLAGS="${CXXFLAGS} -DNDEBUG"
+	if test "${GXX}" = "yes" ; then
+		CXXFLAGS="${CXXFLAGS} -Wuninitialized -ffast-math -finline-functions -fomit-frame-pointer -fexpensive-optimizations -fno-strict-aliasing"
+	fi
+fi
+
+dnl Output
+AC_OUTPUT(Makefile intl/Makefile m4/Makefile po/Makefile.in dxirc.spec src/Makefile
+          icons/Makefile icons/default/Makefile icons/flags/Makefile)
+
+echo ""
+echo "Configure finished!"
+echo "              Do:  'make' to compile dxirc."
+echo "            Then:  'make install' (as root) to install dxirc."
+echo ""
+
+

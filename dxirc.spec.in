@@ -1,0 +1,42 @@
+Name: 		@PACKAGE@
+Version:	@VERSION@
+Summary: dxirc is simple IRC client. 
+Release: 1
+License: GPL
+Group: Applications/Communications
+Requires: fox >= 1.6 libpng >= 1.2
+BuildRequires: fox-devel >= 1.6 libpng-devel >= 1.2
+Source: %{name}-%{version}.tar.gz
+Packager: David Vachulka <david@konstrukce-cad.com>
+BuildRoot: %{_tmppath}/%{name}-buildroot
+
+%description
+dxirc is simple IRC client. dxirc is desktop independent and is written with the C++ Fox Toolkit.
+
+%prep
+%setup -q
+
+%build
+%configure --with-included-gettext --enable-release
+make
+
+
+%install
+rm -rf %{buildroot}
+%makeinstall
+%find_lang %{name}
+if [ -f %{buildroot}%{_datadir}/locale/locale.alias ]; then
+	rm %{buildroot}%{_datadir}/locale/locale.alias
+fi
+
+
+%clean
+rm -rf %{buildroot}
+
+%files -f %{name}.lang
+%defattr(644,root,root,755)
+%doc AUTHORS COPYING README TODO BUGS
+%attr(755,root,root) %{_bindir}/*
+%{_datadir}/dxirc/icons/*
+%{_datadir}/pixmaps/*
+%{_datadir}/applications/dxirc.desktop

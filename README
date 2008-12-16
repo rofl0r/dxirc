@@ -1,0 +1,74 @@
+
+
+ dxirc IRC client
+ Copyright (C) 2008 David Vachulka
+ <http://dxirc.org>
+ <http://code.google.com/p/dxirc/>
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2, or (at your option) 
+ any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the  
+ GNU General Public License for more details.
+
+ Icons were taken from http://www.famfamfam.com/, GreenHell
+
+ This software uses the FOX Toolkit Library (http://www.fox-toolkit.org).
+ 
+ *IMPORTANT REMARKS *
+ 1. You must use the current stable Fox version 1.6.16 (required!) or higher in the 1.6.x branch. 
+    The current version of dxirc neither can be build using the Fox 1.0.x, 1.2.x, 1.4.x, nor using the 1.7.x series.
+  
+ Description
+ ~~~~~~~~~~~
+  dxirc is a simple IRC client for various os (linux, *bsd, windows), written using the FOX toolkit.
+
+ Key bindings
+ ~~~~~~~~~~~~
+  * Help								- F1\n \
+  * Server list							- F2\n \
+  * Quick connect						- Ctrl-k\n \
+  * Disconnect							- Ctrl-d\n \
+  * Close current tab					- Ctrl-w\n \
+  * Clear window						- Ctrl-l\n \
+  * Clear all windows					- Ctrl-shift-l\n \
+  * Show/Hide users list				- Ctrl-u\n \
+  * Switch between tabs					- Alt-0~9 or Ctrl-tab\n \
+  * Switch between unreaded tabs		- Ctrl-n\n\
+  * Quit								- Alt-F4\n \
+
+ Install from sources
+ ~~~~~~~~~~~~~~~~~~~~
+  Type:
+  ./configure
+  make
+  make install
+
+ Bugs
+ ~~~~
+  Please report bugs to David Vachulka <david@konstrukce-cad.com>.
+
+ Translations
+ ~~~~~~~~~~~~
+  dxirc is now available in 2 languages. To translate dxirc to your language, open with a software like poedit,
+  kbabel or gtranslator the dxirc.pot file in the po directory of the source tree and fill it with your
+  translated strings, and then send it back to me.
+ 
+ 
+ Patches
+ ~~~~~~~
+  If you have coded some interesting patch, please send it to me, I will try to include it in the next release...
+
+ Enjoy!
+ 
+  Many thanks to Jeroen van der Zijp for his excellent FOX-tookit and to all people that have provided useful patches, \
+  translations, tests, advices and also all users.
+ 
+ [Last revision: 10.12.2008]
+
+
+
