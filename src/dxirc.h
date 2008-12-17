@@ -78,6 +78,7 @@ class dxirc: public FXMainWindow
         FXString commandsList, themesList, themePath, logPath;
         FXint maxAway;
         FXString nickCompletionChar;
+        FXFont *ircFont;
 
         void SetLocaleEncoding();
         FXbool TabExist(IrcSocket*, FXString);

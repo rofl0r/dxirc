@@ -50,6 +50,7 @@ FXDEFMAP(ConfigDialog) ConfigDialogMap[] = {
     FXMAPFUNC(SEL_CHANGED, ConfigDialog::ID_COLORS, ConfigDialog::OnThemeColorChanged),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_THEME, ConfigDialog::OnTheme),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_FONT, ConfigDialog::OnFont),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_IRCFONT, ConfigDialog::OnIrcFont),
     FXMAPFUNCS(SEL_SELECTED, ConfigDialog::ID_USER, ConfigDialog::ID_SERVER, ConfigDialog::OnUsersSelected),
     FXMAPFUNCS(SEL_DESELECTED, ConfigDialog::ID_USER, ConfigDialog::ID_SERVER, ConfigDialog::OnUsersDeselected),
     FXMAPFUNCS(SEL_CHANGED, ConfigDialog::ID_USER, ConfigDialog::ID_SERVER, ConfigDialog::OnUsersChanged),
@@ -57,7 +58,7 @@ FXDEFMAP(ConfigDialog) ConfigDialogMap[] = {
 
 FXIMPLEMENT(ConfigDialog, FXDialogBox, ConfigDialogMap, ARRAYNUMBER(ConfigDialogMap))
 
-ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, FXIgnoreUserArray ulist, FXString tpth, FXString thm, FXint maxa, FXbool log, FXString lpth, FXbool srvw, FXString nichar)
+ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, FXIgnoreUserArray ulist, FXString tpth, FXString thm, FXint maxa, FXbool log, FXString lpth, FXbool srvw, FXString nichar, FXString fnt)
     : FXDialogBox(owner, _("Preferences"), DECOR_RESIZE|DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0),
         commandsList(clist), themePath(tpth), themesList(thm), logPath(lpth), logging(log), serverWindow(srvw), usersList(ulist), maxAway(maxa), nickChar(nichar), colors(clrs)
 {
@@ -131,6 +132,9 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, F
     font = new FXFont(getApp(),fontdescription);
     font->create();
 
+    ircFont = new FXFont(getApp(), fnt);
+    ircFont->create();
+
     FXHorizontalFrame *closeframe = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X);    
     FXButton *ok = new FXButton(closeframe, _("&Close"), NULL, this, ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|LAYOUT_RIGHT|FRAME_RAISED|FRAME_THICK, 0,0,0,0, 20,20);
     ok->addHotKey(KEY_Return);
@@ -141,7 +145,7 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, F
     FXSwitcher *switcher = new FXSwitcher(contents, LAYOUT_FILL_X|LAYOUT_FILL_Y|LAYOUT_RIGHT);
 
     FXVerticalFrame *colorpane = new FXVerticalFrame(switcher, LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    new FXLabel(colorpane, _("Color settings"), NULL, LAYOUT_LEFT);
+    new FXLabel(colorpane, _("Irc text settings"), NULL, LAYOUT_LEFT);
     new FXHorizontalSeparator(colorpane, SEPARATOR_LINE|LAYOUT_FILL_X);
     FXHorizontalFrame *hframe = new FXHorizontalFrame(colorpane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     FXMatrix *colormatrix = new FXMatrix(hframe, 2, MATRIX_BY_COLUMNS, 0,0,0,0, DEFAULT_SPACING,DEFAULT_SPACING,DEFAULT_SPACING,DEFAULT_SPACING, 1,1);
@@ -157,6 +161,8 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, F
     new FXLabel(colormatrix, _("Notice text color"), NULL, JUSTIFY_LEFT|LAYOUT_CENTER_Y|LAYOUT_FILL_X|LAYOUT_FILL_ROW);
     new FXColorWell(colormatrix, FXRGB(0,0,255), &errorTarget, FXDataTarget::ID_VALUE, COLORWELL_OPAQUEONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_LEFT|LAYOUT_CENTER_Y|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW, 0,0,40,24);
     new FXLabel(colormatrix, _("Error text color"), NULL, JUSTIFY_LEFT|LAYOUT_CENTER_Y|LAYOUT_FILL_X|LAYOUT_FILL_ROW);
+    new FXLabel(colormatrix, _("Font"));
+    ircfontButton = new FXButton(colormatrix, " ", NULL, this, ID_IRCFONT, LAYOUT_CENTER_Y|FRAME_RAISED|JUSTIFY_CENTER_X|JUSTIFY_CENTER_Y|LAYOUT_FILL_X);
     FXVerticalFrame *tframe = new FXVerticalFrame(hframe, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     text = new FXText(tframe, NULL, 0, LAYOUT_FILL_X|LAYOUT_FILL_Y|TEXT_READONLY);
     text->setScrollStyle(HSCROLLING_OFF);
@@ -300,7 +306,7 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, F
     new FXLabel(fontframe, _("Font"));
     fontButton = new FXButton(fontframe, " ", NULL, this, ID_FONT, LAYOUT_CENTER_Y|FRAME_RAISED|JUSTIFY_CENTER_X|JUSTIFY_CENTER_Y|LAYOUT_FILL_X);
 
-    new FXButton(buttonframe, _("Co&lors"), NULL, switcher, FXSwitcher::ID_OPEN_FIRST, FRAME_RAISED);
+    new FXButton(buttonframe, _("&Irc Text"), NULL, switcher, FXSwitcher::ID_OPEN_FIRST, FRAME_RAISED);
     new FXButton(buttonframe, _("I&gnore"), NULL, switcher, FXSwitcher::ID_OPEN_SECOND, FRAME_RAISED);
     new FXButton(buttonframe, _("&Other"), NULL, switcher, FXSwitcher::ID_OPEN_THIRD, FRAME_RAISED);
     new FXButton(buttonframe, _("&Look"), NULL, switcher, FXSwitcher::ID_OPEN_FOURTH, FRAME_RAISED);
@@ -340,12 +346,14 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, F
 
     UpdateColors();
     UpdateFont();
+    UpdateIrcFont();
 }
 
 
 ConfigDialog::~ConfigDialog()
 {
     delete font;
+    delete ircFont;
 }
 
 long ConfigDialog::OnCommandsSelected(FXObject*, FXSelector, void*)
@@ -637,19 +645,38 @@ long ConfigDialog::OnTheme(FXObject*, FXSelector, void *ptr)
 
 long ConfigDialog::OnFont(FXObject*, FXSelector, void*)
 {
-    FXFontDialog dialog(this,"Select Normal Font");
+    FXFontDialog dialog(this, _("Select font"));
     FXFontDesc fontdescription;
     font->getFontDesc(fontdescription);
     strncpy(fontdescription.face,font->getActualName().text(),sizeof(fontdescription.face));
     dialog.setFontSelection(fontdescription);
     if(dialog.execute(PLACEMENT_SCREEN))
     {
-        FXFont *oldfont=font;
+        FXFont *oldfont = font;
         dialog.getFontSelection(fontdescription);
-        font=new FXFont(getApp(),fontdescription);
+        font = new FXFont(getApp(),fontdescription);
         font->create();
         delete oldfont;
         UpdateFont();
+    }
+    return 1;
+}
+
+long ConfigDialog::OnIrcFont(FXObject*, FXSelector, void*)
+{
+    FXFontDialog dialog(this, _("Select font"));
+    FXFontDesc fontdescription;
+    ircFont->getFontDesc(fontdescription);
+    strncpy(fontdescription.face,ircFont->getActualName().text(),sizeof(fontdescription.face));
+    dialog.setFontSelection(fontdescription);
+    if(dialog.execute(PLACEMENT_SCREEN))
+    {
+        FXFont *oldfont = ircFont;
+        dialog.getFontSelection(fontdescription);
+        ircFont = new FXFont(getApp(),fontdescription);
+        ircFont->create();
+        delete oldfont;
+        UpdateIrcFont();
     }
     return 1;
 }
@@ -816,6 +843,22 @@ void ConfigDialog::UpdateFont()
     menuLabels[0]->setFont(font);
     menuLabels[1]->setFont(font);
     menuLabels[2]->setFont(font);
+}
+
+void ConfigDialog::UpdateIrcFont()
+{
+    FXString fontname = ircFont->getActualName() +", " + FXStringVal(ircFont->getSize()/10);
+    if(ircFont->getWeight()!=0 && ircFont->getWeight()!=FXFont::Normal)
+    {
+        fontname += ", " + weightToString(ircFont->getWeight());
+    }
+    if (ircFont->getSlant()!=0 && ircFont->getSlant()!=FXFont::Straight)
+    {
+        fontname += ", " + slantToString(ircFont->getSlant());
+    }
+    ircfontButton->setText(fontname);
+
+    text->setFont(ircFont);
 }
 
 long ConfigDialog::OnLogChanged(FXObject*, FXSelector, void*)

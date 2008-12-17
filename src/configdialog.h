@@ -82,7 +82,7 @@ class ConfigDialog: public FXDialogBox
 {
     FXDECLARE(ConfigDialog)
     public:
-        ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, FXIgnoreUserArray ulist, FXString tpth, FXString thm, FXint maxa, FXbool log, FXString lpth, FXbool srvw, FXString nichar);
+        ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, FXIgnoreUserArray ulist, FXString tpth, FXString thm, FXint maxa, FXbool log, FXString lpth, FXbool srvw, FXString nichar, FXString fnt);
         virtual ~ConfigDialog();
         enum {
             ID_ADDCOMMAND = FXTopWindow::ID_LAST,
@@ -97,6 +97,7 @@ class ConfigDialog: public FXDialogBox
             ID_CHANNEL,
             ID_SERVER,
             ID_IRCCOLORS,
+            ID_IRCFONT,
             ID_COLORS,
             ID_THEME,
             ID_FONT,
@@ -133,6 +134,7 @@ class ConfigDialog: public FXDialogBox
         long OnTheme(FXObject*,FXSelector,void*);
         long OnThemeColorChanged(FXObject*,FXSelector,void*);
         long OnFont(FXObject*,FXSelector,void*);
+        long OnIrcFont(FXObject*,FXSelector,void*);
 
         FXString GetCommandsList() { return commandsList; }
         FXIgnoreUserArray GetUsersList() { return usersList; }
@@ -144,6 +146,7 @@ class ConfigDialog: public FXDialogBox
         FXbool GetServerWindow() { return serverWindow; }
         FXString GetLogPath() { return logPath; }
         FXString GetNickCompletionChar() { return nickChar; }
+        FXString GetIrcFont() { return ircFont->getFont(); }
 
     private:
         ConfigDialog() {}
@@ -152,7 +155,7 @@ class ConfigDialog: public FXDialogBox
         FXList *commands, *users, *channels, *servers, *icons;
         FXButton *addCommand, *deleteCommand, *addUser, *modifyUser, *deleteUser, *addTheme, *deleteTheme, *selectPath;
         FXButton *icon1, *icon2, *icon3, *icon4, *icon5, *icon6, *icon7;
-        FXButton *fontButton;
+        FXButton *fontButton, *ircfontButton;
         FXCheckButton *logCheck, *serverCheck;
         FXTextField *folder, *nickCharField, *textTest;
         FXString commandsList, themePath, themesList, logPath;
@@ -176,7 +179,7 @@ class ConfigDialog: public FXDialogBox
         FXHorizontalFrame *textFrame1, *textFrame2, *textFrame3;
         FXGroupBox *menuGroup;
         FXSeparator *sep1, *sep2;
-        FXFont *font;
+        FXFont *font, *ircFont;
 
         void FillCommnads();
         FXString FillCommandsCombo();
@@ -187,6 +190,7 @@ class ConfigDialog: public FXDialogBox
         void UpdateIcons();
         void UpdateColors();
         void UpdateFont();
+        void UpdateIrcFont();
         void ShowMessage();
         void WriteRegistry();
         FXbool ThemeExist(const FXString &ckdTheme);

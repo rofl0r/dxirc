@@ -52,8 +52,8 @@ FXDEFMAP(IrcTabItem) IrcTabItemMap[] = {
 
 FXIMPLEMENT(IrcTabItem, FXTabItem, IrcTabItemMap, ARRAYNUMBER(IrcTabItemMap))
 
-IrcTabItem::IrcTabItem(FXTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FXuint opts=TAB_TOP_NORMAL, TYPE typ=CHANNEL, IrcSocket *sock=NULL, FXbool oswnd=false, FXbool uhid=false, FXbool logg=false, FXString cmdlst="", FXString lpth="", FXint maxa=200, FXColor tclr=FXRGB(0,0,0), FXColor tbclr=FXRGB(255,255,255), FXColor uclr=FXRGB(229,229,229), FXColor aclr=FXRGB(255,165,0), FXColor nclr=FXRGB(0,0,255), FXColor eclr=FXRGB(255,0,0), FXString nichar=":")
-    : FXTabItem(tab, tabtext, ic, opts), parent(tab), server(sock), type(typ), usersHidden(uhid), logging(logg), ownServerWindow(oswnd), textColor(tclr), textBackColor(tbclr), userColor(uclr), actionsColor(aclr), noticeColor(nclr), errorColor(eclr),
+IrcTabItem::IrcTabItem(FXTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FXuint opts=TAB_TOP_NORMAL, TYPE typ=CHANNEL, IrcSocket *sock=NULL, FXbool oswnd=false, FXbool uhid=false, FXbool logg=false, FXString cmdlst="", FXString lpth="", FXint maxa=200, IrcColor clrs=IrcColor(), FXString nichar=":")
+    : FXTabItem(tab, tabtext, ic, opts), parent(tab), server(sock), type(typ), usersHidden(uhid), logging(logg), ownServerWindow(oswnd), colors(clrs),
     commandsList(cmdlst), logPath(lpth), maxAway(maxa), nickCompletionChar(nichar), logstream(NULL)
 {
     currentPosition = 0;
@@ -85,23 +85,23 @@ IrcTabItem::IrcTabItem(FXTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FX
 
     for(int i=0; i<7; i++)
     {
-        textStyleList[i].normalForeColor = textColor;
-        textStyleList[i].normalBackColor = textBackColor;
+        textStyleList[i].normalForeColor = colors.text;
+        textStyleList[i].normalBackColor = colors.back;
         textStyleList[i].selectForeColor = getApp()->getSelforeColor();
         textStyleList[i].selectBackColor = getApp()->getSelbackColor();
         textStyleList[i].hiliteForeColor = getApp()->getHiliteColor();
         textStyleList[i].hiliteBackColor = FXRGB(255, 128, 128); // from FXText.cpp
-        textStyleList[i].activeBackColor = textBackColor;
+        textStyleList[i].activeBackColor = colors.back;
         textStyleList[i].style = 0;
     }
     //gray text - user commands
-    textStyleList[0].normalForeColor = userColor;
+    textStyleList[0].normalForeColor = colors.user;
     //orange text - Actions
-    textStyleList[1].normalForeColor = actionsColor;
+    textStyleList[1].normalForeColor = colors.action;
     //blue text - Notice
-    textStyleList[2].normalForeColor = noticeColor;
+    textStyleList[2].normalForeColor = colors.notice;
     //red text - Errors
-    textStyleList[3].normalForeColor = errorColor;
+    textStyleList[3].normalForeColor = colors.error;
     //bold style
     textStyleList[4].style = FXText::STYLE_BOLD;
     //underline style
@@ -113,13 +113,13 @@ IrcTabItem::IrcTabItem(FXTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FX
     text->setStyled(TRUE);
     text->setHiliteStyles(textStyleList);
 
-    text->setBackColor(textBackColor);
-    text->setActiveBackColor(textBackColor);
-    commandline->setBackColor(textBackColor);
-    users->setBackColor(textBackColor);
-    text->setTextColor(textColor);
-    commandline->setTextColor(textColor);
-    users->setTextColor(textColor);
+    text->setBackColor(colors.back);
+    text->setActiveBackColor(colors.back);
+    commandline->setBackColor(colors.back);
+    users->setBackColor(colors.back);
+    text->setTextColor(colors.text);
+    commandline->setTextColor(colors.text);
+    users->setTextColor(colors.text);
 
     this->setIconPosition(ICON_BEFORE_TEXT);
 }
@@ -204,19 +204,19 @@ void IrcTabItem::SetType(const TYPE &typ, const FXString &tabtext)
     else this->setIcon(queryicon);
 }
 
-void IrcTabItem::SetColor(FXColor tclr, FXColor tbclr, FXColor uclr, FXColor aclr, FXColor nclr, FXColor eclr)
+void IrcTabItem::SetColor(IrcColor clrs)
 {
-    SetTextColor(tclr);
-    SetTextBackColor(tbclr);
-    SetUserColor(uclr);
-    SetActionsColor(aclr);
-    SetNoticeColor(nclr);
-    SetErrorColor(eclr);
+    colors = clrs;
+    SetTextColor(clrs.text);
+    SetTextBackColor(clrs.back);
+    SetUserColor(clrs.user);
+    SetActionsColor(clrs.action);
+    SetNoticeColor(clrs.notice);
+    SetErrorColor(clrs.error);
 }
 
 void IrcTabItem::SetTextBackColor(FXColor clr)
 {
-    textBackColor = clr;
     for(int i=0; i<7; i++)
     {
         textStyleList[i].normalBackColor = clr;
@@ -230,7 +230,6 @@ void IrcTabItem::SetTextBackColor(FXColor clr)
 
 void IrcTabItem::SetTextColor(FXColor clr)
 {
-    textColor = clr;
     textStyleList[4].normalForeColor = clr;
     textStyleList[5].normalForeColor = clr;
     textStyleList[6].normalForeColor = clr;
@@ -242,25 +241,21 @@ void IrcTabItem::SetTextColor(FXColor clr)
 
 void IrcTabItem::SetUserColor(FXColor clr)
 {
-    userColor = clr;
     textStyleList[0].normalForeColor = clr;
 }
 
 void IrcTabItem::SetActionsColor(FXColor clr)
 {
-    actionsColor = clr;
     textStyleList[1].normalForeColor = clr;
 }
 
 void IrcTabItem::SetNoticeColor(FXColor clr)
 {
-    noticeColor = clr;
     textStyleList[2].normalForeColor = clr;
 }
 
 void IrcTabItem::SetErrorColor(FXColor clr)
 {
-    errorColor = clr;
     textStyleList[3].normalForeColor = clr;
 }
 
@@ -288,6 +283,11 @@ void IrcTabItem::SetLogPath(FXString pth)
 void IrcTabItem::SetNickCompletionChar(FXString nichr)
 {
     nickCompletionChar = nichr;
+}
+
+void IrcTabItem::SetIrcFont(FXFont *fnt)
+{
+    text->setFont(fnt);
 }
 
 void IrcTabItem::AppendIrcText(FXString msg)

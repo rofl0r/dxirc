@@ -25,12 +25,13 @@
 
 #include <fstream>
 #include "ircsocket.h"
+#include "defs.h"
 
 class IrcTabItem: public FXTabItem
 {
     FXDECLARE(IrcTabItem)
     public:
-        IrcTabItem(FXTabBook *tab, const FXString &tabtext, FXIcon *ic, FXuint opts, TYPE typ, IrcSocket *sock, FXbool oswnd, FXbool uhid, FXbool logg, FXString cmdlst, FXString lpth, FXint maxa, FXColor tclr, FXColor tbclr, FXColor uclr, FXColor aclr, FXColor nclr, FXColor eclr, FXString nichar);
+        IrcTabItem(FXTabBook*, const FXString&, FXIcon*, FXuint, TYPE, IrcSocket*, FXbool, FXbool, FXbool, FXString, FXString, FXint, IrcColor, FXString);
         virtual ~IrcTabItem();
         enum {
             ID_COMMANDLINE = FXTabItem::ID_LAST,
@@ -58,18 +59,13 @@ class IrcTabItem: public FXTabItem
         TYPE GetType() { return type; }
         void ReparentTab();
         void MakeLastRowVisible(FXbool);
-        void SetColor(FXColor tclr, FXColor tbclr, FXColor uclr, FXColor aclr, FXColor nclr, FXColor eclr);
-        void SetTextBackColor(FXColor clr);
-        void SetTextColor(FXColor clr);
-        void SetUserColor(FXColor clr);
-        void SetActionsColor(FXColor clr);
-        void SetNoticeColor(FXColor clr);
-        void SetErrorColor(FXColor clr);
+        void SetColor(IrcColor);
         void SetCommandsList(FXString clst);
         void SetMaxAway(FXint maxa);
         void SetLogging(FXbool log);
         void SetLogPath(FXString pth);
         void SetNickCompletionChar(FXString nichr);
+        void SetIrcFont(FXFont*);
 
         long OnCommandline(FXObject *, FXSelector, void*);
         long OnKeyPress(FXObject *, FXSelector, void*);
@@ -102,7 +98,7 @@ class IrcTabItem: public FXTabItem
         FXbool checkAway, iamOp, usersHidden, logging, ownServerWindow;
         FXHistoryArray commandsHistory;
         FXHiliteStyle textStyleList[7];
-        FXColor textColor, textBackColor, userColor, actionsColor, noticeColor, errorColor;
+        IrcColor colors;
         NickInfo nickOnRight;
         FXString commandsList, logPath;
         FXint maxAway;
@@ -128,6 +124,12 @@ class IrcTabItem: public FXTabItem
         void StopLogging();
         void LogLine(const FXString &line);
         FXbool IsChannel(const FXString &text);
+        void SetTextColor(FXColor);
+        void SetTextBackColor(FXColor);
+        void SetUserColor(FXColor);
+        void SetActionsColor(FXColor);
+        void SetNoticeColor(FXColor);
+        void SetErrorColor(FXColor);
 };
 
 #endif // IRCTABITEM_H
