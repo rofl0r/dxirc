@@ -31,7 +31,7 @@ class IrcTabItem: public FXTabItem
 {
     FXDECLARE(IrcTabItem)
     public:
-        IrcTabItem(FXTabBook*, const FXString&, FXIcon*, FXuint, TYPE, IrcSocket*, FXbool, FXbool, FXbool, FXString, FXString, FXint, IrcColor, FXString);
+        IrcTabItem(FXTabBook*, const FXString&, FXIcon*, FXuint, TYPE, IrcSocket*, FXbool, FXbool, FXbool, FXString, FXString, FXint, IrcColor, FXString, FXFont*);
         virtual ~IrcTabItem();
         enum {
             ID_COMMANDLINE = FXTabItem::ID_LAST,

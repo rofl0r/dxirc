@@ -52,7 +52,7 @@ FXDEFMAP(IrcTabItem) IrcTabItemMap[] = {
 
 FXIMPLEMENT(IrcTabItem, FXTabItem, IrcTabItemMap, ARRAYNUMBER(IrcTabItemMap))
 
-IrcTabItem::IrcTabItem(FXTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FXuint opts=TAB_TOP_NORMAL, TYPE typ=CHANNEL, IrcSocket *sock=NULL, FXbool oswnd=false, FXbool uhid=false, FXbool logg=false, FXString cmdlst="", FXString lpth="", FXint maxa=200, IrcColor clrs=IrcColor(), FXString nichar=":")
+IrcTabItem::IrcTabItem(FXTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FXuint opts=TAB_TOP_NORMAL, TYPE typ=CHANNEL, IrcSocket *sock=NULL, FXbool oswnd=false, FXbool uhid=false, FXbool logg=false, FXString cmdlst="", FXString lpth="", FXint maxa=200, IrcColor clrs=IrcColor(), FXString nichar=":", FXFont *fnt=NULL)
     : FXTabItem(tab, tabtext, ic, opts), parent(tab), server(sock), type(typ), usersHidden(uhid), logging(logg), ownServerWindow(oswnd), colors(clrs),
     commandsList(cmdlst), logPath(lpth), maxAway(maxa), nickCompletionChar(nichar), logstream(NULL)
 {
@@ -73,6 +73,7 @@ IrcTabItem::IrcTabItem(FXTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FX
 
     textframe = new FXHorizontalFrame(splitter, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     text = new FXText(textframe, NULL, 0, LAYOUT_FILL_X|LAYOUT_FILL_Y|TEXT_READONLY|TEXT_WORDWRAP|TEXT_SHOWACTIVE|TEXT_AUTOSCROLL);
+    text->setFont(fnt);
 
     usersframe = new FXVerticalFrame(splitter, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y|LAYOUT_FIX_WIDTH);
     users = new FXList(usersframe, this, ID_USERS, LAYOUT_FILL_X|LAYOUT_FILL_Y);
