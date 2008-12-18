@@ -31,7 +31,7 @@ class IrcTabItem: public FXTabItem
 {
     FXDECLARE(IrcTabItem)
     public:
-        IrcTabItem(FXTabBook*, const FXString&, FXIcon*, FXuint, TYPE, IrcSocket*, FXbool, FXbool, FXbool, FXString, FXString, FXint, IrcColor, FXString, FXFont*);
+        IrcTabItem(FXTabBook*, const FXString&, FXIcon*, FXuint, TYPE, IrcSocket*, FXbool, FXbool, FXbool, FXString, FXString, FXint, IrcColor, FXString, FXFont*, FXbool);
         virtual ~IrcTabItem();
         enum {
             ID_COMMANDLINE = FXTabItem::ID_LAST,
@@ -66,6 +66,7 @@ class IrcTabItem: public FXTabItem
         void SetLogPath(FXString pth);
         void SetNickCompletionChar(FXString nichr);
         void SetIrcFont(FXFont*);
+        void SetSameFont(FXbool);
 
         long OnCommandline(FXObject *, FXSelector, void*);
         long OnKeyPress(FXObject *, FXSelector, void*);
@@ -95,7 +96,7 @@ class IrcTabItem: public FXTabItem
         FXList *users;
         FXTextField *commandline;
         FXint currentPosition, historyMax, numberUsers;
-        FXbool checkAway, iamOp, usersHidden, logging, ownServerWindow;
+        FXbool checkAway, iamOp, usersShown, logging, ownServerWindow, sameFont;
         FXHistoryArray commandsHistory;
         FXHiliteStyle textStyleList[7];
         IrcColor colors;

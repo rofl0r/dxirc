@@ -73,7 +73,7 @@ class dxirc: public FXMainWindow
         FXApp *app;
         FXServerInfoArray serverList;
         FXIgnoreUserArray usersList;
-        FXbool usersHidden, logging, ownServerWindow, tempServerWindow;
+        FXbool usersShown, logging, ownServerWindow, tempServerWindow, sameFont;
         IrcColor colors;
         FXString commandsList, themesList, themePath, logPath;
         FXint maxAway;
@@ -99,6 +99,7 @@ class dxirc: public FXMainWindow
         FXMenuBar *menubar;
         FXMenuPane *servermenu, *helpmenu, *editmenu;
         FXMenuCommand *disconnect, *closeTab, *clearTab, *clearTabs;
+        FXMenuCheck *users;
         FXStatusBar *statusbar;
         FXVerticalFrame *mainframe;
         FXTabBook *tabbook;

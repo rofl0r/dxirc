@@ -52,8 +52,8 @@ FXDEFMAP(IrcTabItem) IrcTabItemMap[] = {
 
 FXIMPLEMENT(IrcTabItem, FXTabItem, IrcTabItemMap, ARRAYNUMBER(IrcTabItemMap))
 
-IrcTabItem::IrcTabItem(FXTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FXuint opts=TAB_TOP_NORMAL, TYPE typ=CHANNEL, IrcSocket *sock=NULL, FXbool oswnd=false, FXbool uhid=false, FXbool logg=false, FXString cmdlst="", FXString lpth="", FXint maxa=200, IrcColor clrs=IrcColor(), FXString nichar=":", FXFont *fnt=NULL)
-    : FXTabItem(tab, tabtext, ic, opts), parent(tab), server(sock), type(typ), usersHidden(uhid), logging(logg), ownServerWindow(oswnd), colors(clrs),
+IrcTabItem::IrcTabItem(FXTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FXuint opts=TAB_TOP_NORMAL, TYPE typ=CHANNEL, IrcSocket *sock=NULL, FXbool oswnd=false, FXbool uswn=true, FXbool logg=false, FXString cmdlst="", FXString lpth="", FXint maxa=200, IrcColor clrs=IrcColor(), FXString nichar=":", FXFont *fnt=NULL, FXbool sfnt=false)
+    : FXTabItem(tab, tabtext, ic, opts), parent(tab), server(sock), type(typ), usersShown(uswn), logging(logg), ownServerWindow(oswnd), sameFont(sfnt), colors(clrs),
     commandsList(cmdlst), logPath(lpth), maxAway(maxa), nickCompletionChar(nichar), logstream(NULL)
 {
     currentPosition = 0;
@@ -79,10 +79,12 @@ IrcTabItem::IrcTabItem(FXTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FX
     users = new FXList(usersframe, this, ID_USERS, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     users->setSortFunc(sortfuncs[0]);
     users->setScrollStyle(HSCROLLING_OFF);
-    if(type != CHANNEL || usersHidden) usersframe->hide();
-    if(type != CHANNEL || usersHidden) users->hide();
+    if(sameFont) users->setFont(fnt);
+    if(type != CHANNEL || !usersShown) usersframe->hide();
+    if(type != CHANNEL || !usersShown) users->hide();
 
     commandline = new FXTextField(mainframe, 25, this, ID_COMMANDLINE, TEXTFIELD_ENTER_ONLY|FRAME_SUNKEN|JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_BOTTOM, 0, 0, 0, 0, 1, 1, 1, 1);
+    if(sameFont) commandline->setFont(fnt);
 
     for(int i=0; i<7; i++)
     {
@@ -155,7 +157,7 @@ void IrcTabItem::ReparentTab()
 
 void IrcTabItem::HideUsers()
 {
-    usersHidden = !usersHidden;
+    usersShown = !usersShown;
     if(type == CHANNEL)
     {
         usersframe->hide();
@@ -166,7 +168,7 @@ void IrcTabItem::HideUsers()
 
 void IrcTabItem::ShowUsers()
 {
-    usersHidden = !usersHidden;
+    usersShown = !usersShown;
     if(type == CHANNEL)
     {
         usersframe->show();
@@ -179,8 +181,8 @@ void IrcTabItem::SetType(const TYPE &typ, const FXString &tabtext)
 {
     if(typ == CHANNEL)
     {
-        if(!usersHidden) usersframe->show();
-        if(!usersHidden) users->show();
+        if(usersShown) usersframe->show();
+        if(usersShown) users->show();
         splitter->recalc();
         setText(tabtext);
         server->SendMode(getText());
@@ -289,6 +291,16 @@ void IrcTabItem::SetNickCompletionChar(FXString nichr)
 void IrcTabItem::SetIrcFont(FXFont *fnt)
 {
     text->setFont(fnt);
+    if(sameFont)
+    {
+        users->setFont(fnt);
+        commandline->setFont(fnt);
+    }
+}
+
+void IrcTabItem::SetSameFont(FXbool sfnt)
+{
+    sameFont = sfnt;
 }
 
 void IrcTabItem::AppendIrcText(FXString msg)

@@ -58,9 +58,9 @@ FXDEFMAP(ConfigDialog) ConfigDialogMap[] = {
 
 FXIMPLEMENT(ConfigDialog, FXDialogBox, ConfigDialogMap, ARRAYNUMBER(ConfigDialogMap))
 
-ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, FXIgnoreUserArray ulist, FXString tpth, FXString thm, FXint maxa, FXbool log, FXString lpth, FXbool srvw, FXString nichar, FXString fnt)
+ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, FXIgnoreUserArray ulist, FXString tpth, FXString thm, FXint maxa, FXbool log, FXString lpth, FXbool srvw, FXString nichar, FXString fnt, FXbool sfnt)
     : FXDialogBox(owner, _("Preferences"), DECOR_RESIZE|DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0),
-        commandsList(clist), themePath(tpth), themesList(thm), logPath(lpth), logging(log), serverWindow(srvw), usersList(ulist), maxAway(maxa), nickChar(nichar), colors(clrs)
+        commandsList(clist), themePath(tpth), themesList(thm), logPath(lpth), logging(log), serverWindow(srvw), usersList(ulist), maxAway(maxa), nickChar(nichar), colors(clrs), sameFont(sfnt)
 {
     textTarget.connect(colors.text);
     textTarget.setTarget(this);
@@ -80,6 +80,8 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, F
     errorTarget.connect(colors.error);
     errorTarget.setTarget(this);
     errorTarget.setSelector(ID_IRCCOLORS);
+
+    targetSameFont.connect(sameFont);
 
     themeCurrent.base = getApp()->getBaseColor();
     themeCurrent.back = getApp()->getBackColor();
@@ -148,7 +150,8 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, F
     new FXLabel(colorpane, _("Irc text settings"), NULL, LAYOUT_LEFT);
     new FXHorizontalSeparator(colorpane, SEPARATOR_LINE|LAYOUT_FILL_X);
     FXHorizontalFrame *hframe = new FXHorizontalFrame(colorpane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    FXMatrix *colormatrix = new FXMatrix(hframe, 2, MATRIX_BY_COLUMNS, 0,0,0,0, DEFAULT_SPACING,DEFAULT_SPACING,DEFAULT_SPACING,DEFAULT_SPACING, 1,1);
+    FXVerticalFrame *cframe = new FXVerticalFrame(hframe, LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    FXMatrix *colormatrix = new FXMatrix(cframe, 2, MATRIX_BY_COLUMNS, 0,0,0,0, DEFAULT_SPACING,DEFAULT_SPACING,DEFAULT_SPACING,DEFAULT_SPACING, 1,1);
     new FXColorWell(colormatrix, FXRGB(0,0,255), &backTarget, FXDataTarget::ID_VALUE, COLORWELL_OPAQUEONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_LEFT|LAYOUT_CENTER_Y|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW, 0,0,40,24);
     new FXLabel(colormatrix, _("Text backround color"), NULL, JUSTIFY_LEFT|LAYOUT_CENTER_Y|LAYOUT_FILL_X|LAYOUT_FILL_ROW);
     new FXColorWell(colormatrix, FXRGB(0,0,255), &textTarget, FXDataTarget::ID_VALUE, COLORWELL_OPAQUEONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_LEFT|LAYOUT_CENTER_Y|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW, 0,0,40,24);
@@ -163,6 +166,7 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, F
     new FXLabel(colormatrix, _("Error text color"), NULL, JUSTIFY_LEFT|LAYOUT_CENTER_Y|LAYOUT_FILL_X|LAYOUT_FILL_ROW);
     new FXLabel(colormatrix, _("Font"));
     ircfontButton = new FXButton(colormatrix, " ", NULL, this, ID_IRCFONT, LAYOUT_CENTER_Y|FRAME_RAISED|JUSTIFY_CENTER_X|JUSTIFY_CENTER_Y|LAYOUT_FILL_X);
+    new FXCheckButton(cframe, _("Use same font for user list and commandline"), &targetSameFont, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT);
     FXVerticalFrame *tframe = new FXVerticalFrame(hframe, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     text = new FXText(tframe, NULL, 0, LAYOUT_FILL_X|LAYOUT_FILL_Y|TEXT_READONLY);
     text->setScrollStyle(HSCROLLING_OFF);

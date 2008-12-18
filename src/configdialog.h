@@ -82,7 +82,7 @@ class ConfigDialog: public FXDialogBox
 {
     FXDECLARE(ConfigDialog)
     public:
-        ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, FXIgnoreUserArray ulist, FXString tpth, FXString thm, FXint maxa, FXbool log, FXString lpth, FXbool srvw, FXString nichar, FXString fnt);
+        ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, FXIgnoreUserArray ulist, FXString tpth, FXString thm, FXint maxa, FXbool log, FXString lpth, FXbool srvw, FXString nichar, FXString fnt, FXbool sfnt);
         virtual ~ConfigDialog();
         enum {
             ID_ADDCOMMAND = FXTopWindow::ID_LAST,
@@ -147,6 +147,7 @@ class ConfigDialog: public FXDialogBox
         FXString GetLogPath() { return logPath; }
         FXString GetNickCompletionChar() { return nickChar; }
         FXString GetIrcFont() { return ircFont->getFont(); }
+        FXbool GetSameFont() { return sameFont; }
 
     private:
         ConfigDialog() {}
@@ -158,20 +159,21 @@ class ConfigDialog: public FXDialogBox
         FXButton *fontButton, *ircfontButton;
         FXCheckButton *logCheck, *serverCheck;
         FXTextField *folder, *nickCharField, *textTest;
+        IrcColor colors;
         FXString commandsList, themePath, themesList, logPath;
-        FXbool logging, serverWindow;
+        FXbool logging, serverWindow, sameFont;
         FXIgnoreUserArray usersList;
         FXToolBar *iconsBar;
         FXint maxAway;
         FXSpinner *maxAwaySpinner;
         FXString nickChar;
-        IrcColor colors;
         FXDataTarget textTarget, backTarget, userTarget, actionTarget, noticeTarget, errorTarget;
         FXHiliteStyle textStyle[4];
         FXText *text;
         ColorTheme themeCurrent, themeUser;
         FXListBox *themes;
         FXDataTarget targetBack, targetBase, targetBorder, targetFore, targetMenuback, targetMenufore, targetSelback, targetSelfore, targetTipback, targetTipfore;
+        FXDataTarget targetSameFont;
         FXColor shadow, hilite;
         FXLabel *labelSelected, *labelNocurrent, *labelTip, *label;
         FXVerticalFrame *vframe2, *menuFrame;
