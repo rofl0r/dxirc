@@ -73,7 +73,7 @@ class dxirc: public FXMainWindow
         FXApp *app;
         FXServerInfoArray serverList;
         FXIgnoreUserArray usersList;
-        FXbool usersShown, logging, ownServerWindow, tempServerWindow, sameFont;
+        FXbool usersShown, logging, ownServerWindow, tempServerWindow, sameCmd, sameList;
         IrcColor colors;
         FXString commandsList, themesList, themePath, logPath;
         FXint maxAway;

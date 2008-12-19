@@ -372,9 +372,9 @@ void IrcSocket::Numeric(const FXint &command, const FXString &params)
         }break;
         case 324: //RPL_CHANNELMODEIS
         {
-            //now nothing action
+            SendEvent(IRC_CHMODE, GetParam(params, 2, false), GetParam(params, 3, false));
         }break;
-        case 329: //RPL of channel mode
+        case 329: //RPL of channel mode (creation time)
         {
             //now nothing action
         }break;
@@ -871,7 +871,7 @@ void IrcSocket::Mode(const FXString &from, const FXString &params)
         FXString channel = GetParam(params, 1, false);
         FXString modes = GetParam(params, 2, false);
         FXString args = GetParam(params, 3, true);
-        SendEvent(IRC_CHMODE, moderator, channel, modes, args);
+        SendEvent(IRC_UMODE, moderator, channel, modes, args);
     }
 }
 

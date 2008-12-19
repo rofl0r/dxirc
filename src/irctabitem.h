@@ -31,7 +31,7 @@ class IrcTabItem: public FXTabItem
 {
     FXDECLARE(IrcTabItem)
     public:
-        IrcTabItem(FXTabBook*, const FXString&, FXIcon*, FXuint, TYPE, IrcSocket*, FXbool, FXbool, FXbool, FXString, FXString, FXint, IrcColor, FXString, FXFont*, FXbool);
+        IrcTabItem(FXTabBook*, const FXString&, FXIcon*, FXuint, TYPE, IrcSocket*, FXbool, FXbool, FXbool, FXString, FXString, FXint, IrcColor, FXString, FXFont*, FXbool, FXbool);
         virtual ~IrcTabItem();
         enum {
             ID_COMMANDLINE = FXTabItem::ID_LAST,
@@ -48,6 +48,7 @@ class IrcTabItem: public FXTabItem
             ID_KICK,
             ID_BAN,
             ID_KICKBAN,
+            ID_TOPIC,
         };
 
         void CreateGeom();
@@ -66,7 +67,8 @@ class IrcTabItem: public FXTabItem
         void SetLogPath(FXString pth);
         void SetNickCompletionChar(FXString nichr);
         void SetIrcFont(FXFont*);
-        void SetSameFont(FXbool);
+        void SetSameCmd(FXbool);
+        void SetSameList(FXbool);
 
         long OnCommandline(FXObject *, FXSelector, void*);
         long OnKeyPress(FXObject *, FXSelector, void*);
@@ -82,6 +84,7 @@ class IrcTabItem: public FXTabItem
         long OnKick(FXObject *, FXSelector, void*);
         long OnBan(FXObject *, FXSelector, void*);
         long OnKickban(FXObject *, FXSelector, void*);
+        long OnTopic(FXObject *, FXSelector, void*);
 
     private:
         IrcTabItem(){}
@@ -89,19 +92,18 @@ class IrcTabItem: public FXTabItem
         FXTabBook *parent;
         IrcSocket *server;
         TYPE type;
-        FXHorizontalFrame *textframe;
-        FXVerticalFrame *usersframe, *mainframe;
+        FXVerticalFrame *textframe, *usersframe, *mainframe;
         FXSplitter *splitter;
         FXText *text;
         FXList *users;
-        FXTextField *commandline;
+        FXTextField *commandline, *topicline;
         FXint currentPosition, historyMax, numberUsers;
-        FXbool checkAway, iamOp, usersShown, logging, ownServerWindow, sameFont;
+        FXbool checkAway, iamOp, usersShown, logging, ownServerWindow, sameCmd, sameList, editableTopic;
         FXHistoryArray commandsHistory;
         FXHiliteStyle textStyleList[7];
         IrcColor colors;
         NickInfo nickOnRight;
-        FXString commandsList, logPath;
+        FXString commandsList, logPath, topic;
         FXint maxAway;
         FXString nickCompletionChar;
         std::ofstream *logstream;

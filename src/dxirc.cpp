@@ -110,7 +110,7 @@ dxirc::dxirc(FXApp *app)
     server->SetUsersList(usersList);
     servers.append(server);
 
-    IrcTabItem *tabitem = new IrcTabItem(tabbook, "(server)", servericon, TAB_BOTTOM, SERVER, server, ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameFont);
+    IrcTabItem *tabitem = new IrcTabItem(tabbook, "(server)", servericon, TAB_BOTTOM, SERVER, server, ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList);
     server->AppendTarget(tabitem);
 
     new FXToolTip(app,0);
@@ -191,7 +191,8 @@ void dxirc::ReadConfig()
     colors.notice = getApp()->reg().readColorEntry("SETTINGS", "noticeColor", FXRGB(0,0,255));
     colors.error = getApp()->reg().readColorEntry("SETTINGS", "errorColor", FXRGB(255,0,0));
     fontspec = getApp()->reg().readStringEntry("SETTINGS", "ircFont", "");
-    sameFont = getApp()->reg().readBoolEntry("SETTINGS", "sameFont", false);
+    sameCmd = getApp()->reg().readBoolEntry("SETTINGS", "sameCmd", false);
+    sameList = getApp()->reg().readBoolEntry("SETTINGS", "sameList", false);
     if(!fontspec.empty()) ircFont = new FXFont(getApp(), fontspec);
     else
     {
@@ -276,7 +277,7 @@ void dxirc::ReadServersConfig()
                     if (server.channels.length()>1) servers[0]->SetStartChannels(server.channels);
                     if (!tabbook->numChildren())
                     {
-                        IrcTabItem *tabitem = new IrcTabItem(tabbook, server.hostname, servericon, TAB_BOTTOM, SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameFont);
+                        IrcTabItem *tabitem = new IrcTabItem(tabbook, server.hostname, servericon, TAB_BOTTOM, SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList);
                         servers[0]->AppendTarget(tabitem);
                         tabitem->create();
                         tabitem->CreateGeom();
@@ -298,7 +299,7 @@ void dxirc::ReadServersConfig()
                     server.nick.length() ? servers[0]->SetUserName(server.nick) : servers[0]->SetUserName("_xxx_");
                     server.realname.length() ? servers[0]->SetRealName(server.realname) : servers[0]->SetRealName(server.nick.length() ? server.nick : "_xxx_");
                     if (server.channels.length()>1) servers[0]->SetStartChannels(server.channels);
-                    IrcTabItem *tabitem = new IrcTabItem(tabbook, server.hostname, servericon, TAB_BOTTOM, SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameFont);
+                    IrcTabItem *tabitem = new IrcTabItem(tabbook, server.hostname, servericon, TAB_BOTTOM, SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList);
                     servers[0]->AppendTarget(tabitem);
                     tabitem->create();
                     tabitem->CreateGeom();
@@ -342,7 +343,8 @@ void dxirc::SaveConfig()
     getApp()->reg().writeStringEntry("SETTINGS", "ircFont", ircFont->getFont().text());
     getApp()->reg().writeIntEntry("SETTINGS", "maxAway", maxAway);
     getApp()->reg().writeBoolEntry("SETTINGS", "logging", logging);
-    getApp()->reg().writeBoolEntry("SETTINGS", "sameFont", sameFont);
+    getApp()->reg().writeBoolEntry("SETTINGS", "sameCmd", sameCmd);
+    getApp()->reg().writeBoolEntry("SETTINGS", "sameList", sameList);
     if(ownServerWindow == tempServerWindow) getApp()->reg().writeBoolEntry("SETTINGS", "serverWindow", ownServerWindow);
     else getApp()->reg().writeBoolEntry("SETTINGS", "serverWindow", tempServerWindow);
     getApp()->reg().writeStringEntry("SETTINGS", "logPath", logPath.text());
@@ -402,7 +404,7 @@ long dxirc::OnCommandUsers(FXObject*, FXSelector, void*)
 
 long dxirc::OnCommandOptions(FXObject*, FXSelector, void*)
 {
-    ConfigDialog dialog(this, colors, commandsList, usersList, themePath, themesList, maxAway, logging, logPath, tempServerWindow, nickCompletionChar, ircFont->getFont(), sameFont);
+    ConfigDialog dialog(this, colors, commandsList, usersList, themePath, themesList, maxAway, logging, logPath, tempServerWindow, nickCompletionChar, ircFont->getFont(), sameCmd, sameList);
     if(dialog.execute(PLACEMENT_CURSOR))
     {
         commandsList = dialog.GetCommandsList();
@@ -415,7 +417,8 @@ long dxirc::OnCommandOptions(FXObject*, FXSelector, void*)
         tempServerWindow = dialog.GetServerWindow();
         logPath = dialog.GetLogPath();
         nickCompletionChar = dialog.GetNickCompletionChar();
-        sameFont = dialog.GetSameFont();
+        sameCmd = dialog.GetSameCmd();
+        sameList = dialog.GetSameList();
         ircFont = new FXFont(getApp(), dialog.GetIrcFont());
         ircFont->create();
         for (FXint i = 0; i<tabbook->numChildren(); i=i+2)
@@ -426,7 +429,8 @@ long dxirc::OnCommandOptions(FXObject*, FXSelector, void*)
             ((IrcTabItem *)tabbook->childAtIndex(i))->SetLogging(logging);
             ((IrcTabItem *)tabbook->childAtIndex(i))->SetLogPath(logPath);
             ((IrcTabItem *)tabbook->childAtIndex(i))->SetNickCompletionChar(nickCompletionChar);
-            ((IrcTabItem *)tabbook->childAtIndex(i))->SetSameFont(sameFont);
+            ((IrcTabItem *)tabbook->childAtIndex(i))->SetSameCmd(sameCmd);
+            ((IrcTabItem *)tabbook->childAtIndex(i))->SetSameList(sameList);
             ((IrcTabItem *)tabbook->childAtIndex(i))->SetIrcFont(ircFont);
         }
         for (FXint i = 0; i<servers.no(); i++)
@@ -472,7 +476,7 @@ long dxirc::OnCommandServers(FXObject*, FXSelector, void*)
                 if (serverList[indexJoin].channels.length()>1) servers[0]->SetStartChannels(serverList[indexJoin].channels);
                 if (!tabbook->numChildren())
                 {
-                    IrcTabItem *tabitem = new IrcTabItem(tabbook, serverList[indexJoin].hostname, servericon, TAB_BOTTOM, SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameFont);
+                    IrcTabItem *tabitem = new IrcTabItem(tabbook, serverList[indexJoin].hostname, servericon, TAB_BOTTOM, SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList);
                     servers[0]->AppendTarget(tabitem);
                     tabitem->create();
                     tabitem->CreateGeom();
@@ -494,7 +498,7 @@ long dxirc::OnCommandServers(FXObject*, FXSelector, void*)
                 servers[0]->SetUserName(serverList[indexJoin].nick);
                 serverList[indexJoin].realname.length() ? servers[0]->SetRealName(serverList[indexJoin].realname) : servers[0]->SetRealName(serverList[indexJoin].nick);
                 if (serverList[indexJoin].channels.length()>1) servers[0]->SetStartChannels(serverList[indexJoin].channels);
-                IrcTabItem *tabitem = new IrcTabItem(tabbook, serverList[indexJoin].hostname, servericon, TAB_BOTTOM, SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameFont);
+                IrcTabItem *tabitem = new IrcTabItem(tabbook, serverList[indexJoin].hostname, servericon, TAB_BOTTOM, SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList);
                 servers[0]->AppendTarget(tabitem);
                 tabitem->create();
                 tabitem->CreateGeom();
@@ -554,7 +558,7 @@ long dxirc::OnCommandConnect(FXObject*, FXSelector, void*)
             if (channel->getText().length()>1) servers[0]->SetStartChannels(channel->getText());
             if (!tabbook->numChildren())
             {
-                IrcTabItem *tabitem = new IrcTabItem(tabbook, hostname->getText(), servericon, TAB_BOTTOM, SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameFont);
+                IrcTabItem *tabitem = new IrcTabItem(tabbook, hostname->getText(), servericon, TAB_BOTTOM, SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList);
                 servers[0]->AppendTarget(tabitem);
                 tabitem->create();
                 tabitem->CreateGeom();
@@ -576,7 +580,7 @@ long dxirc::OnCommandConnect(FXObject*, FXSelector, void*)
             nick->getText().length() ? servers[0]->SetUserName(nick->getText()) : servers[0]->SetUserName("_xxx_");
             realname->getText().length() ? servers[0]->SetRealName(realname->getText()) : servers[0]->SetRealName(nick->getText().length() ? nick->getText() : "_xxx_");
             if (channel->getText().length()>1) servers[0]->SetStartChannels(channel->getText());
-            IrcTabItem *tabitem = new IrcTabItem(tabbook, hostname->getText(), servericon, TAB_BOTTOM, SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameFont);
+            IrcTabItem *tabitem = new IrcTabItem(tabbook, hostname->getText(), servericon, TAB_BOTTOM, SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList);
             servers[0]->AppendTarget(tabitem);
             tabitem->create();
             tabitem->CreateGeom();
@@ -659,7 +663,7 @@ long dxirc::OnIrcEvent(FXObject *, FXSelector, void *data)
         }
         else
         {
-            IrcTabItem* tabitem = new IrcTabItem(tabbook, ev->param1, channelicon, TAB_BOTTOM, CHANNEL, server, ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameFont);
+            IrcTabItem* tabitem = new IrcTabItem(tabbook, ev->param1, channelicon, TAB_BOTTOM, CHANNEL, server, ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList);
             server->AppendTarget(tabitem);
             tabitem->create();
             tabitem->CreateGeom();
@@ -676,7 +680,7 @@ long dxirc::OnIrcEvent(FXObject *, FXSelector, void *data)
         }
         else
         {
-            IrcTabItem* tabitem = new IrcTabItem(tabbook, ev->param1, queryicon, TAB_BOTTOM, QUERY, server, ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameFont);
+            IrcTabItem* tabitem = new IrcTabItem(tabbook, ev->param1, queryicon, TAB_BOTTOM, QUERY, server, ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList);
             server->AppendTarget(tabitem);
             tabitem->create();
             tabitem->CreateGeom();

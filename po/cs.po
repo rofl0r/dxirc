@@ -3,8 +3,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.01\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-12-18 18:55+0100\n"
-"PO-Revision-Date: 2008-12-18 18:56+0100\n"
+"POT-Creation-Date: 2008-12-19 19:51+0100\n"
+"PO-Revision-Date: 2008-12-19 19:52+0100\n"
 "Last-Translator: David Vachulka <david@konstrukce-cad.com>\n"
 "Language-Team: dvx-alone <david@konstrukce-cad.com>\n"
 "MIME-Version: 1.0\n"
@@ -17,305 +17,307 @@ msgstr ""
 msgid "Preferences"
 msgstr "Nastavení"
 
-#: src/configdialog.cpp:141
+#: src/configdialog.cpp:142
 msgid "&Close"
 msgstr "&Zavřít"
 
-#: src/configdialog.cpp:143 src/configdialog.cpp:490 src/configdialog.cpp:528
-#: src/configdialog.cpp:570 src/dxirc.cpp:543 src/dxirc.cpp:614
-#: src/irctabitem.cpp:1580 src/irctabitem.cpp:1601 src/irctabitem.cpp:1626
+#: src/configdialog.cpp:144 src/configdialog.cpp:492 src/configdialog.cpp:530
+#: src/configdialog.cpp:572 src/dxirc.cpp:547 src/dxirc.cpp:618
+#: src/irctabitem.cpp:1625 src/irctabitem.cpp:1646 src/irctabitem.cpp:1671
 #: src/serverdialog.cpp:95 src/serverdialog.cpp:155 src/serverdialog.cpp:219
 msgid "Cancel"
 msgstr "Zrušit"
 
-#: src/configdialog.cpp:150
+#: src/configdialog.cpp:151
 msgid "Irc text settings"
 msgstr "Nastavení Irc textu"
 
-#: src/configdialog.cpp:156
+#: src/configdialog.cpp:157
 msgid "Text backround color"
 msgstr "Barva pozadí textu"
 
-#: src/configdialog.cpp:158
+#: src/configdialog.cpp:159
 msgid "Text color"
 msgstr "Barva textu"
 
-#: src/configdialog.cpp:160
+#: src/configdialog.cpp:161
 msgid "User events text color"
 msgstr "Barva uživatelských zpráv"
 
-#: src/configdialog.cpp:162
+#: src/configdialog.cpp:163
 msgid "Actions message text color"
 msgstr "Barva textu akční zprávy"
 
-#: src/configdialog.cpp:164
+#: src/configdialog.cpp:165
 msgid "Notice text color"
 msgstr "Barva textu poznámky"
 
-#: src/configdialog.cpp:166
+#: src/configdialog.cpp:167
 msgid "Error text color"
 msgstr "Barva textu chyby"
 
-#: src/configdialog.cpp:167 src/configdialog.cpp:310
+#: src/configdialog.cpp:168 src/configdialog.cpp:312
 msgid "Font"
 msgstr "Font"
 
-#: src/configdialog.cpp:169
-msgid "Use same font for user list and commandline"
-msgstr ""
-"Použít stejný font i pro seznam uživatelů\n"
-"a příkazový řádek"
+#: src/configdialog.cpp:170
+msgid "Use same font for commandline"
+msgstr "Použít stejný font i pro příkazový řádek"
 
-#: src/configdialog.cpp:175
+#: src/configdialog.cpp:171
+msgid "Use same font for user list"
+msgstr "Použít stejný font i pro seznam uživatelů"
+
+#: src/configdialog.cpp:177
 msgid "Ignore commands and users"
 msgstr "Ignorované příkazy a uživatelé"
 
-#: src/configdialog.cpp:177
+#: src/configdialog.cpp:179
 msgid "Commands"
 msgstr "Příkazy"
 
-#: src/configdialog.cpp:179 src/configdialog.cpp:185 src/configdialog.cpp:215
+#: src/configdialog.cpp:181 src/configdialog.cpp:187 src/configdialog.cpp:217
 #: src/serverdialog.cpp:85
 msgid "Add"
 msgstr "Přidat"
 
-#: src/configdialog.cpp:180 src/configdialog.cpp:187 src/configdialog.cpp:216
+#: src/configdialog.cpp:182 src/configdialog.cpp:189 src/configdialog.cpp:218
 #: src/serverdialog.cpp:90
 msgid "Delete"
 msgstr "Smazat"
 
-#: src/configdialog.cpp:183
+#: src/configdialog.cpp:185
 msgid "Users"
 msgstr "Uživatelé"
 
-#: src/configdialog.cpp:186 src/serverdialog.cpp:87
+#: src/configdialog.cpp:188 src/serverdialog.cpp:87
 msgid "Modify"
 msgstr "Upravit"
 
-#: src/configdialog.cpp:211
+#: src/configdialog.cpp:213
 msgid "Other settings"
 msgstr "Další nastavení"
 
-#: src/configdialog.cpp:213
+#: src/configdialog.cpp:215
 msgid "Nick icons themes"
 msgstr "Téma ikon přezdívek"
 
-#: src/configdialog.cpp:220
+#: src/configdialog.cpp:222
 msgid "\tAdmin"
 msgstr "\tAdministrátor"
 
-#: src/configdialog.cpp:221
+#: src/configdialog.cpp:223
 msgid "\tOwner"
 msgstr "\tVlastník"
 
-#: src/configdialog.cpp:222
+#: src/configdialog.cpp:224
 msgid "\tOp"
 msgstr "\tOp"
 
-#: src/configdialog.cpp:223
+#: src/configdialog.cpp:225
 msgid "\tHalfop"
 msgstr "\tPoloviční op"
 
-#: src/configdialog.cpp:224
+#: src/configdialog.cpp:226
 msgid "\tVoice"
 msgstr "\tHlas"
 
-#: src/configdialog.cpp:225
+#: src/configdialog.cpp:227
 msgid "\tNormal"
 msgstr "\tUživatel"
 
-#: src/configdialog.cpp:226
+#: src/configdialog.cpp:228
 msgid "\tAway"
 msgstr "\tPryč"
 
-#: src/configdialog.cpp:239
+#: src/configdialog.cpp:241
 msgid ""
 "Max. users number for checking away\tToo high number can be reason for ban"
 msgstr ""
 "Max. počet uživatelů pro kontrolu stavu pryč\tPříliš vysoké číslo může být "
 "důvodem k banu"
 
-#: src/configdialog.cpp:242
+#: src/configdialog.cpp:244
 msgid "Too high number can be reason for ban"
 msgstr "Příliš vysoké číslo může být důvodem k banu"
 
-#: src/configdialog.cpp:244
+#: src/configdialog.cpp:246
 msgid "Nick completion char"
 msgstr "Znak pro kompletaci přezdívek"
 
-#: src/configdialog.cpp:247
+#: src/configdialog.cpp:249
 msgid "Special tab for server messages"
 msgstr "Zvláštní panel pro zprávy serveru"
 
-#: src/configdialog.cpp:249
+#: src/configdialog.cpp:251
 msgid "Logging chats"
 msgstr "Zaznamenávání chatů"
 
-#: src/configdialog.cpp:252
+#: src/configdialog.cpp:254
 msgid "Log path"
 msgstr "Cesta k záznamům"
 
-#: src/configdialog.cpp:262
+#: src/configdialog.cpp:264
 msgid "FOX toolkit look for dxirc"
 msgstr "Vzhled FOX toolkit pro dxirc"
 
-#: src/configdialog.cpp:267
+#: src/configdialog.cpp:269
 msgid "Theme:"
 msgstr "Motiv:"
 
-#: src/configdialog.cpp:274
+#: src/configdialog.cpp:276
 msgid "Base Color"
 msgstr "Základní barva"
 
-#: src/configdialog.cpp:276
+#: src/configdialog.cpp:278
 msgid "Border Color"
 msgstr "Barva okraje"
 
-#: src/configdialog.cpp:278
+#: src/configdialog.cpp:280
 msgid "Text Color"
 msgstr "Barva textu"
 
-#: src/configdialog.cpp:280
+#: src/configdialog.cpp:282
 msgid "Background Color"
 msgstr "Barva pozadí"
 
-#: src/configdialog.cpp:282
+#: src/configdialog.cpp:284
 msgid "Selected Text Color"
 msgstr "Barva vybraného textu"
 
-#: src/configdialog.cpp:284
+#: src/configdialog.cpp:286
 msgid "Selected Background Color"
 msgstr "Barva pozadí vybraného textu"
 
-#: src/configdialog.cpp:286
+#: src/configdialog.cpp:288
 msgid "Selected Menu Text Color"
 msgstr "Barva textu vybrané položky menu"
 
-#: src/configdialog.cpp:288
+#: src/configdialog.cpp:290
 msgid "Selected Menu Background Color"
 msgstr "Barva textu pozadí vybrané položky menu"
 
-#: src/configdialog.cpp:290
+#: src/configdialog.cpp:292
 msgid "Tip Text Color"
 msgstr "Barva textu tipů"
 
-#: src/configdialog.cpp:292
+#: src/configdialog.cpp:294
 msgid "Tip Background Color"
 msgstr "Barva pozadí textu tipů"
 
-#: src/configdialog.cpp:296
+#: src/configdialog.cpp:298
 msgid "Select this text, to see the selected colors"
 msgstr "Vyberte text, aby jste viděli vybrané barvy"
 
-#: src/configdialog.cpp:298
+#: src/configdialog.cpp:300
 msgid "Selected Text (with focus)"
 msgstr "Vybraný text (se zaměřením)"
 
-#: src/configdialog.cpp:300
+#: src/configdialog.cpp:302
 msgid "Selected Text (no focus)"
 msgstr "Vybraný text (bez zaměření)"
 
-#: src/configdialog.cpp:302
+#: src/configdialog.cpp:304
 msgid "Tooltip example"
 msgstr "Příklad tooltip"
 
-#: src/configdialog.cpp:303
+#: src/configdialog.cpp:305
 msgid "Menu example"
 msgstr "Příklad menu"
 
-#: src/configdialog.cpp:305
+#: src/configdialog.cpp:307
 msgid "&Server list"
 msgstr "&Seznam serverů"
 
-#: src/configdialog.cpp:306
+#: src/configdialog.cpp:308
 msgid "Selected Menu Entry"
 msgstr "Vybraná položka menu"
 
-#: src/configdialog.cpp:308
+#: src/configdialog.cpp:310
 msgid "&Quit"
 msgstr "&Ukončit"
 
-#: src/configdialog.cpp:313
+#: src/configdialog.cpp:315
 msgid "&Irc Text"
 msgstr "&Irc Text"
 
-#: src/configdialog.cpp:314
+#: src/configdialog.cpp:316
 msgid "I&gnore"
 msgstr "I&gnorování"
 
-#: src/configdialog.cpp:315
+#: src/configdialog.cpp:317
 msgid "&Other"
 msgstr "&Další"
 
-#: src/configdialog.cpp:316
+#: src/configdialog.cpp:318
 msgid "&Look"
 msgstr "&Vzhled"
 
-#: src/configdialog.cpp:480
+#: src/configdialog.cpp:482
 msgid "Select ignore command"
 msgstr "Vyberte příkaz pro ignorování"
 
-#: src/configdialog.cpp:484
+#: src/configdialog.cpp:486
 msgid "Command:"
 msgstr "Příkaz:"
 
-#: src/configdialog.cpp:489 src/configdialog.cpp:527 src/configdialog.cpp:569
-#: src/dxirc.cpp:447 src/dxirc.cpp:613 src/irctabitem.cpp:1579
-#: src/irctabitem.cpp:1600 src/irctabitem.cpp:1625 src/serverdialog.cpp:154
+#: src/configdialog.cpp:491 src/configdialog.cpp:529 src/configdialog.cpp:571
+#: src/dxirc.cpp:451 src/dxirc.cpp:617 src/irctabitem.cpp:1624
+#: src/irctabitem.cpp:1645 src/irctabitem.cpp:1670 src/serverdialog.cpp:154
 #: src/serverdialog.cpp:218
 msgid "OK"
 msgstr "OK"
 
-#: src/configdialog.cpp:511
+#: src/configdialog.cpp:513
 msgid "Add ignore user"
 msgstr "Přidejte ignorovaného uživatele"
 
-#: src/configdialog.cpp:515 src/configdialog.cpp:558
+#: src/configdialog.cpp:517 src/configdialog.cpp:560
 msgid "Nick:"
 msgstr "Přezdívka:"
 
-#: src/configdialog.cpp:518 src/configdialog.cpp:561 src/dxirc.cpp:537
+#: src/configdialog.cpp:520 src/configdialog.cpp:563 src/dxirc.cpp:541
 #: src/serverdialog.cpp:146 src/serverdialog.cpp:209
 msgid "Channel(s):\tChannels need to be comma separated"
 msgstr "Kanál(y):\tKanály musí být odděleny čárkami"
 
-#: src/configdialog.cpp:521
+#: src/configdialog.cpp:523
 msgid "Channels need to be comma separated"
 msgstr "Kanály musí být odděleny čárkami"
 
-#: src/configdialog.cpp:522 src/configdialog.cpp:564
+#: src/configdialog.cpp:524 src/configdialog.cpp:566
 msgid "Server:"
 msgstr "Server: "
 
-#: src/configdialog.cpp:554
+#: src/configdialog.cpp:556
 msgid "Modify ignore user"
 msgstr "Upravte ignorovaného uživatele"
 
-#: src/configdialog.cpp:609
+#: src/configdialog.cpp:611
 msgid "Select theme directory"
 msgstr "Vybrat adresář s tématem"
 
-#: src/configdialog.cpp:652 src/configdialog.cpp:671
+#: src/configdialog.cpp:654 src/configdialog.cpp:673
 msgid "Select font"
 msgstr "Vyberte font"
 
-#: src/configdialog.cpp:892
+#: src/configdialog.cpp:894
 msgid "Select log directory"
 msgstr "Vybrat adresář pro záznamy"
 
-#: src/configdialog.cpp:958
+#: src/configdialog.cpp:960
 msgid "Current"
 msgstr "Aktuální"
 
-#: src/configdialog.cpp:965
+#: src/configdialog.cpp:967
 msgid "User Defined"
 msgstr "Uživatelský"
 
-#: src/configdialog.cpp:1022
+#: src/configdialog.cpp:1024
 msgid "Information"
 msgstr "Informace"
 
-#: src/configdialog.cpp:1022
+#: src/configdialog.cpp:1024
 msgid "Some changes need restart application"
 msgstr "Některé změny vyžadují restart aplikace"
 
@@ -375,24 +377,24 @@ msgstr "&O programu.."
 msgid "&Help"
 msgstr "&Nápověda"
 
-#: src/dxirc.cpp:377
+#: src/dxirc.cpp:379
 msgid "Help"
 msgstr "Nápověda"
 
-#: src/dxirc.cpp:386
+#: src/dxirc.cpp:388
 msgid "Close"
 msgstr "Zavřít"
 
-#: src/dxirc.cpp:442
+#: src/dxirc.cpp:446
 #, c-format
 msgid "About %s"
 msgstr "O %s"
 
-#: src/dxirc.cpp:445
+#: src/dxirc.cpp:449
 msgid "Copyright (C) 2008~ David Vachulka (david@konstrukce-cad.com)\n"
 msgstr "Copyright (C) 2008~ David Vachulka (david@konstrukce-cad.com)\n"
 
-#: src/dxirc.cpp:446
+#: src/dxirc.cpp:450
 #, c-format
 msgid ""
 "This software uses the FOX Toolkit Library version %d.%d.%d (http://www.fox-"
@@ -401,49 +403,49 @@ msgstr ""
 "Tento program používá FOX Toolkit Library verze %d.%d.%d (http://www.fox-"
 "toolkit.org).\n"
 
-#: src/dxirc.cpp:513
+#: src/dxirc.cpp:517
 msgid "Quick connect"
 msgstr "Rychlé připojení"
 
-#: src/dxirc.cpp:518 src/serverdialog.cpp:58 src/serverdialog.cpp:127
+#: src/dxirc.cpp:522 src/serverdialog.cpp:58 src/serverdialog.cpp:127
 #: src/serverdialog.cpp:188
 msgid "Hostname:"
 msgstr "Server:"
 
-#: src/dxirc.cpp:522 src/serverdialog.cpp:61 src/serverdialog.cpp:131
+#: src/dxirc.cpp:526 src/serverdialog.cpp:61 src/serverdialog.cpp:131
 #: src/serverdialog.cpp:192
 msgid "Port:"
 msgstr "Port:"
 
-#: src/dxirc.cpp:527 src/serverdialog.cpp:64 src/serverdialog.cpp:136
+#: src/dxirc.cpp:531 src/serverdialog.cpp:64 src/serverdialog.cpp:136
 #: src/serverdialog.cpp:197
 msgid "Password:"
 msgstr "Heslo:"
 
-#: src/dxirc.cpp:530 src/serverdialog.cpp:67 src/serverdialog.cpp:139
+#: src/dxirc.cpp:534 src/serverdialog.cpp:67 src/serverdialog.cpp:139
 #: src/serverdialog.cpp:201
 msgid "Nickname:"
 msgstr "Přezdívka:"
 
-#: src/dxirc.cpp:534 src/serverdialog.cpp:70 src/serverdialog.cpp:143
+#: src/dxirc.cpp:538 src/serverdialog.cpp:70 src/serverdialog.cpp:143
 #: src/serverdialog.cpp:205
 msgid "Realname:"
 msgstr "Jméno: "
 
-#: src/dxirc.cpp:542
+#: src/dxirc.cpp:546
 msgid "&OK"
 msgstr "&OK"
 
-#: src/dxirc.cpp:609
+#: src/dxirc.cpp:613
 msgid "Confirm disconnect"
 msgstr "Potvrdit odpojení"
 
-#: src/dxirc.cpp:611
+#: src/dxirc.cpp:615
 #, c-format
 msgid "Disconnect server: %s:%d?"
 msgstr "Odpojit server: %s:%d?"
 
-#: src/dxirc.cpp:1342
+#: src/dxirc.cpp:1346
 msgid ""
 "\n"
 "Usage: dxirc [options] \n"
@@ -565,7 +567,7 @@ msgstr "Kanály:"
 msgid "%s : is identified to services"
 msgstr "%s : je identifikován u služby"
 
-#: src/ircsocket.cpp:383
+#: src/ircsocket.cpp:383 src/irctabitem.cpp:63 src/irctabitem.cpp:210
 msgid "No topic is set"
 msgstr "Téma není nastaveno"
 
@@ -863,322 +865,322 @@ msgstr "PONG od "
 msgid "Unable send data"
 msgstr "Nemohu poslat data"
 
-#: src/irctabitem.cpp:451
+#: src/irctabitem.cpp:470
 msgid "/banlist <channel>, see banlist for channel."
 msgstr "/banlist <kanál>, zobrazí seznam banů kanálu."
 
-#: src/irctabitem.cpp:458 src/irctabitem.cpp:892
+#: src/irctabitem.cpp:477 src/irctabitem.cpp:911
 msgid "Available commnads: "
 msgstr "Dostupné příkazy: "
 
-#: src/irctabitem.cpp:471
+#: src/irctabitem.cpp:490
 msgid "/ctcp <nick> <message>, sends a CTCP message to a user."
 msgstr "/ctcp <přezdívka> <zpráva>, pošle CTCP zprávu uživateli."
 
-#: src/irctabitem.cpp:481
+#: src/irctabitem.cpp:500
 msgid "/deop <nicks>, remove operator status from one or more nicks."
 msgstr "/deop <přezdívky>, odebere operátora jedné nebo více přezdívkám."
 
-#: src/irctabitem.cpp:482 src/irctabitem.cpp:507
+#: src/irctabitem.cpp:501 src/irctabitem.cpp:526
 msgid "/deop <channel> <nicks>, remove operator status from one or more nicks."
 msgstr ""
 "/deop <kanál> <přezdívky>, odebere operátora jedné nebo více přezdívkám."
 
-#: src/irctabitem.cpp:517
+#: src/irctabitem.cpp:536
 msgid "/devoice <nicks>, remove voice from one or more nicks."
 msgstr "/devoice <přezdívky>, odebere hlas jedné nebo více přezdívkám"
 
-#: src/irctabitem.cpp:518 src/irctabitem.cpp:543
+#: src/irctabitem.cpp:537 src/irctabitem.cpp:562
 msgid "/devoice <channel> <nicks>, remove voice from one or more nicks."
 msgstr "/devoice <kanál> <přezdívky>, odebere hlas jedné nebo více přezdívkám."
 
-#: src/irctabitem.cpp:551 src/irctabitem.cpp:552
+#: src/irctabitem.cpp:570 src/irctabitem.cpp:571
 msgid "/invite <nick> <channel>, invites someone to a channel."
 msgstr "/invite <přezdívka> <kanál>, pozve někoho na kanál."
 
-#: src/irctabitem.cpp:565
+#: src/irctabitem.cpp:584
 msgid "/join <channel>, join a channel."
 msgstr "/join <kanál>, připojí kanál."
 
-#: src/irctabitem.cpp:575
+#: src/irctabitem.cpp:594
 msgid "/kick <nick>, kick a user from a channel."
 msgstr "/kick <přezdívka>, vykopne uživatele z kanálu."
 
-#: src/irctabitem.cpp:576 src/irctabitem.cpp:601
+#: src/irctabitem.cpp:595 src/irctabitem.cpp:620
 msgid "/kick <channel> <nick>, kick a user from a channel."
 msgstr "/kick <kanál> <přezdívka>, vykopne uživatele z kanálu."
 
-#: src/irctabitem.cpp:611
+#: src/irctabitem.cpp:630
 msgid "/kill <user> [reason], kill a user from the network."
 msgstr "/kill <uživatel> [důvod], zabije uživatele."
 
-#: src/irctabitem.cpp:627
+#: src/irctabitem.cpp:646
 msgid "/me <message>, sends the action to the current channel."
 msgstr "/me <zprávu>, pošle akční zprávu aktivnímu kanálu."
 
-#: src/irctabitem.cpp:649
+#: src/irctabitem.cpp:668
 msgid "/me <to> <message>, sends the action."
 msgstr "/me <komu> <zprávu>, pošle akční zprávu."
 
-#: src/irctabitem.cpp:664
+#: src/irctabitem.cpp:683
 msgid "/msg <nick/channel> <message>, sends a normal message."
 msgstr "/msg <přezdívka/kanál> <zpráva>, pošle zprávu."
 
-#: src/irctabitem.cpp:678
+#: src/irctabitem.cpp:697
 msgid "/names <channel>, for nicks on a channel."
 msgstr "/names <channel>, pro lidi na kanále."
 
-#: src/irctabitem.cpp:687
+#: src/irctabitem.cpp:706
 msgid "/nick <nick>, change nick."
 msgstr "/nick <přezdívka>, změní přezdívku."
 
-#: src/irctabitem.cpp:703
+#: src/irctabitem.cpp:722
 #, c-format
 msgid "%s's NOTICE: "
 msgstr "NOTICE od %s:"
 
-#: src/irctabitem.cpp:705
+#: src/irctabitem.cpp:724
 msgid "/notice <nick/channel> <message>, sends a notice."
 msgstr "/notice <přezdívka/kanál> <zpráva>, pošle poznámku."
 
-#: src/irctabitem.cpp:714
+#: src/irctabitem.cpp:733
 msgid "/op <nicks>, give operator status for one or more nicks."
 msgstr "/op <přezdívky>, dá operátora jedné nebo více přezdívkám."
 
-#: src/irctabitem.cpp:715 src/irctabitem.cpp:740
+#: src/irctabitem.cpp:734 src/irctabitem.cpp:759
 msgid "/op <channel> <nicks>, give operator status for one or more nicks."
 msgstr "/op <kanál> <přezdívky>, dá operátora jedné nebo více přezdívkám."
 
-#: src/irctabitem.cpp:751
+#: src/irctabitem.cpp:770
 msgid "/oper <login> <password>, oper up."
 msgstr "/oper <přihlašovací jméno> <heslo>, aktivuje operátora."
 
-#: src/irctabitem.cpp:800
+#: src/irctabitem.cpp:819
 msgid "/topic <channel> [topic], view or change channel topic."
 msgstr "/topic <kanál> [téma], zobrazí nebo změní téma kanálu."
 
-#: src/irctabitem.cpp:810
+#: src/irctabitem.cpp:829
 msgid "/voice <nicks>, give voice for one or more nicks."
 msgstr "/voice <přezdívky>, dá hlas jedné nebo více přezdívkám."
 
-#: src/irctabitem.cpp:811 src/irctabitem.cpp:836
+#: src/irctabitem.cpp:830 src/irctabitem.cpp:855
 msgid "/voice <channel> <nicks>, give voice for one or more nicks."
 msgstr "/voice <kanál> <přezdívky>, dá hlas jedné nebo více přezdívkám."
 
-#: src/irctabitem.cpp:844
+#: src/irctabitem.cpp:863
 msgid "/wallops <message>, send wallop message."
 msgstr "/wallops <zprávu>, pošle wallop zprávu."
 
-#: src/irctabitem.cpp:852
+#: src/irctabitem.cpp:871
 msgid ""
 "/who <mask> [o], search for mask on network, if o is supplied, only search "
 "for opers."
 msgstr ""
 "/who <maska> [o], vyhledá podle masky na síti, při zadaném 'o' jen operátory."
 
-#: src/irctabitem.cpp:860
+#: src/irctabitem.cpp:879
 msgid "/whois <nick>, whois nick."
 msgstr "/whois <přezdívka>, příkaz 'kdo je' pro přezdívku."
 
-#: src/irctabitem.cpp:868
+#: src/irctabitem.cpp:887
 msgid "/whowas <nick>, whowas nick."
 msgstr "/whowas <přezdívka>,  příkaz 'kdo byl' pro přezdívku."
 
-#: src/irctabitem.cpp:873
+#: src/irctabitem.cpp:892
 #, c-format
 msgid "Unknown command '%s', type /commands for available commands"
 msgstr "Neznámý přikaz '%s', /commands zobrazí dostupné příkazy"
 
-#: src/irctabitem.cpp:903
+#: src/irctabitem.cpp:922
 msgid "You aren't connected"
 msgstr "Nejsi připojen"
 
-#: src/irctabitem.cpp:1102
+#: src/irctabitem.cpp:1121
 #, c-format
 msgid "CTCP %s reply from %s: %s"
 msgstr "CTCP %s odpověď od %s: %s"
 
-#: src/irctabitem.cpp:1109
+#: src/irctabitem.cpp:1128
 #, c-format
 msgid "CTCP %s request from %s"
 msgstr "CTCP %s požadavek od %s"
 
-#: src/irctabitem.cpp:1116
+#: src/irctabitem.cpp:1135
 #, c-format
 msgid "%s has joined to %s"
 msgstr "%s se připojil na %s"
 
-#: src/irctabitem.cpp:1127
+#: src/irctabitem.cpp:1146
 #, c-format
 msgid "%s has quit"
 msgstr "%s odešel"
 
-#: src/irctabitem.cpp:1131
+#: src/irctabitem.cpp:1150
 #, c-format
 msgid "%s has quit (%s)"
 msgstr "%s odešel (%s)"
 
-#: src/irctabitem.cpp:1139
+#: src/irctabitem.cpp:1158
 #, c-format
 msgid "%s has parted %s"
 msgstr "%s opustil %s"
 
-#: src/irctabitem.cpp:1140
+#: src/irctabitem.cpp:1159
 #, c-format
 msgid "%s has parted %s (%s)"
 msgstr "%s opustil %s (%s)"
 
-#: src/irctabitem.cpp:1150 src/irctabitem.cpp:1160 src/irctabitem.cpp:1168
+#: src/irctabitem.cpp:1169 src/irctabitem.cpp:1179 src/irctabitem.cpp:1187
 #, c-format
 msgid "%s's NOTICE: %s"
 msgstr "NOTICE od %s: %s"
 
-#: src/irctabitem.cpp:1167
+#: src/irctabitem.cpp:1186
 #, c-format
 msgid "NOTICE for you: %s"
 msgstr "NOTICE pro tebe: %s"
 
-#: src/irctabitem.cpp:1175
+#: src/irctabitem.cpp:1194
 #, c-format
 msgid "you changes nick to %s"
 msgstr "Změnil si přezdívku na %s"
 
-#: src/irctabitem.cpp:1176
+#: src/irctabitem.cpp:1195
 #, c-format
 msgid "%s changes nick to %s"
 msgstr "%s změnil přezdívku na %s"
 
-#: src/irctabitem.cpp:1187
+#: src/irctabitem.cpp:1206
 #, c-format
 msgid "%s Set new topic for %s: %s"
 msgstr "%s Nastavil nové téma pro %s: %s"
 
-#: src/irctabitem.cpp:1194
+#: src/irctabitem.cpp:1215
 #, c-format
 msgid "%s invites you to: %s"
 msgstr "%s tě pozval na: %s"
 
-#: src/irctabitem.cpp:1203
+#: src/irctabitem.cpp:1224
 #, c-format
 msgid "%s was kicked from: %s"
 msgstr "%s byl vykopnut z: %s"
 
-#: src/irctabitem.cpp:1204
+#: src/irctabitem.cpp:1225
 #, c-format
 msgid "%s was kicked from: %s (%s)"
 msgstr "%s byl vykopnut z: %s (%s)"
 
-#: src/irctabitem.cpp:1210
+#: src/irctabitem.cpp:1231
 #, c-format
 msgid "you was kicked from: %s"
 msgstr "byl si vykopnut z: %s"
 
-#: src/irctabitem.cpp:1211
+#: src/irctabitem.cpp:1232
 #, c-format
 msgid "you was kicked from: %s (%s)"
 msgstr "byl si vykopnut z: %s (%s)"
 
-#: src/irctabitem.cpp:1218
+#: src/irctabitem.cpp:1239
 #, c-format
 msgid "Mode change [%s] for %s"
 msgstr "Změna módu [%s] pro %s"
 
-#: src/irctabitem.cpp:1275
+#: src/irctabitem.cpp:1301
 #, c-format
 msgid "%s set Mode: %s"
 msgstr "%s nastavil Mód: %s"
 
-#: src/irctabitem.cpp:1325 src/irctabitem.cpp:1331
+#: src/irctabitem.cpp:1360 src/irctabitem.cpp:1366
 #, c-format
 msgid "Unhandled command '%s' params: %s"
 msgstr "Nezpracovaný přikaz '%s' parametry: %s"
 
-#: src/irctabitem.cpp:1338
+#: src/irctabitem.cpp:1373
 #, c-format
 msgid "%s is away: %s"
 msgstr "%s je pryč: %s"
 
-#: src/irctabitem.cpp:1374
+#: src/irctabitem.cpp:1419
 #, c-format
 msgid "Users on %s: %s"
 msgstr "Uživatelé na %s: %s"
 
-#: src/irctabitem.cpp:1500
+#: src/irctabitem.cpp:1545
 msgid "Give op"
 msgstr "Dát práva operátora"
 
-#: src/irctabitem.cpp:1501
+#: src/irctabitem.cpp:1546
 msgid "Remove op"
 msgstr "Vzít práva operátora"
 
-#: src/irctabitem.cpp:1503
+#: src/irctabitem.cpp:1548
 msgid "Give voice"
 msgstr "Dát hlas"
 
-#: src/irctabitem.cpp:1504
+#: src/irctabitem.cpp:1549
 msgid "Remove voice"
 msgstr "Vzít hlas"
 
-#: src/irctabitem.cpp:1506
+#: src/irctabitem.cpp:1551
 msgid "Kick"
 msgstr "Vykopnout"
 
-#: src/irctabitem.cpp:1508
+#: src/irctabitem.cpp:1553
 msgid "Ban"
 msgstr "Banovat"
 
-#: src/irctabitem.cpp:1509
+#: src/irctabitem.cpp:1554
 msgid "KickBan"
 msgstr "Vykopnout a banovat"
 
-#: src/irctabitem.cpp:1511
+#: src/irctabitem.cpp:1556
 #, c-format
 msgid "User: %s@%s"
 msgstr "Uživatel: %s@%s"
 
-#: src/irctabitem.cpp:1512
+#: src/irctabitem.cpp:1557
 #, c-format
 msgid "Realname: %s"
 msgstr "Jméno: %s"
 
-#: src/irctabitem.cpp:1516
+#: src/irctabitem.cpp:1561
 msgid "Query"
 msgstr "Rozhovor"
 
-#: src/irctabitem.cpp:1517
+#: src/irctabitem.cpp:1562
 msgid "User information (WHOIS)"
 msgstr "Informace o uživateli (WHOIS)"
 
-#: src/irctabitem.cpp:1518
+#: src/irctabitem.cpp:1563
 msgid "Operator actions"
 msgstr "Akce operátora"
 
-#: src/irctabitem.cpp:1571
+#: src/irctabitem.cpp:1616
 msgid "Kick dialog"
 msgstr "Dialog o vykopnutí"
 
-#: src/irctabitem.cpp:1575 src/irctabitem.cpp:1616
+#: src/irctabitem.cpp:1620 src/irctabitem.cpp:1661
 msgid "Kick reason:"
 msgstr "Důvod vykopnutí:"
 
-#: src/irctabitem.cpp:1591
+#: src/irctabitem.cpp:1636
 msgid "Ban dialog"
 msgstr "Dialog o banu"
 
-#: src/irctabitem.cpp:1595 src/irctabitem.cpp:1620
+#: src/irctabitem.cpp:1640 src/irctabitem.cpp:1665
 msgid "Banmask:"
 msgstr "Maska banu:"
 
-#: src/irctabitem.cpp:1612
+#: src/irctabitem.cpp:1657
 msgid "Kick/Ban dialog"
 msgstr "Dialog o vykopnutí/banování"
 
-#: src/irctabitem.cpp:1648
+#: src/irctabitem.cpp:1703
 #, c-format
 msgid "You was banned by %s"
 msgstr "Byl si zabanován %s"
 
-#: src/irctabitem.cpp:1651
+#: src/irctabitem.cpp:1706
 #, c-format
 msgid "%s was banned by %s"
 msgstr "%s byl zabanován %s"

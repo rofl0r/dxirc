@@ -82,7 +82,7 @@ class ConfigDialog: public FXDialogBox
 {
     FXDECLARE(ConfigDialog)
     public:
-        ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, FXIgnoreUserArray ulist, FXString tpth, FXString thm, FXint maxa, FXbool log, FXString lpth, FXbool srvw, FXString nichar, FXString fnt, FXbool sfnt);
+        ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, FXIgnoreUserArray ulist, FXString tpth, FXString thm, FXint maxa, FXbool log, FXString lpth, FXbool srvw, FXString nichar, FXString fnt, FXbool scmd, FXbool slst);
         virtual ~ConfigDialog();
         enum {
             ID_ADDCOMMAND = FXTopWindow::ID_LAST,
@@ -147,7 +147,8 @@ class ConfigDialog: public FXDialogBox
         FXString GetLogPath() { return logPath; }
         FXString GetNickCompletionChar() { return nickChar; }
         FXString GetIrcFont() { return ircFont->getFont(); }
-        FXbool GetSameFont() { return sameFont; }
+        FXbool GetSameCmd() { return sameCmd; }
+        FXbool GetSameList() { return sameList; }
 
     private:
         ConfigDialog() {}
@@ -161,7 +162,7 @@ class ConfigDialog: public FXDialogBox
         FXTextField *folder, *nickCharField, *textTest;
         IrcColor colors;
         FXString commandsList, themePath, themesList, logPath;
-        FXbool logging, serverWindow, sameFont;
+        FXbool logging, serverWindow, sameCmd, sameList;
         FXIgnoreUserArray usersList;
         FXToolBar *iconsBar;
         FXint maxAway;
@@ -173,7 +174,7 @@ class ConfigDialog: public FXDialogBox
         ColorTheme themeCurrent, themeUser;
         FXListBox *themes;
         FXDataTarget targetBack, targetBase, targetBorder, targetFore, targetMenuback, targetMenufore, targetSelback, targetSelfore, targetTipback, targetTipfore;
-        FXDataTarget targetSameFont;
+        FXDataTarget targetSameCmd, targetSameList;
         FXColor shadow, hilite;
         FXLabel *labelSelected, *labelNocurrent, *labelTip, *label;
         FXVerticalFrame *vframe2, *menuFrame;

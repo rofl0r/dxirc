@@ -54,6 +54,7 @@ enum IrcEventType {
     IRC_TOPIC,
     IRC_NICK,
     IRC_MODE,
+    IRC_UMODE,
     IRC_CHMODE,
     IRC_SERVERREPLY, //command 001,002,....
     IRC_SERVERERROR, //command 400~599

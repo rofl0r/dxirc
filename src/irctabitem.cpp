@@ -19,8 +19,6 @@
  *      MA 02110-1301, USA.
  */
 
-#include <cctype>
-
 #include "irctabitem.h"
 #include "icons.h"
 #include "config.h"
@@ -48,12 +46,13 @@ FXDEFMAP(IrcTabItem) IrcTabItemMap[] = {
     FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_KICK,            IrcTabItem::OnKick),
     FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_BAN,             IrcTabItem::OnBan),
     FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_KICKBAN,         IrcTabItem::OnKickban),
+    FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_TOPIC,           IrcTabItem::OnTopic),
 };
 
 FXIMPLEMENT(IrcTabItem, FXTabItem, IrcTabItemMap, ARRAYNUMBER(IrcTabItemMap))
 
-IrcTabItem::IrcTabItem(FXTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FXuint opts=TAB_TOP_NORMAL, TYPE typ=CHANNEL, IrcSocket *sock=NULL, FXbool oswnd=false, FXbool uswn=true, FXbool logg=false, FXString cmdlst="", FXString lpth="", FXint maxa=200, IrcColor clrs=IrcColor(), FXString nichar=":", FXFont *fnt=NULL, FXbool sfnt=false)
-    : FXTabItem(tab, tabtext, ic, opts), parent(tab), server(sock), type(typ), usersShown(uswn), logging(logg), ownServerWindow(oswnd), sameFont(sfnt), colors(clrs),
+IrcTabItem::IrcTabItem(FXTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FXuint opts=TAB_TOP_NORMAL, TYPE typ=CHANNEL, IrcSocket *sock=NULL, FXbool oswnd=false, FXbool uswn=true, FXbool logg=false, FXString cmdlst="", FXString lpth="", FXint maxa=200, IrcColor clrs=IrcColor(), FXString nichar=":", FXFont *fnt=NULL, FXbool scmd=false, FXbool slst=false)
+    : FXTabItem(tab, tabtext, ic, opts), parent(tab), server(sock), type(typ), usersShown(uswn), logging(logg), ownServerWindow(oswnd), sameCmd(scmd), sameList(slst), colors(clrs),
     commandsList(cmdlst), logPath(lpth), maxAway(maxa), nickCompletionChar(nichar), logstream(NULL)
 {
     currentPosition = 0;
@@ -61,6 +60,8 @@ IrcTabItem::IrcTabItem(FXTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FX
     numberUsers = 0;
     checkAway = false;
     iamOp = false;
+    topic = _("No topic is set");
+    editableTopic = true;
 
     if(type == CHANNEL && server->GetConnected())
     {
@@ -71,20 +72,30 @@ IrcTabItem::IrcTabItem(FXTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FX
 
     splitter = new FXSplitter(mainframe, LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y|SPLITTER_REVERSED|SPLITTER_TRACKING);
 
-    textframe = new FXHorizontalFrame(splitter, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    text = new FXText(textframe, NULL, 0, LAYOUT_FILL_X|LAYOUT_FILL_Y|TEXT_READONLY|TEXT_WORDWRAP|TEXT_SHOWACTIVE|TEXT_AUTOSCROLL);
+    textframe = new FXVerticalFrame(splitter, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    topicline = new FXTextField(textframe, 50, this, ID_TOPIC, FRAME_SUNKEN|TEXTFIELD_ENTER_ONLY|JUSTIFY_LEFT|LAYOUT_FILL_X);
+    topicline->setText(topic);
+    if(type != CHANNEL)
+    {
+        topicline->hide();
+    }
+    topicline->setFont(fnt);
+    text = new FXText(textframe, NULL, 0, FRAME_SUNKEN|LAYOUT_FILL_X|LAYOUT_FILL_Y|TEXT_READONLY|TEXT_WORDWRAP|TEXT_SHOWACTIVE|TEXT_AUTOSCROLL);
     text->setFont(fnt);
 
     usersframe = new FXVerticalFrame(splitter, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y|LAYOUT_FIX_WIDTH);
     users = new FXList(usersframe, this, ID_USERS, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     users->setSortFunc(sortfuncs[0]);
     users->setScrollStyle(HSCROLLING_OFF);
-    if(sameFont) users->setFont(fnt);
-    if(type != CHANNEL || !usersShown) usersframe->hide();
-    if(type != CHANNEL || !usersShown) users->hide();
+    if(sameList) users->setFont(fnt);
+    if(type != CHANNEL || !usersShown)
+    {
+        usersframe->hide();
+        users->hide();
+    }
 
     commandline = new FXTextField(mainframe, 25, this, ID_COMMANDLINE, TEXTFIELD_ENTER_ONLY|FRAME_SUNKEN|JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_BOTTOM, 0, 0, 0, 0, 1, 1, 1, 1);
-    if(sameFont) commandline->setFont(fnt);
+    if(sameCmd) commandline->setFont(fnt);
 
     for(int i=0; i<7; i++)
     {
@@ -182,16 +193,21 @@ void IrcTabItem::SetType(const TYPE &typ, const FXString &tabtext)
     if(typ == CHANNEL)
     {
         if(usersShown) usersframe->show();
-        if(usersShown) users->show();
+        if(usersShown) users->show();        
+        topicline->show();
+        topicline->setText(topic);
         splitter->recalc();
         setText(tabtext);
-        server->SendMode(getText());
+        if(server->GetConnected()) server->SendMode(getText());
         type = typ;
     }
     else if(typ == SERVER || typ == QUERY)
     {
         usersframe->hide();
         users->hide();
+        topicline->setText("");
+        topicline->hide();
+        topic = _("No topic is set");
         setText(tabtext);
         splitter->setSplit(1, 0);
         if(type == CHANNEL)
@@ -291,16 +307,19 @@ void IrcTabItem::SetNickCompletionChar(FXString nichr)
 void IrcTabItem::SetIrcFont(FXFont *fnt)
 {
     text->setFont(fnt);
-    if(sameFont)
-    {
-        users->setFont(fnt);
-        commandline->setFont(fnt);
-    }
+    topicline->setFont(fnt);
+    if(sameCmd) commandline->setFont(fnt);
+    if(sameList) users->setFont(fnt);
 }
 
-void IrcTabItem::SetSameFont(FXbool sfnt)
+void IrcTabItem::SetSameCmd(FXbool scmd)
 {
-    sameFont = sfnt;
+    sameCmd = scmd;
+}
+
+void IrcTabItem::SetSameList(FXbool slst)
+{
+    sameList = slst;
 }
 
 void IrcTabItem::AppendIrcText(FXString msg)
@@ -1185,6 +1204,8 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
         if(ev->param2.lower() == getText().lower())
         {
             AppendIrcText(FXStringFormat(_("%s Set new topic for %s: %s"), ev->param1.text(), ev->param2.text(), ev->param3.text()));
+            topic = ev->param3;
+            topicline->setText(topic);            
         }
     }
     else if(ev->eventType == IRC_INVITE)
@@ -1218,7 +1239,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
             AppendIrcStyledText(FXStringFormat(_("Mode change [%s] for %s"), ev->param1.text(), ev->param2.text()), 1);
         }
     }
-    else if(ev->eventType == IRC_CHMODE)
+    else if(ev->eventType == IRC_UMODE)
     {
         FXString moderator = ev->param1;
         FXString channel = ev->param2;
@@ -1271,11 +1292,25 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
                         OnBan(banmask, sign, moderator);
                         argsiter++;
                     }break;
-                    default: {
+                    case 't': //topic settable by channel operator
+                    {
+                        sign ? editableTopic = false : editableTopic = true;
+                    }
+                    default:
+                    {
                         AppendIrcStyledText(FXStringFormat(_("%s set Mode: %s"), moderator.text(), FXString(modes+" "+args).text()), 1);
                     }
                 }
             }
+        }
+    }
+    else if(ev->eventType == IRC_CHMODE)
+    {
+        FXString channel = ev->param1;
+        FXString modes = ev->param2;
+        if(channel.lower() == getText().lower())
+        {
+            if(modes.contains('t')) editableTopic = false;
         }
     }
     else if(ev->eventType == IRC_SERVERREPLY)
@@ -1343,6 +1378,16 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
         if(ev->param1.lower() == getText().lower())
         {
             AppendIrcText(ev->param2);
+            if(ev->eventType == IRC_331)
+            {
+                topic = StripColors(ev->param2, true);
+                topicline->setText(topic);
+            }
+            if(ev->eventType == IRC_332)
+            {
+                topic = StripColors(GetParam(ev->param2, 2, true, ':').after(' '), true);
+                topicline->setText(topic);
+            }
         }
     }
     else if(ev->eventType == IRC_353)
@@ -1630,6 +1675,16 @@ long IrcTabItem::OnKickban(FXObject *, FXSelector, void *)
         server->SendKick(getText(), nickOnRight.nick, reasonEdit->getText());
         server->SendMode(getText()+" +b "+banEdit->getText());
     }
+    return 1;
+}
+
+long IrcTabItem::OnTopic(FXObject*, FXSelector, void*)
+{
+    if(editableTopic || iamOp)
+    {
+        server->SendTopic(getText(), topicline->getText());
+    }
+    else topicline->setText(topic);
     return 1;
 }
 
