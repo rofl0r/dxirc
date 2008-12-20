@@ -100,7 +100,7 @@ class IrcTabItem: public FXTabItem
         FXint currentPosition, historyMax, numberUsers;
         FXbool checkAway, iamOp, usersShown, logging, ownServerWindow, sameCmd, sameList, editableTopic;
         FXHistoryArray commandsHistory;
-        FXHiliteStyle textStyleList[7];
+        FXHiliteStyle textStyleList[8];
         IrcColor colors;
         NickInfo nickOnRight;
         FXString commandsList, logPath, topic;

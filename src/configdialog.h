@@ -168,8 +168,8 @@ class ConfigDialog: public FXDialogBox
         FXint maxAway;
         FXSpinner *maxAwaySpinner;
         FXString nickChar;
-        FXDataTarget textTarget, backTarget, userTarget, actionTarget, noticeTarget, errorTarget;
-        FXHiliteStyle textStyle[4];
+        FXDataTarget textTarget, backTarget, userTarget, actionTarget, noticeTarget, errorTarget, hilightTarget;
+        FXHiliteStyle textStyle[5];
         FXText *text;
         ColorTheme themeCurrent, themeUser;
         FXListBox *themes;

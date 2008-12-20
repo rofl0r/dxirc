@@ -97,7 +97,7 @@ IrcTabItem::IrcTabItem(FXTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FX
     commandline = new FXTextField(mainframe, 25, this, ID_COMMANDLINE, TEXTFIELD_ENTER_ONLY|FRAME_SUNKEN|JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_BOTTOM, 0, 0, 0, 0, 1, 1, 1, 1);
     if(sameCmd) commandline->setFont(fnt);
 
-    for(int i=0; i<7; i++)
+    for(int i=0; i<8; i++)
     {
         textStyleList[i].normalForeColor = colors.text;
         textStyleList[i].normalBackColor = colors.back;
@@ -123,6 +123,8 @@ IrcTabItem::IrcTabItem(FXTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FX
     //bold & underline
     textStyleList[6].style = FXText::STYLE_UNDERLINE;
     textStyleList[6].style ^=FXText::STYLE_BOLD;
+    //highlight text
+    textStyleList[7].normalForeColor = colors.hilight;
 
     text->setStyled(TRUE);
     text->setHiliteStyles(textStyleList);
@@ -1091,7 +1093,8 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
     {
         if((ev->param2.lower() == getText().lower() && type == CHANNEL) || (ev->param1 == getText() && type == QUERY && ev->param2 == server->GetNickName()))
         {
-            AppendIrcText("<"+ev->param1+"> "+ev->param3);
+            if(ev->param3.contains(server->GetNickName())) AppendIrcStyledText("<"+ev->param1+"> "+ev->param3, 8);
+            else AppendIrcText("<"+ev->param1+"> "+ev->param3);
             if(FXRGB(255,0,0) != this->getTextColor() && !IsCurrent())
             {
                 if(ev->param3.contains(server->GetNickName())) this->setTextColor(FXRGB(255,0,0));

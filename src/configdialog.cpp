@@ -80,6 +80,9 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, F
     errorTarget.connect(colors.error);
     errorTarget.setTarget(this);
     errorTarget.setSelector(ID_IRCCOLORS);
+    hilightTarget.connect(colors.hilight);
+    hilightTarget.setTarget(this);
+    hilightTarget.setSelector(ID_IRCCOLORS);
 
     targetSameCmd.connect(sameCmd);
     targetSameList.connect(sameList);
@@ -165,10 +168,12 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, F
     new FXLabel(colormatrix, _("Notice text color"), NULL, JUSTIFY_LEFT|LAYOUT_CENTER_Y|LAYOUT_FILL_X|LAYOUT_FILL_ROW);
     new FXColorWell(colormatrix, FXRGB(0,0,255), &errorTarget, FXDataTarget::ID_VALUE, COLORWELL_OPAQUEONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_LEFT|LAYOUT_CENTER_Y|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW, 0,0,40,24);
     new FXLabel(colormatrix, _("Error text color"), NULL, JUSTIFY_LEFT|LAYOUT_CENTER_Y|LAYOUT_FILL_X|LAYOUT_FILL_ROW);
+    new FXColorWell(colormatrix, FXRGB(0,0,255), &hilightTarget, FXDataTarget::ID_VALUE, COLORWELL_OPAQUEONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_LEFT|LAYOUT_CENTER_Y|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW, 0,0,40,24);
+    new FXLabel(colormatrix, _("Highlight message text color"), NULL, JUSTIFY_LEFT|LAYOUT_CENTER_Y|LAYOUT_FILL_X|LAYOUT_FILL_ROW);
     new FXLabel(colormatrix, _("Font"));
     ircfontButton = new FXButton(colormatrix, " ", NULL, this, ID_IRCFONT, LAYOUT_CENTER_Y|FRAME_RAISED|JUSTIFY_CENTER_X|JUSTIFY_CENTER_Y|LAYOUT_FILL_X);
     new FXCheckButton(cframe, _("Use same font for commandline"), &targetSameCmd, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
-	new FXCheckButton(cframe, _("Use same font for user list"), &targetSameList, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
+    new FXCheckButton(cframe, _("Use same font for user list"), &targetSameList, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
     FXVerticalFrame *tframe = new FXVerticalFrame(hframe, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     text = new FXText(tframe, NULL, 0, LAYOUT_FILL_X|LAYOUT_FILL_Y|TEXT_READONLY);
     text->setScrollStyle(HSCROLLING_OFF);
@@ -317,7 +322,7 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, F
     new FXButton(buttonframe, _("&Other"), NULL, switcher, FXSwitcher::ID_OPEN_THIRD, FRAME_RAISED);
     new FXButton(buttonframe, _("&Look"), NULL, switcher, FXSwitcher::ID_OPEN_FOURTH, FRAME_RAISED);
 
-    for(int i=0; i<4; i++)
+    for(int i=0; i<5; i++)
     {
         textStyle[i].normalForeColor = colors.text;
         textStyle[i].normalBackColor = colors.back;
@@ -336,6 +341,8 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, F
     textStyle[2].normalForeColor = colors.notice;
     //Errors
     textStyle[3].normalForeColor = colors.error;
+    //Highlight
+    textStyle[4].normalForeColor = colors.hilight;
 
     text->setStyled(TRUE);
     text->setHiliteStyles(textStyle);
@@ -343,6 +350,8 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, F
     text->appendText("[00:00:00] ");
     text->appendStyledText(FXString("dvx has joined to #dxirc\n"), 1);
     text->appendText("[00:00:00] <dvx> Welcome in dxirc\n");
+    text->appendText("[00:00:00] ");
+    text->appendStyledText(FXString("<bm> dvx, dxirc is nice\n"), 5);
     text->appendText("[00:00:00] ");
     text->appendStyledText(FXString("dvx is online\n"), 2);
     text->appendText("[00:00:00] ");
@@ -426,6 +435,7 @@ long ConfigDialog::OnColor(FXObject*, FXSelector, void*)
     textStyle[1].normalForeColor = colors.action;
     textStyle[2].normalForeColor = colors.notice;
     textStyle[3].normalForeColor = colors.error;
+    textStyle[4].normalForeColor = colors.hilight;
     text->update();
     return 1;
 }

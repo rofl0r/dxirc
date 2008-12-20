@@ -93,7 +93,7 @@ dxirc::dxirc(FXApp *app)
 
     helpmenu = new FXMenuPane(this);
     new FXMenuCommand(helpmenu, _("&Help\tF1"), helpicon, this, ID_HELP);
-    new FXMenuCommand(helpmenu, _("&About.."), NULL, this, ID_ABOUT);
+    new FXMenuCommand(helpmenu, _("&About..."), NULL, this, ID_ABOUT);
     new FXMenuTitle(menubar, _("&Help"), NULL, helpmenu);
 
     statusbar = new FXStatusBar(this, LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X);
@@ -190,6 +190,7 @@ void dxirc::ReadConfig()
     colors.action = getApp()->reg().readColorEntry("SETTINGS", "actionsColor", FXRGB(255,165,0));
     colors.notice = getApp()->reg().readColorEntry("SETTINGS", "noticeColor", FXRGB(0,0,255));
     colors.error = getApp()->reg().readColorEntry("SETTINGS", "errorColor", FXRGB(255,0,0));
+    colors.hilight = getApp()->reg().readColorEntry("SETTINGS", "hilightColor", FXRGB(0,255,0));
     fontspec = getApp()->reg().readStringEntry("SETTINGS", "ircFont", "");
     sameCmd = getApp()->reg().readBoolEntry("SETTINGS", "sameCmd", false);
     sameList = getApp()->reg().readBoolEntry("SETTINGS", "sameList", false);
@@ -340,6 +341,7 @@ void dxirc::SaveConfig()
     getApp()->reg().writeColorEntry("SETTINGS", "actionsColor", colors.action);
     getApp()->reg().writeColorEntry("SETTINGS", "noticeColor", colors.notice);
     getApp()->reg().writeColorEntry("SETTINGS", "errorColor", colors.error);
+    getApp()->reg().writeColorEntry("SETTINGS", "hilightColor", colors.hilight);
     getApp()->reg().writeStringEntry("SETTINGS", "ircFont", ircFont->getFont().text());
     getApp()->reg().writeIntEntry("SETTINGS", "maxAway", maxAway);
     getApp()->reg().writeBoolEntry("SETTINGS", "logging", logging);
