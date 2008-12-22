@@ -9,9 +9,9 @@ AppId={{11B40D37-A7C9-4720-8741-EEC36F2D07DB}
 AppName=dxirc
 AppVerName=dxirc 0.10
 AppPublisher=David Vachulka
-AppPublisherURL=http://www.dxirc.org/
-AppSupportURL=http://www.dxirc.org/
-AppUpdatesURL=http://www.dxirc.org/
+AppPublisherURL=http://www.dxirc.org
+AppSupportURL=http://www.dxirc.org
+AppUpdatesURL=http://www.dxirc.org
 DefaultDirName={pf}\dxirc
 DefaultGroupName=dxirc
 LicenseFile=..\COPYING
@@ -29,8 +29,9 @@ Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescrip
 
 [Files]
 Source: "dxirc.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\icons\*.png"; DestDir: "{app}\icons"; Flags: recursesubdirs
-Source: ".\locale\*.mo"; DestDir: "{app}\locale"; Flags: recursesubdirs
+Source: "*.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "icons\*.png"; DestDir: "{app}\icons"; Flags: recursesubdirs
+Source: "locale\*.mo"; DestDir: "{app}\locale"; Flags: recursesubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
