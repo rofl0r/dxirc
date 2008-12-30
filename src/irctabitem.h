@@ -133,6 +133,7 @@ class IrcTabItem: public FXTabItem
         void SetActionsColor(FXColor);
         void SetNoticeColor(FXColor);
         void SetErrorColor(FXColor);
+        void SetHilightColor(FXColor);
 };
 
 #endif // IRCTABITEM_H

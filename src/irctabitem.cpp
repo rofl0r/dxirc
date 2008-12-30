@@ -234,6 +234,7 @@ void IrcTabItem::SetColor(IrcColor clrs)
     SetActionsColor(clrs.action);
     SetNoticeColor(clrs.notice);
     SetErrorColor(clrs.error);
+    SetHilightColor(clrs.hilight);
 }
 
 void IrcTabItem::SetTextBackColor(FXColor clr)
@@ -278,6 +279,11 @@ void IrcTabItem::SetNoticeColor(FXColor clr)
 void IrcTabItem::SetErrorColor(FXColor clr)
 {
     textStyleList[3].normalForeColor = clr;
+}
+
+void IrcTabItem::SetHilightColor(FXColor clr)
+{
+    textStyleList[7].normalForeColor = clr;
 }
 
 void IrcTabItem::SetCommandsList(FXString clst)
