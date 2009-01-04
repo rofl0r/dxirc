@@ -346,6 +346,7 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, F
 
     text->setStyled(TRUE);
     text->setHiliteStyles(textStyle);
+    text->setTextColor(colors.text);
     text->setBackColor(colors.back);
     text->appendText("[00:00:00] ");
     text->appendStyledText(FXString("dvx has joined to #dxirc\n"), 1);
