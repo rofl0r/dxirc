@@ -2256,7 +2256,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=dxirc
- VERSION=0.10.1
+ VERSION=0.10.2
 
 
 cat >>confdefs.h <<_ACEOF

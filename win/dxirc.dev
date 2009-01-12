@@ -32,19 +32,19 @@ CompilerSettings=0000000000000000000000
 [VersionInfo]
 Major=0
 Minor=10
-Release=1
+Release=2
 Build=0
 LanguageID=1029
 CharsetID=1252
 CompanyName=David Vachulka
-FileVersion=0.10.1
+FileVersion=0.10.2
 FileDescription=dxirc - simple IRC client
 InternalName=dxirc
 LegalCopyright=Copyright (C) 2008 David Vachulka
 LegalTrademarks=GPL
 OriginalFilename=dxirc.exe
 ProductName=dxirc - simple IRC client
-ProductVersion=0.10.1
+ProductVersion=0.10.2
 AutoIncBuildNr=0
 
 [Unit1]
