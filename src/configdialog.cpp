@@ -428,7 +428,7 @@ long ConfigDialog::OnColor(FXObject*, FXSelector, void*)
 {
     text->setTextColor(colors.text);
     text->setBackColor(colors.back);
-    for(int i=0; i<4; i++)
+    for(int i=0; i<5; i++)
     {
         textStyle[i].normalBackColor = colors.back;
     }

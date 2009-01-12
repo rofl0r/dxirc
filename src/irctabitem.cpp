@@ -132,9 +132,11 @@ IrcTabItem::IrcTabItem(FXTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FX
     text->setBackColor(colors.back);
     text->setActiveBackColor(colors.back);
     commandline->setBackColor(colors.back);
+    topicline->setBackColor(colors.back);
     users->setBackColor(colors.back);
     text->setTextColor(colors.text);
     commandline->setTextColor(colors.text);
+    topicline->setTextColor(colors.text);
     users->setTextColor(colors.text);
 
     this->setIconPosition(ICON_BEFORE_TEXT);
