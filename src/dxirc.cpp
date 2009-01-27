@@ -180,6 +180,10 @@ int CompareTabs(const void **a,const void **b)
 void dxirc::ReadConfig()
 {
     FXString fontspec;
+    FXint xx=getApp()->reg().readIntEntry("SETTINGS","x",50);
+    FXint yy=getApp()->reg().readIntEntry("SETTINGS","y",50);
+    FXint ww=getApp()->reg().readIntEntry("SETTINGS","w",0);
+    FXint hh=getApp()->reg().readIntEntry("SETTINGS","h",0);
     usersShown = getApp()->reg().readBoolEntry("SETTINGS", "usersShown", true);
     commandsList = getApp()->reg().readStringEntry("SETTINGS", "commandsList");
     themePath = CheckThemePath(getApp()->reg().readStringEntry("SETTINGS", "themePath", DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "default"));
@@ -222,6 +226,10 @@ void dxirc::ReadConfig()
             usersList.append(user);
         }
     }
+    setX(xx);
+    setY(yy);
+    setWidth(ww);
+    setHeight(hh);
 }
 
 FXString dxirc::CheckThemePath(const FXString &path)
@@ -362,6 +370,10 @@ void dxirc::SaveConfig()
             getApp()->reg().writeStringEntry(FXStringFormat("USER%d", i).text(), "server", usersList[i].server.text());
         }
     }
+    getApp()->reg().writeIntEntry("SETTINGS","x",getX());
+    getApp()->reg().writeIntEntry("SETTINGS","y",getY());
+    getApp()->reg().writeIntEntry("SETTINGS","w",getWidth());
+    getApp()->reg().writeIntEntry("SETTINGS","h",getHeight());
 }
 
 long dxirc::OnCommandQuit(FXObject*, FXSelector, void*)

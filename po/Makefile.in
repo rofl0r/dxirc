@@ -11,7 +11,7 @@
 # Origin: gettext-0.16
 
 PACKAGE = dxirc
-VERSION = 0.10.1
+VERSION = 0.10.2
 PACKAGE_BUGREPORT = 
 
 SHELL = /bin/sh

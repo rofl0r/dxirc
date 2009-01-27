@@ -136,7 +136,9 @@ IrcTabItem::IrcTabItem(FXTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FX
     users->setBackColor(colors.back);
     text->setTextColor(colors.text);
     commandline->setTextColor(colors.text);
+    commandline->setCursorColor(colors.text);
     topicline->setTextColor(colors.text);
+    topicline->setCursorColor(colors.text);
     users->setTextColor(colors.text);
 
     this->setIconPosition(ICON_BEFORE_TEXT);
@@ -241,7 +243,7 @@ void IrcTabItem::SetColor(IrcColor clrs)
 
 void IrcTabItem::SetTextBackColor(FXColor clr)
 {
-    for(int i=0; i<7; i++)
+    for(int i=0; i<8; i++)
     {
         textStyleList[i].normalBackColor = clr;
         textStyleList[i].activeBackColor = clr;
@@ -249,6 +251,7 @@ void IrcTabItem::SetTextBackColor(FXColor clr)
     text->setBackColor(clr);
     text->setActiveBackColor(clr);
     commandline->setBackColor(clr);
+    topicline->setBackColor(clr);
     users->setBackColor(clr);
 }
 
@@ -260,6 +263,8 @@ void IrcTabItem::SetTextColor(FXColor clr)
     text->setTextColor(clr);
     commandline->setTextColor(clr);
     commandline->setCursorColor(clr);
+    topicline->setTextColor(clr);
+    topicline->setCursorColor(clr);
     users->setTextColor(clr);
 }
 
@@ -379,12 +384,13 @@ void IrcTabItem::AppendIrcStyledText(FXString styled, FXint stylenum)
 
 void IrcTabItem::StartLogging()
 {
-    if(logstream && FXStat::exists(logPath+PATHSEPSTRING+server->GetServerName()+PATHSEPSTRING+getText())) return;
+    if(logstream && FXStat::exists(logPath+PATHSEPSTRING+server->GetServerName()+PATHSEPSTRING+getText()+PATHSEPSTRING+FXSystem::time("%Y-%m-%d", FXSystem::now()))) return;
 
     if(logging && type != SERVER)
     {
         if(!FXStat::exists(logPath+PATHSEPSTRING+server->GetServerName())) FXDir::create(logPath+PATHSEPSTRING+server->GetServerName());
-        logstream = new std::ofstream(FXString(logPath+PATHSEPSTRING+server->GetServerName()+PATHSEPSTRING+getText()).text(), std::ios::out|std::ios::app);
+        if(!FXStat::exists(logPath+PATHSEPSTRING+server->GetServerName()+PATHSEPSTRING+getText())) FXDir::create(logPath+PATHSEPSTRING+server->GetServerName()+PATHSEPSTRING+getText());
+        logstream = new std::ofstream(FXString(logPath+PATHSEPSTRING+server->GetServerName()+PATHSEPSTRING+getText()+PATHSEPSTRING+FXSystem::time("%Y-%m-%d", FXSystem::now())).text(), std::ios::out|std::ios::app);
     }
 }
 
@@ -403,7 +409,7 @@ void IrcTabItem::LogLine(const FXString &line)
     if(logging && type != SERVER)
     {
         this->StartLogging();
-        *logstream << "[" << FXSystem::time("%Y-%m-%d %H:%M:%S", FXSystem::now()).text() << "] " << line.text() << std::endl;
+        *logstream << "[" << FXSystem::time("%H:%M:%S", FXSystem::now()).text() << "] " << line.text() << std::endl;
     }
 }
 

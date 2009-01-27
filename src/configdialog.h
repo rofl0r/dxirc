@@ -160,11 +160,11 @@ class ConfigDialog: public FXDialogBox
         FXButton *fontButton, *ircfontButton;
         FXCheckButton *logCheck, *serverCheck;
         FXTextField *folder, *nickCharField, *textTest;
-        IrcColor colors;
         FXString commandsList, themePath, themesList, logPath;
         FXbool logging, serverWindow, sameCmd, sameList;
         FXIgnoreUserArray usersList;
         FXToolBar *iconsBar;
+        IrcColor colors;
         FXint maxAway;
         FXSpinner *maxAwaySpinner;
         FXString nickChar;
