@@ -97,6 +97,8 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, F
     themeCurrent.selfore = getApp()->getSelforeColor();
     themeCurrent.tipback = getApp()->getTipbackColor();
     themeCurrent.tipfore = getApp()->getTipforeColor();
+    themeCurrent.hilite = getApp()->getHiliteColor();
+    themeCurrent.shadow = getApp()->getShadowColor();
 
     targetBack.connect(themeCurrent.back);
     targetBack.setTarget(this);
@@ -128,9 +130,6 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, F
     targetTipfore.connect(themeCurrent.tipfore);
     targetTipfore.setTarget(this);
     targetTipfore.setSelector(ID_COLORS);
-
-    hilite = getApp()->getHiliteColor();
-    shadow = getApp()->getShadowColor();
 
     getApp()->getNormalFont()->create();
     FXFontDesc fontdescription;
@@ -444,7 +443,6 @@ long ConfigDialog::OnColor(FXObject*, FXSelector, void*)
 long ConfigDialog::OnAccept(FXObject*, FXSelector, void*)
 {
     maxAway = maxAwaySpinner->getValue();
-    WriteRegistry();
     getApp()->stopModal(this,TRUE);
     hide();
     return 1;
@@ -455,25 +453,6 @@ long ConfigDialog::OnCancel(FXObject*,FXSelector,void*)
     getApp()->stopModal(this,FALSE);
     hide();
     return 1;
-}
-
-void ConfigDialog::WriteRegistry()
-{
-    getApp()->reg().writeColorEntry("SETTINGS", "basecolor", themeCurrent.base);
-    getApp()->reg().writeColorEntry("SETTINGS", "bordercolor", themeCurrent.border);
-    getApp()->reg().writeColorEntry("SETTINGS", "backcolor", themeCurrent.back);
-    getApp()->reg().writeColorEntry("SETTINGS", "forecolor", themeCurrent.fore);
-    getApp()->reg().writeColorEntry("SETTINGS", "hilitecolor", hilite);
-    getApp()->reg().writeColorEntry("SETTINGS", "shadowcolor", shadow);
-    getApp()->reg().writeColorEntry("SETTINGS", "selforecolor", themeCurrent.selfore);
-    getApp()->reg().writeColorEntry("SETTINGS", "selbackcolor", themeCurrent.selback);
-    getApp()->reg().writeColorEntry("SETTINGS", "tipforecolor", themeCurrent.tipfore);
-    getApp()->reg().writeColorEntry("SETTINGS", "tipbackcolor", themeCurrent.tipback);
-    getApp()->reg().writeColorEntry("SETTINGS", "selmenutextcolor", themeCurrent.menufore);
-    getApp()->reg().writeColorEntry("SETTINGS", "selmenubackcolor", themeCurrent.menuback);
-    
-    FXString fontspec=font->getFont();
-    getApp()->reg().writeStringEntry("SETTINGS", "normalfont", fontspec.text());
 }
 
 long ConfigDialog::OnKeyPress(FXObject *sender,FXSelector sel,void *ptr)
@@ -707,27 +686,27 @@ long ConfigDialog::OnThemeColorChanged(FXObject*, FXSelector, void*)
 
 void ConfigDialog::UpdateColors()
 {
-    shadow = makeShadowColor(themeCurrent.base);
-    hilite = makeHiliteColor(themeCurrent.base);
+    themeCurrent.shadow = makeShadowColor(themeCurrent.base);
+    themeCurrent.hilite = makeHiliteColor(themeCurrent.base);
 
     vframe2->setBorderColor(themeCurrent.border);
     vframe2->setBaseColor(themeCurrent.base);
     vframe2->setBackColor(themeCurrent.base);
-    vframe2->setShadowColor(shadow);
-    vframe2->setHiliteColor(hilite);
+    vframe2->setShadowColor(themeCurrent.shadow);
+    vframe2->setHiliteColor(themeCurrent.hilite);
 
     label->setBorderColor(themeCurrent.border);
     label->setBaseColor(themeCurrent.base);
     label->setBackColor(themeCurrent.base);
     label->setTextColor(themeCurrent.fore);
-    label->setShadowColor(shadow);
-    label->setHiliteColor(hilite);
+    label->setShadowColor(themeCurrent.shadow);
+    label->setHiliteColor(themeCurrent.hilite);
 
     textFrame1->setBorderColor(themeCurrent.border);
     textFrame1->setBaseColor(themeCurrent.base);
     textFrame1->setBackColor(themeCurrent.base);
-    textFrame1->setShadowColor(shadow);
-    textFrame1->setHiliteColor(hilite);
+    textFrame1->setShadowColor(themeCurrent.shadow);
+    textFrame1->setHiliteColor(themeCurrent.hilite);
     textTest->setBorderColor(themeCurrent.border);
     textTest->setBackColor(themeCurrent.back);
     textTest->setBaseColor(themeCurrent.base);
@@ -735,77 +714,77 @@ void ConfigDialog::UpdateColors()
     textTest->setSelTextColor(themeCurrent.selfore);
     textTest->setSelBackColor(themeCurrent.selback);
     textTest->setCursorColor(themeCurrent.fore);
-    textTest->setShadowColor(shadow);
-    textTest->setHiliteColor(hilite);
+    textTest->setShadowColor(themeCurrent.shadow);
+    textTest->setHiliteColor(themeCurrent.hilite);
 
     textFrame2->setBorderColor(themeCurrent.border);
     textFrame2->setBaseColor(themeCurrent.base);
     textFrame2->setBackColor(themeCurrent.back);
-    textFrame2->setShadowColor(shadow);
-    textFrame2->setHiliteColor(hilite);
+    textFrame2->setShadowColor(themeCurrent.shadow);
+    textFrame2->setHiliteColor(themeCurrent.hilite);
     labelSelected->setBorderColor(themeCurrent.border);
     labelSelected->setBaseColor(themeCurrent.base);
     labelSelected->setBackColor(themeCurrent.selback);
     labelSelected->setTextColor(themeCurrent.selfore);
-    labelSelected->setShadowColor(shadow);
-    labelSelected->setHiliteColor(hilite);
+    labelSelected->setShadowColor(themeCurrent.shadow);
+    labelSelected->setHiliteColor(themeCurrent.hilite);
 
     textFrame3->setBorderColor(themeCurrent.border);
     textFrame3->setBaseColor(themeCurrent.base);
     textFrame3->setBackColor(themeCurrent.back);
-    textFrame3->setShadowColor(shadow);
-    textFrame3->setHiliteColor(hilite);
+    textFrame3->setShadowColor(themeCurrent.shadow);
+    textFrame3->setHiliteColor(themeCurrent.hilite);
     labelNocurrent->setBorderColor(themeCurrent.border);
     labelNocurrent->setBaseColor(themeCurrent.base);
     labelNocurrent->setBackColor(themeCurrent.base);
     labelNocurrent->setTextColor(themeCurrent.fore);
-    labelNocurrent->setShadowColor(shadow);
-    labelNocurrent->setHiliteColor(hilite);
+    labelNocurrent->setShadowColor(themeCurrent.shadow);
+    labelNocurrent->setHiliteColor(themeCurrent.hilite);
 
     sep1->setBorderColor(themeCurrent.border);
     sep1->setBaseColor(themeCurrent.base);
     sep1->setBackColor(themeCurrent.base);
-    sep1->setShadowColor(shadow);
-    sep1->setHiliteColor(hilite);
+    sep1->setShadowColor(themeCurrent.shadow);
+    sep1->setHiliteColor(themeCurrent.hilite);
 
     labelTip->setBorderColor(themeCurrent.tipfore);
     labelTip->setBaseColor(themeCurrent.tipback);
     labelTip->setBackColor(themeCurrent.tipback);
     labelTip->setTextColor(themeCurrent.tipfore);
-    labelTip->setShadowColor(shadow);
-    labelTip->setHiliteColor(hilite);
+    labelTip->setShadowColor(themeCurrent.shadow);
+    labelTip->setHiliteColor(themeCurrent.hilite);
     
     menuGroup->setBorderColor(themeCurrent.border);
     menuGroup->setBaseColor(themeCurrent.base);
     menuGroup->setBackColor(themeCurrent.base);
-    menuGroup->setShadowColor(shadow);
-    menuGroup->setHiliteColor(hilite);
+    menuGroup->setShadowColor(themeCurrent.shadow);
+    menuGroup->setHiliteColor(themeCurrent.hilite);
     menuGroup->setTextColor(themeCurrent.fore);
     menuFrame->setBorderColor(themeCurrent.border);
     menuFrame->setBaseColor(themeCurrent.base);
     menuFrame->setBackColor(themeCurrent.base);
-    menuFrame->setShadowColor(shadow);
-    menuFrame->setHiliteColor(hilite);
+    menuFrame->setShadowColor(themeCurrent.shadow);
+    menuFrame->setHiliteColor(themeCurrent.hilite);
     sep2->setBorderColor(themeCurrent.border);
     sep2->setBaseColor(themeCurrent.base);
     sep2->setBackColor(themeCurrent.base);
-    sep2->setShadowColor(shadow);
-    sep2->setHiliteColor(hilite);
+    sep2->setShadowColor(themeCurrent.shadow);
+    sep2->setHiliteColor(themeCurrent.hilite);
     for (int i=0; i<3; i++)
     {
         menuLabels[i]->setBorderColor(themeCurrent.border);
         menuLabels[i]->setBaseColor(themeCurrent.base);
         menuLabels[i]->setBackColor(themeCurrent.base);
         menuLabels[i]->setTextColor(themeCurrent.fore);
-        menuLabels[i]->setShadowColor(shadow);
-        menuLabels[i]->setHiliteColor(hilite);
+        menuLabels[i]->setShadowColor(themeCurrent.shadow);
+        menuLabels[i]->setHiliteColor(themeCurrent.hilite);
     }
     menuLabels[1]->setBorderColor(themeCurrent.border);
     menuLabels[1]->setBaseColor(themeCurrent.menuback);
     menuLabels[1]->setBackColor(themeCurrent.menuback);
     menuLabels[1]->setTextColor(themeCurrent.menufore);
-    menuLabels[1]->setShadowColor(shadow);
-    menuLabels[1]->setHiliteColor(hilite);
+    menuLabels[1]->setShadowColor(themeCurrent.shadow);
+    menuLabels[1]->setHiliteColor(themeCurrent.hilite);
 }
 
 static FXString weightToString(FXuint weight){
@@ -857,6 +836,7 @@ void ConfigDialog::UpdateFont()
     labelTip->setFont(font);
     label->setFont(font);
     textTest->setFont(font);
+    menuGroup->setFont(font);
     menuLabels[0]->setFont(font);
     menuLabels[1]->setFont(font);
     menuLabels[2]->setFont(font);

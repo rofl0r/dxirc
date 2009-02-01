@@ -324,7 +324,7 @@ void dxirc::ReadServersConfig()
 
 void dxirc::SaveConfig()
 {
-    //getApp()->reg().clear();
+    getApp()->reg().clear();
     getApp()->reg().writeIntEntry("SERVERS", "number", serverList.no());
     if(serverList.no())
     {
@@ -374,6 +374,19 @@ void dxirc::SaveConfig()
     getApp()->reg().writeIntEntry("SETTINGS","y",getY());
     getApp()->reg().writeIntEntry("SETTINGS","w",getWidth());
     getApp()->reg().writeIntEntry("SETTINGS","h",getHeight());
+    getApp()->reg().writeColorEntry("SETTINGS", "basecolor", getApp()->getBaseColor());
+    getApp()->reg().writeColorEntry("SETTINGS", "bordercolor", getApp()->getBorderColor());
+    getApp()->reg().writeColorEntry("SETTINGS", "backcolor", getApp()->getBackColor());
+    getApp()->reg().writeColorEntry("SETTINGS", "forecolor", getApp()->getForeColor());
+    getApp()->reg().writeColorEntry("SETTINGS", "hilitecolor", getApp()->getHiliteColor());
+    getApp()->reg().writeColorEntry("SETTINGS", "shadowcolor", getApp()->getShadowColor());
+    getApp()->reg().writeColorEntry("SETTINGS", "selforecolor", getApp()->getSelforeColor());
+    getApp()->reg().writeColorEntry("SETTINGS", "selbackcolor", getApp()->getSelbackColor());
+    getApp()->reg().writeColorEntry("SETTINGS", "tipforecolor", getApp()->getTipforeColor());
+    getApp()->reg().writeColorEntry("SETTINGS", "tipbackcolor", getApp()->getTipbackColor());
+    getApp()->reg().writeColorEntry("SETTINGS", "selmenutextcolor", getApp()->getSelMenuTextColor());
+    getApp()->reg().writeColorEntry("SETTINGS", "selmenubackcolor", getApp()->getSelMenuBackColor());
+    getApp()->reg().writeStringEntry("SETTINGS", "normalfont", getApp()->getNormalFont()->getFont().text());
 }
 
 long dxirc::OnCommandQuit(FXObject*, FXSelector, void*)
@@ -433,6 +446,8 @@ long dxirc::OnCommandOptions(FXObject*, FXSelector, void*)
         nickCompletionChar = dialog.GetNickCompletionChar();
         sameCmd = dialog.GetSameCmd();
         sameList = dialog.GetSameList();
+        UpdateTheme(dialog.GetTheme());
+        UpdateFont(dialog.GetFont());
         ircFont = new FXFont(getApp(), dialog.GetIrcFont());
         ircFont->create();
         for (FXint i = 0; i<tabbook->numChildren(); i=i+2)
@@ -453,6 +468,292 @@ long dxirc::OnCommandOptions(FXObject*, FXSelector, void*)
         }
     }
     return 1;
+}
+
+void dxirc::UpdateTheme(ColorTheme theme)
+{
+    register FXWindow *w = FXApp::instance()->getRootWindow();
+
+    FX7Segment * sevensegment;
+    FXTextField * textfield;
+    FXIconList * iconlist;
+    FXList * list;
+    FXListBox * listbox;
+    FXTreeList * treelist;
+    FXComboBox * combobox;
+    FXButton * button;
+    FXFrame * frame;
+    FXLabel * label;
+    FXPopup * popup;
+    FXMenuTitle * menutitle;
+    FXMenuCheck * menucheck;
+    FXMenuRadio * menuradio;
+    FXMenuCaption * menucaption;
+    FXMenuSeparator * menuseparator;
+    FXText * text;
+    FXFoldingList * foldinglist;
+    FXMDIChild * mdichild;
+    FXTable * table;
+    FXDockTitle * docktitle;
+    FXPacker * packer;
+    FXHeader * header;
+    FXGroupBox * groupbox;
+    FXScrollBar * scrollbar;
+    FXSlider * slider;
+    FXStatusLine * statusline;
+    FXDragCorner * dragcorner;
+    FXRadioButton * radiobutton;
+    FXCheckButton * checkbutton;
+    FXToolTip * tooltip;
+    FXImageFrame * imageframe;
+
+    getApp()->setBaseColor(theme.base);
+    getApp()->setBackColor(theme.back);
+    getApp()->setBorderColor(theme.border);
+    getApp()->setForeColor(theme.fore);
+    getApp()->setSelMenuBackColor(theme.menuback);
+    getApp()->setSelMenuTextColor(theme.menufore);
+    getApp()->setSelbackColor(theme.selback);
+    getApp()->setSelforeColor(theme.selfore);
+    getApp()->setTipbackColor(theme.tipback);
+    getApp()->setTipforeColor(theme.tipfore);
+    getApp()->setHiliteColor(theme.hilite);
+    getApp()->setShadowColor(theme.shadow);
+
+    while (w)
+    {
+        w->setBackColor(theme.base);
+        if ((frame = dynamic_cast<FXFrame*> (w)))
+        {
+            frame->setBaseColor(theme.base);
+            frame->setBackColor(theme.base);
+            frame->setShadowColor(theme.shadow);
+            frame->setHiliteColor(theme.hilite);
+            frame->setBorderColor(theme.border);
+            if ((label = dynamic_cast<FXLabel*> (w)))
+            {
+                label->setTextColor(theme.fore);
+                if ((button = dynamic_cast<FXButton*> (w)))
+                {
+                    if (dynamic_cast<FXListBox*> (button->getParent()))
+                    {
+                        w->setBackColor(theme.back);
+                    }
+                    else
+                    {
+                        w->setBackColor(theme.base);
+                    }
+                }
+                else if ((checkbutton = dynamic_cast<FXCheckButton*> (w)))
+                {
+                    checkbutton->setCheckColor(theme.fore);
+                    checkbutton->setBoxColor(theme.back);
+                }
+                else if ((radiobutton = dynamic_cast<FXRadioButton*> (w)))
+                {
+                    radiobutton->setRadioColor(theme.fore);
+                    radiobutton->setDiskColor(theme.back);
+                }
+            }
+            else if ((textfield = dynamic_cast<FXTextField*> (w)))
+            {
+                w->setBackColor(theme.back);
+                textfield->setTextColor(theme.fore);
+                textfield->setSelTextColor(theme.selfore);
+                textfield->setSelBackColor(theme.selback);
+            }
+            else if ((docktitle = dynamic_cast<FXDockTitle*> (w)))
+            {
+                docktitle->setCaptionColor(theme.selfore);
+                docktitle->setBackColor(theme.selback);
+            }
+            else if ((header = dynamic_cast<FXHeader*> (w)))
+            {
+                header->setTextColor(theme.fore);
+            }
+            else if ((statusline = dynamic_cast<FXStatusLine*> (w)))
+            {
+                statusline->setTextColor(theme.fore);
+            }
+            else if ((sevensegment = dynamic_cast<FX7Segment*> (w)))
+            {
+                sevensegment->setTextColor(theme.fore);
+            }
+            else if ((slider = dynamic_cast<FXSlider*> (w)))
+            {
+                slider->setSlotColor(theme.back);
+            }
+            else if ((imageframe = dynamic_cast<FXImageFrame*> (w)))
+            {
+                imageframe->setBackColor(theme.back); /// fixme, only for coverframe in mainwindow
+            }
+        }
+        else if ((packer = dynamic_cast<FXPacker*> (w)))
+        {
+            packer->setBaseColor(theme.base);
+            packer->setBackColor(theme.base);
+            packer->setShadowColor(theme.shadow);
+            packer->setHiliteColor(theme.hilite);
+            packer->setBorderColor(theme.border);
+            if ((combobox = dynamic_cast<FXComboBox*> (w)))
+            {
+                w->setBackColor(theme.back);
+            }
+            else if ((listbox = dynamic_cast<FXListBox*> (w)))
+            {
+                w->setBackColor(theme.back);
+            }
+            else if ((groupbox = dynamic_cast<FXGroupBox*> (w)))
+            {
+                groupbox->setTextColor(theme.fore);
+            }
+        }
+        else if ((popup = dynamic_cast<FXPopup*> (w)))
+        {
+            popup->setBaseColor(theme.base);
+            popup->setShadowColor(theme.shadow);
+            popup->setHiliteColor(theme.hilite);
+            popup->setBorderColor(theme.border);
+        }
+        else if ((menucaption = dynamic_cast<FXMenuCaption*> (w)))
+        {
+            w->setBackColor(theme.base);
+            menucaption->setTextColor(theme.fore);
+            menucaption->setSelTextColor(theme.menufore);
+            menucaption->setSelBackColor(theme.menuback);
+            menucaption->setShadowColor(theme.shadow);
+            menucaption->setHiliteColor(theme.hilite);
+
+            if ((menucheck = dynamic_cast<FXMenuCheck*> (w)))
+            {
+                menucheck->setBoxColor(theme.back);
+            }
+            else if ((menuradio = dynamic_cast<FXMenuRadio*> (w)))
+            {
+                menuradio->setRadioColor(theme.back);
+            }
+            else if ((menutitle = dynamic_cast<FXMenuTitle*> (w)))
+            {
+                menutitle->setTextColor(theme.fore);
+                menutitle->setSelTextColor(theme.fore);
+                menutitle->setSelBackColor(theme.base);
+            }
+        }
+        else if ((menuseparator = dynamic_cast<FXMenuSeparator*> (w)))
+        {
+            menuseparator->setShadowColor(theme.shadow);
+            menuseparator->setHiliteColor(theme.hilite);
+        }
+        else if ((scrollbar = dynamic_cast<FXScrollBar*> (w)))
+        {
+            scrollbar->setShadowColor(theme.shadow);
+            scrollbar->setHiliteColor(theme.hilite);
+            scrollbar->setBorderColor(theme.border);
+            scrollbar->setArrowColor(theme.fore);
+        }
+        else if ((dragcorner = dynamic_cast<FXDragCorner*> (w)))
+        {
+            dragcorner->setShadowColor(theme.shadow);
+            dragcorner->setHiliteColor(theme.hilite);
+        }
+        else if (dynamic_cast<FXScrollArea*> (w))
+        {
+            if ((text = dynamic_cast<FXText*> (w)))
+            {
+                w->setBackColor(theme.back);
+                text->setTextColor(theme.fore);
+                text->setSelTextColor(theme.selfore);
+                text->setSelBackColor(theme.selback);
+            }
+            else if ((list = dynamic_cast<FXList*> (w)))
+            {
+                w->setBackColor(theme.back);
+                list->setTextColor(theme.fore);
+                list->setSelTextColor(theme.selfore);
+                list->setSelBackColor(theme.selback);
+            }
+            else if ((treelist = dynamic_cast<FXTreeList*> (w)))
+            {
+                w->setBackColor(theme.back);
+                treelist->setTextColor(theme.fore);
+                treelist->setLineColor(theme.shadow);
+                treelist->setSelTextColor(theme.selfore);
+                treelist->setSelBackColor(theme.selback);
+            }
+            else if ((iconlist = dynamic_cast<FXIconList*> (w)))
+            {
+                w->setBackColor(theme.back);
+                iconlist->setTextColor(theme.fore);
+                iconlist->setSelTextColor(theme.selfore);
+                iconlist->setSelBackColor(theme.selback);
+            }
+            else if ((foldinglist = dynamic_cast<FXFoldingList*> (w)))
+            {
+                w->setBackColor(theme.back);
+                foldinglist->setTextColor(theme.fore);
+                foldinglist->setSelTextColor(theme.selfore);
+                foldinglist->setSelBackColor(theme.selback);
+                foldinglist->setLineColor(theme.shadow);
+            }
+            else if ((table = dynamic_cast<FXTable*> (w)))
+            {
+                w->setBackColor(theme.back);
+                table->setTextColor(theme.fore);
+                table->setSelTextColor(theme.selfore);
+                table->setSelBackColor(theme.selback);
+            }
+        }
+        else if ((mdichild = dynamic_cast<FXMDIChild*> (w)))
+        {
+            mdichild->setBackColor(theme.base);
+            mdichild->setBaseColor(theme.base);
+            mdichild->setShadowColor(theme.shadow);
+            mdichild->setHiliteColor(theme.hilite);
+            mdichild->setBorderColor(theme.border);
+            mdichild->setTitleColor(theme.selfore);
+            mdichild->setTitleBackColor(theme.selback);
+        }
+        else if ((tooltip = dynamic_cast<FXToolTip*> (w)))
+        {
+            tooltip->setTextColor(theme.tipfore);
+            tooltip->setBackColor(theme.tipback);
+        }
+
+        w->update();
+        if (w->getFirst())
+        {
+            w = w->getFirst();
+            continue;
+        }
+        while (!w->getNext() && w->getParent())
+        {
+            w = w->getParent();
+        }
+        w = w->getNext();
+    }
+}
+
+void dxirc::UpdateFont(FXString fnt)
+{
+    getApp()->getNormalFont()->destroy();
+    getApp()->getNormalFont()->setFont(fnt);
+    getApp()->getNormalFont()->create();
+    register FXWindow *w = this;
+    while(w)
+    {
+        w->recalc();
+        w->update();
+        if(w->getFirst())
+        {
+            w = w->getFirst();
+            continue;
+        }
+        while(!w->getNext() && w->getParent())
+        {
+            w = w->getParent();
+        }
+        w = w->getNext();
+    }
 }
 
 long dxirc::OnCommandAbout(FXObject*, FXSelector, void*)

@@ -125,6 +125,8 @@ struct ColorTheme {
     FXColor tipfore;
     FXColor menuback;
     FXColor menufore;
+    FXColor shadow;
+    FXColor hilite;
 };
 
 typedef FXArray<FXString> FXHistoryArray;

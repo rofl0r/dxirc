@@ -149,6 +149,8 @@ class ConfigDialog: public FXDialogBox
         FXString GetIrcFont() { return ircFont->getFont(); }
         FXbool GetSameCmd() { return sameCmd; }
         FXbool GetSameList() { return sameList; }
+        ColorTheme GetTheme() { return themeCurrent; }
+        FXString GetFont() { return font->getFont(); }
 
     private:
         ConfigDialog() {}
@@ -175,7 +177,6 @@ class ConfigDialog: public FXDialogBox
         FXListBox *themes;
         FXDataTarget targetBack, targetBase, targetBorder, targetFore, targetMenuback, targetMenufore, targetSelback, targetSelfore, targetTipback, targetTipfore;
         FXDataTarget targetSameCmd, targetSameList;
-        FXColor shadow, hilite;
         FXLabel *labelSelected, *labelNocurrent, *labelTip, *label;
         FXVerticalFrame *vframe2, *menuFrame;
         FXLabel *menuLabels[3];
@@ -195,7 +196,6 @@ class ConfigDialog: public FXDialogBox
         void UpdateFont();
         void UpdateIrcFont();
         void ShowMessage();
-        void WriteRegistry();
         FXbool ThemeExist(const FXString &ckdTheme);
         FXbool NickExist(const FXString &ckdNick);
 };

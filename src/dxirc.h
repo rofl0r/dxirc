@@ -89,6 +89,8 @@ class dxirc: public FXMainWindow
         void ReadConfig();
         void SaveConfig();
         void UpdateMenus();
+        void UpdateTheme(ColorTheme);
+        void UpdateFont(FXString);
         void SortTabs();
         FXString Encrypt(const FXString&);
         FXString Decrypt(const FXString&);
