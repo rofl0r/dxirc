@@ -6,7 +6,8 @@ dxirc_SOURCES = configdialog.cpp \
 			      icons.cpp \
 			      ircsocket.cpp \
 			      irctabitem.cpp \
-			      serverdialog.cpp
+			      serverdialog.cpp \
+                              utils.cpp
 
 dxirc_LDADD = @LIBINTL@
 
@@ -24,6 +25,7 @@ EXTRA_DIST =  configdialog.h \
                           icons.h \
 			  ircsocket.h \
 			  irctabitem.h \
-			  serverdialog.h
+			  serverdialog.h \
+                          utils.h
 
 

@@ -25,7 +25,7 @@
 
 FXIcon* MakeIcon(FXApp *app, const FXString path, const FXString name, const FXbool menu);
 FXIcon* MakeAwayIcon(FXApp *app, const FXString path, const FXString name);
-FXbool MakeAllIcons(FXApp *app);
+FXbool MakeAllIcons(FXApp *app, const FXString &iniFile);
 FXString CheckThemePath(const FXString &path);
 
 extern FXIcon *bigicon;

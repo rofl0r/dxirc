@@ -44,11 +44,12 @@ class IrcSocket: public FXObject
 {
     FXDECLARE(IrcSocket)
     public:
-        IrcSocket(FXApp*, FXObject*, FXSelector, FXString, FXString);
+        IrcSocket(FXApp*, FXObject*, FXSelector, FXString);
         virtual ~IrcSocket();
         enum {
             ID_READ,
-            ID_SERVER
+            ID_SERVER,
+            ID_LAST
         };
         FXCommandsArray commands;
 
@@ -117,7 +118,7 @@ class IrcSocket: public FXObject
         FXSelector selector;
         FXbool connected;
         FXint serverPort;
-        FXString serverName, realServerName, serverPassword, nickName, realName, userName, localeEncoding, startChannels;
+        FXString serverName, realServerName, serverPassword, nickName, realName, userName, startChannels;
         FXString receiveRest;
         FXTargetsArray targets;
         FXCommandsArray ignoreCommands;
@@ -135,7 +136,6 @@ class IrcSocket: public FXObject
         FXbool SendLine(const FXString &line);
         FXbool IsUtf8(const FXchar *string, FXuint length);
         int Streq(const FXchar *a, const FXchar *b);
-        FXString LocaleToUtf8(const FXchar *buffer);
         void ParseLine(const FXString &line);
         void SendEvent(IrcEventType);
         void SendEvent(IrcEventType, const FXString&);
@@ -162,6 +162,7 @@ class IrcSocket: public FXObject
         void Unknown(const FXString&, const FXString&);
         void FillCommands();
         FXbool IsUserIgnored(const FXString &nick, const FXString &on);
+        void CloseConnection();
 
 };
 

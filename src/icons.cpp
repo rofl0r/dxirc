@@ -19,7 +19,6 @@
  *      MA 02110-1301, USA.
  */
 
-
 #include <fx.h>
 #include <FXPNGIcon.h>
 
@@ -253,14 +252,16 @@ FXString CheckThemePath(const FXString &path)
     }
 }
 
-FXbool MakeAllIcons(FXApp *app)
+FXbool MakeAllIcons(FXApp *app, const FXString &iniFile)
 {
     FXbool success = true;
     FXString mainpath = DXIRC_DATADIR PATHSEPSTRING "icons";
     FXString flagpath = DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "flags";
-    FXString themepath = CheckThemePath(app->reg().readStringEntry("SETTINGS", "themePath", DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "default"));
-    menuColor = app->getBaseColor();
-    textBackColor = app->reg().readColorEntry("SETTINGS", "textBackColor", FXRGB(255,255,255));
+    FXSettings set;
+    set.parseFile(iniFile, true);
+    FXString themepath = CheckThemePath(set.readStringEntry("SETTINGS", "themePath", DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "default"));
+    menuColor = set.readColorEntry("SETTINGS", "basecolor", app->getBaseColor());
+    textBackColor = set.readColorEntry("SETTINGS", "textBackColor", FXRGB(255,255,255));
 
     success = ((bigicon = MakeIcon(app, mainpath, "big_dxirc.png", true)) != NULL) &success;
     success = ((smallicon = MakeIcon(app, mainpath, "small_dxirc.png", true)) != NULL) &success;

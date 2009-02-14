@@ -31,6 +31,7 @@
 #include "irctabitem.h"
 #include "configdialog.h"
 #include "serverdialog.h"
+#include "utils.h"
 
 FXDEFMAP(dxirc) dxircMap[] = {
     FXMAPFUNC(SEL_CLOSE,    0,                          dxirc::OnCommandQuit),
@@ -63,8 +64,6 @@ dxirc::dxirc(FXApp *app)
     setMiniIcon(smallicon);
 
     ircFont = NULL;
-
-    SetLocaleEncoding();
 
     ReadConfig();
 
@@ -106,7 +105,7 @@ dxirc::dxirc(FXApp *app)
     packing &= ~PACK_UNIFORM_WIDTH;
     tabbook->setPackingHints(packing);
 
-    IrcSocket *server = new IrcSocket(app, this, 0, localeEncoding, "");
+    IrcSocket *server = new IrcSocket(app, this, 0, "");
     server->SetUsersList(usersList);
     servers.append(server);
 
@@ -114,6 +113,10 @@ dxirc::dxirc(FXApp *app)
     server->AppendTarget(tabitem);
 
     new FXToolTip(app,0);
+
+    UpdateTheme();
+    UpdateFont(fontSpec);
+    UpdateTabs();
 
     getAccelTable()->addAccel(MKUINT(KEY_1, ALTMASK), this, FXSEL(SEL_KEYPRESS, ID_SELECTTAB));
     getAccelTable()->addAccel(MKUINT(KEY_2, ALTMASK), this, FXSEL(SEL_KEYPRESS, ID_SELECTTAB));
@@ -179,26 +182,41 @@ int CompareTabs(const void **a,const void **b)
 
 void dxirc::ReadConfig()
 {
-    FXString fontspec;
-    FXint xx=getApp()->reg().readIntEntry("SETTINGS","x",50);
-    FXint yy=getApp()->reg().readIntEntry("SETTINGS","y",50);
-    FXint ww=getApp()->reg().readIntEntry("SETTINGS","w",0);
-    FXint hh=getApp()->reg().readIntEntry("SETTINGS","h",0);
-    usersShown = getApp()->reg().readBoolEntry("SETTINGS", "usersShown", true);
-    commandsList = getApp()->reg().readStringEntry("SETTINGS", "commandsList");
-    themePath = CheckThemePath(getApp()->reg().readStringEntry("SETTINGS", "themePath", DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "default"));
-    themesList = CheckThemesList(getApp()->reg().readStringEntry("SETTINGS", "themesList", FXString(themePath+";").text()));
-    colors.text = getApp()->reg().readColorEntry("SETTINGS", "textColor", FXRGB(0,0,0));
-    colors.back = getApp()->reg().readColorEntry("SETTINGS", "textBackColor", FXRGB(255,255,255));
-    colors.user = getApp()->reg().readColorEntry("SETTINGS", "userColor", FXRGB(191,191,191));
-    colors.action = getApp()->reg().readColorEntry("SETTINGS", "actionsColor", FXRGB(255,165,0));
-    colors.notice = getApp()->reg().readColorEntry("SETTINGS", "noticeColor", FXRGB(0,0,255));
-    colors.error = getApp()->reg().readColorEntry("SETTINGS", "errorColor", FXRGB(255,0,0));
-    colors.hilight = getApp()->reg().readColorEntry("SETTINGS", "hilightColor", FXRGB(0,255,0));
-    fontspec = getApp()->reg().readStringEntry("SETTINGS", "ircFont", "");
-    sameCmd = getApp()->reg().readBoolEntry("SETTINGS", "sameCmd", false);
-    sameList = getApp()->reg().readBoolEntry("SETTINGS", "sameList", false);
-    if(!fontspec.empty()) ircFont = new FXFont(getApp(), fontspec);
+    FXString ircfontspec;
+    FXSettings set;
+    set.parseFile(utils::GetIniFile(iniFile), true);
+    FXint xx=set.readIntEntry("SETTINGS","x",50);
+    FXint yy=set.readIntEntry("SETTINGS","y",50);
+    FXint ww=set.readIntEntry("SETTINGS","w",400);
+    FXint hh=set.readIntEntry("SETTINGS","h",300);
+    appTheme.base = set.readColorEntry("SETTINGS", "basecolor", getApp()->getBaseColor());
+    appTheme.back = set.readColorEntry("SETTINGS", "backcolor", getApp()->getBackColor());
+    appTheme.border = set.readColorEntry("SETTINGS", "bordercolor", getApp()->getBorderColor());
+    appTheme.fore = set.readColorEntry("SETTINGS", "forecolor", getApp()->getForeColor());
+    appTheme.menuback = set.readColorEntry("SETTINGS", "selmenubackcolor", getApp()->getSelMenuBackColor());
+    appTheme.menufore = set.readColorEntry("SETTINGS", "selmenutextcolor", getApp()->getSelMenuTextColor());
+    appTheme.selback = set.readColorEntry("SETTINGS", "selbackcolor", getApp()->getSelbackColor());
+    appTheme.selfore = set.readColorEntry("SETTINGS", "selforecolor", getApp()->getSelforeColor());
+    appTheme.tipback = set.readColorEntry("SETTINGS", "tipbackcolor", getApp()->getTipbackColor());
+    appTheme.tipfore = set.readColorEntry("SETTINGS", "tipforecolor", getApp()->getTipforeColor());
+    appTheme.hilite = set.readColorEntry("SETTINGS", "hilitecolor", getApp()->getHiliteColor());
+    appTheme.shadow = set.readColorEntry("SETTINGS", "shadowcolor", getApp()->getShadowColor());
+    fontSpec = set.readStringEntry("SETTINGS", "normalfont", getApp()->getNormalFont()->getFont().text());
+    usersShown = set.readBoolEntry("SETTINGS", "usersShown", true);
+    commandsList = set.readStringEntry("SETTINGS", "commandsList");
+    themePath = CheckThemePath(set.readStringEntry("SETTINGS", "themePath", DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "default"));
+    themesList = CheckThemesList(set.readStringEntry("SETTINGS", "themesList", FXString(themePath+";").text()));
+    colors.text = set.readColorEntry("SETTINGS", "textColor", FXRGB(0,0,0));
+    colors.back = set.readColorEntry("SETTINGS", "textBackColor", FXRGB(255,255,255));
+    colors.user = set.readColorEntry("SETTINGS", "userColor", FXRGB(191,191,191));
+    colors.action = set.readColorEntry("SETTINGS", "actionsColor", FXRGB(255,165,0));
+    colors.notice = set.readColorEntry("SETTINGS", "noticeColor", FXRGB(0,0,255));
+    colors.error = set.readColorEntry("SETTINGS", "errorColor", FXRGB(255,0,0));
+    colors.hilight = set.readColorEntry("SETTINGS", "hilightColor", FXRGB(0,255,0));
+    ircfontspec = set.readStringEntry("SETTINGS", "ircFont", "");
+    sameCmd = set.readBoolEntry("SETTINGS", "sameCmd", false);
+    sameList = set.readBoolEntry("SETTINGS", "sameList", false);
+    if(!ircfontspec.empty()) ircFont = new FXFont(getApp(), ircfontspec);
     else
     {
         getApp()->getNormalFont()->create();
@@ -207,22 +225,22 @@ void dxirc::ReadConfig()
         ircFont = new FXFont(getApp(),fontdescription);
         ircFont->create();
     }
-    maxAway = getApp()->reg().readIntEntry("SETTINGS", "maxAway", 200);
-    logging = getApp()->reg().readBoolEntry("SETTINGS", "logging", false);
-    ownServerWindow = getApp()->reg().readBoolEntry("SETTINGS", "serverWindow", true);
-    nickCompletionChar = FXString(getApp()->reg().readStringEntry("SETTINGS", "nickCompletionChar", ":")).left(1);
+    maxAway = set.readIntEntry("SETTINGS", "maxAway", 200);
+    logging = set.readBoolEntry("SETTINGS", "logging", false);
+    ownServerWindow = set.readBoolEntry("SETTINGS", "serverWindow", true);
+    nickCompletionChar = FXString(set.readStringEntry("SETTINGS", "nickCompletionChar", ":")).left(1);
     tempServerWindow = ownServerWindow;
-    logPath = getApp()->reg().readStringEntry("SETTINGS", "logPath");
+    logPath = set.readStringEntry("SETTINGS", "logPath");
     if(logging && !FXStat::exists(logPath)) logging = false;
-    FXint usersNum = getApp()->reg().readIntEntry("USERS", "number", 0);
+    FXint usersNum = set.readIntEntry("USERS", "number", 0);
     if(usersNum)
     {
         for(FXint i=0; i<usersNum; i++)
         {
             IgnoreUser user;
-            user.nick = getApp()->reg().readStringEntry(FXStringFormat("USER%d", i).text(), "nick", FXStringFormat("xxx%d", i).text());
-            user.channel = getApp()->reg().readStringEntry(FXStringFormat("USER%d", i).text(), "channel", "all");
-            user.server = getApp()->reg().readStringEntry(FXStringFormat("USER%d", i).text(), "server", "all");
+            user.nick = set.readStringEntry(FXStringFormat("USER%d", i).text(), "nick", FXStringFormat("xxx%d", i).text());
+            user.channel = set.readStringEntry(FXStringFormat("USER%d", i).text(), "channel", "all");
+            user.server = set.readStringEntry(FXStringFormat("USER%d", i).text(), "server", "all");
             usersList.append(user);
         }
     }
@@ -258,20 +276,22 @@ FXString dxirc::CheckThemesList(const FXString &list)
 
 void dxirc::ReadServersConfig()
 {
-    FXint serversNum = getApp()->reg().readIntEntry("SERVERS", "number", 0);
+    FXSettings set;
+    set.parseFile(utils::GetIniFile(iniFile), true);
+    FXint serversNum = set.readIntEntry("SERVERS", "number", 0);
     FXint autoConnect = 0;
     if(serversNum)
     {
         for(FXint i=0; i<serversNum; i++)
         {
             ServerInfo server;
-            server.hostname = getApp()->reg().readStringEntry(FXStringFormat("SERVER%d", i).text(), "hostname", FXStringFormat("localhost%d", i).text());
-            server.port = getApp()->reg().readIntEntry(FXStringFormat("SERVER%d", i).text(), "port", 6667);
-            server.nick = getApp()->reg().readStringEntry(FXStringFormat("SERVER%d", i).text(), "nick", "xxx");
-            server.realname = getApp()->reg().readStringEntry(FXStringFormat("SERVER%d", i).text(), "realname", "xxx");
-            server.passwd = Decrypt(getApp()->reg().readStringEntry(FXStringFormat("SERVER%d", i).text(), "hes", ""));
-            server.channels = getApp()->reg().readStringEntry(FXStringFormat("SERVER%d", i).text(), "channels", "");
-            server.autoConnect = getApp()->reg().readBoolEntry(FXStringFormat("SERVER%d", i).text(), "autoconnect", false);
+            server.hostname = set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "hostname", FXStringFormat("localhost%d", i).text());
+            server.port = set.readIntEntry(FXStringFormat("SERVER%d", i).text(), "port", 6667);
+            server.nick = set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "nick", "xxx");
+            server.realname = set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "realname", "xxx");
+            server.passwd = Decrypt(set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "hes", ""));
+            server.channels = set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "channels", "");
+            server.autoConnect = set.readBoolEntry(FXStringFormat("SERVER%d", i).text(), "autoconnect", false);
             if(server.autoConnect)
             {
                 autoConnect++;
@@ -298,7 +318,7 @@ void dxirc::ReadServersConfig()
                 }
                 else if(!ServerExist(server.hostname, server.port))
                 {
-                    IrcSocket *newserver = new IrcSocket(app, this, 0, localeEncoding, "");
+                    IrcSocket *newserver = new IrcSocket(app, this, 0, "");
                     newserver->SetUsersList(usersList);
                     servers.prepend(newserver);
                     servers[0]->SetServerName(server.hostname);
@@ -324,69 +344,72 @@ void dxirc::ReadServersConfig()
 
 void dxirc::SaveConfig()
 {
-    getApp()->reg().clear();
-    getApp()->reg().writeIntEntry("SERVERS", "number", serverList.no());
+    FXSettings set;
+    //set.clear();
+    set.writeIntEntry("SERVERS", "number", serverList.no());
     if(serverList.no())
     {
         for(FXint i=0; i<serverList.no(); i++)
         {
-            getApp()->reg().writeStringEntry(FXStringFormat("SERVER%d", i).text(), "hostname", serverList[i].hostname.text());
-            getApp()->reg().writeIntEntry(FXStringFormat("SERVER%d", i).text(), "port", serverList[i].port);
-            getApp()->reg().writeStringEntry(FXStringFormat("SERVER%d", i).text(), "nick", serverList[i].nick.text());
-            getApp()->reg().writeStringEntry(FXStringFormat("SERVER%d", i).text(), "realname", serverList[i].realname.text());
-            getApp()->reg().writeStringEntry(FXStringFormat("SERVER%d", i).text(), "hes", Encrypt(serverList[i].passwd).text());
-            getApp()->reg().writeStringEntry(FXStringFormat("SERVER%d", i).text(), "channels", serverList[i].channels.text());
-            getApp()->reg().writeBoolEntry(FXStringFormat("SERVER%d", i).text(), "autoconnect", serverList[i].autoConnect);
+            set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "hostname", serverList[i].hostname.text());
+            set.writeIntEntry(FXStringFormat("SERVER%d", i).text(), "port", serverList[i].port);
+            set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "nick", serverList[i].nick.text());
+            set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "realname", serverList[i].realname.text());
+            set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "hes", Encrypt(serverList[i].passwd).text());
+            set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "channels", serverList[i].channels.text());
+            set.writeBoolEntry(FXStringFormat("SERVER%d", i).text(), "autoconnect", serverList[i].autoConnect);
         }
     }
-    getApp()->reg().writeBoolEntry("SETTINGS", "usersShown", usersShown);
-    getApp()->reg().writeStringEntry("SETTINGS", "commandsList", commandsList.text());
-    getApp()->reg().writeStringEntry("SETTINGS", "themePath", themePath.text());
-    getApp()->reg().writeStringEntry("SETTINGS", "themesList", themesList.text());
-    getApp()->reg().writeColorEntry("SETTINGS", "textColor", colors.text);
-    getApp()->reg().writeColorEntry("SETTINGS", "textBackColor", colors.back);
-    getApp()->reg().writeColorEntry("SETTINGS", "userColor", colors.user);
-    getApp()->reg().writeColorEntry("SETTINGS", "actionsColor", colors.action);
-    getApp()->reg().writeColorEntry("SETTINGS", "noticeColor", colors.notice);
-    getApp()->reg().writeColorEntry("SETTINGS", "errorColor", colors.error);
-    getApp()->reg().writeColorEntry("SETTINGS", "hilightColor", colors.hilight);
-    getApp()->reg().writeStringEntry("SETTINGS", "ircFont", ircFont->getFont().text());
-    getApp()->reg().writeIntEntry("SETTINGS", "maxAway", maxAway);
-    getApp()->reg().writeBoolEntry("SETTINGS", "logging", logging);
-    getApp()->reg().writeBoolEntry("SETTINGS", "sameCmd", sameCmd);
-    getApp()->reg().writeBoolEntry("SETTINGS", "sameList", sameList);
-    if(ownServerWindow == tempServerWindow) getApp()->reg().writeBoolEntry("SETTINGS", "serverWindow", ownServerWindow);
-    else getApp()->reg().writeBoolEntry("SETTINGS", "serverWindow", tempServerWindow);
-    getApp()->reg().writeStringEntry("SETTINGS", "logPath", logPath.text());
-    getApp()->reg().writeStringEntry("SETTINGS", "nickCompletionChar", nickCompletionChar.text());
-    getApp()->reg().writeIntEntry("USERS", "number", usersList.no());
+    set.writeBoolEntry("SETTINGS", "usersShown", usersShown);
+    set.writeStringEntry("SETTINGS", "commandsList", commandsList.text());
+    set.writeStringEntry("SETTINGS", "themePath", themePath.text());
+    set.writeStringEntry("SETTINGS", "themesList", themesList.text());
+    set.writeColorEntry("SETTINGS", "textColor", colors.text);
+    set.writeColorEntry("SETTINGS", "textBackColor", colors.back);
+    set.writeColorEntry("SETTINGS", "userColor", colors.user);
+    set.writeColorEntry("SETTINGS", "actionsColor", colors.action);
+    set.writeColorEntry("SETTINGS", "noticeColor", colors.notice);
+    set.writeColorEntry("SETTINGS", "errorColor", colors.error);
+    set.writeColorEntry("SETTINGS", "hilightColor", colors.hilight);
+    set.writeStringEntry("SETTINGS", "ircFont", ircFont->getFont().text());
+    set.writeIntEntry("SETTINGS", "maxAway", maxAway);
+    set.writeBoolEntry("SETTINGS", "logging", logging);
+    set.writeBoolEntry("SETTINGS", "sameCmd", sameCmd);
+    set.writeBoolEntry("SETTINGS", "sameList", sameList);
+    if(ownServerWindow == tempServerWindow) set.writeBoolEntry("SETTINGS", "serverWindow", ownServerWindow);
+    else set.writeBoolEntry("SETTINGS", "serverWindow", tempServerWindow);
+    set.writeStringEntry("SETTINGS", "logPath", logPath.text());
+    set.writeStringEntry("SETTINGS", "nickCompletionChar", nickCompletionChar.text());
+    set.writeIntEntry("USERS", "number", usersList.no());
     if(usersList.no())
     {
 
         for(FXint i=0; i<usersList.no(); i++)
         {
-            getApp()->reg().writeStringEntry(FXStringFormat("USER%d", i).text(), "nick", usersList[i].nick.text());
-            getApp()->reg().writeStringEntry(FXStringFormat("USER%d", i).text(), "channel", usersList[i].channel.text());
-            getApp()->reg().writeStringEntry(FXStringFormat("USER%d", i).text(), "server", usersList[i].server.text());
+            set.writeStringEntry(FXStringFormat("USER%d", i).text(), "nick", usersList[i].nick.text());
+            set.writeStringEntry(FXStringFormat("USER%d", i).text(), "channel", usersList[i].channel.text());
+            set.writeStringEntry(FXStringFormat("USER%d", i).text(), "server", usersList[i].server.text());
         }
     }
-    getApp()->reg().writeIntEntry("SETTINGS","x",getX());
-    getApp()->reg().writeIntEntry("SETTINGS","y",getY());
-    getApp()->reg().writeIntEntry("SETTINGS","w",getWidth());
-    getApp()->reg().writeIntEntry("SETTINGS","h",getHeight());
-    getApp()->reg().writeColorEntry("SETTINGS", "basecolor", getApp()->getBaseColor());
-    getApp()->reg().writeColorEntry("SETTINGS", "bordercolor", getApp()->getBorderColor());
-    getApp()->reg().writeColorEntry("SETTINGS", "backcolor", getApp()->getBackColor());
-    getApp()->reg().writeColorEntry("SETTINGS", "forecolor", getApp()->getForeColor());
-    getApp()->reg().writeColorEntry("SETTINGS", "hilitecolor", getApp()->getHiliteColor());
-    getApp()->reg().writeColorEntry("SETTINGS", "shadowcolor", getApp()->getShadowColor());
-    getApp()->reg().writeColorEntry("SETTINGS", "selforecolor", getApp()->getSelforeColor());
-    getApp()->reg().writeColorEntry("SETTINGS", "selbackcolor", getApp()->getSelbackColor());
-    getApp()->reg().writeColorEntry("SETTINGS", "tipforecolor", getApp()->getTipforeColor());
-    getApp()->reg().writeColorEntry("SETTINGS", "tipbackcolor", getApp()->getTipbackColor());
-    getApp()->reg().writeColorEntry("SETTINGS", "selmenutextcolor", getApp()->getSelMenuTextColor());
-    getApp()->reg().writeColorEntry("SETTINGS", "selmenubackcolor", getApp()->getSelMenuBackColor());
-    getApp()->reg().writeStringEntry("SETTINGS", "normalfont", getApp()->getNormalFont()->getFont().text());
+    set.writeIntEntry("SETTINGS","x",getX());
+    set.writeIntEntry("SETTINGS","y",getY());
+    set.writeIntEntry("SETTINGS","w",getWidth());
+    set.writeIntEntry("SETTINGS","h",getHeight());
+    set.writeColorEntry("SETTINGS", "basecolor", appTheme.base);
+    set.writeColorEntry("SETTINGS", "bordercolor", appTheme.border);
+    set.writeColorEntry("SETTINGS", "backcolor", appTheme.back);
+    set.writeColorEntry("SETTINGS", "forecolor", appTheme.fore);
+    set.writeColorEntry("SETTINGS", "hilitecolor", appTheme.hilite);
+    set.writeColorEntry("SETTINGS", "shadowcolor", appTheme.shadow);
+    set.writeColorEntry("SETTINGS", "selforecolor", appTheme.selfore);
+    set.writeColorEntry("SETTINGS", "selbackcolor", appTheme.selback);
+    set.writeColorEntry("SETTINGS", "tipforecolor", appTheme.tipfore);
+    set.writeColorEntry("SETTINGS", "tipbackcolor", appTheme.tipback);
+    set.writeColorEntry("SETTINGS", "selmenutextcolor", appTheme.menufore);
+    set.writeColorEntry("SETTINGS", "selmenubackcolor", appTheme.menuback);
+    set.writeStringEntry("SETTINGS", "normalfont", getApp()->getNormalFont()->getFont().text());
+    set.setModified();
+    set.unparseFile(utils::GetIniFile(iniFile));
 }
 
 long dxirc::OnCommandQuit(FXObject*, FXSelector, void*)
@@ -431,7 +454,7 @@ long dxirc::OnCommandUsers(FXObject*, FXSelector, void*)
 
 long dxirc::OnCommandOptions(FXObject*, FXSelector, void*)
 {
-    ConfigDialog dialog(this, colors, commandsList, usersList, themePath, themesList, maxAway, logging, logPath, tempServerWindow, nickCompletionChar, ircFont->getFont(), sameCmd, sameList);
+    ConfigDialog dialog(this, colors, commandsList, usersList, themePath, themesList, maxAway, logging, logPath, tempServerWindow, nickCompletionChar, ircFont->getFont(), sameCmd, sameList, appTheme);
     if(dialog.execute(PLACEMENT_CURSOR))
     {
         commandsList = dialog.GetCommandsList();
@@ -446,22 +469,12 @@ long dxirc::OnCommandOptions(FXObject*, FXSelector, void*)
         nickCompletionChar = dialog.GetNickCompletionChar();
         sameCmd = dialog.GetSameCmd();
         sameList = dialog.GetSameList();
-        UpdateTheme(dialog.GetTheme());
+        appTheme = dialog.GetTheme();
+        UpdateTheme();
         UpdateFont(dialog.GetFont());
         ircFont = new FXFont(getApp(), dialog.GetIrcFont());
         ircFont->create();
-        for (FXint i = 0; i<tabbook->numChildren(); i=i+2)
-        {
-            ((IrcTabItem *)tabbook->childAtIndex(i))->SetColor(colors);
-            ((IrcTabItem *)tabbook->childAtIndex(i))->SetCommandsList(commandsList);
-            ((IrcTabItem *)tabbook->childAtIndex(i))->SetMaxAway(maxAway);
-            ((IrcTabItem *)tabbook->childAtIndex(i))->SetLogging(logging);
-            ((IrcTabItem *)tabbook->childAtIndex(i))->SetLogPath(logPath);
-            ((IrcTabItem *)tabbook->childAtIndex(i))->SetNickCompletionChar(nickCompletionChar);
-            ((IrcTabItem *)tabbook->childAtIndex(i))->SetSameCmd(sameCmd);
-            ((IrcTabItem *)tabbook->childAtIndex(i))->SetSameList(sameList);
-            ((IrcTabItem *)tabbook->childAtIndex(i))->SetIrcFont(ircFont);
-        }
+        UpdateTabs();
         for (FXint i = 0; i<servers.no(); i++)
         {
             servers[i]->SetUsersList(usersList);
@@ -470,7 +483,7 @@ long dxirc::OnCommandOptions(FXObject*, FXSelector, void*)
     return 1;
 }
 
-void dxirc::UpdateTheme(ColorTheme theme)
+void dxirc::UpdateTheme()
 {
     register FXWindow *w = FXApp::instance()->getRootWindow();
 
@@ -507,216 +520,216 @@ void dxirc::UpdateTheme(ColorTheme theme)
     FXToolTip * tooltip;
     FXImageFrame * imageframe;
 
-    getApp()->setBaseColor(theme.base);
-    getApp()->setBackColor(theme.back);
-    getApp()->setBorderColor(theme.border);
-    getApp()->setForeColor(theme.fore);
-    getApp()->setSelMenuBackColor(theme.menuback);
-    getApp()->setSelMenuTextColor(theme.menufore);
-    getApp()->setSelbackColor(theme.selback);
-    getApp()->setSelforeColor(theme.selfore);
-    getApp()->setTipbackColor(theme.tipback);
-    getApp()->setTipforeColor(theme.tipfore);
-    getApp()->setHiliteColor(theme.hilite);
-    getApp()->setShadowColor(theme.shadow);
+//    getApp()->setBaseColor(appTheme.base);
+//    getApp()->setBackColor(appTheme.back);
+//    getApp()->setBorderColor(appTheme.border);
+//    getApp()->setForeColor(appTheme.fore);
+//    getApp()->setSelMenuBackColor(appTheme.menuback);
+//    getApp()->setSelMenuTextColor(appTheme.menufore);
+//    getApp()->setSelbackColor(appTheme.selback);
+//    getApp()->setSelforeColor(appTheme.selfore);
+//    getApp()->setTipbackColor(appTheme.tipback);
+//    getApp()->setTipforeColor(appTheme.tipfore);
+//    getApp()->setHiliteColor(appTheme.hilite);
+//    getApp()->setShadowColor(appTheme.shadow);
 
     while (w)
     {
-        w->setBackColor(theme.base);
+        w->setBackColor(appTheme.base);
         if ((frame = dynamic_cast<FXFrame*> (w)))
         {
-            frame->setBaseColor(theme.base);
-            frame->setBackColor(theme.base);
-            frame->setShadowColor(theme.shadow);
-            frame->setHiliteColor(theme.hilite);
-            frame->setBorderColor(theme.border);
+            frame->setBaseColor(appTheme.base);
+            frame->setBackColor(appTheme.base);
+            frame->setShadowColor(appTheme.shadow);
+            frame->setHiliteColor(appTheme.hilite);
+            frame->setBorderColor(appTheme.border);
             if ((label = dynamic_cast<FXLabel*> (w)))
             {
-                label->setTextColor(theme.fore);
+                label->setTextColor(appTheme.fore);
                 if ((button = dynamic_cast<FXButton*> (w)))
                 {
                     if (dynamic_cast<FXListBox*> (button->getParent()))
                     {
-                        w->setBackColor(theme.back);
+                        w->setBackColor(appTheme.back);
                     }
                     else
                     {
-                        w->setBackColor(theme.base);
+                        w->setBackColor(appTheme.base);
                     }
                 }
                 else if ((checkbutton = dynamic_cast<FXCheckButton*> (w)))
                 {
-                    checkbutton->setCheckColor(theme.fore);
-                    checkbutton->setBoxColor(theme.back);
+                    checkbutton->setCheckColor(appTheme.fore);
+                    checkbutton->setBoxColor(appTheme.back);
                 }
                 else if ((radiobutton = dynamic_cast<FXRadioButton*> (w)))
                 {
-                    radiobutton->setRadioColor(theme.fore);
-                    radiobutton->setDiskColor(theme.back);
+                    radiobutton->setRadioColor(appTheme.fore);
+                    radiobutton->setDiskColor(appTheme.back);
                 }
             }
             else if ((textfield = dynamic_cast<FXTextField*> (w)))
             {
-                w->setBackColor(theme.back);
-                textfield->setTextColor(theme.fore);
-                textfield->setSelTextColor(theme.selfore);
-                textfield->setSelBackColor(theme.selback);
+                w->setBackColor(appTheme.back);
+                textfield->setTextColor(appTheme.fore);
+                textfield->setSelTextColor(appTheme.selfore);
+                textfield->setSelBackColor(appTheme.selback);
             }
             else if ((docktitle = dynamic_cast<FXDockTitle*> (w)))
             {
-                docktitle->setCaptionColor(theme.selfore);
-                docktitle->setBackColor(theme.selback);
+                docktitle->setCaptionColor(appTheme.selfore);
+                docktitle->setBackColor(appTheme.selback);
             }
             else if ((header = dynamic_cast<FXHeader*> (w)))
             {
-                header->setTextColor(theme.fore);
+                header->setTextColor(appTheme.fore);
             }
             else if ((statusline = dynamic_cast<FXStatusLine*> (w)))
             {
-                statusline->setTextColor(theme.fore);
+                statusline->setTextColor(appTheme.fore);
             }
             else if ((sevensegment = dynamic_cast<FX7Segment*> (w)))
             {
-                sevensegment->setTextColor(theme.fore);
+                sevensegment->setTextColor(appTheme.fore);
             }
             else if ((slider = dynamic_cast<FXSlider*> (w)))
             {
-                slider->setSlotColor(theme.back);
+                slider->setSlotColor(appTheme.back);
             }
             else if ((imageframe = dynamic_cast<FXImageFrame*> (w)))
             {
-                imageframe->setBackColor(theme.back); /// fixme, only for coverframe in mainwindow
+                imageframe->setBackColor(appTheme.back); /// fixme, only for coverframe in mainwindow
             }
         }
         else if ((packer = dynamic_cast<FXPacker*> (w)))
         {
-            packer->setBaseColor(theme.base);
-            packer->setBackColor(theme.base);
-            packer->setShadowColor(theme.shadow);
-            packer->setHiliteColor(theme.hilite);
-            packer->setBorderColor(theme.border);
+            packer->setBaseColor(appTheme.base);
+            packer->setBackColor(appTheme.base);
+            packer->setShadowColor(appTheme.shadow);
+            packer->setHiliteColor(appTheme.hilite);
+            packer->setBorderColor(appTheme.border);
             if ((combobox = dynamic_cast<FXComboBox*> (w)))
             {
-                w->setBackColor(theme.back);
+                w->setBackColor(appTheme.back);
             }
             else if ((listbox = dynamic_cast<FXListBox*> (w)))
             {
-                w->setBackColor(theme.back);
+                w->setBackColor(appTheme.back);
             }
             else if ((groupbox = dynamic_cast<FXGroupBox*> (w)))
             {
-                groupbox->setTextColor(theme.fore);
+                groupbox->setTextColor(appTheme.fore);
             }
         }
         else if ((popup = dynamic_cast<FXPopup*> (w)))
         {
-            popup->setBaseColor(theme.base);
-            popup->setShadowColor(theme.shadow);
-            popup->setHiliteColor(theme.hilite);
-            popup->setBorderColor(theme.border);
+            popup->setBaseColor(appTheme.base);
+            popup->setShadowColor(appTheme.shadow);
+            popup->setHiliteColor(appTheme.hilite);
+            popup->setBorderColor(appTheme.border);
         }
         else if ((menucaption = dynamic_cast<FXMenuCaption*> (w)))
         {
-            w->setBackColor(theme.base);
-            menucaption->setTextColor(theme.fore);
-            menucaption->setSelTextColor(theme.menufore);
-            menucaption->setSelBackColor(theme.menuback);
-            menucaption->setShadowColor(theme.shadow);
-            menucaption->setHiliteColor(theme.hilite);
+            w->setBackColor(appTheme.base);
+            menucaption->setTextColor(appTheme.fore);
+            menucaption->setSelTextColor(appTheme.menufore);
+            menucaption->setSelBackColor(appTheme.menuback);
+            menucaption->setShadowColor(appTheme.shadow);
+            menucaption->setHiliteColor(appTheme.hilite);
 
             if ((menucheck = dynamic_cast<FXMenuCheck*> (w)))
             {
-                menucheck->setBoxColor(theme.back);
+                menucheck->setBoxColor(appTheme.back);
             }
             else if ((menuradio = dynamic_cast<FXMenuRadio*> (w)))
             {
-                menuradio->setRadioColor(theme.back);
+                menuradio->setRadioColor(appTheme.back);
             }
             else if ((menutitle = dynamic_cast<FXMenuTitle*> (w)))
             {
-                menutitle->setTextColor(theme.fore);
-                menutitle->setSelTextColor(theme.fore);
-                menutitle->setSelBackColor(theme.base);
+                menutitle->setTextColor(appTheme.fore);
+                menutitle->setSelTextColor(appTheme.fore);
+                menutitle->setSelBackColor(appTheme.base);
             }
         }
         else if ((menuseparator = dynamic_cast<FXMenuSeparator*> (w)))
         {
-            menuseparator->setShadowColor(theme.shadow);
-            menuseparator->setHiliteColor(theme.hilite);
+            menuseparator->setShadowColor(appTheme.shadow);
+            menuseparator->setHiliteColor(appTheme.hilite);
         }
         else if ((scrollbar = dynamic_cast<FXScrollBar*> (w)))
         {
-            scrollbar->setShadowColor(theme.shadow);
-            scrollbar->setHiliteColor(theme.hilite);
-            scrollbar->setBorderColor(theme.border);
-            scrollbar->setArrowColor(theme.fore);
+            scrollbar->setShadowColor(appTheme.shadow);
+            scrollbar->setHiliteColor(appTheme.hilite);
+            scrollbar->setBorderColor(appTheme.border);
+            scrollbar->setArrowColor(appTheme.fore);
         }
         else if ((dragcorner = dynamic_cast<FXDragCorner*> (w)))
         {
-            dragcorner->setShadowColor(theme.shadow);
-            dragcorner->setHiliteColor(theme.hilite);
+            dragcorner->setShadowColor(appTheme.shadow);
+            dragcorner->setHiliteColor(appTheme.hilite);
         }
         else if (dynamic_cast<FXScrollArea*> (w))
         {
             if ((text = dynamic_cast<FXText*> (w)))
             {
-                w->setBackColor(theme.back);
-                text->setTextColor(theme.fore);
-                text->setSelTextColor(theme.selfore);
-                text->setSelBackColor(theme.selback);
+                w->setBackColor(appTheme.back);
+                text->setTextColor(appTheme.fore);
+                text->setSelTextColor(appTheme.selfore);
+                text->setSelBackColor(appTheme.selback);
             }
             else if ((list = dynamic_cast<FXList*> (w)))
             {
-                w->setBackColor(theme.back);
-                list->setTextColor(theme.fore);
-                list->setSelTextColor(theme.selfore);
-                list->setSelBackColor(theme.selback);
+                w->setBackColor(appTheme.back);
+                list->setTextColor(appTheme.fore);
+                list->setSelTextColor(appTheme.selfore);
+                list->setSelBackColor(appTheme.selback);
             }
             else if ((treelist = dynamic_cast<FXTreeList*> (w)))
             {
-                w->setBackColor(theme.back);
-                treelist->setTextColor(theme.fore);
-                treelist->setLineColor(theme.shadow);
-                treelist->setSelTextColor(theme.selfore);
-                treelist->setSelBackColor(theme.selback);
+                w->setBackColor(appTheme.back);
+                treelist->setTextColor(appTheme.fore);
+                treelist->setLineColor(appTheme.shadow);
+                treelist->setSelTextColor(appTheme.selfore);
+                treelist->setSelBackColor(appTheme.selback);
             }
             else if ((iconlist = dynamic_cast<FXIconList*> (w)))
             {
-                w->setBackColor(theme.back);
-                iconlist->setTextColor(theme.fore);
-                iconlist->setSelTextColor(theme.selfore);
-                iconlist->setSelBackColor(theme.selback);
+                w->setBackColor(appTheme.back);
+                iconlist->setTextColor(appTheme.fore);
+                iconlist->setSelTextColor(appTheme.selfore);
+                iconlist->setSelBackColor(appTheme.selback);
             }
             else if ((foldinglist = dynamic_cast<FXFoldingList*> (w)))
             {
-                w->setBackColor(theme.back);
-                foldinglist->setTextColor(theme.fore);
-                foldinglist->setSelTextColor(theme.selfore);
-                foldinglist->setSelBackColor(theme.selback);
-                foldinglist->setLineColor(theme.shadow);
+                w->setBackColor(appTheme.back);
+                foldinglist->setTextColor(appTheme.fore);
+                foldinglist->setSelTextColor(appTheme.selfore);
+                foldinglist->setSelBackColor(appTheme.selback);
+                foldinglist->setLineColor(appTheme.shadow);
             }
             else if ((table = dynamic_cast<FXTable*> (w)))
             {
-                w->setBackColor(theme.back);
-                table->setTextColor(theme.fore);
-                table->setSelTextColor(theme.selfore);
-                table->setSelBackColor(theme.selback);
+                w->setBackColor(appTheme.back);
+                table->setTextColor(appTheme.fore);
+                table->setSelTextColor(appTheme.selfore);
+                table->setSelBackColor(appTheme.selback);
             }
         }
         else if ((mdichild = dynamic_cast<FXMDIChild*> (w)))
         {
-            mdichild->setBackColor(theme.base);
-            mdichild->setBaseColor(theme.base);
-            mdichild->setShadowColor(theme.shadow);
-            mdichild->setHiliteColor(theme.hilite);
-            mdichild->setBorderColor(theme.border);
-            mdichild->setTitleColor(theme.selfore);
-            mdichild->setTitleBackColor(theme.selback);
+            mdichild->setBackColor(appTheme.base);
+            mdichild->setBaseColor(appTheme.base);
+            mdichild->setShadowColor(appTheme.shadow);
+            mdichild->setHiliteColor(appTheme.hilite);
+            mdichild->setBorderColor(appTheme.border);
+            mdichild->setTitleColor(appTheme.selfore);
+            mdichild->setTitleBackColor(appTheme.selback);
         }
         else if ((tooltip = dynamic_cast<FXToolTip*> (w)))
         {
-            tooltip->setTextColor(theme.tipfore);
-            tooltip->setBackColor(theme.tipback);
+            tooltip->setTextColor(appTheme.tipfore);
+            tooltip->setBackColor(appTheme.tipback);
         }
 
         w->update();
@@ -753,6 +766,22 @@ void dxirc::UpdateFont(FXString fnt)
             w = w->getParent();
         }
         w = w->getNext();
+    }
+}
+
+void dxirc::UpdateTabs()
+{
+    for (FXint i = 0; i<tabbook->numChildren(); i=i+2)
+    {
+        ((IrcTabItem *)tabbook->childAtIndex(i))->SetColor(colors);
+        ((IrcTabItem *)tabbook->childAtIndex(i))->SetCommandsList(commandsList);
+        ((IrcTabItem *)tabbook->childAtIndex(i))->SetMaxAway(maxAway);
+        ((IrcTabItem *)tabbook->childAtIndex(i))->SetLogging(logging);
+        ((IrcTabItem *)tabbook->childAtIndex(i))->SetLogPath(logPath);
+        ((IrcTabItem *)tabbook->childAtIndex(i))->SetNickCompletionChar(nickCompletionChar);
+        ((IrcTabItem *)tabbook->childAtIndex(i))->SetSameCmd(sameCmd);
+        ((IrcTabItem *)tabbook->childAtIndex(i))->SetSameList(sameList);
+        ((IrcTabItem *)tabbook->childAtIndex(i))->SetIrcFont(ircFont);
     }
 }
 
@@ -803,7 +832,7 @@ long dxirc::OnCommandServers(FXObject*, FXSelector, void*)
             }
             else if(!ServerExist(serverList[indexJoin].hostname, serverList[indexJoin].port))
             {
-                IrcSocket *server = new IrcSocket(app, this, 0, localeEncoding, "");
+                IrcSocket *server = new IrcSocket(app, this, 0, "");
                 server->SetUsersList(usersList);
                 servers.prepend(server);
                 servers[0]->SetServerName(serverList[indexJoin].hostname);
@@ -885,7 +914,7 @@ long dxirc::OnCommandConnect(FXObject*, FXSelector, void*)
         }
         else if(!ServerExist(hostname->getText(), port->getValue()))
         {
-            IrcSocket *server = new IrcSocket(app, this, 0, localeEncoding, "");
+            IrcSocket *server = new IrcSocket(app, this, 0, "");
             server->SetUsersList(usersList);
             servers.prepend(server);
             servers[0]->SetServerName(hostname->getText());
@@ -985,8 +1014,10 @@ long dxirc::OnIrcEvent(FXObject *, FXSelector, void *data)
             //tabbook->setCurrent(tabbook->numChildren()/2);
         }
         SortTabs();
+        UpdateMenus();
+        return 1;
     }
-    else if(ev->eventType == IRC_QUERY && !TabExist(server, ev->param1))
+    if(ev->eventType == IRC_QUERY && !TabExist(server, ev->param1))
     {
         FXint serverTabIndex = GetServerTab(server);
         if(serverTabIndex != -1 && !ownServerWindow)
@@ -1002,8 +1033,10 @@ long dxirc::OnIrcEvent(FXObject *, FXSelector, void *data)
             //tabbook->setCurrent(tabbook->numChildren()/2);
         }
         SortTabs();
+        UpdateMenus();
+        return 1;
     }
-    else if(ev->eventType == IRC_PART)
+    if(ev->eventType == IRC_PART)
     {
         if(TabExist(server, ev->param2))
         {
@@ -1033,10 +1066,12 @@ long dxirc::OnIrcEvent(FXObject *, FXSelector, void *data)
                     tabbook->recalc();
                 }
                 SortTabs();
+                UpdateMenus();
             }
         }
+        return 1;
     }
-    else if(ev->eventType == IRC_KICK)
+    if(ev->eventType == IRC_KICK)
     {
         if(ev->param2 == server->GetNickName())
         {
@@ -1064,9 +1099,10 @@ long dxirc::OnIrcEvent(FXObject *, FXSelector, void *data)
                 tabbook->recalc();
             }
             SortTabs();
+            UpdateMenus();
         }
+        return 1;
     }
-    UpdateMenus();
     return 1;
 }
 
@@ -1364,300 +1400,6 @@ FXString dxirc::Decrypt(const FXString &text)
     return result;
 }
 
-void dxirc::SetLocaleEncoding()
-{
-    FXString locale, language, territory, codeset, modifier;
-#ifdef WIN32
-    UINT codepage = ::GetACP();
-    switch(codepage)
-    {
-        case 1250:
-        case 1251:
-        case 1252:
-        case 1253:
-        case 1254:
-        case 1255:
-        case 1256:
-        case 1257:
-        case 1258:
-        case 437:
-        case 850:
-        case 852:
-        case 855:
-        case 856:
-        case 857:
-        case 860:
-        case 861:
-        case 862:
-        case 863:
-        case 864:
-        case 865:
-        case 866:
-        case 869:
-        case 874: localeEncoding = FXStringFormat("CP%d", codepage); break;
-        case 20866: localeEncoding = "KOI8R"; break;
-        default: localeEncoding = "CP1252";
-    }
-#else
-    if(!(FXSystem::getEnvironment("LANG")).empty()) locale = FXSystem::getEnvironment("LANG");
-    else if(!(FXSystem::getEnvironment("LC_ALL")).empty()) locale = FXSystem::getEnvironment("LC_ALL");
-    else if(!(FXSystem::getEnvironment("LC_MESSAGES")).empty()) locale = FXSystem::getEnvironment("LC_MESSAGES");
-    else locale = "en_US";
-    if(locale == "C" || locale == "POSIX")
-    {
-        locale = "en_US";
-    }
-    locale = locale.lower();
-    if(locale.contains("utf")) locale = locale.before('.');
-    language = locale.before('_');
-    territory = locale.after('_').before('.').before('@');
-    codeset = locale.after('.');
-    modifier = locale.after('@');
-
-    if(language == "af") localeEncoding = "88591";
-    else if(language == "ar") localeEncoding = "88596";
-    else if(language == "az") localeEncoding = "88599";
-    else if(language == "be") localeEncoding = "CP1251";
-    else if(language == "bg")
-    {
-        if(codeset=="iso88595") localeEncoding = "88595";
-        else if(codeset=="koi8r") localeEncoding = "KOI8R";
-        else localeEncoding = "CP1251";
-    }
-    else if(language == "br")
-    {
-        if(modifier=="euro" || codeset=="iso885915") localeEncoding = "885915";
-        else if(codeset=="iso885914") localeEncoding = "885914";
-        else localeEncoding = "88591";
-    }
-    else if(language == "ca")
-    {
-        if(modifier=="euro" || codeset=="iso885915") localeEncoding = "885915";
-        else localeEncoding = "88591";
-    }
-    else if(language == "cs") localeEncoding = "88592";
-    else if(language == "cy")
-    {
-        if(modifier=="euro" || codeset=="iso885915") localeEncoding = "885915";
-        else if(codeset=="iso885914") localeEncoding = "885914";
-        else localeEncoding = "88591";
-    }
-    else if(language == "da")
-    {
-        if(modifier=="euro" || codeset=="iso885915") localeEncoding = "885915";
-        else localeEncoding = "88591";
-    }
-    else if(language == "de")
-    {
-        if(modifier=="euro" || codeset=="iso885915") localeEncoding = "885915";
-        else localeEncoding = "88591";
-    }
-    else if(language == "ee") localeEncoding = "88594";
-    else if(language == "el")
-    {
-        if(modifier=="euro") localeEncoding = "885915";
-        else localeEncoding = "88597";
-    }
-    else if(language == "en")
-    {
-        if(modifier=="euro" || codeset=="iso885915") localeEncoding = "885915";
-        else localeEncoding = "88591";
-    }
-    else if(language == "eo") localeEncoding = "88593";
-    else if(language == "es")
-    {
-        if(modifier=="euro" || codeset=="iso885915") localeEncoding = "885915";
-        else localeEncoding = "88591";
-    }
-    else if(language == "et")
-    {
-        if(codeset=="iso88591") localeEncoding = "88591";
-        else if(codeset=="iso885913") localeEncoding = "885913";
-        else if(codeset=="iso88594") localeEncoding = "88594";
-        else localeEncoding = "885915";
-    }
-    else if(language == "eu")
-    {
-        if(modifier=="euro" || codeset=="iso885915") localeEncoding = "885915";
-        else localeEncoding = "88591";
-    }
-    else if(language == "fi")
-    {
-        if(codeset=="88591" || codeset=="iso88591") localeEncoding = "88591";
-        else localeEncoding = "885915";
-    }
-    else if(language == "fo")
-    {
-        if(modifier=="euro" || codeset=="iso885915") localeEncoding = "885915";
-        else localeEncoding = "88591";
-    }
-    else if(language == "fr")
-    {
-        if(modifier=="euro" || codeset=="iso885915") localeEncoding = "885915";
-        else localeEncoding = "88591";
-    }
-    else if(language == "fre") localeEncoding = "88591";
-    else if(language == "ga")
-    {
-        if(modifier=="euro" || codeset=="iso885915") localeEncoding = "885915";
-        else if(codeset=="iso885914") localeEncoding = "885914";
-        else localeEncoding = "88591";
-    }
-    else if(language == "gd")
-    {
-        if(modifier=="euro" || codeset=="iso885915") localeEncoding = "885915";
-        else if(codeset=="iso885914") localeEncoding = "885914";
-        else localeEncoding = "88591";
-    }
-    else if(language == "ger") localeEncoding = "88591";
-    else if(language == "gl")
-    {
-        if(modifier=="euro" || codeset=="iso885915") localeEncoding = "885915";
-        else localeEncoding = "88591";
-    }
-    else if(language == "gv")
-    {
-        if(modifier=="euro" || codeset=="iso885915") localeEncoding = "885915";
-        else if(codeset=="iso885914") localeEncoding = "885914";
-        else localeEncoding = "88591";
-    }
-    else if(language == "he")
-    {
-        if(codeset=="cp1255" || codeset=="microsoftcp1255") localeEncoding = "CP1255";
-        else localeEncoding = "88598";
-    }
-    else if(language == "hr") localeEncoding = "88592";
-    else if(language == "hu") localeEncoding = "88592";
-    else if(language == "id") localeEncoding = "88591";
-    else if(language == "in") localeEncoding = "88591";
-    else if(language == "is")
-    {
-        if(modifier=="euro" || codeset=="iso885915") localeEncoding = "885915";
-        else localeEncoding = "88591";
-    }
-    else if(language == "it")
-    {
-        if(modifier=="euro" || codeset=="iso885915") localeEncoding = "885915";
-        else localeEncoding = "88591";
-    }
-    else if(language == "iw") localeEncoding = "88598";
-    else if(language == "kl")
-    {
-        if(modifier=="euro" || codeset=="iso885915") localeEncoding = "885915";
-        else localeEncoding = "88591";
-    }
-    else if(language == "kw")
-    {
-        if(modifier=="euro" || codeset=="iso885915") localeEncoding = "885915";
-        else if(codeset=="iso885914") localeEncoding = "885914";
-        else localeEncoding = "88591";
-    }
-    else if(language == "lt")
-    {
-        if(codeset=="iso88594") localeEncoding = "88594";
-        else localeEncoding = "885913";
-    }
-    else if(language == "lv")
-    {
-        if(codeset=="iso88594") localeEncoding = "88594";
-        else localeEncoding = "885913";
-    }
-    else if(language == "mi") localeEncoding = "88591";
-    else if(language == "mk")
-    {
-        if(codeset=="cp1251" || codeset=="microsoftc1251") localeEncoding = "CP1251";
-        else localeEncoding = "88595";
-    }
-    else if(language == "ms") localeEncoding = "88591";
-    else if(language == "mt") localeEncoding = "88593";
-    else if(language == "nb")
-    {
-        if(modifier=="euro" || codeset=="iso885915") localeEncoding = "885915";
-        else localeEncoding = "88591";
-    }
-    else if(language == "nl")
-    {
-        if(modifier=="euro" || codeset=="iso885915") localeEncoding = "885915";
-        else localeEncoding = "88591";
-    }
-    else if(language == "nn")
-    {
-        if(modifier=="euro" || codeset=="iso885915") localeEncoding = "885915";
-        else localeEncoding = "88591";
-    }
-    else if(language == "no")
-    {
-        if(modifier=="euro" || codeset=="iso885915") localeEncoding = "885915";
-        else localeEncoding = "88591";
-    }
-    else if(language == "ny")
-    {
-        if(modifier=="euro" || codeset=="iso885915") localeEncoding = "885915";
-        else localeEncoding = "88591";
-    }
-    else if(language == "oc")
-    {
-        if(modifier=="euro" || codeset=="iso885915") localeEncoding = "885915";
-        else localeEncoding = "88591";
-    }
-    else if(language == "pd")
-    {
-        if(modifier=="euro" || codeset=="iso885915") localeEncoding = "885915";
-        else localeEncoding = "88591";
-    }
-    else if(language == "ph") localeEncoding = "88591";
-    else if(language == "pl") localeEncoding = "88592";
-    else if(language == "pp") localeEncoding = "88591";
-    else if(language == "pt")
-    {
-        if(modifier=="euro" || codeset=="iso885915") localeEncoding = "885915";
-        else localeEncoding = "88591";
-    }
-    else if(language == "ro") localeEncoding = "88592";
-    else if(language == "ru")
-    {
-        if(codeset=="koi8r" || territory=="ua") localeEncoding = "KOI8R";
-        else if(codeset=="cp1251" || codeset=="microsoftcp1251") localeEncoding = "CP1251";
-        else localeEncoding = "88595";
-    }
-    else if(language == "sh") localeEncoding = "88592";
-    else if(language == "sk") localeEncoding = "88592";
-    else if(language == "sl") localeEncoding = "88592";
-    else if(language == "sp") localeEncoding = "88595";
-    else if(language == "sq") localeEncoding = "88592";
-    else if(language == "sr")
-    {
-        if(codeset=="iso88592" || territory=="sp") localeEncoding = "88592";
-        else if(codeset=="cp1251" || codeset=="microsoftcp1251") localeEncoding = "CP1251";
-        else localeEncoding = "88595";
-    }
-    else if(language == "sv")
-    {
-        if(modifier=="euro" || codeset=="iso885915") localeEncoding = "885915";
-        else localeEncoding = "88591";
-    }
-    else if(language == "th") localeEncoding = "885911";
-    else if(language == "tl") localeEncoding = "88591";
-    else if(language == "tr") localeEncoding = "88599";
-    else if(language == "tt") localeEncoding = "KOI8R";
-    else if(language == "uk")
-    {
-        if(codeset=="cp1251" || codeset=="microsoftcp1251") localeEncoding = "CP1251";
-        else if(codeset=="koi8u") localeEncoding = "KOI8-U";
-        else localeEncoding = "KOI8R";
-    }
-    else if(language == "ur") localeEncoding = "CP1256";
-    else if(language == "wa")
-    {
-        if(modifier=="euro" || codeset=="iso885915") localeEncoding = "885915";
-        else localeEncoding = "88591";
-    }
-    else if(language == "yi") localeEncoding = "CP1255";
-    else localeEncoding = "88591";
-
-#endif
-}
-
 #define USAGE_MSG _("\
 \nUsage: dxirc [options] \n\
 \n\
@@ -1665,11 +1407,12 @@ void dxirc::SetLocaleEncoding()
 \n\
         -h, --help         Print (this) help screen and exit.\n\
         -v, --version      Print version information and exit.\n\
+        -l [FILE]          Load configuration from FILE.\n\
 \n")
 
 int main(int argc,char *argv[])
 {
-    FXbool loadIcon;
+    FXbool loadIcon;    
 
 #if ENABLE_NLS
     bindtextdomain(PACKAGE, LOCALEDIR);
@@ -1689,12 +1432,16 @@ int main(int argc,char *argv[])
             fprintf(stdout, USAGE_MSG);
             exit(0);
         }
+        if(compare(argv[i],"-l")==0)
+        {
+            iniFile = argv[i+1];
+        }
     }
 
     FXApp app(PACKAGE, FXString::null);
     app.reg().setAsciiMode(true);
     app.init(argc,argv);
-    loadIcon = MakeAllIcons(&app);
+    loadIcon = MakeAllIcons(&app, utils::GetIniFile(iniFile));
     new dxirc(&app);
     app.create();
     return app.run();

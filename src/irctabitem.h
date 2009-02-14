@@ -49,6 +49,7 @@ class IrcTabItem: public FXTabItem
             ID_BAN,
             ID_KICKBAN,
             ID_TOPIC,
+            ID_LAST
         };
 
         void CreateGeom();

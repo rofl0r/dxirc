@@ -952,19 +952,19 @@ long IrcTabItem::OnKeyPress(FXObject *, FXSelector, void *ptr)
         FXEvent* event = (FXEvent*)ptr;
         switch(event->code){
             case KEY_Tab:
-                if(commandline->getText()[0] == '/' && commandline->getText().find(' ') == -1)
+                if(commandline->getText()[0] == '/' && commandline->getText().after(' ').empty())
                 {
                     for (FXint i = 0; i < server->commands.no(); i++)
                     {
-                        if(commandline->getText().after('/').lower() == server->commands.at(i).lower())
+                        if(commandline->getText().after('/').before(' ').lower() == server->commands.at(i).lower())
                         {
-                            if((i+1) < server->commands.no()) commandline->setText('/'+server->commands.at(++i));
-                            else commandline->setText('/'+server->commands.at(0));
+                            if((i+1) < server->commands.no()) commandline->setText("/"+server->commands.at(++i)+" ");
+                            else commandline->setText("/"+server->commands.at(0)+" ");
                             break;
                         }
                         else if(commandline->getText().after('/').lower() == server->commands.at(i).left(commandline->getText().after('/').length()).lower())
                         {
-                            commandline->setText('/'+server->commands.at(i));
+                            commandline->setText("/"+server->commands.at(i)+" ");
                             break;
                         }
                     }
@@ -1115,8 +1115,9 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
                 else this->setTextColor(FXRGB(0,0,255));
             }
         }
+        return 1;
     }
-    else if(ev->eventType == IRC_ACTION)
+    if(ev->eventType == IRC_ACTION)
     {
         if((ev->param2.lower() == getText().lower() && type == CHANNEL) || (ev->param1 == getText() && type == QUERY && ev->param2 == server->GetNickName()))
         {
@@ -1130,32 +1131,36 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
                 }
             }
         }
+        return 1;
     }
-    else if(ev->eventType == IRC_CTCPREPLY)
+    if(ev->eventType == IRC_CTCPREPLY)
     {
         if(type == SERVER || IsCurrent() || IsNoCurrent())
         {
             if(!IsCommandIgnored("ctcp")) AppendIrcStyledText(FXStringFormat(_("CTCP %s reply from %s: %s"), GetParam(ev->param2, 1, false).text(), ev->param1.text(), GetParam(ev->param2, 2, true).text()), 2);
         }
+        return 1;
     }
-    else if(ev->eventType == IRC_CTCPREQUEST)
+    if(ev->eventType == IRC_CTCPREQUEST)
     {
         if(type == SERVER || IsCurrent() || IsNoCurrent())
         {
             if(!IsCommandIgnored("ctcp")) AppendIrcStyledText(FXStringFormat(_("CTCP %s request from %s"), ev->param2.text(), ev->param1.text()), 2);
         }
+        return 1;
     }
-    else if(ev->eventType == IRC_JOIN)
+    if(ev->eventType == IRC_JOIN)
     {
         if(ev->param2.lower() == getText().lower() && ev->param1 != server->GetNickName())
         {
             if(!IsCommandIgnored("join")) AppendIrcStyledText(FXStringFormat(_("%s has joined to %s"), ev->param1.text(), ev->param2.text()), 1);
             AddUser(ev->param1);
         }
+        return 1;
     }
-    else if(ev->eventType == IRC_QUIT)
+    if(ev->eventType == IRC_QUIT)
     {
-        if(users->findItem(ev->param1) != -1)
+        if(type == CHANNEL && users->findItem(ev->param1) != -1)
         {
             RemoveUser(ev->param1);
             if(ev->param2.empty())
@@ -1167,8 +1172,13 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
                 if(!IsCommandIgnored("quit"))AppendIrcStyledText(FXStringFormat(_("%s has quit (%s)"), ev->param1.text(), +ev->param2.text()), 1);
             }
         }
+        else if(type == QUERY && getText() == ev->param1)
+        {
+            AppendIrcStyledText(FXStringFormat(_("%s has quit"), ev->param1.text()), 1);
+        }
+        return 1;
     }
-    else if(ev->eventType == IRC_PART)
+    if(ev->eventType == IRC_PART)
     {
         if(ev->param2.lower() == getText().lower())
         {
@@ -1176,8 +1186,9 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
             else if(!IsCommandIgnored("part")) AppendIrcStyledText(FXStringFormat(_("%s has parted %s (%s)"), ev->param1.text(), ev->param2.text(), ev->param3.text()), 1);
             RemoveUser(ev->param1);
         }
+        return 1;
     }
-    else if(ev->eventType == IRC_CHNOTICE)
+    if(ev->eventType == IRC_CHNOTICE)
     {
         if((ev->param2.lower() == getText().lower() && type == CHANNEL) || (ev->param1 == getText() && type == QUERY && ev->param2 == server->GetNickName()))
         {
@@ -1195,16 +1206,18 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
         {
             if(!IsCommandIgnored("notice")) AppendIrcStyledText(FXStringFormat(_("%s's NOTICE: %s"), ev->param1.text(), ev->param3.text()), 3);
         }
+        return 1;
     }
-    else if(ev->eventType == IRC_NOTICE)
+    if(ev->eventType == IRC_NOTICE)
     {
         if(type == SERVER || IsCurrent() || IsNoCurrent())
         {
             if(ev->param1 == server->GetNickName() && !IsCommandIgnored("notice")) AppendIrcStyledText(FXStringFormat(_("NOTICE for you: %s"), ev->param2.text()), 3);
             else if(!IsCommandIgnored("notice")) AppendIrcStyledText(FXStringFormat(_("%s's NOTICE: %s"), ev->param1.text(), ev->param2.text()), 3);
         }
+        return 1;
     }
-    else if(ev->eventType == IRC_NICK)
+    if(ev->eventType == IRC_NICK)
     {
         if(users->findItem(ev->param1) != -1)
         {
@@ -1212,11 +1225,13 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
             else if(!IsCommandIgnored("nick")) AppendIrcStyledText(FXStringFormat(_("%s changes nick to %s"), ev->param1.text(), ev->param2.text()), 1);
             ChangeNickUser(ev->param1, ev->param2);
         }
-        if(type == QUERY && ev->param1 == getText()) {
+        if(type == QUERY && ev->param1 == getText())
+        {
             this->setText(ev->param2);
         }
+        return 1;
     }
-    else if(ev->eventType == IRC_TOPIC)
+    if(ev->eventType == IRC_TOPIC)
     {
         if(ev->param2.lower() == getText().lower())
         {
@@ -1224,15 +1239,17 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
             topic = ev->param3;
             topicline->setText(topic);            
         }
+        return 1;
     }
-    else if(ev->eventType == IRC_INVITE)
+    if(ev->eventType == IRC_INVITE)
     {
         if(type == SERVER || IsCurrent() || IsNoCurrent())
         {
             AppendIrcStyledText(FXStringFormat(_("%s invites you to: %s"), ev->param1.text(), ev->param3.text()), 3);
         }
+        return 1;
     }
-    else if(ev->eventType == IRC_KICK)
+    if(ev->eventType == IRC_KICK)
     {
         if(ev->param3.lower() == getText().lower())
         {
@@ -1248,15 +1265,17 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
             if(ev->param4.empty()) AppendIrcStyledText(FXStringFormat(_("you was kicked from: %s"), ev->param3.text()), 1);
             else AppendIrcStyledText(FXStringFormat(_("you was kicked from: %s (%s)"), ev->param3.text(), ev->param4.text()), 1);
         }
+        return 1;
     }
-    else if(ev->eventType == IRC_MODE)
+    if(ev->eventType == IRC_MODE)
     {
         if(type == SERVER || IsCurrent() || IsNoCurrent())
         {
             AppendIrcStyledText(FXStringFormat(_("Mode change [%s] for %s"), ev->param1.text(), ev->param2.text()), 1);
         }
+        return 1;
     }
-    else if(ev->eventType == IRC_UMODE)
+    if(ev->eventType == IRC_UMODE)
     {
         FXString moderator = ev->param1;
         FXString channel = ev->param2;
@@ -1320,8 +1339,9 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
                 }
             }
         }
+        return 1;
     }
-    else if(ev->eventType == IRC_CHMODE)
+    if(ev->eventType == IRC_CHMODE)
     {
         FXString channel = ev->param1;
         FXString modes = ev->param2;
@@ -1329,8 +1349,9 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
         {
             if(modes.contains('t')) editableTopic = false;
         }
+        return 1;
     }
-    else if(ev->eventType == IRC_SERVERREPLY)
+    if(ev->eventType == IRC_SERVERREPLY)
     {
         if(ownServerWindow)
         {
@@ -1345,15 +1366,17 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
         {
             if(IsCurrent() || IsNoCurrent()) AppendIrcText(ev->param1);
         }
+        return 1;
     }
-    else if(ev->eventType == IRC_CONNECT)
+    if(ev->eventType == IRC_CONNECT)
     {
         if(type == SERVER || IsCurrent() || IsNoCurrent())
         {
             AppendIrcStyledText(ev->param1, 3);
         }
+        return 1;
     }
-    else if(ev->eventType == IRC_SERVERERROR || ev->eventType == IRC_ERROR || ev->eventType == IRC_DISCONNECT)
+    if(ev->eventType == IRC_SERVERERROR || ev->eventType == IRC_ERROR || ev->eventType == IRC_DISCONNECT)
     {
         if(ownServerWindow)
         {
@@ -1367,8 +1390,9 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
         {
             if(IsCurrent() || IsNoCurrent()) AppendIrcStyledText(ev->param1, 4);
         }
+        return 1;
     }
-    else if(ev->eventType == IRC_UNKNOWN)
+    if(ev->eventType == IRC_UNKNOWN)
     {
         if(ownServerWindow)
         {
@@ -1382,15 +1406,17 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
         {
             if(IsCurrent() || IsNoCurrent()) AppendIrcStyledText(FXStringFormat(_("Unhandled command '%s' params: %s"), ev->param1.text(), ev->param2.text()), 4);
         }
+        return 1;
     }
-    else if(ev->eventType == IRC_301)
+    if(ev->eventType == IRC_301)
     {
         if(users->findItem(ev->param1) == -1)
         {
             AppendIrcStyledText(FXStringFormat(_("%s is away: %s"),ev->param1.text(), ev->param2.text()), 1);
         }
+        return 1;
     }
-    else if(ev->eventType == IRC_331 || ev->eventType == IRC_332 || ev->eventType == IRC_333)
+    if(ev->eventType == IRC_331 || ev->eventType == IRC_332 || ev->eventType == IRC_333)
     {
         if(ev->param1.lower() == getText().lower())
         {
@@ -1406,8 +1432,9 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
                 topicline->setText(topic);
             }
         }
+        return 1;
     }
-    else if(ev->eventType == IRC_353)
+    if(ev->eventType == IRC_353)
     {
         FXString channel = ev->param1;
         FXString usersStr = ev->param2;
@@ -1435,8 +1462,9 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
             }
             if(!channelOn && !IsCommandIgnored("numeric")) AppendIrcText(FXStringFormat(_("Users on %s: %s"), channel.text(), usersStr.text()));
         }
+        return 1;
     }
-    else if(ev->eventType == IRC_366)
+    if(ev->eventType == IRC_366)
     {
         if(ev->param1.lower() == getText().lower())
         {
@@ -1448,8 +1476,9 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
                 getApp()->addTimeout(this, ID_TIME, 180000);
             }
         }
+        return 1;
     }
-    else if(ev->eventType == IRC_372)
+    if(ev->eventType == IRC_372)
     {
         if(ownServerWindow)
         {
@@ -1463,17 +1492,20 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
         {
             if(IsCurrent() || IsNoCurrent()) AppendIrcText(ev->param1);
         }
+        return 1;
     }
-    else if(ev->eventType == IRC_AWAY)
+    if(ev->eventType == IRC_AWAY)
     {
         if(ev->param1.lower() == getText().lower())
         {
             OnAway();
         }
+        return 1;
     }
-    else if(ev->eventType == IRC_ENDMOTD)
+    if(ev->eventType == IRC_ENDMOTD)
     {
         MakeLastRowVisible(true);
+        return 1;
     }
     return 1;
 }

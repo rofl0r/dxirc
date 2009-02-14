@@ -25,6 +25,8 @@
 
 #include "defs.h"
 
+FXString iniFile = FXString::null;
+
 class dxirc: public FXMainWindow
 {
     FXDECLARE(dxirc)
@@ -47,6 +49,7 @@ class dxirc: public FXMainWindow
             ID_HELP,
             ID_ABOUT,
             ID_TABS,
+            ID_LAST
         };
 
         void create();
@@ -77,10 +80,10 @@ class dxirc: public FXMainWindow
         IrcColor colors;
         FXString commandsList, themesList, themePath, logPath;
         FXint maxAway;
-        FXString nickCompletionChar;
+        FXString nickCompletionChar, fontSpec;
         FXFont *ircFont;
-
-        void SetLocaleEncoding();
+        ColorTheme appTheme;
+        
         FXbool TabExist(IrcSocket*, FXString);
         FXbool ServerExist(const FXString&, const FXint&);
         FXint GetServerTab(IrcSocket*);
@@ -89,7 +92,8 @@ class dxirc: public FXMainWindow
         void ReadConfig();
         void SaveConfig();
         void UpdateMenus();
-        void UpdateTheme(ColorTheme);
+        void UpdateTheme();
+        void UpdateTabs();
         void UpdateFont(FXString);
         void SortTabs();
         FXString Encrypt(const FXString&);
@@ -106,8 +110,6 @@ class dxirc: public FXMainWindow
         FXVerticalFrame *mainframe;
         FXTabBook *tabbook;
         FXServersArray servers;
-
-        FXString localeEncoding;
 };
 
 #endif // DXIRC_H

@@ -22,6 +22,7 @@
 #include "ircsocket.h"
 #include "config.h"
 #include "i18n.h"
+#include "utils.h"
 
 #include <FX885910Codec.h>
 #include <FX885911Codec.h>
@@ -72,8 +73,8 @@ FXDEFMAP(IrcSocket) IrcSocketMap[] = {
 
 FXIMPLEMENT(IrcSocket, FXObject, IrcSocketMap, ARRAYNUMBER(IrcSocketMap))
 
-IrcSocket::IrcSocket(FXApp *app, FXObject *tgt, FXSelector sel, FXString locale, FXString channels)
-    : application(app), selector(sel), localeEncoding(locale), startChannels(channels)
+IrcSocket::IrcSocket(FXApp *app, FXObject *tgt, FXSelector sel, FXString channels)
+    : application(app), selector(sel), startChannels(channels)
 {
     targets.append(tgt);
     serverName = "localhost";
@@ -157,31 +158,18 @@ FXint IrcSocket::Connect()
 void IrcSocket::Disconnect()
 {
     SendLine("QUIT");
-    SendEvent(IRC_DISCONNECT, FXStringFormat(_("Server %s was disconnected"), serverName.text()));
-    startChannels.clear();
-#ifdef WIN32
-    shutdown(socketid, SD_BOTH);
-    closesocket(socketid);
-    if(event)
-    {
-        application->removeInput((FXInputHandle)event, INPUT_READ);
-        WSACloseEvent(event);
-        event = NULL;
-    }
-#else
-#ifndef SHUT_RDWR
-#define SHUT_RDWR 2
-#endif
-    shutdown(socketid, SHUT_RDWR);
-    close(socketid);
-    application->removeInput(socketid, INPUT_READ);
-#endif
-    connected = false;
+    CloseConnection();
 }
 
 void IrcSocket::Disconnect(const FXString& reason)
 {
     SendLine("QUIT :"+reason);
+    CloseConnection();
+}
+
+void IrcSocket::CloseConnection()
+{
+    connected = false;
     SendEvent(IRC_DISCONNECT, FXStringFormat(_("Server %s was disconnected"), serverName.text()));
     startChannels.clear();
 #ifdef WIN32
@@ -201,7 +189,6 @@ void IrcSocket::Disconnect(const FXString& reason)
     close(socketid);
     application->removeInput(socketid, INPUT_READ);
 #endif
-    connected = false;
 }
 
 long IrcSocket::ReadData()
@@ -220,7 +207,7 @@ long IrcSocket::ReadData()
         {
             buffer[size] = '\0';
             if (IsUtf8(buffer, size)) data.append(buffer);
-            else data.append(LocaleToUtf8(buffer));
+            else data.append(utils::LocaleToUtf8(buffer));
             while (data.contains('\n'))
             {
                 ParseLine(data.before('\n').before('\r'));
@@ -231,18 +218,19 @@ long IrcSocket::ReadData()
         else if (size < 0)
         {
             SendEvent(IRC_ERROR, FXStringFormat(_("Error in reading data from %s"), serverName.text()));
+            CloseConnection();
         }
-        else Disconnect();
+        else CloseConnection();
     }
     //else if (network_events.lNetworkEvents&FD_CONNECT) ;
-    else if (network_events.lNetworkEvents&FD_CLOSE) Disconnect();
+    else if (network_events.lNetworkEvents&FD_CLOSE) CloseConnection();
 #else
     size = recv(socketid, buffer, 1023, 0);
     if (size > 0)
     {
         buffer[size] = '\0';
         if (IsUtf8(buffer, size)) data.append(buffer);
-        else data.append(LocaleToUtf8(buffer));
+        else data.append(utils::LocaleToUtf8(buffer));
         while (data.contains('\n'))
         {
             ParseLine(data.before('\n').before('\r'));
@@ -253,8 +241,9 @@ long IrcSocket::ReadData()
     else if (size < 0)
     {
         SendEvent(IRC_ERROR, FXStringFormat(_("Error in reading data from %s"), serverName.text()));
+        CloseConnection();
     }
-    else Disconnect();
+    else CloseConnection();
 #endif
     return size;
 }
@@ -1052,7 +1041,7 @@ FXbool IrcSocket::SendLine(const FXString& line)
 #ifdef WIN32
             WSACleanup();
 #endif
-            Disconnect();
+            CloseConnection();
             return false;
         }
         return true;
@@ -1217,212 +1206,6 @@ int IrcSocket::Streq(const FXchar *a, const FXchar *b)
     if (a == NULL || b == NULL)
         return 0;
     return (strcmp(a, b) == 0);
-}
-
-FXString IrcSocket::LocaleToUtf8(const FXchar *buffer)
-{
-    if (localeEncoding == "885910")
-    {
-        FX885910Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "885911")
-    {
-        FX885911Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "885913")
-    {
-        FX885913Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "885914")
-    {
-        FX885914Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "885915")
-    {
-        FX885915Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "885916")
-    {
-        FX885916Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "88591")
-    {
-        FX88591Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "88592")
-    {
-        FX88592Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "88593")
-    {
-        FX88593Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "88594")
-    {
-        FX88594Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "88595")
-    {
-        FX88595Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "88596")
-    {
-        FX88596Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "88597")
-    {
-        FX88597Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "88598")
-    {
-        FX88598Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "88599")
-    {
-        FX88599Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "CP1250")
-    {
-        FXCP1250Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "CP1251")
-    {
-        FXCP1251Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "CP1252")
-    {
-        FXCP1252Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "CP1253")
-    {
-        FXCP1253Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "CP1254")
-    {
-        FXCP1254Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "CP1255")
-    {
-        FXCP1255Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "CP1256")
-    {
-        FXCP1256Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "CP1257")
-    {
-        FXCP1257Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "CP1258")
-    {
-        FXCP1258Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "CP437")
-    {
-        FXCP437Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "CP850")
-    {
-        FXCP850Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "CP852")
-    {
-        FXCP852Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "CP855")
-    {
-        FXCP855Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "CP856")
-    {
-        FXCP856Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "CP857")
-    {
-        FXCP857Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "CP860")
-    {
-        FXCP860Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "CP861")
-    {
-        FXCP861Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "CP862")
-    {
-        FXCP862Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "CP863")
-    {
-        FXCP863Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "CP864")
-    {
-        FXCP864Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "CP865")
-    {
-        FXCP865Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "CP866")
-    {
-        FXCP866Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "CP869")
-    {
-        FXCP869Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "CP874")
-    {
-        FXCP874Codec codec;
-        return codec.mb2utf(buffer);
-    }
-    if (localeEncoding == "KOI8R")
-    {
-        FXKOI8RCodec codec;
-        return codec.mb2utf(buffer);
-    }
-    FX885915Codec codec;
-    return codec.mb2utf(buffer);
 }
 
 FXString IrcSocket::GetParam(FXString toParse, FXint n, FXbool toEnd)

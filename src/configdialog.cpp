@@ -58,9 +58,9 @@ FXDEFMAP(ConfigDialog) ConfigDialogMap[] = {
 
 FXIMPLEMENT(ConfigDialog, FXDialogBox, ConfigDialogMap, ARRAYNUMBER(ConfigDialogMap))
 
-ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, FXIgnoreUserArray ulist, FXString tpth, FXString thm, FXint maxa, FXbool log, FXString lpth, FXbool srvw, FXString nichar, FXString fnt, FXbool scmd, FXbool slst)
+ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, FXIgnoreUserArray ulist, FXString tpth, FXString thm, FXint maxa, FXbool log, FXString lpth, FXbool srvw, FXString nichar, FXString fnt, FXbool scmd, FXbool slst, ColorTheme atheme)
     : FXDialogBox(owner, _("Preferences"), DECOR_RESIZE|DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0),
-        commandsList(clist), themePath(tpth), themesList(thm), logPath(lpth), logging(log), serverWindow(srvw), sameCmd(scmd), sameList(slst), usersList(ulist), colors(clrs), maxAway(maxa), nickChar(nichar)
+        commandsList(clist), themePath(tpth), themesList(thm), logPath(lpth), logging(log), serverWindow(srvw), sameCmd(scmd), sameList(slst), usersList(ulist), colors(clrs), maxAway(maxa), nickChar(nichar), themeCurrent(atheme)
 {
     textTarget.connect(colors.text);
     textTarget.setTarget(this);
@@ -86,19 +86,6 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, F
 
     targetSameCmd.connect(sameCmd);
     targetSameList.connect(sameList);
-
-    themeCurrent.base = getApp()->getBaseColor();
-    themeCurrent.back = getApp()->getBackColor();
-    themeCurrent.border = getApp()->getBorderColor();
-    themeCurrent.fore = getApp()->getForeColor();
-    themeCurrent.menuback = getApp()->getSelMenuBackColor();
-    themeCurrent.menufore = getApp()->getSelMenuTextColor();
-    themeCurrent.selback = getApp()->getSelbackColor();
-    themeCurrent.selfore = getApp()->getSelforeColor();
-    themeCurrent.tipback = getApp()->getTipbackColor();
-    themeCurrent.tipfore = getApp()->getTipforeColor();
-    themeCurrent.hilite = getApp()->getHiliteColor();
-    themeCurrent.shadow = getApp()->getShadowColor();
 
     targetBack.connect(themeCurrent.back);
     targetBack.setTarget(this);
