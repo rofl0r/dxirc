@@ -324,7 +324,9 @@ void IrcTabItem::SetIrcFont(FXFont *fnt)
     text->setFont(fnt);
     topicline->setFont(fnt);
     if(sameCmd) commandline->setFont(fnt);
+    else commandline->setFont(getApp()->getNormalFont());
     if(sameList) users->setFont(fnt);
+    else users->setFont(getApp()->getNormalFont());
 }
 
 void IrcTabItem::SetSameCmd(FXbool scmd)
