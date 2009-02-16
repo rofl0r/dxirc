@@ -344,6 +344,7 @@ void dxirc::ReadServersConfig()
 
 void dxirc::SaveConfig()
 {
+    getApp()->reg().setModified(false);
     FXSettings set;
     //set.clear();
     set.writeIntEntry("SERVERS", "number", serverList.no());
@@ -520,18 +521,18 @@ void dxirc::UpdateTheme()
     FXToolTip * tooltip;
     FXImageFrame * imageframe;
 
-//    getApp()->setBaseColor(appTheme.base);
-//    getApp()->setBackColor(appTheme.back);
-//    getApp()->setBorderColor(appTheme.border);
-//    getApp()->setForeColor(appTheme.fore);
-//    getApp()->setSelMenuBackColor(appTheme.menuback);
-//    getApp()->setSelMenuTextColor(appTheme.menufore);
-//    getApp()->setSelbackColor(appTheme.selback);
-//    getApp()->setSelforeColor(appTheme.selfore);
-//    getApp()->setTipbackColor(appTheme.tipback);
-//    getApp()->setTipforeColor(appTheme.tipfore);
-//    getApp()->setHiliteColor(appTheme.hilite);
-//    getApp()->setShadowColor(appTheme.shadow);
+    getApp()->setBaseColor(appTheme.base);
+    getApp()->setBackColor(appTheme.back);
+    getApp()->setBorderColor(appTheme.border);
+    getApp()->setForeColor(appTheme.fore);
+    getApp()->setSelMenuBackColor(appTheme.menuback);
+    getApp()->setSelMenuTextColor(appTheme.menufore);
+    getApp()->setSelbackColor(appTheme.selback);
+    getApp()->setSelforeColor(appTheme.selfore);
+    getApp()->setTipbackColor(appTheme.tipback);
+    getApp()->setTipforeColor(appTheme.tipfore);
+    getApp()->setHiliteColor(appTheme.hilite);
+    getApp()->setShadowColor(appTheme.shadow);
 
     while (w)
     {
