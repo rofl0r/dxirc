@@ -1378,7 +1378,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
         }
         return 1;
     }
-    if(ev->eventType == IRC_SERVERERROR || ev->eventType == IRC_ERROR || ev->eventType == IRC_DISCONNECT)
+    if(ev->eventType == IRC_SERVERERROR || ev->eventType == IRC_ERROR)
     {
         if(ownServerWindow)
         {
@@ -1393,6 +1393,10 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
             if(IsCurrent() || IsNoCurrent()) AppendIrcStyledText(ev->param1, 4);
         }
         return 1;
+    }
+    if(ev->eventType == IRC_DISCONNECT)
+    {
+        AppendIrcStyledText(ev->param1, 4);
     }
     if(ev->eventType == IRC_UNKNOWN)
     {

@@ -1104,6 +1104,26 @@ long dxirc::OnIrcEvent(FXObject *, FXSelector, void *data)
         }
         return 1;
     }
+    if(ev->eventType == IRC_DISCONNECT)
+    {
+        for(FXint i = tabbook->numChildren()-2; i > -1; i=i-2)
+        {
+            if(server->FindTarget((IrcTabItem *)tabbook->childAtIndex(i)))
+            {
+                if(IsLastTab(server)) ((IrcTabItem *)tabbook->childAtIndex(i))->SetType(SERVER, server->GetServerName());
+                else
+                {
+                    server->RemoveTarget((IrcTabItem *)tabbook->childAtIndex(i));
+                    delete tabbook->childAtIndex(i);
+                    delete tabbook->childAtIndex(i);
+                    tabbook->recalc();
+                }
+            }
+        }
+        SortTabs();
+        UpdateMenus();
+        return 1;
+    }
     return 1;
 }
 
@@ -1182,7 +1202,11 @@ long dxirc::OnCommandCloseTab(FXObject *, FXSelector, void *)
         IrcSocket *currentserver;
         for(FXint i=0; i < servers.no(); i++)
         {
-            if(servers[i]->FindTarget(currenttab)) currentserver = servers[i];
+            if(servers[i]->FindTarget(currenttab))
+            {
+                currentserver = servers[i];
+                break;
+            }
         }
         if(currenttab->GetType() == QUERY)
         {
