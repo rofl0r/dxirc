@@ -1416,9 +1416,9 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
     }
     if(ev->eventType == IRC_301)
     {
-        if(users->findItem(ev->param1) == -1)
+        if(IsCurrent() || getText() == ev->param1)
         {
-            AppendIrcStyledText(FXStringFormat(_("%s is away: %s"),ev->param1.text(), ev->param2.text()), 1);
+            if(!IsCommandIgnored("away")) AppendIrcStyledText(FXStringFormat(_("%s is away: %s"),ev->param1.text(), ev->param2.text()), 1);
         }
         return 1;
     }
