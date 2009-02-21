@@ -24,6 +24,7 @@
 namespace utils
 {
     FXTextCodec *lcodec = NULL;
+    FXString iniFile = FXString::null;
     
     FXTextCodec* GetCodec()
     {
@@ -606,12 +607,17 @@ namespace utils
         return GetCodec()->mb2utf(text);
     }
 
-    FXString GetIniFile(const FXString &file)
+    void SetIniFile(const FXString &file)
+    {
+        iniFile = file;
+    }
+
+    FXString GetIniFile()
     {
         FXString pathname;
-        if(!file.empty() && !FXStat::isExecutable(file))
+        if(!iniFile.empty() && !FXStat::isExecutable(iniFile))
         {
-            pathname = FXPath::directory(file);
+            pathname = FXPath::directory(iniFile);
             if(!FXStat::exists(pathname))
             {
                 if(!FXDir::create(pathname))
@@ -626,7 +632,7 @@ namespace utils
                     fxwarning("%s: is not a directory.\n",pathname.text());
                 }
             }
-            return file;
+            return iniFile;
         }
         else
         {
@@ -646,7 +652,8 @@ namespace utils
                     fxwarning("%s: is not a directory.\n",pathname.text());
                 }
             }
-            return pathname.append(PATHSEPSTRING "dxirc.ini");
+            iniFile = pathname.append(PATHSEPSTRING "dxirc.ini")
+            return iniFile;
 #else
             pathname = FXSystem::getHomeDirectory()+PATHSEPSTRING+".dxirc";
             if(!FXStat::exists(pathname))
@@ -663,9 +670,35 @@ namespace utils
                     fxwarning("%s: is not a directory.\n",pathname.text());
                 }
             }
-            return pathname.append(PATHSEPSTRING "dxirc");
+            iniFile = pathname.append(PATHSEPSTRING "dxirc");
+            return iniFile;
 #endif
         }
         return FXString::null;
     }
+
+    FXString GetParam(FXString toParse, FXint n, FXbool toEnd)
+    {
+        if (toEnd)
+        {
+            return toParse.after(' ', n-1);
+        }
+        else
+        {
+            return toParse.before(' ', n).rafter(' ');
+        }
+    }
+
+    FXString GetParam(FXString toParse, FXint n, FXbool toEnd, const FXchar &separator)
+    {
+        if (toEnd)
+        {
+            return toParse.after(separator, n-1);
+        }
+        else
+        {
+            return toParse.before(separator, n).rafter(separator);
+        }
+    }
+
 }

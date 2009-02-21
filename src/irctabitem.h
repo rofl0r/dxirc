@@ -34,8 +34,8 @@ class IrcTabItem: public FXTabItem
         IrcTabItem(FXTabBook*, const FXString&, FXIcon*, FXuint, TYPE, IrcSocket*, FXbool, FXbool, FXbool, FXString, FXString, FXint, IrcColor, FXString, FXFont*, FXbool, FXbool);
         virtual ~IrcTabItem();
         enum {
-            ID_COMMANDLINE = FXTabItem::ID_LAST,
-            ID_CONNECT,
+            ID_COMMANDLINE = FXMainWindow::ID_LAST+20,
+            ID_CDIALOG,
             ID_TABQUIT,
             ID_TIME,
             ID_USERS,
@@ -49,6 +49,7 @@ class IrcTabItem: public FXTabItem
             ID_BAN,
             ID_KICKBAN,
             ID_TOPIC,
+            ID_CSERVER,
             ID_LAST
         };
 
@@ -109,8 +110,6 @@ class IrcTabItem: public FXTabItem
         FXString nickCompletionChar;
         std::ofstream *logstream;
 
-        FXString GetParam(FXString toParse, int n, bool toEnd);
-        FXString GetParam(FXString toParse, int n, bool toEnd, const FXchar &separator);
         FXString StripColors(const FXString &text, const FXbool stripOther);
         void AppendIrcText(FXString);
         void AppendIrcStyledText(FXString, FXint);

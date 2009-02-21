@@ -141,9 +141,7 @@ class IrcSocket: public FXObject
         void SendEvent(IrcEventType, const FXString&);
         void SendEvent(IrcEventType, const FXString&, const FXString&);
         void SendEvent(IrcEventType, const FXString&, const FXString&, const FXString&);
-        void SendEvent(IrcEventType, const FXString&, const FXString&, const FXString&, const FXString&);
-        FXString GetParam(FXString, FXint, FXbool);
-        FXString GetParam(FXString, FXint, FXbool, const FXchar&);
+        void SendEvent(IrcEventType, const FXString&, const FXString&, const FXString&, const FXString&);        
         void Numeric(const FXint&, const FXString&);
         void Privmsg(const FXString&, const FXString&);
         void Ctcp(const FXString&, const FXString&);

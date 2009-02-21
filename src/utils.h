@@ -73,7 +73,10 @@ namespace utils
     FXTextCodec* GetCodec();
     FXString LocaleToUtf8(const FXchar *buffer);
     FXString LocaleToUtf8(const FXString &text);
-    FXString GetIniFile(const FXString &file);
+    void SetIniFile(const FXString &file);
+    FXString GetIniFile();
+    FXString GetParam(FXString, FXint, FXbool);
+    FXString GetParam(FXString, FXint, FXbool, const FXchar&);
 }
 
 

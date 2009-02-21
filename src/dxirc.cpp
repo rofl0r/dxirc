@@ -37,22 +37,23 @@ FXDEFMAP(dxirc) dxircMap[] = {
     FXMAPFUNC(SEL_CLOSE,    0,                          dxirc::OnCommandQuit),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_QUIT,             dxirc::OnCommandQuit),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_ABOUT,            dxirc::OnCommandAbout),
-    FXMAPFUNC(SEL_COMMAND,  dxirc::ID_CONNECT,          dxirc::OnCommandConnect),
-    FXMAPFUNC(SEL_COMMAND,  IrcTabItem::ID_CONNECT,     dxirc::OnCommandConnect),
+    FXMAPFUNC(SEL_COMMAND,  dxirc::ID_CONNECT,          dxirc::OnCommandConnect),    
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_DISCONNECT,       dxirc::OnCommandDisconnect),
-    FXMAPFUNC(SEL_COMMAND,  IrcTabItem::ID_TABQUIT,     dxirc::OnCommandDisconnect),
-    FXMAPFUNC(SEL_COMMAND,  dxirc::ID_SERVERS,          dxirc::OnCommandServers),
-    FXMAPFUNC(SEL_COMMAND,  IrcSocket::ID_SERVER,       dxirc::OnIrcEvent),
+    FXMAPFUNC(SEL_COMMAND,  dxirc::ID_SERVERS,          dxirc::OnCommandServers),    
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_TABS,             dxirc::OnTabBook),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_CLEAR,            dxirc::OnCommandClear),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_CLEARALL,         dxirc::OnCommandClearAll),
-    FXMAPFUNC(SEL_COMMAND,  dxirc::ID_CLOSETAB,         dxirc::OnCommandCloseTab),
-    FXMAPFUNC(SEL_KEYPRESS, dxirc::ID_SELECTTAB,        dxirc::OnCommandSelectTab),
+    FXMAPFUNC(SEL_COMMAND,  dxirc::ID_CLOSETAB,         dxirc::OnCommandCloseTab),    
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_USERS,            dxirc::OnCommandUsers),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_HELP,             dxirc::OnCommandHelp),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_OPTIONS,          dxirc::OnCommandOptions),
+    FXMAPFUNC(SEL_KEYPRESS, dxirc::ID_SELECTTAB,        dxirc::OnCommandSelectTab),
     FXMAPFUNC(SEL_KEYPRESS, dxirc::ID_NEXTTAB,          dxirc::OnCommandNextTab),
     FXMAPFUNC(SEL_KEYPRESS, dxirc::ID_NEXTUNREAD,       dxirc::OnCommandNextUnread),
+    FXMAPFUNC(SEL_COMMAND,  IrcSocket::ID_SERVER,       dxirc::OnIrcEvent),
+    FXMAPFUNC(SEL_COMMAND,  IrcTabItem::ID_CDIALOG,     dxirc::OnCommandConnect),
+    FXMAPFUNC(SEL_COMMAND,  IrcTabItem::ID_CSERVER,     dxirc::OnTabConnect),
+    FXMAPFUNC(SEL_COMMAND,  IrcTabItem::ID_TABQUIT,     dxirc::OnCommandDisconnect),
 };
 
 FXIMPLEMENT(dxirc, FXMainWindow, dxircMap, ARRAYNUMBER(dxircMap))
@@ -170,7 +171,7 @@ void dxirc::create()
 {
     FXMainWindow::create();
     ReadServersConfig();
-    show(PLACEMENT_SCREEN);
+    show();
 }
 
 int CompareTabs(const void **a,const void **b)
@@ -184,7 +185,7 @@ void dxirc::ReadConfig()
 {
     FXString ircfontspec;
     FXSettings set;
-    set.parseFile(utils::GetIniFile(iniFile), true);
+    set.parseFile(utils::GetIniFile(), true);
     FXint xx=set.readIntEntry("SETTINGS","x",50);
     FXint yy=set.readIntEntry("SETTINGS","y",50);
     FXint ww=set.readIntEntry("SETTINGS","w",400);
@@ -277,7 +278,7 @@ FXString dxirc::CheckThemesList(const FXString &list)
 void dxirc::ReadServersConfig()
 {
     FXSettings set;
-    set.parseFile(utils::GetIniFile(iniFile), true);
+    set.parseFile(utils::GetIniFile(), true);
     FXint serversNum = set.readIntEntry("SERVERS", "number", 0);
     FXint autoConnect = 0;
     if(serversNum)
@@ -410,7 +411,7 @@ void dxirc::SaveConfig()
     set.writeColorEntry("SETTINGS", "selmenubackcolor", appTheme.menuback);
     set.writeStringEntry("SETTINGS", "normalfont", getApp()->getNormalFont()->getFont().text());
     set.setModified();
-    set.unparseFile(utils::GetIniFile(iniFile));
+    set.unparseFile(utils::GetIniFile());
 }
 
 long dxirc::OnCommandQuit(FXObject*, FXSelector, void*)
@@ -810,50 +811,9 @@ long dxirc::OnCommandServers(FXObject*, FXSelector, void*)
         indexJoin = dialog->GetIndexJoin();
         if (indexJoin != -1 && !ServerExist(serverList[indexJoin].hostname, serverList[indexJoin].port))
         {
-            if(servers.no() == 1 && !servers[0]->GetConnected())
-            {
-                servers[0]->SetServerName(serverList[indexJoin].hostname);
-                servers[0]->SetServerPort(serverList[indexJoin].port);
-                servers[0]->SetServerPassword(serverList[indexJoin].passwd);
-                servers[0]->SetNickName(serverList[indexJoin].nick);
-                servers[0]->SetUserName(serverList[indexJoin].nick);
-                serverList[indexJoin].realname.length() ? servers[0]->SetRealName(serverList[indexJoin].realname) : servers[0]->SetRealName(serverList[indexJoin].nick);
-                if (serverList[indexJoin].channels.length()>1) servers[0]->SetStartChannels(serverList[indexJoin].channels);
-                if (!tabbook->numChildren())
-                {
-                    IrcTabItem *tabitem = new IrcTabItem(tabbook, serverList[indexJoin].hostname, servericon, TAB_BOTTOM, SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList);
-                    servers[0]->AppendTarget(tabitem);
-                    tabitem->create();
-                    tabitem->CreateGeom();
-                    //tabbook->setCurrent(tabbook->numChildren()/2);
-                }
-                ((IrcTabItem *)tabbook->childAtIndex(0))->SetType(SERVER, serverList[indexJoin].hostname);
-                SortTabs();
-                servers[0]->Connect();
-            }
-            else if(!ServerExist(serverList[indexJoin].hostname, serverList[indexJoin].port))
-            {
-                IrcSocket *server = new IrcSocket(app, this, 0, "");
-                server->SetUsersList(usersList);
-                servers.prepend(server);
-                servers[0]->SetServerName(serverList[indexJoin].hostname);
-                servers[0]->SetServerPort(serverList[indexJoin].port);
-                servers[0]->SetServerPassword(serverList[indexJoin].passwd);
-                servers[0]->SetNickName(serverList[indexJoin].nick);
-                servers[0]->SetUserName(serverList[indexJoin].nick);
-                serverList[indexJoin].realname.length() ? servers[0]->SetRealName(serverList[indexJoin].realname) : servers[0]->SetRealName(serverList[indexJoin].nick);
-                if (serverList[indexJoin].channels.length()>1) servers[0]->SetStartChannels(serverList[indexJoin].channels);
-                IrcTabItem *tabitem = new IrcTabItem(tabbook, serverList[indexJoin].hostname, servericon, TAB_BOTTOM, SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList);
-                servers[0]->AppendTarget(tabitem);
-                tabitem->create();
-                tabitem->CreateGeom();
-                //tabbook->setCurrent(tabbook->numChildren()/2);
-                SortTabs();
-                servers[0]->Connect();
-            }
+            ConnectServer(serverList[indexJoin].hostname, serverList[indexJoin].port, serverList[indexJoin].passwd, serverList[indexJoin].nick, serverList[indexJoin].realname, serverList[indexJoin].channels, "");
         }
     }
-    UpdateMenus();
     return 1;
 }
 
@@ -892,50 +852,61 @@ long dxirc::OnCommandConnect(FXObject*, FXSelector, void*)
     new FXButton(buttonframe, _("Cancel"), NULL, &serverEdit, FXDialogBox::ID_CANCEL, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
     if (serverEdit.execute(PLACEMENT_OWNER))
     {
-        if(servers.no() == 1 && !servers[0]->GetConnected())
+        ConnectServer(hostname->getText(), port->getValue(), passwd->getText(), nick->getText(), realname->getText(), channel->getText(), "");
+    }
+    return 1;
+}
+
+long dxirc::OnTabConnect(FXObject*, FXSelector, void *data)
+{
+    ServerInfo *srv = (ServerInfo*)data;
+    ConnectServer(srv->hostname, srv->port, srv->passwd, srv->nick, srv->realname, srv->channels, "");
+    return 1;
+}
+
+void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString nick, FXString rname, FXString channels, FXString commands)
+{
+    if(servers.no() == 1 && !servers[0]->GetConnected())
+    {
+        servers[0]->SetServerName(hostname);
+        servers[0]->SetServerPort(port);
+        servers[0]->SetServerPassword(pass);
+        nick.length() ? servers[0]->SetNickName(nick) : servers[0]->SetNickName("_xxx_");
+        nick.length() ? servers[0]->SetUserName(nick) : servers[0]->SetUserName("_xxx_");
+        rname.length() ? servers[0]->SetRealName(rname) : servers[0]->SetRealName(nick.length() ? nick : "_xxx_");
+        if (channels.length()>1) servers[0]->SetStartChannels(channels);
+        if (!tabbook->numChildren())
         {
-            servers[0]->SetServerName(hostname->getText());
-            servers[0]->SetServerPort(port->getValue());
-            servers[0]->SetServerPassword(passwd->getText());
-            nick->getText().length() ? servers[0]->SetNickName(nick->getText()) : servers[0]->SetNickName("_xxx_");
-            nick->getText().length() ? servers[0]->SetUserName(nick->getText()) : servers[0]->SetUserName("_xxx_");
-            realname->getText().length() ? servers[0]->SetRealName(realname->getText()) : servers[0]->SetRealName(nick->getText().length() ? nick->getText() : "_xxx_");
-            if (channel->getText().length()>1) servers[0]->SetStartChannels(channel->getText());
-            if (!tabbook->numChildren())
-            {
-                IrcTabItem *tabitem = new IrcTabItem(tabbook, hostname->getText(), servericon, TAB_BOTTOM, SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList);
-                servers[0]->AppendTarget(tabitem);
-                tabitem->create();
-                tabitem->CreateGeom();
-                //tabbook->setCurrent(tabbook->numChildren()/2);
-            }
-            ((IrcTabItem *)tabbook->childAtIndex(0))->SetType(SERVER, hostname->getText());
-            SortTabs();
-            servers[0]->Connect();
-        }
-        else if(!ServerExist(hostname->getText(), port->getValue()))
-        {
-            IrcSocket *server = new IrcSocket(app, this, 0, "");
-            server->SetUsersList(usersList);
-            servers.prepend(server);
-            servers[0]->SetServerName(hostname->getText());
-            servers[0]->SetServerPort(port->getValue());
-            servers[0]->SetServerPassword(passwd->getText());
-            nick->getText().length() ? servers[0]->SetNickName(nick->getText()) : servers[0]->SetNickName("_xxx_");
-            nick->getText().length() ? servers[0]->SetUserName(nick->getText()) : servers[0]->SetUserName("_xxx_");
-            realname->getText().length() ? servers[0]->SetRealName(realname->getText()) : servers[0]->SetRealName(nick->getText().length() ? nick->getText() : "_xxx_");
-            if (channel->getText().length()>1) servers[0]->SetStartChannels(channel->getText());
-            IrcTabItem *tabitem = new IrcTabItem(tabbook, hostname->getText(), servericon, TAB_BOTTOM, SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList);
+            IrcTabItem *tabitem = new IrcTabItem(tabbook, hostname, servericon, TAB_BOTTOM, SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList);
             servers[0]->AppendTarget(tabitem);
             tabitem->create();
             tabitem->CreateGeom();
             //tabbook->setCurrent(tabbook->numChildren()/2);
-            SortTabs();
-            servers[0]->Connect();
         }
+        ((IrcTabItem *)tabbook->childAtIndex(0))->SetType(SERVER, hostname);
+        SortTabs();
+        servers[0]->Connect();
+    }
+    else if(!ServerExist(hostname, port))
+    {
+        IrcSocket *server = new IrcSocket(app, this, 0, channels.length()>1 ? channels : "");
+        server->SetUsersList(usersList);
+        servers.prepend(server);
+        servers[0]->SetServerName(hostname);
+        servers[0]->SetServerPort(port);
+        servers[0]->SetServerPassword(pass);
+        nick.length() ? servers[0]->SetNickName(nick) : servers[0]->SetNickName("_xxx_");
+        nick.length() ? servers[0]->SetUserName(nick) : servers[0]->SetUserName("_xxx_");
+        rname.length() ? servers[0]->SetRealName(rname) : servers[0]->SetRealName(nick.length() ? nick : "_xxx_");
+        IrcTabItem *tabitem = new IrcTabItem(tabbook, hostname, servericon, TAB_BOTTOM, SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList);
+        servers[0]->AppendTarget(tabitem);
+        tabitem->create();
+        tabitem->CreateGeom();
+        //tabbook->setCurrent(tabbook->numChildren()/2);
+        SortTabs();
+        servers[0]->Connect();
     }
     UpdateMenus();
-    return 1;
 }
 
 long dxirc::OnCommandDisconnect(FXObject*, FXSelector, void*)
@@ -1183,7 +1154,7 @@ long dxirc::OnCommandClear(FXObject *, FXSelector, void *)
     return 1;
 }
 
-long dxirc::OnCommandClearAll(FXObject *, FXSelector, void *)
+long dxirc::OnCommandClearAll(FXObject *, FXSelector sel, void *)
 {
     for (FXint i = 0; i<tabbook->numChildren(); i=i+2)
     {
@@ -1459,14 +1430,14 @@ int main(int argc,char *argv[])
         }
         if(compare(argv[i],"-l")==0)
         {
-            iniFile = argv[i+1];
+            utils::SetIniFile(argv[i+1]);
         }
     }
 
     FXApp app(PACKAGE, FXString::null);
     app.reg().setAsciiMode(true);
     app.init(argc,argv);
-    loadIcon = MakeAllIcons(&app, utils::GetIniFile(iniFile));
+    loadIcon = MakeAllIcons(&app, utils::GetIniFile());
     new dxirc(&app);
     app.create();
     return app.run();

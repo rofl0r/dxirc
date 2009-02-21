@@ -25,7 +25,7 @@
 
 #include "defs.h"
 
-FXString iniFile = FXString::null;
+
 
 class dxirc: public FXMainWindow
 {
@@ -70,6 +70,7 @@ class dxirc: public FXMainWindow
         long OnCommandNextUnread(FXObject*, FXSelector, void*);
         long OnCommandUsers(FXObject*, FXSelector, void*);
         long OnCommandOptions(FXObject*, FXSelector, void*);
+        long OnTabConnect(FXObject*, FXSelector, void*);
 
     private:
         dxirc(){}
@@ -88,6 +89,7 @@ class dxirc: public FXMainWindow
         FXbool ServerExist(const FXString&, const FXint&);
         FXint GetServerTab(IrcSocket*);
         FXbool IsLastTab(IrcSocket*);
+        void ConnectServer(FXString, FXint, FXString, FXString, FXString, FXString, FXString);
         void ReadServersConfig();
         void ReadConfig();
         void SaveConfig();

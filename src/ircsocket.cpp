@@ -210,15 +210,15 @@ void IrcSocket::ParseLine(const FXString &line)
     FXString from, command, params;
     if (line[0] == ':')
     {
-        from = GetParam(line, 1, false).after(':');
-        command = GetParam(line, 2, false).upper();
-        params = GetParam(line, 3, true);
+        from = utils::GetParam(line, 1, false).after(':');
+        command = utils::GetParam(line, 2, false).upper();
+        params = utils::GetParam(line, 3, true);
     }
     else
     {
         from = "";
-        command = GetParam(line, 1, false).upper();
-        params = GetParam(line, 2, true);
+        command = utils::GetParam(line, 1, false).upper();
+        params = utils::GetParam(line, 2, true);
     }
 
     if(command.length() == 3)
@@ -251,11 +251,11 @@ void IrcSocket::Numeric(const FXint &command, const FXString &params)
         }break;
         case 242: //RPL_STATSUPTIME
         {
-            SendEvent(IRC_SERVERREPLY, FXStringFormat(_("Server Up %s days %s"), GetParam(params, 4, false).text(), GetParam(params, 6, true).text()));
+            SendEvent(IRC_SERVERREPLY, FXStringFormat(_("Server Up %s days %s"), utils::GetParam(params, 4, false).text(), utils::GetParam(params, 6, true).text()));
         }break;
         case 301: //RPL_AWAY
         {
-            SendEvent(IRC_301, GetParam(params, 2, false), GetParam(params, 3, true).after(':'));
+            SendEvent(IRC_301, utils::GetParam(params, 2, false), utils::GetParam(params, 3, true).after(':'));
         }break;
         case 305: //RPL_UNAWAY
         {
@@ -268,28 +268,28 @@ void IrcSocket::Numeric(const FXint &command, const FXString &params)
         case 311: //RPL_WHOISUSER
         {
             SendEvent(IRC_SERVERREPLY, _("Start of WHOIS"));
-            SendEvent(IRC_SERVERREPLY, GetParam(params, 2, false)+" ["+GetParam(params, 3, false)+"@"+GetParam(params, 4, false)+"]");
-            AddNick(GetParam(params, 2, false), GetParam(params, 3, false), GetParam(params, 6, true).after(':'), GetParam(params, 4, false));
-            SendEvent(IRC_SERVERREPLY, _("Realname: ")+GetParam(params, 6, true).after(':'));
+            SendEvent(IRC_SERVERREPLY, utils::GetParam(params, 2, false)+" ["+utils::GetParam(params, 3, false)+"@"+utils::GetParam(params, 4, false)+"]");
+            AddNick(utils::GetParam(params, 2, false), utils::GetParam(params, 3, false), utils::GetParam(params, 6, true).after(':'), utils::GetParam(params, 4, false));
+            SendEvent(IRC_SERVERREPLY, _("Realname: ")+utils::GetParam(params, 6, true).after(':'));
         }break;
         case 312: //RPL_WHOISSERVER
         {
-            SendEvent(IRC_SERVERREPLY, _("Server: ")+GetParam(params, 3, false)+" ["+GetParam(params, 4, true).after(':')+"]");
+            SendEvent(IRC_SERVERREPLY, _("Server: ")+utils::GetParam(params, 3, false)+" ["+utils::GetParam(params, 4, true).after(':')+"]");
         }break;
         case 313: //RPL_WHOISOPERATOR
         {
-            SendEvent(IRC_SERVERREPLY, FXStringFormat(_("%s is an IRC operator"), GetParam(params, 2, false).text()));
+            SendEvent(IRC_SERVERREPLY, FXStringFormat(_("%s is an IRC operator"), utils::GetParam(params, 2, false).text()));
         }break;
         case 315: //RPL_ENDOFWHO
         {
             FXbool ignoreEvent = false;
             for(FXint i=0; i < ignoreCommands.no(); i++)
             {
-                if((GetParam(ignoreCommands[i], 1, false) == "who") && (GetParam(ignoreCommands[i], 2, true).lower() == GetParam(params, 2, false).lower()))
+                if((utils::GetParam(ignoreCommands[i], 1, false) == "who") && (utils::GetParam(ignoreCommands[i], 2, true).lower() == utils::GetParam(params, 2, false).lower()))
                 {
                     ignoreCommands.erase(i);
                     ignoreEvent = true;
-                    SendEvent(IRC_AWAY, GetParam(params, 2, false));
+                    SendEvent(IRC_AWAY, utils::GetParam(params, 2, false));
                     break;
                 }
             }
@@ -297,9 +297,9 @@ void IrcSocket::Numeric(const FXint &command, const FXString &params)
         }break;
         case 317: //RPL_WHOISIDLE
         {
-            FXlong idle = FXLongVal(GetParam(params, 3, false));
+            FXlong idle = FXLongVal(utils::GetParam(params, 3, false));
             SendEvent(IRC_SERVERREPLY, _("Idle: ")+FXStringVal(idle/3600)+":"+FXStringVal((idle/60)%60)+":"+FXStringVal(idle%60));
-            FXString datestr = GetParam(params, 4, false);
+            FXString datestr = utils::GetParam(params, 4, false);
             FXlong time = FXLongVal(datestr);
             datestr = FXSystem::time(_("%x %X"), time);
             SendEvent(IRC_SERVERREPLY, _("Signon: ")+datestr);
@@ -310,15 +310,15 @@ void IrcSocket::Numeric(const FXint &command, const FXString &params)
         }break;
         case 319: //RPL_WHOISCHANNELS
         {
-            SendEvent(IRC_SERVERREPLY, _("Channels: ")+GetParam(params, 3, true).after(':'));
+            SendEvent(IRC_SERVERREPLY, _("Channels: ")+utils::GetParam(params, 3, true).after(':'));
         }break;
         case 320: //RPL_IDENTIFIED
         {
-            SendEvent(IRC_SERVERREPLY, FXStringFormat(_("%s : is identified to services"), GetParam(params, 2, false).text()));
+            SendEvent(IRC_SERVERREPLY, FXStringFormat(_("%s : is identified to services"), utils::GetParam(params, 2, false).text()));
         }break;
         case 324: //RPL_CHANNELMODEIS
         {
-            SendEvent(IRC_CHMODE, GetParam(params, 2, false), GetParam(params, 3, false));
+            SendEvent(IRC_CHMODE, utils::GetParam(params, 2, false), utils::GetParam(params, 3, false));
         }break;
         case 329: //RPL of channel mode (creation time)
         {
@@ -326,59 +326,59 @@ void IrcSocket::Numeric(const FXint &command, const FXString &params)
         }break;
         case 331: //RPL_NOTOPIC
         {
-            SendEvent(IRC_331, GetParam(params, 2, false), _("No topic is set"));
+            SendEvent(IRC_331, utils::GetParam(params, 2, false), _("No topic is set"));
         }break;
         case 332: //RPL_TOPIC
         {
-            SendEvent(IRC_332, GetParam(params, 2, false), FXStringFormat(_("Topic for %s : %s"), GetParam(params, 2, false).text(), GetParam(params, 3, true).after(':').text()));
+            SendEvent(IRC_332, utils::GetParam(params, 2, false), FXStringFormat(_("Topic for %s : %s"), utils::GetParam(params, 2, false).text(), utils::GetParam(params, 3, true).after(':').text()));
         }break;
         case 333: //RPL_TOPICSETBY
         {
-            FXString datestr = GetParam(params, 4, false);
+            FXString datestr = utils::GetParam(params, 4, false);
             FXlong time = FXLongVal(datestr);
             datestr = FXSystem::time(_("%x %X"), time);
-            SendEvent(IRC_333, GetParam(params, 2, false), FXStringFormat(_("Set %s %s"), GetParam(params, 3, false).before('!').text(), datestr.text()));
+            SendEvent(IRC_333, utils::GetParam(params, 2, false), FXStringFormat(_("Set %s %s"), utils::GetParam(params, 3, false).before('!').text(), datestr.text()));
         }break;
         case 341: //RPL_INVITING
         {
-            SendEvent(IRC_SERVERREPLY, FXStringFormat(_("You invite %s to %s"), GetParam(params, 2, false).text(), GetParam(params, 3, false).text()));
+            SendEvent(IRC_SERVERREPLY, FXStringFormat(_("You invite %s to %s"), utils::GetParam(params, 2, false).text(), utils::GetParam(params, 3, false).text()));
         }break;
         case 342: //RPL_SUMMONING
         {
-            SendEvent(IRC_SERVERREPLY, FXStringFormat(_("%s :Summoning user to IRC"), GetParam(params, 2, false).text()));
+            SendEvent(IRC_SERVERREPLY, FXStringFormat(_("%s :Summoning user to IRC"), utils::GetParam(params, 2, false).text()));
         }break;
         case 352: //RPL_WHOREPLY
         {
             FXbool ignoreEvent = false;
             for(FXint i=0; i < ignoreCommands.no(); i++)
             {
-                if((GetParam(ignoreCommands[i], 1, false) == "who") && (GetParam(ignoreCommands[i], 2, true).lower() == GetParam(params, 2, false).lower()))
+                if((utils::GetParam(ignoreCommands[i], 1, false) == "who") && (utils::GetParam(ignoreCommands[i], 2, true).lower() == utils::GetParam(params, 2, false).lower()))
                 {
                     //param:xxx #test ~dvx localhost dvx.irc.dvx dvx H :0 dvx
-                    AddNick(GetParam(params, 6, false), GetParam(params, 3, false), GetParam(params, 9, true), GetParam(params, 4, false), GetParam(params, 7, false)[0] == 'H' ? false : true);
+                    AddNick(utils::GetParam(params, 6, false), utils::GetParam(params, 3, false), utils::GetParam(params, 9, true), utils::GetParam(params, 4, false), utils::GetParam(params, 7, false)[0] == 'H' ? false : true);
                     ignoreEvent = true;
                     break;
                 }
             }
-            if(!ignoreEvent) SendEvent(IRC_SERVERREPLY, GetParam(params, 2, true));
+            if(!ignoreEvent) SendEvent(IRC_SERVERREPLY, utils::GetParam(params, 2, true));
         }break;
         case 353: //RPL_NAMREPLY
         {
-            SendEvent(IRC_353, GetParam(params, 3, false), GetParam(params, 4, true).after(':'));
+            SendEvent(IRC_353, utils::GetParam(params, 3, false), utils::GetParam(params, 4, true).after(':'));
         }break;
         case 366: //RPL_ENDOFNAMES
         {
-            SendEvent(IRC_366, GetParam(params, 2, false));
+            SendEvent(IRC_366, utils::GetParam(params, 2, false));
         }break;
         case 367: //RPL_BANLIST
         {
-            FXString datestr = GetParam(params, 5, true);
-            if(datestr.empty()) SendEvent(IRC_SERVERREPLY, GetParam(params, 2, false)+" "+GetParam(params, 3, false));
+            FXString datestr = utils::GetParam(params, 5, true);
+            if(datestr.empty()) SendEvent(IRC_SERVERREPLY, utils::GetParam(params, 2, false)+" "+utils::GetParam(params, 3, false));
             else
             {
                 FXlong time = FXLongVal(datestr);
                 datestr = FXSystem::time("%x %X", time);
-                SendEvent(IRC_SERVERREPLY, GetParam(params, 2, false)+" "+GetParam(params, 3, false)+" "+GetParam(params, 4, false)+" "+datestr);
+                SendEvent(IRC_SERVERREPLY, utils::GetParam(params, 2, false)+" "+utils::GetParam(params, 3, false)+" "+utils::GetParam(params, 4, false)+" "+datestr);
             }
         }break;
         case 369: //RPL_ENDOFWHOWAS
@@ -387,7 +387,7 @@ void IrcSocket::Numeric(const FXint &command, const FXString &params)
         }break;
         case 372: //RPL_MOTD
         {
-            SendEvent(IRC_372, GetParam(params, 2, true).after(':'));
+            SendEvent(IRC_372, utils::GetParam(params, 2, true).after(':'));
         }break;
         case 374: //RPL_ENDOFINFO
         {
@@ -409,35 +409,35 @@ void IrcSocket::Numeric(const FXint &command, const FXString &params)
         }break;
         case 401: //ERR_NOSUCHNICK
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :No such nick/channel"), GetParam(params, 2, false).text()));
+            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :No such nick/channel"), utils::GetParam(params, 2, false).text()));
         }break;
         case 402: //ERR_NOSUCHSERVER
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :No such server"), GetParam(params, 2, false).text()));
+            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :No such server"), utils::GetParam(params, 2, false).text()));
         }break;
         case 403: //ERR_NOSUCHCHANNEL
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :No such channel"), GetParam(params, 2, false).text()));
+            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :No such channel"), utils::GetParam(params, 2, false).text()));
         }break;
         case 404: //ERR_CANNOTSENDTOCHAN
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Cannot send to channel"), GetParam(params, 2, false).text()));
+            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Cannot send to channel"), utils::GetParam(params, 2, false).text()));
         }break;
         case 405: //ERR_TOOMANYCHANNELS
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :You have joined too many channels"), GetParam(params, 2, false).text()));
+            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :You have joined too many channels"), utils::GetParam(params, 2, false).text()));
         }break;
         case 406: //ERR_WASNOSUCHNICK
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :There was no such nickname"), GetParam(params, 2, false).text()));
+            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :There was no such nickname"), utils::GetParam(params, 2, false).text()));
         }break;
         case 407: //ERR_TOOMANYTARGETS
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Too many targets"), GetParam(params, 2, false).text()));
+            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Too many targets"), utils::GetParam(params, 2, false).text()));
         }break;
         case 408: //ERR_NOSUCHSERVICE
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :No such service"), GetParam(params, 2, false).text()));
+            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :No such service"), utils::GetParam(params, 2, false).text()));
         }break;
         case 409: //ERR_NOORIGIN
         {
@@ -453,19 +453,19 @@ void IrcSocket::Numeric(const FXint &command, const FXString &params)
         }break;
         case 413: //ERR_NOTOPLEVEL
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :No toplevel domain specified"), GetParam(params, 2, false).text()));
+            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :No toplevel domain specified"), utils::GetParam(params, 2, false).text()));
         }break;
         case 414: //ERR_WILDTOPLEVEL
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Wildcard in toplevel domain"), GetParam(params, 2, false).text()));
+            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Wildcard in toplevel domain"), utils::GetParam(params, 2, false).text()));
         }break;
         case 415: //ERR_BADMASK
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Bad Server/host mask"), GetParam(params, 2, false).text()));
+            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Bad Server/host mask"), utils::GetParam(params, 2, false).text()));
         }break;
         case 421: //ERR_UNKNOWNCOMMAND
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Unknown command"), GetParam(params, 2, false).text()));
+            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Unknown command"), utils::GetParam(params, 2, false).text()));
         }break;
         case 422: //ERR_NOMOTD
         {
@@ -479,7 +479,7 @@ void IrcSocket::Numeric(const FXint &command, const FXString &params)
         }break;
         case 423: //ERR_NOADMININFO
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :No administrative info available"), GetParam(params, 2, false).text()));
+            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :No administrative info available"), utils::GetParam(params, 2, false).text()));
         }break;
         case 424: //ERR_FILEERROR
         {
@@ -491,37 +491,37 @@ void IrcSocket::Numeric(const FXint &command, const FXString &params)
         }break;
         case 432: //ERR_ERRONEUSNICKNAME
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Erroneous nickname"), GetParam(params, 2, false).text()));
+            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Erroneous nickname"), utils::GetParam(params, 2, false).text()));
         }break;
         case 433: //ERR_NICKNAMEINUSE
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Nickname is already in use"), GetParam(params, 2, false).text()));
+            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Nickname is already in use"), utils::GetParam(params, 2, false).text()));
             nickName += "_";
             SendNick(nickName);
         }break;
         case 436: //ERR_NICKCOLLISION
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Nickname collision"), GetParam(params, 2, false).text()));
+            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Nickname collision"), utils::GetParam(params, 2, false).text()));
         }break;
         case 437: //ERR_UNAVAILRESOURCE
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Nick/channel is temporarily unavailable"), GetParam(params, 2, false).text()));
+            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Nick/channel is temporarily unavailable"), utils::GetParam(params, 2, false).text()));
         }break;
         case 441: //ERR_USERNOTINCHANNEL
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s %s :They aren't on that channel"), GetParam(params, 2, false).text(), GetParam(params, 3, false).text()));
+            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s %s :They aren't on that channel"), utils::GetParam(params, 2, false).text(), utils::GetParam(params, 3, false).text()));
         }break;
         case 442: //ERR_NOTONCHANNEL
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :You're not on that channel"), GetParam(params, 2, false).text()));
+            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :You're not on that channel"), utils::GetParam(params, 2, false).text()));
         }break;
         case 443: //ERR_USERONCHANNEL
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s %s :is already on channel"), GetParam(params, 2, false).text(), GetParam(params, 3, false).text()));
+            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s %s :is already on channel"), utils::GetParam(params, 2, false).text(), utils::GetParam(params, 3, false).text()));
         }break;
         case 444: //ERR_NOLOGIN
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :User not logged in"), GetParam(params, 2, false).text()));
+            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :User not logged in"), utils::GetParam(params, 2, false).text()));
         }break;
         case 445: //ERR_SUMMONDISABLED
         {
@@ -537,7 +537,7 @@ void IrcSocket::Numeric(const FXint &command, const FXString &params)
         }break;
         case 461: //ERR_NEEDMOREPARAMS
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Not enough parameters"), GetParam(params, 2, false).text()));
+            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Not enough parameters"), utils::GetParam(params, 2, false).text()));
         }break;
         case 462: //ERR_ALREADYREGISTRED
         {
@@ -561,41 +561,41 @@ void IrcSocket::Numeric(const FXint &command, const FXString &params)
         }break;
         case 467: //ERR_KEYSET
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Channel key already set"), GetParam(params, 2, false).text()));
+            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Channel key already set"), utils::GetParam(params, 2, false).text()));
         }break;
         case 471: //ERR_CHANNELISFULL
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Cannot join channel (+l)"), GetParam(params, 2, false).text()));
+            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Cannot join channel (+l)"), utils::GetParam(params, 2, false).text()));
         }break;
         case 472: //ERR_UNKNOWNMODE
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :is unknown mode char to me for channel"), GetParam(params, 2, false).text()));
+            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :is unknown mode char to me for channel"), utils::GetParam(params, 2, false).text()));
         }break;
         case 473: //ERR_INVITEONLYCHAN
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Cannot join channel (+i)"), GetParam(params, 2, false).text()));
+            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Cannot join channel (+i)"), utils::GetParam(params, 2, false).text()));
         }break;
         case 474: //ERR_BANNEDFROMCHAN
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Cannot join channel (+b)"), GetParam(params, 2, false).text()));
+            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Cannot join channel (+b)"), utils::GetParam(params, 2, false).text()));
         }break;
         case 475: //ERR_BADCHANNELKEY
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Cannot join channel (+k)"), GetParam(params, 2, false).text()));
+            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Cannot join channel (+k)"), utils::GetParam(params, 2, false).text()));
         }break;
         case 476: //ERR_BADCHANMASK
         {
-            if(GetParam(params, 3, true).contains("Bad Channel Mask")) SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Bad Channel Mask"), GetParam(params, 2, false).text()));
+            if(utils::GetParam(params, 3, true).contains("Bad Channel Mask")) SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Bad Channel Mask"), utils::GetParam(params, 2, false).text()));
             else SendEvent(IRC_SERVERERROR, params);
         }break;
         case 477: //ERR_NOCHANMODES
         {
-            if(GetParam(params, 3, true).contains("Channel doesn't support modes")) SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Channel doesn't support modes"), GetParam(params, 2, false).text()));
+            if(utils::GetParam(params, 3, true).contains("Channel doesn't support modes")) SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Channel doesn't support modes"), utils::GetParam(params, 2, false).text()));
             else SendEvent(IRC_SERVERERROR, params);
         }break;
         case 478: //ERR_BANLISTFULL
         {
-            if(GetParam(params, 3, true).contains("Channel list is full")) SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s %s :Channel list is full"), GetParam(params, 2, false).text(), GetParam(params, 3, false).text()));
+            if(utils::GetParam(params, 3, true).contains("Channel list is full")) SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s %s :Channel list is full"), utils::GetParam(params, 2, false).text(), utils::GetParam(params, 3, false).text()));
             else SendEvent(IRC_SERVERERROR, params);
         }break;
         case 481: //ERR_NOPRIVILEGES
@@ -604,7 +604,7 @@ void IrcSocket::Numeric(const FXint &command, const FXString &params)
         }break;
         case 482: //ERR_CHANOPRIVSNEEDED
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :You're not channel operator"), GetParam(params, 2, false).text()));
+            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :You're not channel operator"), utils::GetParam(params, 2, false).text()));
         }break;
         case 483: //ERR_CANTKILLSERVER
         {
@@ -632,8 +632,8 @@ void IrcSocket::Numeric(const FXint &command, const FXString &params)
         }break;
         default:
         {
-            if(GetParam(params, 2, true)[0] == ':') SendEvent(IRC_SERVERREPLY, GetParam(params, 2, true).after(':'));
-            else SendEvent(IRC_SERVERREPLY, GetParam(params, 2, true));
+            if(utils::GetParam(params, 2, true)[0] == ':') SendEvent(IRC_SERVERREPLY, utils::GetParam(params, 2, true).after(':'));
+            else SendEvent(IRC_SERVERREPLY, utils::GetParam(params, 2, true));
         }
     }
 }
@@ -641,8 +641,8 @@ void IrcSocket::Numeric(const FXint &command, const FXString &params)
 void IrcSocket::Privmsg(const FXString &from, const FXString &params)
 {
     FXString nick = from.before('!');
-    FXString to = GetParam(params, 1, false);
-    FXString msg = GetParam(params, 2, true).after(':');
+    FXString to = utils::GetParam(params, 1, false);
+    FXString msg = utils::GetParam(params, 2, true).after(':');
     if(msg[0] == '\001') Ctcp(from, params);
     else
     {
@@ -654,8 +654,8 @@ void IrcSocket::Privmsg(const FXString &from, const FXString &params)
 void IrcSocket::Ctcp(const FXString &from, const FXString &params)
 {
     FXString nick = from.before('!');
-    FXString to = GetParam(params, 1, false);
-    FXString msg = GetParam(params, 2, true).after(':').after('\001').before('\001');
+    FXString to = utils::GetParam(params, 1, false);
+    FXString msg = utils::GetParam(params, 2, true).after(':').after('\001').before('\001');
     FXString ctcpCommand = msg.before(' ').upper();
     FXString ctcpRest = msg.after(' ');
     if(ctcpCommand == "VERSION")
@@ -696,7 +696,7 @@ void IrcSocket::Ctcp(const FXString &from, const FXString &params)
 
 void IrcSocket::Join(const FXString &from, const FXString &params)
 {
-    FXString channel = GetParam(params, 1, false);
+    FXString channel = utils::GetParam(params, 1, false);
     if (channel[0] == ':') channel = channel.after(':');
     FXString nick = from.before('!');
     if(nickName == nick) SendEvent(IRC_NEWCHANNEL, (channel[0] == '&' ? "&"+channel : channel));
@@ -706,7 +706,7 @@ void IrcSocket::Join(const FXString &from, const FXString &params)
 
 void IrcSocket::Quitirc(const FXString &from, const FXString &params)
 {
-    FXString reason = GetParam(params, 1, true).after(':');
+    FXString reason = utils::GetParam(params, 1, true).after(':');
     FXString nick = from.before('!');
     if (reason.empty())
     {
@@ -721,8 +721,8 @@ void IrcSocket::Quitirc(const FXString &from, const FXString &params)
 
 void IrcSocket::Part(const FXString &from, const FXString &params)
 {
-    FXString channel = GetParam(params, 1, false);
-    FXString reason = GetParam(params, 1, true).after(':');
+    FXString channel = utils::GetParam(params, 1, false);
+    FXString reason = utils::GetParam(params, 1, true).after(':');
     FXString nick = from.before('!');
     if (reason.empty())
     {
@@ -746,9 +746,9 @@ void IrcSocket::Pong(const FXString &from, const FXString &params)
 
 void IrcSocket::Notice(const FXString &from, const FXString &params)
 {
-    FXString to = GetParam(params, 1, false);
+    FXString to = utils::GetParam(params, 1, false);
     FXString nick = from.before('!');
-    FXString msg = GetParam(params, 2, true).after(':');
+    FXString msg = utils::GetParam(params, 2, true).after(':');
     if(msg[0] == '\001')
     {
         SendEvent(IRC_CTCPREPLY, nick, msg.after('\001').before('\001'));
@@ -769,7 +769,7 @@ void IrcSocket::Notice(const FXString &from, const FXString &params)
 void IrcSocket::Nick(const FXString &from, const FXString &params)
 {
     FXString nick = from.before('!');
-    FXString newnick = GetParam(params, 1, false).after(':');
+    FXString newnick = utils::GetParam(params, 1, false).after(':');
     if(nickName == nick) nickName = newnick;
     SendEvent(IRC_NICK, nick, newnick);
     for(FXint i = 0; i < nicks.no(); i++)
@@ -785,16 +785,16 @@ void IrcSocket::Nick(const FXString &from, const FXString &params)
 void IrcSocket::Topic(const FXString &from, const FXString &params)
 {
     FXString nick = from.before('!');
-    FXString channel = GetParam(params, 1, false);
-    FXString topic = GetParam(params, 2, true).after(':');
+    FXString channel = utils::GetParam(params, 1, false);
+    FXString topic = utils::GetParam(params, 2, true).after(':');
     SendEvent(IRC_TOPIC, nick, channel, topic);
 }
 
 void IrcSocket::Invite(const FXString &from, const FXString &params)
 {
     FXString nick = from.before('!');
-    FXString to = GetParam(params, 1, false);
-    FXString channel = GetParam(params, 2, false);
+    FXString to = utils::GetParam(params, 1, false);
+    FXString channel = utils::GetParam(params, 2, false);
     if (channel[0] == ':') channel = channel.after(':');
     SendEvent(IRC_INVITE, nick, to, channel);
 }
@@ -802,21 +802,21 @@ void IrcSocket::Invite(const FXString &from, const FXString &params)
 void IrcSocket::Kick(const FXString &from, const FXString &params)
 {
     FXString nick = from.before('!');
-    FXString to = GetParam(params, 2, false);
-    FXString channel = GetParam(params, 1, false);
-    FXString reason = GetParam(params, 3, true).after(':');
+    FXString to = utils::GetParam(params, 2, false);
+    FXString channel = utils::GetParam(params, 1, false);
+    FXString reason = utils::GetParam(params, 3, true).after(':');
     SendEvent(IRC_KICK, nick, to, channel, reason);
 }
 
 void IrcSocket::Mode(const FXString &from, const FXString &params)
 {
-    if(params.contains(':')) SendEvent(IRC_MODE, GetParam(params, 2, true).after(':'), GetParam(params, 1, false));
+    if(params.contains(':')) SendEvent(IRC_MODE, utils::GetParam(params, 2, true).after(':'), utils::GetParam(params, 1, false));
     else //channel mode
     {
         FXString moderator = from.before('!');
-        FXString channel = GetParam(params, 1, false);
-        FXString modes = GetParam(params, 2, false);
-        FXString args = GetParam(params, 3, true);
+        FXString channel = utils::GetParam(params, 1, false);
+        FXString modes = utils::GetParam(params, 2, false);
+        FXString args = utils::GetParam(params, 3, true);
         SendEvent(IRC_UMODE, moderator, channel, modes, args);
     }
 }
@@ -1086,6 +1086,7 @@ void IrcSocket::FillCommands()
     commands.append("ADMIN");
     commands.append("AWAY");
     commands.append("BANLIST");
+    commands.append("CONNECT");
     commands.append("COMMANDS");
     commands.append("CTCP");
     commands.append("DEOP");
@@ -1163,28 +1164,6 @@ int IrcSocket::Streq(const FXchar *a, const FXchar *b)
     if (a == NULL || b == NULL)
         return 0;
     return (strcmp(a, b) == 0);
-}
-
-FXString IrcSocket::GetParam(FXString toParse, FXint n, FXbool toEnd)
-{
-    if (toEnd)
-    {
-        return toParse.after(' ', n-1);
-    }
-    else
-    {
-        return toParse.before(' ', n).rafter(' ');
-    }
-}
-
-FXString IrcSocket::GetParam(FXString toParse, FXint n, FXbool toEnd, const FXchar &separator)
-{
-    if (toEnd) {
-        return toParse.after(separator, n-1);
-    }
-    else {
-        return toParse.before(separator, n).rafter(separator);
-    }
 }
 
 void IrcSocket::AppendTarget(FXObject *tgt)
@@ -1336,7 +1315,7 @@ FXbool IrcSocket::IsUserIgnored(const FXString &nick, const FXString &on)
         {
             for(FXint j=1; j<usersList[i].channel.contains(',')+2; j++)
             {
-                if(FXRex(FXString(GetParam(usersList[i].channel, j, false, ',')+"\\>").substitute("*","\\w*")).match(on))
+                if(FXRex(FXString(utils::GetParam(usersList[i].channel, j, false, ',')+"\\>").substitute("*","\\w*")).match(on))
                 {
                     channel = true;
                     break;

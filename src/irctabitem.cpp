@@ -23,6 +23,7 @@
 #include "icons.h"
 #include "config.h"
 #include "i18n.h"
+#include "utils.h"
 
 static const FXListSortFunc sortfuncs[] = {
     FXList::ascendingCase,
@@ -490,6 +491,26 @@ long IrcTabItem::OnCommandline(FXObject *, FXSelector, void *)
                 commandline->setText("");
                 return 1;
             }
+            if(command == "connect")
+            {
+                commandline->setText("");
+                if(commandtext.after(' ').empty())
+                {
+                    AppendIrcStyledText(_("/connect <server> [port] [nick] [password] [realname] [channels], connect for given server."), 4);
+                }
+                else
+                {
+                    ServerInfo srv;
+                    srv.hostname = commandtext.after(' ').section(' ', 0);
+                    srv.port = commandtext.after(' ').section(' ', 1).empty() ? 6667 : FXIntVal(commandtext.after(' ').section(' ', 1));
+                    srv.nick = commandtext.after(' ').section(' ', 2).empty() ? FXSystem::currentUserName() : commandtext.after(' ').section(' ', 2);
+                    srv.passwd = commandtext.after(' ').section(' ', 3).empty() ? "" : commandtext.after(' ').section(' ', 3);
+                    srv.realname = commandtext.after(' ').section(' ', 4).empty() ? FXSystem::currentUserName() : commandtext.after(' ').section(' ', 4);
+                    srv.channels = commandtext.after(' ').section(' ', 5).empty() ? "" : commandtext.after(' ').section(' ', 5);
+                    parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CSERVER), &srv);
+                }
+                return 1;
+            }
             if(command == "commands")
             {
                 FXString commandstr = _("Available commnads: ");
@@ -924,6 +945,26 @@ long IrcTabItem::OnCommandline(FXObject *, FXSelector, void *)
     }
     else
     {
+        if(command == "connect")
+        {
+            commandline->setText("");
+            if(commandtext.after(' ').empty())
+            {
+                AppendIrcStyledText(_("/connect <server> [port] [nick] [password] [realname] [channels], connect for given server."), 4);
+            }
+            else
+            {
+                ServerInfo srv;
+                srv.hostname = commandtext.after(' ').section(' ', 0);
+                srv.port = commandtext.after(' ').section(' ', 1).empty() ? 6667 : FXIntVal(commandtext.after(' ').section(' ', 1));
+                srv.nick = commandtext.after(' ').section(' ', 2).empty() ? FXSystem::currentUserName() : commandtext.after(' ').section(' ', 2);
+                srv.passwd = commandtext.after(' ').section(' ', 3).empty() ? "" : commandtext.after(' ').section(' ', 3);
+                srv.realname = commandtext.after(' ').section(' ', 4).empty() ? FXSystem::currentUserName() : commandtext.after(' ').section(' ', 4);
+                srv.channels = commandtext.after(' ').section(' ', 5).empty() ? "" : commandtext.after(' ').section(' ', 5);
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CSERVER), &srv);
+            }
+            return 1;
+        }
         if(command == "commands")
         {
             FXString commandstr = _("Available commnads: ");
@@ -938,7 +979,7 @@ long IrcTabItem::OnCommandline(FXObject *, FXSelector, void *)
         else
         {
             AppendIrcStyledText(_("You aren't connected"), 4);
-            parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CONNECT), NULL);
+            parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
             commandline->setText("");
             return 1;
         }
@@ -1139,7 +1180,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
     {
         if(type == SERVER || IsCurrent() || IsNoCurrent())
         {
-            if(!IsCommandIgnored("ctcp")) AppendIrcStyledText(FXStringFormat(_("CTCP %s reply from %s: %s"), GetParam(ev->param2, 1, false).text(), ev->param1.text(), GetParam(ev->param2, 2, true).text()), 2);
+            if(!IsCommandIgnored("ctcp")) AppendIrcStyledText(FXStringFormat(_("CTCP %s reply from %s: %s"), utils::GetParam(ev->param2, 1, false).text(), ev->param1.text(), utils::GetParam(ev->param2, 2, true).text()), 2);
         }
         return 1;
     }
@@ -1297,14 +1338,14 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
                         break;
                     case 'a': //admin
                     {
-                        FXString nick = GetParam(args, argsiter, false);
+                        FXString nick = utils::GetParam(args, argsiter, false);
                         RemoveUser(nick);
                         sign ? AddUser("!"+nick) : AddUser(nick);
                         argsiter++;
                     }break;
                     case 'o': //op
                     {
-                        FXString nick = GetParam(args, argsiter, false);
+                        FXString nick = utils::GetParam(args, argsiter, false);
                         RemoveUser(nick);
                         sign ? AddUser("@"+nick) : AddUser(nick);
                         if (server->GetNickName() == nick) sign ? iamOp = true : iamOp = false;
@@ -1312,21 +1353,21 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
                     }break;
                     case 'v': //voice
                     {
-                        FXString nick = GetParam(args, argsiter, false);
+                        FXString nick = utils::GetParam(args, argsiter, false);
                         RemoveUser(nick);
                         sign ? AddUser("+"+nick) : AddUser(nick);
                         argsiter++;
                     }break;
                     case 'h': //halfop
                     {
-                        FXString nick = GetParam(args, argsiter, false);
+                        FXString nick = utils::GetParam(args, argsiter, false);
                         RemoveUser(nick);
                         sign ? AddUser("%"+nick) : AddUser(nick);
                         argsiter++;
                     }break;
                     case 'b': //ban
                     {
-                        FXString banmask = GetParam(args, argsiter, false);
+                        FXString banmask = utils::GetParam(args, argsiter, false);
                         OnBan(banmask, sign, moderator);
                         argsiter++;
                     }break;
@@ -1434,7 +1475,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
             }
             if(ev->eventType == IRC_332)
             {
-                topic = StripColors(GetParam(ev->param2, 2, true, ':').after(' '), true);
+                topic = StripColors(utils::GetParam(ev->param2, 2, true, ':').after(' '), true);
                 topicline->setText(topic);
             }
         }
@@ -1765,21 +1806,6 @@ void IrcTabItem::OnBan(const FXString &banmask, const FXbool &sign, const FXStri
             }
             nicks = nicks.after(';');
         }
-    }
-}
-
-FXString IrcTabItem::GetParam(FXString toParse, int n, bool toEnd)
-{
-    return GetParam(toParse, n, toEnd, ' ');
-}
-
-FXString IrcTabItem::GetParam(FXString toParse, int n, bool toEnd, const FXchar &separator)
-{
-    if (toEnd) {
-        return toParse.after(separator, n-1);
-    }
-    else {
-        return toParse.before(separator, n).rafter(separator);
     }
 }
 
