@@ -439,22 +439,6 @@ void IrcTabItem::MakeLastRowVisible(FXbool force)
     }
 }
 
-FXString IrcTabItem::CreateModes(FXchar sign, FXchar mode, FXString nicks)
-{
-    FXString modes;
-    modes += sign;
-    FXString tomode;
-    if(!nicks.contains(' ')) return modes+mode+" "+nicks;
-    if(nicks.right(1) != " ") nicks.append(" ");
-    while(nicks.contains(' '))
-    {
-        modes += mode;
-        tomode += nicks.before(' ')+" ";
-        nicks = nicks.after(' ');
-    }
-    return modes+" "+tomode;
-}
-
 long IrcTabItem::OnCommandline(FXObject *, FXSelector, void *)
 {
     FXString commandtext = commandline->getText();
@@ -542,14 +526,14 @@ long IrcTabItem::OnCommandline(FXObject *, FXSelector, void *)
                     {
                         FXString channel = params.before(' ');
                         FXString nicks = params.after(' ');
-                        FXString modeparams = CreateModes('-', 'o', nicks);
+                        FXString modeparams = utils::CreateModes('-', 'o', nicks);
                         server->SendMode(channel+" "+modeparams);
                     }
                     else
                     {
                         FXString channel = getText();
                         FXString nicks = params;
-                        FXString modeparams = CreateModes('-', 'o', nicks);
+                        FXString modeparams = utils::CreateModes('-', 'o', nicks);
                         server->SendMode(channel+" "+modeparams);
                     }
                 }
@@ -559,7 +543,7 @@ long IrcTabItem::OnCommandline(FXObject *, FXSelector, void *)
                     {
                         FXString channel = params.before(' ');
                         FXString nicks = params.after(' ');
-                        FXString modeparams = CreateModes('-', 'o', nicks);
+                        FXString modeparams = utils::CreateModes('-', 'o', nicks);
                         server->SendMode(channel+" "+modeparams);
                     }
                     else AppendIrcStyledText(_("/deop <channel> <nicks>, remove operator status from one or more nicks."), 4);
@@ -578,14 +562,14 @@ long IrcTabItem::OnCommandline(FXObject *, FXSelector, void *)
                     {
                         FXString channel = params.before(' ');
                         FXString nicks = params.after(' ');
-                        FXString modeparams = CreateModes('-', 'v', nicks);
+                        FXString modeparams = utils::CreateModes('-', 'v', nicks);
                         server->SendMode(channel+" "+modeparams);
                     }
                     else
                     {
                         FXString channel = getText();
                         FXString nicks = params;
-                        FXString modeparams = CreateModes('-', 'v', nicks);
+                        FXString modeparams = utils::CreateModes('-', 'v', nicks);
                         server->SendMode(channel+" "+modeparams);
                     }
                 }
@@ -595,7 +579,7 @@ long IrcTabItem::OnCommandline(FXObject *, FXSelector, void *)
                     {
                         FXString channel = params.before(' ');
                         FXString nicks = params.after(' ');
-                        FXString modeparams = CreateModes('-', 'v', nicks);
+                        FXString modeparams = utils::CreateModes('-', 'v', nicks);
                         server->SendMode(channel+" "+modeparams);
                     }
                     else AppendIrcStyledText(_("/devoice <channel> <nicks>, remove voice from one or more nicks."), 4);
@@ -775,14 +759,14 @@ long IrcTabItem::OnCommandline(FXObject *, FXSelector, void *)
                     {
                         FXString channel = params.before(' ');
                         FXString nicks = params.after(' ');
-                        FXString modeparams = CreateModes('+', 'o', nicks);
+                        FXString modeparams = utils::CreateModes('+', 'o', nicks);
                         server->SendMode(channel+" "+modeparams);
                     }
                     else
                     {
                         FXString channel = getText();
                         FXString nicks = params;
-                        FXString modeparams = CreateModes('+', 'o', nicks);
+                        FXString modeparams = utils::CreateModes('+', 'o', nicks);
                         server->SendMode(channel+" "+modeparams);
                     }
                 }
@@ -792,7 +776,7 @@ long IrcTabItem::OnCommandline(FXObject *, FXSelector, void *)
                     {
                         FXString channel = params.before(' ');
                         FXString nicks = params.after(' ');
-                        FXString modeparams = CreateModes('+', 'o', nicks);
+                        FXString modeparams = utils::CreateModes('+', 'o', nicks);
                         server->SendMode(channel+" "+modeparams);
                     }
                     else AppendIrcStyledText(_("/op <channel> <nicks>, give operator status for one or more nicks."), 4);
@@ -871,14 +855,14 @@ long IrcTabItem::OnCommandline(FXObject *, FXSelector, void *)
                     {
                         FXString channel = params.before(' ');
                         FXString nicks = params.after(' ');
-                        FXString modeparams = CreateModes('+', 'v', nicks);
+                        FXString modeparams = utils::CreateModes('+', 'v', nicks);
                         server->SendMode(channel+" "+modeparams);
                     }
                     else
                     {
                         FXString channel = getText();
                         FXString nicks = params;
-                        FXString modeparams = CreateModes('+', 'v', nicks);
+                        FXString modeparams = utils::CreateModes('+', 'v', nicks);
                         server->SendMode(channel+" "+modeparams);
                     }
                 }
@@ -888,7 +872,7 @@ long IrcTabItem::OnCommandline(FXObject *, FXSelector, void *)
                     {
                         FXString channel = params.before(' ');
                         FXString nicks = params.after(' ');
-                        FXString modeparams = CreateModes('+', 'v', nicks);
+                        FXString modeparams = utils::CreateModes('+', 'v', nicks);
                         server->SendMode(channel+" "+modeparams);
                     }
                     else AppendIrcStyledText(_("/voice <channel> <nicks>, give voice for one or more nicks."), 4);

@@ -701,4 +701,19 @@ namespace utils
         }
     }
 
+    FXString CreateModes(FXchar sign, FXchar mode, FXString nicks)
+    {
+        FXString modes;
+        modes += sign;
+        FXString tomode;
+        if(!nicks.contains(' ')) return modes+mode+" "+nicks;
+        if(nicks.right(1) != " ") nicks.append(" ");
+        while(nicks.contains(' '))
+        {
+            modes += mode;
+            tomode += nicks.before(' ')+" ";
+            nicks = nicks.after(' ');
+        }
+        return modes+" "+tomode;
+    }
 }

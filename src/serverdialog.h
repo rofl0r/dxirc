@@ -67,6 +67,7 @@ class ServerDialog: public FXDialogBox
         FXMatrix *matrix;
         FXList *names;
         FXTextField *hostname, *port, *passwd, *nick, *realname, *channels;
+        FXText *commands;
         FXCheckButton *buttonAuto;
         FXButton *buttonJoin, *buttonAdd, *buttonModify, *buttonDelete, *buttonCancel, *buttonSaveClose;
 

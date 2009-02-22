@@ -100,6 +100,7 @@ struct ServerInfo {
     FXString realname;
     FXString passwd;
     FXString channels;
+    FXString commands;
     FXbool autoConnect;
 };
 

@@ -44,7 +44,7 @@ class IrcSocket: public FXObject
 {
     FXDECLARE(IrcSocket)
     public:
-        IrcSocket(FXApp*, FXObject*, FXSelector, FXString);
+        IrcSocket(FXApp*, FXObject*, FXSelector, FXString, FXString);
         virtual ~IrcSocket();
         enum {
             ID_READ,
@@ -71,6 +71,7 @@ class IrcSocket: public FXObject
         void SetUserName(const FXString &user) { userName = user; }
         void SetRealName(const FXString &rname) { realName = rname; }
         void SetStartChannels(const FXString &channels) { startChannels = channels; }
+        void SetStartCommands(const FXString &commands) { startCommands = commands; }
         void SetUsersList(const FXIgnoreUserArray &ulst) { usersList = ulst;}
         FXbool GetConnected() { return connected; }
         void AddIgnoreCommands(const FXString &command);
@@ -118,7 +119,7 @@ class IrcSocket: public FXObject
         FXSelector selector;
         FXbool connected;
         FXint serverPort;
-        FXString serverName, realServerName, serverPassword, nickName, realName, userName, startChannels;
+        FXString serverName, realServerName, serverPassword, nickName, realName, userName, startChannels, startCommands;
         FXString receiveRest;
         FXTargetsArray targets;
         FXCommandsArray ignoreCommands;
@@ -134,6 +135,8 @@ class IrcSocket: public FXObject
 
         long ReadData();
         FXbool SendLine(const FXString &line);
+        void SendCommands();
+        FXbool SendCommand(const FXString &commandtext);
         FXbool IsUtf8(const FXchar *string, FXuint length);
         int Streq(const FXchar *a, const FXchar *b);
         void ParseLine(const FXString &line);

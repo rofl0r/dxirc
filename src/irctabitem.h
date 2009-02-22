@@ -112,8 +112,7 @@ class IrcTabItem: public FXTabItem
 
         FXString StripColors(const FXString &text, const FXbool stripOther);
         void AppendIrcText(FXString);
-        void AppendIrcStyledText(FXString, FXint);
-        FXString CreateModes(FXchar sign, FXchar mode, FXString nicks);
+        void AppendIrcStyledText(FXString, FXint);        
         FXString GetNick(int);
         FXbool IsCurrent();
         FXbool IsNoCurrent();

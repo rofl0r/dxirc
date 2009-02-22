@@ -77,6 +77,7 @@ namespace utils
     FXString GetIniFile();
     FXString GetParam(FXString, FXint, FXbool);
     FXString GetParam(FXString, FXint, FXbool, const FXchar&);
+    FXString CreateModes(FXchar sign, FXchar mode, FXString nicks);
 }
 
 

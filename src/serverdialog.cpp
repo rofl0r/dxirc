@@ -73,6 +73,12 @@ ServerDialog::ServerDialog(FXMainWindow *owner, FXServerInfoArray servers)
     new FXLabel(matrix, _("Channel(s):"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     channels = new FXTextField(matrix, 25, NULL, 0, TEXTFIELD_READONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
 
+    new FXLabel(matrix, _("Commands on connection:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    FXHorizontalFrame *commandsbox=new FXHorizontalFrame(matrix, LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW|FRAME_SUNKEN|FRAME_THICK,0,0,0,0, 0,0,0,0);
+    commands = new FXText(commandsbox, NULL, 0, TEXT_READONLY|TEXT_WORDWRAP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    commands->setVisibleRows(4);
+    commands->setVisibleColumns(25);
+
     new FXLabel(matrix, _("Auto connect:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     buttonAuto = new FXCheckButton(matrix, "", NULL, 0);
     buttonAuto->disable();
@@ -147,6 +153,12 @@ long ServerDialog::OnAdd(FXObject*,FXSelector,void*)
     FXTextField *channel = new FXTextField(matrix, 25, NULL, 0, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     channel->setText("#");
 
+    new FXLabel(matrix, _("Commands on connection:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    FXHorizontalFrame *commandsbox=new FXHorizontalFrame(matrix, LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW|FRAME_SUNKEN|FRAME_THICK,0,0,0,0, 0,0,0,0);
+    FXText *command = new FXText(commandsbox, NULL, 0, TEXT_WORDWRAP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    command->setVisibleRows(4);
+    command->setVisibleColumns(25);
+
     new FXLabel(matrix, _("Auto connect:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     FXCheckButton *buttonAuto = new FXCheckButton(matrix, "", NULL, 0);
 
@@ -165,6 +177,7 @@ long ServerDialog::OnAdd(FXObject*,FXSelector,void*)
             realname->getText().length() ? server.realname = realname->getText() : server.realname = nick->getText();
             server.passwd = passwd->getText();
             (channel->getText().length()>1) ? server.channels = channel->getText() : server.channels = "";
+            (command->getText().length()) ? server.commands = command->getText() : server.commands = "";
             server.autoConnect = buttonAuto->getCheck();
             serverList.append(server);
         }
@@ -210,6 +223,13 @@ long ServerDialog::OnModify(FXObject*,FXSelector,void*)
     FXTextField *channel = new FXTextField(matrix, 25, NULL, 0, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     channel->setText(serverList[index].channels);
 
+    new FXLabel(matrix, _("Commands on connection:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    FXHorizontalFrame *commandsbox=new FXHorizontalFrame(matrix, LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW|FRAME_SUNKEN|FRAME_THICK,0,0,0,0, 0,0,0,0);
+    FXText *command = new FXText(commandsbox, NULL, 0, TEXT_WORDWRAP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    command->setVisibleRows(4);
+    command->setVisibleColumns(25);
+    command->setText(serverList[index].commands);
+
     new FXLabel(matrix, _("Auto connect:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     FXCheckButton *buttonAuto = new FXCheckButton(matrix, "", NULL, 0);
     buttonAuto->setCheck(serverList[index].autoConnect);
@@ -229,6 +249,7 @@ long ServerDialog::OnModify(FXObject*,FXSelector,void*)
             realname->getText().length() ? server.realname = realname->getText() : server.realname = nick->getText();
             server.passwd = passwd->getText();
             (channel->getText().length()>1) ? server.channels = channel->getText() : server.channels = "";
+            (command->getText().length()) ? server.commands = command->getText() : server.commands = "";
             server.autoConnect = buttonAuto->getCheck();
             serverList[index] = server;
         }
@@ -342,6 +363,9 @@ void ServerDialog::UpdateDetails()
         channels->setText(serverList[index].channels);
             if(serverList[index].channels.length()>18) channels->setTipText(serverList[index].channels);
             else channels->setTipText("");
+        commands->setText(serverList[index].commands);
+            if(commands->getNumRows()>4) commands->setTipText(serverList[index].commands);
+            else commands->setTipText("");
         buttonAuto->setCheck(serverList[index].autoConnect);
     }
     else

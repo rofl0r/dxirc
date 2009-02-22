@@ -106,7 +106,7 @@ dxirc::dxirc(FXApp *app)
     packing &= ~PACK_UNIFORM_WIDTH;
     tabbook->setPackingHints(packing);
 
-    IrcSocket *server = new IrcSocket(app, this, 0, "");
+    IrcSocket *server = new IrcSocket(app, this, 0, "", "");
     server->SetUsersList(usersList);
     servers.append(server);
 
@@ -292,6 +292,7 @@ void dxirc::ReadServersConfig()
             server.realname = set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "realname", "xxx");
             server.passwd = Decrypt(set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "hes", ""));
             server.channels = set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "channels", "");
+            server.commands = set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "commands", "");
             server.autoConnect = set.readBoolEntry(FXStringFormat("SERVER%d", i).text(), "autoconnect", false);
             if(server.autoConnect)
             {
@@ -304,7 +305,8 @@ void dxirc::ReadServersConfig()
                     server.nick.length() ? servers[0]->SetNickName(server.nick) : servers[0]->SetNickName("_xxx_");
                     server.nick.length() ? servers[0]->SetUserName(server.nick) : servers[0]->SetUserName("_xxx_");
                     server.realname.length() ? servers[0]->SetRealName(server.realname) : servers[0]->SetRealName(server.nick.length() ? server.nick : "_xxx_");
-                    if (server.channels.length()>1) servers[0]->SetStartChannels(server.channels);
+                    if(server.channels.length()>1) servers[0]->SetStartChannels(server.channels);
+                    if(server.commands.length()) servers[0]->SetStartCommands(server.commands);
                     if (!tabbook->numChildren())
                     {
                         IrcTabItem *tabitem = new IrcTabItem(tabbook, server.hostname, servericon, TAB_BOTTOM, SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList);
@@ -319,7 +321,7 @@ void dxirc::ReadServersConfig()
                 }
                 else if(!ServerExist(server.hostname, server.port))
                 {
-                    IrcSocket *newserver = new IrcSocket(app, this, 0, "");
+                    IrcSocket *newserver = new IrcSocket(app, this, 0, server.channels, server.commands);
                     newserver->SetUsersList(usersList);
                     servers.prepend(newserver);
                     servers[0]->SetServerName(server.hostname);
@@ -327,8 +329,7 @@ void dxirc::ReadServersConfig()
                     servers[0]->SetServerPassword(server.passwd);
                     server.nick.length() ? servers[0]->SetNickName(server.nick) : servers[0]->SetNickName("_xxx_");
                     server.nick.length() ? servers[0]->SetUserName(server.nick) : servers[0]->SetUserName("_xxx_");
-                    server.realname.length() ? servers[0]->SetRealName(server.realname) : servers[0]->SetRealName(server.nick.length() ? server.nick : "_xxx_");
-                    if (server.channels.length()>1) servers[0]->SetStartChannels(server.channels);
+                    server.realname.length() ? servers[0]->SetRealName(server.realname) : servers[0]->SetRealName(server.nick.length() ? server.nick : "_xxx_");                    
                     IrcTabItem *tabitem = new IrcTabItem(tabbook, server.hostname, servericon, TAB_BOTTOM, SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList);
                     servers[0]->AppendTarget(tabitem);
                     tabitem->create();
@@ -359,6 +360,7 @@ void dxirc::SaveConfig()
             set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "realname", serverList[i].realname.text());
             set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "hes", Encrypt(serverList[i].passwd).text());
             set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "channels", serverList[i].channels.text());
+            set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "commands", serverList[i].commands.text());
             set.writeBoolEntry(FXStringFormat("SERVER%d", i).text(), "autoconnect", serverList[i].autoConnect);
         }
     }
@@ -811,7 +813,7 @@ long dxirc::OnCommandServers(FXObject*, FXSelector, void*)
         indexJoin = dialog->GetIndexJoin();
         if (indexJoin != -1 && !ServerExist(serverList[indexJoin].hostname, serverList[indexJoin].port))
         {
-            ConnectServer(serverList[indexJoin].hostname, serverList[indexJoin].port, serverList[indexJoin].passwd, serverList[indexJoin].nick, serverList[indexJoin].realname, serverList[indexJoin].channels, "");
+            ConnectServer(serverList[indexJoin].hostname, serverList[indexJoin].port, serverList[indexJoin].passwd, serverList[indexJoin].nick, serverList[indexJoin].realname, serverList[indexJoin].channels, serverList[indexJoin].commands);
         }
     }
     return 1;
@@ -847,12 +849,18 @@ long dxirc::OnCommandConnect(FXObject*, FXSelector, void*)
     FXTextField *channel = new FXTextField(matrix, 25, NULL, 0, TEXTFIELD_ENTER_ONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     channel->setText("#");
 
+    new FXLabel(matrix, _("Commands on connection:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    FXHorizontalFrame *commandsbox=new FXHorizontalFrame(matrix, LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW|FRAME_SUNKEN|FRAME_THICK,0,0,0,0, 0,0,0,0);
+    FXText *command = new FXText(commandsbox, NULL, 0, TEXT_WORDWRAP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    command->setVisibleRows(4);
+    command->setVisibleColumns(25);
+
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y);
     new FXButton(buttonframe, _("&OK"), NULL, &serverEdit, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
     new FXButton(buttonframe, _("Cancel"), NULL, &serverEdit, FXDialogBox::ID_CANCEL, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
     if (serverEdit.execute(PLACEMENT_OWNER))
     {
-        ConnectServer(hostname->getText(), port->getValue(), passwd->getText(), nick->getText(), realname->getText(), channel->getText(), "");
+        ConnectServer(hostname->getText(), port->getValue(), passwd->getText(), nick->getText(), realname->getText(), channel->getText(), command->getText());
     }
     return 1;
 }
@@ -874,7 +882,8 @@ void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString
         nick.length() ? servers[0]->SetNickName(nick) : servers[0]->SetNickName("_xxx_");
         nick.length() ? servers[0]->SetUserName(nick) : servers[0]->SetUserName("_xxx_");
         rname.length() ? servers[0]->SetRealName(rname) : servers[0]->SetRealName(nick.length() ? nick : "_xxx_");
-        if (channels.length()>1) servers[0]->SetStartChannels(channels);
+        if(channels.length()>1) servers[0]->SetStartChannels(channels);
+        if(commands.length()) servers[0]->SetStartCommands(commands);
         if (!tabbook->numChildren())
         {
             IrcTabItem *tabitem = new IrcTabItem(tabbook, hostname, servericon, TAB_BOTTOM, SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList);
@@ -889,7 +898,7 @@ void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString
     }
     else if(!ServerExist(hostname, port))
     {
-        IrcSocket *server = new IrcSocket(app, this, 0, channels.length()>1 ? channels : "");
+        IrcSocket *server = new IrcSocket(app, this, 0, channels.length()>1 ? channels : "", commands.length() ? commands : "");
         server->SetUsersList(usersList);
         servers.prepend(server);
         servers[0]->SetServerName(hostname);

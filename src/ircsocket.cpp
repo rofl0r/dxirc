@@ -30,8 +30,8 @@ FXDEFMAP(IrcSocket) IrcSocketMap[] = {
 
 FXIMPLEMENT(IrcSocket, FXObject, IrcSocketMap, ARRAYNUMBER(IrcSocketMap))
 
-IrcSocket::IrcSocket(FXApp *app, FXObject *tgt, FXSelector sel, FXString channels)
-    : application(app), selector(sel), startChannels(channels)
+IrcSocket::IrcSocket(FXApp *app, FXObject *tgt, FXSelector sel, FXString channels, FXString commands)
+    : application(app), selector(sel), startChannels(channels), startCommands(commands)
 {
     targets.append(tgt);
     serverName = "localhost";
@@ -70,6 +70,7 @@ FXint IrcSocket::Connect()
     {
         SendEvent(IRC_ERROR, _("Unable initiliaze socket"));
         startChannels.clear();
+        startCommands.clear();
         return -1;
     }
 #endif
@@ -77,12 +78,14 @@ FXint IrcSocket::Connect()
     {
         SendEvent(IRC_ERROR, FXStringFormat(_("Bad host: %s"), serverName.text()));
         startChannels.clear();
+        startCommands.clear();
         return -1;
     }
     if ((socketid = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
     {
         SendEvent(IRC_ERROR, _("Unable create socket"));
         startChannels.clear();
+        startCommands.clear();
 #ifdef WIN32
         WSACleanup();
 #endif
@@ -95,6 +98,7 @@ FXint IrcSocket::Connect()
     {
         SendEvent(IRC_ERROR, FXStringFormat(_("Unable connect to: %s"), serverName.text()));
         startChannels.clear();
+        startCommands.clear();
         return -1;
     }
 #ifdef WIN32
@@ -129,6 +133,7 @@ void IrcSocket::CloseConnection()
     connected = false;
     SendEvent(IRC_DISCONNECT, FXStringFormat(_("Server %s was disconnected"), serverName.text()));
     startChannels.clear();
+    startCommands.clear();
 #ifdef WIN32
     shutdown(socketid, SD_BOTH);
     closesocket(socketid);
@@ -402,6 +407,10 @@ void IrcSocket::Numeric(const FXint &command, const FXString &params)
                 SendJoin(startChannels);
                 startChannels.clear();
             }
+            if(!startCommands.empty())
+            {
+                SendCommands();
+            }
         }break;
         case 381: //RPL_YOUREOPER
         {
@@ -475,6 +484,10 @@ void IrcSocket::Numeric(const FXint &command, const FXString &params)
             {
                 SendJoin(startChannels);
                 startChannels.clear();
+            }
+            if(!startCommands.empty())
+            {
+                SendCommands();
             }
         }break;
         case 423: //ERR_NOADMININFO
@@ -1004,6 +1017,180 @@ FXbool IrcSocket::SendLine(const FXString& line)
         return true;
     }
     else return false;
+}
+
+void IrcSocket::SendCommands()
+{
+    if(!startCommands.contains('\n')) startCommands.append('\n');
+    if(startCommands.right(1) != "\n") startCommands.append('\n');
+    while(startCommands.contains('\n'))
+    {
+        SendCommand(startCommands.before('\n'));
+        startCommands = startCommands.after('\n');
+    }
+}
+
+FXbool IrcSocket::SendCommand(const FXString& commandtext)
+{
+    if(connected)
+    {
+        FXString command = commandtext.after('/').before(' ').lower();
+        if(command == "admin")
+        {
+            return SendAdmin(commandtext.after(' '));
+        }
+        if(command == "away")
+        {
+            return SendAway(commandtext.after(' '));
+        }
+        if(command == "banlist")
+        {
+            FXString channel = commandtext.after(' ');
+            return SendBanlist(channel);
+        }
+        if(command == "ctcp")
+        {
+            FXString to = commandtext.after(' ').before(' ');
+            FXString msg = commandtext.after(' ', 2);
+            return SendCtcp(to, msg);
+        }
+        if(command == "deop")
+        {
+            FXString params = commandtext.after(' ');
+            FXString channel = params.before(' ');
+            FXString nicks = params.after(' ');
+            FXString modeparams = utils::CreateModes('-', 'o', nicks);
+            return SendMode(channel+" "+modeparams);
+        }
+        if(command == "devoice")
+        {
+            FXString params = commandtext.after(' ');
+            FXString channel = params.before(' ');
+            FXString nicks = params.after(' ');
+            FXString modeparams = utils::CreateModes('-', 'v', nicks);
+            return SendMode(channel+" "+modeparams);
+        }
+        if(command == "invite")
+        {
+            FXString params = commandtext.after(' ');
+            FXString nick = params.before(' ');
+            FXString channel = params.after(' ');
+            return SendInvite(nick, channel);
+        }
+        if(command == "join")
+        {
+            FXString channel = commandtext.after(' ');
+            return SendJoin(channel);
+        }
+        if(command == "kick")
+        {
+            FXString params = commandtext.after(' ');
+            FXString channel = params.before(' ');
+            FXString nick = params.after(' ');
+            FXString reason = params.after(' ', 2);
+            return SendKick(channel, nick, reason);
+        }
+        if(command == "kill")
+        {
+            FXString params = commandtext.after(' ');
+            FXString nick = params.before(' ');
+            FXString reason = params.after(' ');
+            return SendKill(nick, reason);
+        }
+        if(command == "list")
+        {
+            return SendList(commandtext.after(' '));
+        }
+        if(command == "me")
+        {
+            FXString params = commandtext.after(' ');
+            FXString to = params.before(' ');
+            FXString message = params.after(' ');
+            return SendMe(to, message);
+        }
+        if(command == "msg")
+        {
+            FXString params = commandtext.after(' ');
+            FXString to = params.before(' ');
+            FXString message = params.after(' ');
+            return SendMsg(to, message);
+        }
+        if(command == "names")
+        {
+            FXString params = commandtext.after(' ');
+            return SendNames(params);
+        }
+        if(command == "nick")
+        {
+            FXString nick = commandtext.after(' ');
+            return SendNick(nick);
+        }
+        if(command == "notice")
+        {
+            FXString params = commandtext.after(' ');
+            FXString to = params.before(' ');
+            FXString message = params.after(' ');
+            return SendNotice(to, message);
+        }
+        if(command == "op")
+        {
+            FXString params = commandtext.after(' ');
+            FXString channel = params.before(' ');
+            FXString nicks = params.after(' ');
+            FXString modeparams = utils::CreateModes('+', 'o', nicks);
+            return SendMode(channel+" "+modeparams);
+        }
+        if(command == "oper")
+        {
+            FXString params = commandtext.after(' ');
+            FXString login = params.before(' ');
+            FXString password = params.after(' ');
+            return SendOper(login, password);
+        }
+        if(command == "raw")
+        {
+            return SendRaw(commandtext.after(' '));
+        }
+        if(command == "topic")
+        {
+            FXString params = commandtext.after(' ');
+            FXString channel = params.before(' ');
+            FXString topic = params.after(' ');
+            return SendTopic(channel, topic);
+        }
+        if(command == "voice")
+        {
+            FXString params = commandtext.after(' ');
+            FXString channel = params.before(' ');
+            FXString nicks = params.after(' ');
+            FXString modeparams = utils::CreateModes('+', 'v', nicks);
+            return SendMode(channel+" "+modeparams);
+        }
+        if(command == "wallops")
+        {
+            FXString params = commandtext.after(' ');
+            return SendWallops(params);
+        }
+        if(command == "who")
+        {
+            FXString params = commandtext.after(' ');
+            return SendWho(params);
+        }
+        if(command == "whois")
+        {
+            FXString params = commandtext.after(' ');
+            return SendWhois(params);
+        }
+        if(command == "whowas")
+        {
+            FXString params = commandtext.after(' ');
+            return SendWhowas(params);
+        }
+        SendEvent(IRC_ERROR, FXStringFormat(_("Bad command on connection:%s"), commandtext.text()));
+        return false;
+    }
+    else
+        return false;
 }
 
 void IrcSocket::SendEvent(IrcEventType eventType)
