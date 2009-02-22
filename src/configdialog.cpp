@@ -949,8 +949,8 @@ void ConfigDialog::FillThemes()
 FXString ConfigDialog::FillCommandsCombo()
 {
     FXString combo;
-    FXString available[9] = { "away", "ban", "ctcp", "join", "me", "nick", "notice", "part", "quit"};
-    for(FXint i=0; i<9; i++)
+    FXString available[10] = { "away", "ban", "ctcp", "join", "me", "nick", "notice", "mode", "part", "quit"};
+    for(FXint i=0; i<10; i++)
     {
         FXbool exist = false;
         for(FXint j=0; j<commands->getNumItems(); j++)

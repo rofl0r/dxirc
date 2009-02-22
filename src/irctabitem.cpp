@@ -1324,14 +1324,48 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
                     {
                         FXString nick = utils::GetParam(args, argsiter, false);
                         RemoveUser(nick);
-                        sign ? AddUser("!"+nick) : AddUser(nick);
+                        if(sign)
+                        {
+                            AddUser("!"+nick);
+                            if(!IsCommandIgnored("mode"))
+                            {
+                                if(nick == server->GetNickName()) AppendIrcStyledText(FXStringFormat(_("%s gave you admin"), moderator.text()), 1);
+                                else AppendIrcStyledText(FXStringFormat(_("%s gave %s admin"), moderator.text(), nick.text()), 1);
+                            }
+                        }
+                        else
+                        {
+                            AddUser(nick);
+                            if(!IsCommandIgnored("mode"))
+                            {
+                                if(nick == server->GetNickName()) AppendIrcStyledText(FXStringFormat(_("%s removed you admin"), moderator.text()), 1);
+                                else AppendIrcStyledText(FXStringFormat(_("%s removed %s admin"), moderator.text(), nick.text()), 1);
+                            }
+                        }
                         argsiter++;
                     }break;
                     case 'o': //op
                     {
                         FXString nick = utils::GetParam(args, argsiter, false);
                         RemoveUser(nick);
-                        sign ? AddUser("@"+nick) : AddUser(nick);
+                        if(sign)
+                        {
+                            AddUser("@"+nick);
+                            if(!IsCommandIgnored("mode"))
+                            {
+                                if(nick == server->GetNickName()) AppendIrcStyledText(FXStringFormat(_("%s gave you op"), moderator.text()), 1);
+                                else AppendIrcStyledText(FXStringFormat(_("%s gave %s op"), moderator.text(), nick.text()), 1);
+                            }
+                        }
+                        else
+                        {
+                            AddUser(nick);
+                            if(!IsCommandIgnored("mode"))
+                            {
+                                if(nick == server->GetNickName()) AppendIrcStyledText(FXStringFormat(_("%s removed you op"), moderator.text()), 1);
+                                else AppendIrcStyledText(FXStringFormat(_("%s removed %s op"), moderator.text(), nick.text()), 1);
+                            }
+                        }
                         if (server->GetNickName() == nick) sign ? iamOp = true : iamOp = false;
                         argsiter++;
                     }break;
@@ -1339,14 +1373,48 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
                     {
                         FXString nick = utils::GetParam(args, argsiter, false);
                         RemoveUser(nick);
-                        sign ? AddUser("+"+nick) : AddUser(nick);
+                        if(sign)
+                        {
+                            AddUser("+"+nick);
+                            if(!IsCommandIgnored("mode"))
+                            {
+                                if(nick == server->GetNickName()) AppendIrcStyledText(FXStringFormat(_("%s gave you voice"), moderator.text()), 1);
+                                else AppendIrcStyledText(FXStringFormat(_("%s gave %s voice"), moderator.text(), nick.text()), 1);
+                            }
+                        }
+                        else
+                        {
+                            AddUser(nick);
+                            if(!IsCommandIgnored("mode"))
+                            {
+                                if(nick == server->GetNickName()) AppendIrcStyledText(FXStringFormat(_("%s removed you voice"), moderator.text()), 1);
+                                else AppendIrcStyledText(FXStringFormat(_("%s removed %s voice"), moderator.text(), nick.text()), 1);
+                            }
+                        }
                         argsiter++;
                     }break;
                     case 'h': //halfop
                     {
                         FXString nick = utils::GetParam(args, argsiter, false);
                         RemoveUser(nick);
-                        sign ? AddUser("%"+nick) : AddUser(nick);
+                        if(sign)
+                        {
+                            AddUser("%"+nick);
+                            if(!IsCommandIgnored("mode"))
+                            {
+                                if(nick == server->GetNickName()) AppendIrcStyledText(FXStringFormat(_("%s gave you halfop"), moderator.text()), 1);
+                                else AppendIrcStyledText(FXStringFormat(_("%s gave %s halfop"), moderator.text(), nick.text()), 1);
+                            }
+                        }
+                        else
+                        {
+                            AddUser(nick);
+                            if(!IsCommandIgnored("mode"))
+                            {
+                                if(nick == server->GetNickName()) AppendIrcStyledText(FXStringFormat(_("%s removed you halfop"), moderator.text()), 1);
+                                else AppendIrcStyledText(FXStringFormat(_("%s removed %s halfop"), moderator.text(), nick.text()), 1);
+                            }
+                        }
                         argsiter++;
                     }break;
                     case 'b': //ban
