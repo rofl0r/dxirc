@@ -1120,10 +1120,39 @@ void IrcTabItem::RemoveUser(const FXString& user)
 
 void IrcTabItem::ChangeNickUser(const FXString& nick, const FXString& newnick)
 {
-    if(users->findItem(nick) != -1)
+    FXint i = users->findItem(nick);
+    if(i != -1)
     {
-        RemoveUser(nick);
-        AddUser(newnick);
+        if(users->getItemIcon(i) == irc_owner_icon || users->getItemIcon(i) == irc_away_owner_icon)
+        {
+            RemoveUser(nick);
+            AddUser("*"+newnick);
+        }
+        else if(users->getItemIcon(i) == irc_admin_icon || users->getItemIcon(i) == irc_away_admin_icon)
+        {
+            RemoveUser(nick);
+            AddUser("!"+newnick);
+        }
+        else if(users->getItemIcon(i) == irc_op_icon || users->getItemIcon(i) == irc_away_op_icon)
+        {
+            RemoveUser(nick);
+            AddUser("@"+newnick);
+        }
+        else if(users->getItemIcon(i) == irc_voice_icon || users->getItemIcon(i) == irc_away_voice_icon)
+        {
+            RemoveUser(nick);
+            AddUser("+"+newnick);
+        }
+        else if(users->getItemIcon(i) == irc_halfop_icon || users->getItemIcon(i) == irc_away_halfop_icon)
+        {
+            RemoveUser(nick);
+            AddUser("%"+newnick);
+        }
+        else
+        {
+            RemoveUser(nick);
+            AddUser(newnick);
+        }
     }
 }
 
