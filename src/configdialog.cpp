@@ -201,7 +201,7 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, F
     }
 
     FXVerticalFrame *otherpane = new FXVerticalFrame(switcher, LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    new FXLabel(otherpane, _("Other settings"), NULL, LAYOUT_LEFT);
+    new FXLabel(otherpane, _("General settings"), NULL, LAYOUT_LEFT);
     new FXHorizontalSeparator(otherpane, SEPARATOR_LINE|LAYOUT_FILL_X);
     FXGroupBox *themesgroup = new FXGroupBox(otherpane, _("Nick icons themes"), FRAME_GROOVE|LAYOUT_FILL_X|LAYOUT_FILL_Y|LAYOUT_SIDE_TOP);
     FXVerticalFrame *themesbuttons = new FXVerticalFrame(themesgroup, LAYOUT_SIDE_RIGHT|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
@@ -302,11 +302,11 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, F
     FXHorizontalFrame *fontframe = new FXHorizontalFrame(lookpane, LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, DEFAULT_SPACING,DEFAULT_SPACING,DEFAULT_SPACING,DEFAULT_SPACING);
     new FXLabel(fontframe, _("Font"));
     fontButton = new FXButton(fontframe, " ", NULL, this, ID_FONT, LAYOUT_CENTER_Y|FRAME_RAISED|JUSTIFY_CENTER_X|JUSTIFY_CENTER_Y|LAYOUT_FILL_X);
-
+    
+    new FXButton(buttonframe, _("&General"), NULL, switcher, FXSwitcher::ID_OPEN_THIRD, FRAME_RAISED);
+    new FXButton(buttonframe, _("&Look"), NULL, switcher, FXSwitcher::ID_OPEN_FOURTH, FRAME_RAISED);
     new FXButton(buttonframe, _("&Irc Text"), NULL, switcher, FXSwitcher::ID_OPEN_FIRST, FRAME_RAISED);
     new FXButton(buttonframe, _("I&gnore"), NULL, switcher, FXSwitcher::ID_OPEN_SECOND, FRAME_RAISED);
-    new FXButton(buttonframe, _("&Other"), NULL, switcher, FXSwitcher::ID_OPEN_THIRD, FRAME_RAISED);
-    new FXButton(buttonframe, _("&Look"), NULL, switcher, FXSwitcher::ID_OPEN_FOURTH, FRAME_RAISED);
 
     for(int i=0; i<5; i++)
     {

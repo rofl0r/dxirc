@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: 0.01\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-02-22 20:57+0100\n"
-"PO-Revision-Date: 2009-02-22 21:06+0100\n"
+"PO-Revision-Date: 2009-02-25 20:39+0100\n"
 "Last-Translator: David Vachulka <david@konstrukce-cad.com>\n"
 "Language-Team: dvx-alone <david@konstrukce-cad.com>\n"
 "MIME-Version: 1.0\n"
@@ -158,7 +158,7 @@ msgstr "Příliš vysoké číslo může být důvodem k banu"
 
 #: src/configdialog.cpp:237
 msgid "Nick completion char"
-msgstr "Znak pro kompletaci přezdívek"
+msgstr "Znak pro doplňování přezdívek"
 
 #: src/configdialog.cpp:240
 msgid "Special tab for server messages"
