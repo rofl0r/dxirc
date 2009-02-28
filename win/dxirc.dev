@@ -1,7 +1,7 @@
 [Project]
 FileName=dxirc.dev
 Name=dxirc
-UnitCount=16
+UnitCount=18
 Type=0
 Ver=1
 ObjFiles=
@@ -11,8 +11,8 @@ PrivateResource=dxirc_private.rc
 ResourceIncludes=
 MakeIncludes=
 Compiler=-I"<INCLUDE>\Fox-1.6"_@@__@@__@@_
-CppCompiler=-I"<INCLUDE>\Fox-1.6"_@@_-DDXIRC_DATADIR=\".\"_@@__@@_
-Linker=-lFOX-1.6_@@_-lws2_32_@@_-lpng_@@_-lintl_@@_-ljpeg_@@_-ltiff_@@__@@__@@_
+CppCompiler=-I"<INCLUDE>\Fox-1.6"_@@_-DDXIRC_DATADIR=\".\"_@@_-DFOXDLL_@@__@@_
+Linker=-lFOXDLL-1.6_@@_-lws2_32_@@_-lpng12_@@_-lintl_@@_-ljpeg_@@_-ltiff_@@__@@__@@_
 IsCpp=1
 Icon=dxirc.ico
 ExeOutput=..\
@@ -32,19 +32,19 @@ CompilerSettings=0000000000000000000000
 [VersionInfo]
 Major=0
 Minor=10
-Release=2
+Release=3
 Build=0
 LanguageID=1029
 CharsetID=1252
 CompanyName=David Vachulka
-FileVersion=0.10.2
+FileVersion=0.10.3
 FileDescription=dxirc - simple IRC client
 InternalName=dxirc
 LegalCopyright=Copyright (C) 2008 David Vachulka
 LegalTrademarks=GPL
 OriginalFilename=dxirc.exe
 ProductName=dxirc - simple IRC client
-ProductVersion=0.10.2
+ProductVersion=0.10.3
 AutoIncBuildNr=0
 
 [Unit1]
@@ -199,6 +199,26 @@ BuildCmd=
 
 [Unit16]
 FileName=config.h
+CompileCpp=1
+Folder=dxirc
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit17]
+FileName=..\src\utils.h
+CompileCpp=1
+Folder=dxirc
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit18]
+FileName=..\src\utils.cpp
 CompileCpp=1
 Folder=dxirc
 Compile=1
