@@ -319,7 +319,9 @@ void IrcSocket::Numeric(const FXint &command, const FXString &params)
         }break;
         case 320: //RPL_IDENTIFIED
         {
-            SendEvent(IRC_SERVERREPLY, FXStringFormat(_("%s : is identified to services"), utils::GetParam(params, 2, false).text()));
+            if(params.contains("is identified to services")) SendEvent(IRC_SERVERREPLY, FXStringFormat(_("%s : is identified to services"), utils::GetParam(params, 2, false).text()));
+            else if(params.contains("is signed on as account")) SendEvent(IRC_SERVERREPLY, FXStringFormat(_("%s : is signed on as account %s"), utils::GetParam(params, 2, false).text(), utils::GetParam(params, 8, false).text()));
+            else SendEvent(IRC_SERVERREPLY, utils::GetParam(params, 2, true));
         }break;
         case 324: //RPL_CHANNELMODEIS
         {

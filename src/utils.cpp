@@ -652,7 +652,7 @@ namespace utils
                     fxwarning("%s: is not a directory.\n",pathname.text());
                 }
             }
-            iniFile = pathname.append(PATHSEPSTRING "dxirc.ini")
+            iniFile = pathname.append(PATHSEPSTRING "dxirc.ini");
             return iniFile;
 #else
             pathname = FXSystem::getHomeDirectory()+PATHSEPSTRING+".dxirc";
