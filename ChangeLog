@@ -1,3 +1,8 @@
+Version 0.10.3 (released 28-02-2009)
+- new startup option -l [FILE] and location for config file
+- new command /connect
+- 'commands on connection' added
+
 Version 0.10.2 (released 12-01-2009)
 - irctab and configdialog repaired
 
