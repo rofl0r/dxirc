@@ -58,13 +58,15 @@ enum IrcEventType {
     IRC_CHMODE,
     IRC_SERVERREPLY, //command 001,002,....
     IRC_SERVERERROR, //command 400~599
-    IRC_301,
-    IRC_331,
-    IRC_332,
-    IRC_333,
-    IRC_353,
-    IRC_366,
-    IRC_372,
+    IRC_301, //RPL_AWAY
+    IRC_305, //RPL_UNAWAY
+    IRC_306, //RPL_NOWAWAY
+    IRC_331, //RPL_UNAWAY
+    IRC_332, //RPL_UNAWAY
+    IRC_333, //RPL_TOPICSETBY
+    IRC_353, //RPL_NAMREPLY
+    IRC_366, //RPL_ENDOFNAMES
+    IRC_372, //RPL_MOTD
     IRC_KICK,
     IRC_NOTICE,
     IRC_CHNOTICE,
@@ -75,7 +77,6 @@ enum IrcEventType {
 
 struct IrcEvent {
     IrcEventType eventType;
-    IrcSocket *ircSocket;
     FXString param1, param2, param3, param4;
 };
 

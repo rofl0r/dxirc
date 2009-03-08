@@ -975,10 +975,10 @@ long dxirc::OnCommandDisconnect(FXObject*, FXSelector, void*)
     return 1;
 }
 
-long dxirc::OnIrcEvent(FXObject *, FXSelector, void *data)
+long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
 {
-    IrcEvent *ev = (IrcEvent *) data;
-    IrcSocket *server = ev->ircSocket;
+    IrcEvent *ev = (IrcEvent *)data;
+    IrcSocket *server = (IrcSocket *)obj;
     if(ev->eventType == IRC_NEWCHANNEL)
     {
         FXint serverTabIndex = GetServerTab(server);

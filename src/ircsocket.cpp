@@ -264,11 +264,11 @@ void IrcSocket::Numeric(const FXint &command, const FXString &params)
         }break;
         case 305: //RPL_UNAWAY
         {
-            SendEvent(IRC_SERVERREPLY, _("You are no longer marked as being away"));
+            SendEvent(IRC_305, _("You are no longer marked as being away"));
         }break;
         case 306: //RPL_NOWAWAY
         {
-            SendEvent(IRC_SERVERREPLY, _("You have been marked as being away"));
+            SendEvent(IRC_306, _("You have been marked as being away"));
         }break;
         case 311: //RPL_WHOISUSER
         {
@@ -331,11 +331,11 @@ void IrcSocket::Numeric(const FXint &command, const FXString &params)
         {
             //now nothing action
         }break;
-        case 331: //RPL_NOTOPIC
+        case 331: //RPL_UNAWAY
         {
             SendEvent(IRC_331, utils::GetParam(params, 2, false), _("No topic is set"));
         }break;
-        case 332: //RPL_TOPIC
+        case 332: //RPL_UNAWAY
         {
             SendEvent(IRC_332, utils::GetParam(params, 2, false), FXStringFormat(_("Topic for %s : %s"), utils::GetParam(params, 2, false).text(), utils::GetParam(params, 3, true).after(':').text()));
         }break;
@@ -507,6 +507,8 @@ void IrcSocket::Numeric(const FXint &command, const FXString &params)
         case 432: //ERR_ERRONEUSNICKNAME
         {
             SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Erroneous nickname"), utils::GetParam(params, 2, false).text()));
+            nickName[0] = '_';
+            SendNick(nickName);
         }break;
         case 433: //ERR_NICKNAMEINUSE
         {
@@ -1203,7 +1205,6 @@ void IrcSocket::SendEvent(IrcEventType eventType)
     ev.param2 = "";
     ev.param3 = "";
     ev.param4 = "";
-    ev.ircSocket = this;
     for (FXint i=0; i < targets.no(); i++)
     {
         targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
@@ -1218,7 +1219,6 @@ void IrcSocket::SendEvent(IrcEventType eventType, const FXString &param1)
     ev.param2 = "";
     ev.param3 = "";
     ev.param4 = "";
-    ev.ircSocket = this;
     for (FXint i=0; i < targets.no(); i++)
     {
         targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
@@ -1233,7 +1233,6 @@ void IrcSocket::SendEvent(IrcEventType eventType, const FXString &param1, const 
     ev.param2 = param2;
     ev.param3 = "";
     ev.param4 = "";
-    ev.ircSocket = this;
     for (FXint i=0; i < targets.no(); i++)
     {
         targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
@@ -1248,7 +1247,6 @@ void IrcSocket::SendEvent(IrcEventType eventType, const FXString &param1, const 
     ev.param2 = param2;
     ev.param3 = param3;
     ev.param4 = "";
-    ev.ircSocket = this;
     for (FXint i=0; i < targets.no(); i++)
     {
         targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
@@ -1263,7 +1261,6 @@ void IrcSocket::SendEvent(IrcEventType eventType, const FXString &param1, const 
     ev.param2 = param2;
     ev.param3 = param3;
     ev.param4 = param4;
-    ev.ircSocket = this;
     for (FXint i=0; i < targets.no(); i++)
     {
         targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);

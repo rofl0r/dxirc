@@ -1544,6 +1544,84 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
         }
         return 1;
     }
+    if(ev->eventType == IRC_305)
+    {
+        FXint i = users->findItem(server->GetNickName());
+        if(i != -1)
+        {
+            AppendIrcStyledText(ev->param1, 1);
+            if(users->getItemIcon(i) == irc_away_owner_icon)
+            {
+                users->setItemIcon(i, irc_owner_icon);
+                return 1;
+            }
+            if(users->getItemIcon(i) == irc_away_admin_icon)
+            {
+                users->setItemIcon(i, irc_admin_icon);
+                return 1;
+            }
+            if(users->getItemIcon(i) == irc_away_op_icon)
+            {
+                users->setItemIcon(i, irc_op_icon);
+                return 1;
+            }
+            if(users->getItemIcon(i) == irc_away_voice_icon)
+            {
+                users->setItemIcon(i, irc_voice_icon);
+                return 1;
+            }
+            if(users->getItemIcon(i) == irc_away_halfop_icon)
+            {
+                users->setItemIcon(i, irc_halfop_icon);
+                return 1;
+            }
+            if(users->getItemIcon(i) == irc_away_normal_icon)
+            {
+                users->setItemIcon(i, irc_normal_icon);
+                return 1;
+            }
+        }
+        return 1;
+    }
+    if(ev->eventType == IRC_306)
+    {
+        FXint i = users->findItem(server->GetNickName());
+        if(i != -1)
+        {
+            AppendIrcStyledText(ev->param1, 1);
+            if(users->getItemIcon(i) == irc_owner_icon)
+            {
+                users->setItemIcon(i, irc_away_owner_icon);
+                return 1;
+            }
+            if(users->getItemIcon(i) == irc_admin_icon)
+            {
+                users->setItemIcon(i, irc_away_admin_icon);
+                return 1;
+            }
+            if(users->getItemIcon(i) == irc_op_icon)
+            {
+                users->setItemIcon(i, irc_away_op_icon);
+                return 1;
+            }
+            if(users->getItemIcon(i) == irc_voice_icon)
+            {
+                users->setItemIcon(i, irc_away_voice_icon);
+                return 1;
+            }
+            if(users->getItemIcon(i) == irc_halfop_icon)
+            {
+                users->setItemIcon(i, irc_away_halfop_icon);
+                return 1;
+            }
+            if(users->getItemIcon(i) == irc_normal_icon)
+            {
+                users->setItemIcon(i, irc_away_normal_icon);
+                return 1;
+            }
+        }
+        return 1;
+    }
     if(ev->eventType == IRC_331 || ev->eventType == IRC_332 || ev->eventType == IRC_333)
     {
         if(ev->param1.lower() == getText().lower())
@@ -1751,7 +1829,6 @@ long IrcTabItem::OnNewQuery(FXObject *, FXSelector, void *)
     IrcEvent ev;
     ev.eventType = IRC_QUERY;
     ev.param1 = nickOnRight.nick;
-    ev.ircSocket = server;
     parent->getParent()->getParent()->handle(server, FXSEL(SEL_COMMAND, IrcSocket::ID_SERVER), &ev);
     return 1;
 }
