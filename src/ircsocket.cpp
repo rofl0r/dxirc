@@ -507,7 +507,7 @@ void IrcSocket::Numeric(const FXint &command, const FXString &params)
         case 432: //ERR_ERRONEUSNICKNAME
         {
             SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Erroneous nickname"), utils::GetParam(params, 2, false).text()));
-            nickName[0] = '_';
+            nickName = utils::GetParam(params, 2, false).replace(0, '_');
             SendNick(nickName);
         }break;
         case 433: //ERR_NICKNAMEINUSE
