@@ -1111,7 +1111,7 @@ long dxirc::OnTabBook(FXObject *, FXSelector, void *)
 {
     FXint index = tabbook->getCurrent()*2;
     IrcTabItem *currenttab = (IrcTabItem *)tabbook->childAtIndex(index);
-    if (FXRGB(0,0,0) != currenttab->getTextColor()) currenttab->setTextColor(FXRGB(0,0,0));
+    if (appTheme.fore != currenttab->getTextColor()) currenttab->setTextColor(appTheme.fore);
     return 1;
 }
 
@@ -1132,18 +1132,18 @@ long dxirc::OnCommandNextUnread(FXObject *, FXSelector, void*)
     {
         for (FXint i = tabbook->getCurrent()*2; i<tabbook->numChildren(); i=i+2)
         {
-            if (FXRGB(0,0,0) != ((IrcTabItem *)tabbook->childAtIndex(i))->getTextColor())
+            if (appTheme.fore != ((IrcTabItem *)tabbook->childAtIndex(i))->getTextColor())
             {
-                ((IrcTabItem *)tabbook->childAtIndex(i))->setTextColor(FXRGB(0,0,0));
+                ((IrcTabItem *)tabbook->childAtIndex(i))->setTextColor(appTheme.fore);
                 tabbook->setCurrent(i/2, true);
                 return 1;
             }
         }
         for (FXint i = tabbook->getCurrent()*2; i>-1; i=i-2)
         {
-            if (FXRGB(0,0,0) != ((IrcTabItem *)tabbook->childAtIndex(i))->getTextColor())
+            if (appTheme.fore != ((IrcTabItem *)tabbook->childAtIndex(i))->getTextColor())
             {
-                ((IrcTabItem *)tabbook->childAtIndex(i))->setTextColor(FXRGB(0,0,0));
+                ((IrcTabItem *)tabbook->childAtIndex(i))->setTextColor(appTheme.fore);
                 tabbook->setCurrent(i/2, true);
                 return 1;
             }
@@ -1168,7 +1168,7 @@ long dxirc::OnCommandClearAll(FXObject *, FXSelector sel, void *)
     for (FXint i = 0; i<tabbook->numChildren(); i=i+2)
     {
         ((IrcTabItem *)tabbook->childAtIndex(i))->ClearChat();
-        if (FXRGB(0,0,0) != ((IrcTabItem *)tabbook->childAtIndex(i))->getTextColor()) ((IrcTabItem *)tabbook->childAtIndex(i))->setTextColor(FXRGB(0,0,0));
+        if (appTheme.fore != ((IrcTabItem *)tabbook->childAtIndex(i))->getTextColor()) ((IrcTabItem *)tabbook->childAtIndex(i))->setTextColor(appTheme.fore);
     }
     return 1;
 }
