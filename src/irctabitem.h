@@ -101,7 +101,7 @@ class IrcTabItem: public FXTabItem
         FXTextField *commandline, *topicline;
         FXint currentPosition, historyMax, numberUsers;
         FXbool checkAway, iamOp, usersShown, logging, ownServerWindow, sameCmd, sameList, editableTopic;
-        FXHistoryArray commandsHistory;
+        dxHistoryArray commandsHistory;
         FXHiliteStyle textStyleList[8];
         IrcColor colors;
         NickInfo nickOnRight;
@@ -133,6 +133,7 @@ class IrcTabItem: public FXTabItem
         void SetNoticeColor(FXColor);
         void SetErrorColor(FXColor);
         void SetHilightColor(FXColor);
+        FXbool ProcessCommand(const FXString &);
 };
 
 #endif // IRCTABITEM_H

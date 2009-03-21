@@ -58,7 +58,7 @@ FXDEFMAP(ConfigDialog) ConfigDialogMap[] = {
 
 FXIMPLEMENT(ConfigDialog, FXDialogBox, ConfigDialogMap, ARRAYNUMBER(ConfigDialogMap))
 
-ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, FXIgnoreUserArray ulist, FXString tpth, FXString thm, FXint maxa, FXbool log, FXString lpth, FXbool srvw, FXString nichar, FXString fnt, FXbool scmd, FXbool slst, ColorTheme atheme)
+ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, dxIgnoreUserArray ulist, FXString tpth, FXString thm, FXint maxa, FXbool log, FXString lpth, FXbool srvw, FXString nichar, FXString fnt, FXbool scmd, FXbool slst, ColorTheme atheme)
     : FXDialogBox(owner, _("Preferences"), DECOR_RESIZE|DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0),
         commandsList(clist), themePath(tpth), themesList(thm), logPath(lpth), logging(log), serverWindow(srvw), sameCmd(scmd), sameList(slst), usersList(ulist), colors(clrs), maxAway(maxa), nickChar(nichar), themeCurrent(atheme)
 {
@@ -130,7 +130,7 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, F
     FXHorizontalFrame *closeframe = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X);    
     FXButton *ok = new FXButton(closeframe, _("&Close"), NULL, this, ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|LAYOUT_RIGHT|FRAME_RAISED|FRAME_THICK, 0,0,0,0, 20,20);
     ok->addHotKey(KEY_Return);
-    new FXButton(closeframe, _("Cancel"), NULL, this, ID_CANCEL, BUTTON_DEFAULT|LAYOUT_RIGHT|FRAME_RAISED|FRAME_THICK, 0,0,0,0, 20,20);
+    new FXButton(closeframe, _("Cancel"), NULL, this, ID_CANCEL, LAYOUT_RIGHT|FRAME_RAISED|FRAME_THICK, 0,0,0,0, 20,20);
 
     FXHorizontalFrame *contents = new FXHorizontalFrame(this, LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     FXVerticalFrame *buttonframe = new FXVerticalFrame(contents, LAYOUT_FILL_Y|LAYOUT_LEFT|PACK_UNIFORM_WIDTH);
@@ -467,7 +467,7 @@ long ConfigDialog::OnAddCommand(FXObject*, FXSelector, void*)
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y);
     new FXButton(buttonframe, _("OK"), NULL, &dialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
-    new FXButton(buttonframe, _("Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
+    new FXButton(buttonframe, _("Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
 
     if(dialog.execute(PLACEMENT_CURSOR))
     {
@@ -505,7 +505,7 @@ long ConfigDialog::OnAddUser(FXObject*, FXSelector, void*)
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y);
     new FXButton(buttonframe, _("OK"), NULL, &dialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
-    new FXButton(buttonframe, _("Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
+    new FXButton(buttonframe, _("Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
 
     if(dialog.execute(PLACEMENT_CURSOR))
     {
@@ -547,7 +547,7 @@ long ConfigDialog::OnModifyUser(FXObject*, FXSelector, void*)
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y);
     new FXButton(buttonframe, _("OK"), NULL, &dialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
-    new FXButton(buttonframe, _("Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
+    new FXButton(buttonframe, _("Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
 
     if(dialog.execute(PLACEMENT_CURSOR))
     {

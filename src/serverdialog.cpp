@@ -41,7 +41,7 @@ FXDEFMAP(ServerDialog) ServerDialogMap[] = {
 
 FXIMPLEMENT(ServerDialog, FXDialogBox, ServerDialogMap, ARRAYNUMBER(ServerDialogMap))
 
-ServerDialog::ServerDialog(FXMainWindow *owner, FXServerInfoArray servers)
+ServerDialog::ServerDialog(FXMainWindow *owner, dxServerInfoArray servers)
     : FXDialogBox(owner, _("Servers list"), DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0), serverList(servers), indexJoin(-1)
 {
     contents = new FXVerticalFrame(this, LAYOUT_SIDE_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 10,10,10,10, 0,0);
@@ -85,20 +85,20 @@ ServerDialog::ServerDialog(FXMainWindow *owner, FXServerInfoArray servers)
 
     buttonframe = new FXHorizontalFrame(contents, LAYOUT_FILL_X|LAYOUT_FILL_Y);
 
-    buttonJoin = new FXButton(buttonframe, _("Join"), NULL, this, ID_JOIN, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
+    buttonJoin = new FXButton(buttonframe, _("Join"), NULL, this, ID_JOIN, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
     serverList.no()? buttonJoin->enable() : buttonJoin->disable();
 
-    buttonAdd = new FXButton(buttonframe, _("Add"), NULL, this, ID_ADD, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
+    buttonAdd = new FXButton(buttonframe, _("Add"), NULL, this, ID_ADD, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
 
-    buttonModify = new FXButton(buttonframe, _("Modify"), NULL, this, ID_MODIFY, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
+    buttonModify = new FXButton(buttonframe, _("Modify"), NULL, this, ID_MODIFY, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
     serverList.no()? buttonModify->enable() : buttonModify->disable();
 
-    buttonDelete = new FXButton(buttonframe, _("Delete"), NULL, this, ID_DELETE, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
+    buttonDelete = new FXButton(buttonframe, _("Delete"), NULL, this, ID_DELETE, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
     serverList.no()? buttonDelete->enable() : buttonDelete->disable();
 
-    buttonSaveClose = new FXButton(buttonframe, _("Save&&Close"), NULL, this, ID_SAVECLOSE, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
+    buttonSaveClose = new FXButton(buttonframe, _("Save&&Close"), NULL, this, ID_SAVECLOSE, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
 
-    buttonCancel = new FXButton(buttonframe, _("Cancel"), NULL, this, ID_CANCEL, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
+    buttonCancel = new FXButton(buttonframe, _("Cancel"), NULL, this, ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
 
     UpdateDetails();
 }
@@ -164,7 +164,7 @@ long ServerDialog::OnAdd(FXObject*,FXSelector,void*)
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     new FXButton(buttonframe, _("OK"), NULL, &serverEdit, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0, 0, 0, 0, 32, 32, 5, 5);
-    new FXButton(buttonframe, _("Cancel"), NULL, &serverEdit, FXDialogBox::ID_CANCEL, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0, 0, 0, 0, 32, 32, 5, 5);
+    new FXButton(buttonframe, _("Cancel"), NULL, &serverEdit, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0, 0, 0, 0, 32, 32, 5, 5);
 
     if(serverEdit.execute(PLACEMENT_OWNER))
     {
@@ -236,7 +236,7 @@ long ServerDialog::OnModify(FXObject*,FXSelector,void*)
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     new FXButton(buttonframe, _("OK"), NULL, &serverEdit, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0, 0, 0, 0, 32, 32, 5, 5);
-    new FXButton(buttonframe, _("Cancel"), NULL, &serverEdit, FXDialogBox::ID_CANCEL, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0, 0, 0, 0, 32, 32, 5, 5);
+    new FXButton(buttonframe, _("Cancel"), NULL, &serverEdit, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0, 0, 0, 0, 32, 32, 5, 5);
 
     if(serverEdit.execute(PLACEMENT_OWNER))
     {

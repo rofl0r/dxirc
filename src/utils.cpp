@@ -21,10 +21,72 @@
 
 #include "utils.h"
 
+FXTextCodec *lcodec = NULL;
+FXString iniFile = FXString::null;
+dxStringMap aliases;
+dxCommandsArray bcommands, commands;
+
+
+
 namespace utils
 {
-    FXTextCodec *lcodec = NULL;
-    FXString iniFile = FXString::null;
+    void FillCommands()
+    {
+        bcommands.clear();
+        commands.clear();        
+        bcommands.append("ADMIN");
+        bcommands.append("AWAY");
+        bcommands.append("BANLIST");
+        bcommands.append("CONNECT");
+        bcommands.append("COMMANDS");
+        bcommands.append("CTCP");
+        bcommands.append("DEOP");
+        bcommands.append("DEVOICE");
+        bcommands.append("INVITE");
+        bcommands.append("JOIN");        
+        bcommands.append("KICK");
+        bcommands.append("KILL");
+        bcommands.append("LIST");
+        bcommands.append("ME");
+        bcommands.append("MSG");
+        bcommands.append("NAMES");
+        bcommands.append("NICK");
+        bcommands.append("NOTICE");
+        bcommands.append("OP");
+        bcommands.append("OPER");
+        bcommands.append("PART");
+        bcommands.append("QUIT");
+        bcommands.append("RAW");
+        bcommands.append("TOPIC");
+        bcommands.append("VOICE");
+        bcommands.append("WALLOPS");
+        bcommands.append("WHO");
+        bcommands.append("WHOIS");
+        bcommands.append("WHOWAS");
+        commands.append(bcommands);
+        StringIt it;
+        for(it=aliases.begin(); it!=aliases.end(); it++)
+        {
+            commands.append((*it).first.after('/'));
+        }
+        register FXString v;
+        register FXint i,j,h;
+        for(h=1; h<=commands.no()/9; h=3*h+1);
+        for (; h > 0; h /= 3)
+        {
+            for (i = h + 1; i <= commands.no(); i++)
+            {
+                v = commands[i - 1];
+                j = i;
+                while (j > h && comparecase(commands[j - h - 1], v) > 0)
+                {
+                    commands[j - 1] = commands[j - h - 1];
+                    j -= h;
+                }
+                commands[j - 1] = v;
+            }
+        }
+    }
     
     FXTextCodec* GetCodec()
     {
@@ -715,5 +777,50 @@ namespace utils
             nicks = nicks.after(' ');
         }
         return modes+" "+tomode;
+    }
+
+    void SetAlias()
+    {
+        FXSettings set;
+        set.parseFile(GetIniFile(), true);
+        FXint no = set.readIntEntry("ALIASES", "number", 0);
+        for(FXint i=0; i<no; i++)
+        {
+            FXString key, value;
+            key = set.readStringEntry("ALIASES", FXStringFormat("key%d", i).text());
+            value = set.readStringEntry("ALIASES", FXStringFormat("value%d", i).text());
+            if(!key.empty() && !value.empty() && key[0]=='/' && !key.contains(' '))
+                aliases.insert(StringPair(key, value));
+        }
+        FillCommands();
+
+    }
+
+    void SetAliases(dxStringMap a)
+    {
+        aliases = a;
+        FillCommands();
+    }
+
+    FXString GetAlias(FXString key)
+    {
+        if(aliases.count(key)>0)
+            return aliases.find(key)->second;
+        return FXString::null;
+    }
+
+    dxStringMap GetAliases()
+    {
+        return aliases;
+    }
+
+    FXint CommandsNo()
+    {
+        return commands.no();
+    }
+
+    FXString CommandsAt(FXint i)
+    {
+        return commands.at(i);
     }
 }

@@ -49,6 +49,7 @@ class dxirc: public FXMainWindow
             ID_HELP,
             ID_ABOUT,
             ID_TABS,
+            ID_ALIAS,
             ID_LAST
         };
 
@@ -70,13 +71,14 @@ class dxirc: public FXMainWindow
         long OnCommandNextUnread(FXObject*, FXSelector, void*);
         long OnCommandUsers(FXObject*, FXSelector, void*);
         long OnCommandOptions(FXObject*, FXSelector, void*);
+        long OnCommandAlias(FXObject*, FXSelector, void*);
         long OnTabConnect(FXObject*, FXSelector, void*);
 
     private:
         dxirc(){}
         FXApp *app;
-        FXServerInfoArray serverList;
-        FXIgnoreUserArray usersList;
+        dxServerInfoArray serverList;
+        dxIgnoreUserArray usersList;
         FXbool usersShown, logging, ownServerWindow, tempServerWindow, sameCmd, sameList;
         IrcColor colors;
         FXString commandsList, themesList, themePath, logPath;
@@ -111,7 +113,7 @@ class dxirc: public FXMainWindow
         FXStatusBar *statusbar;
         FXVerticalFrame *mainframe;
         FXTabBook *tabbook;
-        FXServersArray servers;
+        dxServersArray servers;
 };
 
 #endif // DXIRC_H

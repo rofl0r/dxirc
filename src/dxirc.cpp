@@ -31,6 +31,7 @@
 #include "irctabitem.h"
 #include "configdialog.h"
 #include "serverdialog.h"
+#include "aliasdialog.h"
 #include "utils.h"
 
 FXDEFMAP(dxirc) dxircMap[] = {
@@ -50,6 +51,7 @@ FXDEFMAP(dxirc) dxircMap[] = {
     FXMAPFUNC(SEL_KEYPRESS, dxirc::ID_SELECTTAB,        dxirc::OnCommandSelectTab),
     FXMAPFUNC(SEL_KEYPRESS, dxirc::ID_NEXTTAB,          dxirc::OnCommandNextTab),
     FXMAPFUNC(SEL_KEYPRESS, dxirc::ID_NEXTUNREAD,       dxirc::OnCommandNextUnread),
+    FXMAPFUNC(SEL_COMMAND,  dxirc::ID_ALIAS,            dxirc::OnCommandAlias),
     FXMAPFUNC(SEL_COMMAND,  IrcSocket::ID_SERVER,       dxirc::OnIrcEvent),
     FXMAPFUNC(SEL_COMMAND,  IrcTabItem::ID_CDIALOG,     dxirc::OnCommandConnect),
     FXMAPFUNC(SEL_COMMAND,  IrcTabItem::ID_CSERVER,     dxirc::OnTabConnect),
@@ -88,6 +90,7 @@ dxirc::dxirc(FXApp *app)
     new FXMenuSeparator(editmenu);
     users = new FXMenuCheck(editmenu, _("Users list\tCtrl-U\tShow/Hide users list"), this, ID_USERS);
     users->setCheck(usersShown);
+    new FXMenuCommand(editmenu, _("&Aliases"), NULL, this, ID_ALIAS);
     new FXMenuCommand(editmenu, _("&Preferences"), optionicon, this, ID_OPTIONS);
     new FXMenuTitle(menubar, _("&Edit"), NULL, editmenu);
 
@@ -412,6 +415,19 @@ void dxirc::SaveConfig()
     set.writeColorEntry("SETTINGS", "selmenutextcolor", appTheme.menufore);
     set.writeColorEntry("SETTINGS", "selmenubackcolor", appTheme.menuback);
     set.writeStringEntry("SETTINGS", "normalfont", getApp()->getNormalFont()->getFont().text());
+    dxStringMap aliases = utils::GetAliases();
+    set.writeIntEntry("ALIASES", "number", (FXint)aliases.size());
+    if((FXint)aliases.size())
+    {
+        StringIt it;
+        FXint i=0;
+        for(it=aliases.begin(); it!=aliases.end(); it++)
+        {
+            set.writeStringEntry("ALIASES", FXStringFormat("key%d", i).text(), (*it).first.text());
+            set.writeStringEntry("ALIASES", FXStringFormat("value%d", i).text(), (*it).second.text());
+            i++;
+        }
+    }
     set.setModified();
     set.unparseFile(utils::GetIniFile());
 }
@@ -484,6 +500,13 @@ long dxirc::OnCommandOptions(FXObject*, FXSelector, void*)
             servers[i]->SetUsersList(usersList);
         }
     }
+    return 1;
+}
+
+long dxirc::OnCommandAlias(FXObject*, FXSelector, void*)
+{
+    AliasDialog dialog(this);
+    dialog.execute(PLACEMENT_CURSOR);
     return 1;
 }
 
@@ -857,7 +880,7 @@ long dxirc::OnCommandConnect(FXObject*, FXSelector, void*)
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y);
     new FXButton(buttonframe, _("&OK"), NULL, &serverEdit, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
-    new FXButton(buttonframe, _("Cancel"), NULL, &serverEdit, FXDialogBox::ID_CANCEL, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
+    new FXButton(buttonframe, _("Cancel"), NULL, &serverEdit, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
     if (serverEdit.execute(PLACEMENT_OWNER))
     {
         ConnectServer(hostname->getText(), port->getValue(), passwd->getText(), nick->getText(), realname->getText(), channel->getText(), command->getText());
@@ -940,7 +963,7 @@ long dxirc::OnCommandDisconnect(FXObject*, FXSelector, void*)
             new FXLabel(contents, FXStringFormat(_("Disconnect server: %s:%d?"), currentserver->GetServerName().text(), currentserver->GetServerPort()),NULL);
             FXHorizontalFrame* buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y);
             new FXButton(buttonframe, _("OK"), NULL, &confirmDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
-            new FXButton(buttonframe, _("Cancel"), NULL, &confirmDialog, FXDialogBox::ID_CANCEL, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
+            new FXButton(buttonframe, _("Cancel"), NULL, &confirmDialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
             if (confirmDialog.execute(PLACEMENT_OWNER))
             {
                 currentserver->Disconnect();
@@ -1446,8 +1469,9 @@ int main(int argc,char *argv[])
     FXApp app(PACKAGE, FXString::null);
     app.reg().setAsciiMode(true);
     app.init(argc,argv);
-    loadIcon = MakeAllIcons(&app, utils::GetIniFile());
+    loadIcon = MakeAllIcons(&app, utils::GetIniFile());    
     new dxirc(&app);
     app.create();
+    utils::SetAlias();
     return app.run();
 }

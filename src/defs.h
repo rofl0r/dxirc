@@ -27,6 +27,7 @@
 #include <FXArray.h>
 #include <new>
 #include <iostream>
+#include <map>
 
 class IrcSocket;
 
@@ -131,12 +132,15 @@ struct ColorTheme {
     FXColor hilite;
 };
 
-typedef FXArray<FXString> FXHistoryArray;
-typedef FXArray<IrcSocket*> FXServersArray;
-typedef FXArray<FXObject*> FXTargetsArray;
-typedef FXArray<FXString> FXCommandsArray;
-typedef FXArray<NickInfo> FXNicksArray;
-typedef FXArray<ServerInfo> FXServerInfoArray;
-typedef FXArray<IgnoreUser> FXIgnoreUserArray;
+typedef FXArray<FXString> dxHistoryArray;
+typedef FXArray<IrcSocket*> dxServersArray;
+typedef FXArray<FXObject*> dxTargetsArray;
+typedef FXArray<FXString> dxCommandsArray;
+typedef FXArray<NickInfo> dxNicksArray;
+typedef FXArray<ServerInfo> dxServerInfoArray;
+typedef FXArray<IgnoreUser> dxIgnoreUserArray;
+typedef std::map<FXString,FXString> dxStringMap;
+typedef std::pair<FXString,FXString> StringPair;
+typedef std::map<FXString, FXString>::iterator StringIt;
 
 #endif /* DEFS_H_ */

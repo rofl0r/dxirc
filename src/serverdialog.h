@@ -29,7 +29,7 @@ class ServerDialog: public FXDialogBox
 {
     FXDECLARE(ServerDialog)
     public:
-        ServerDialog(FXMainWindow *owner, FXServerInfoArray servers);
+        ServerDialog(FXMainWindow *owner, dxServerInfoArray servers);
         virtual ~ServerDialog();
         enum {
             ID_JOIN = FXTopWindow::ID_LAST,
@@ -39,9 +39,10 @@ class ServerDialog: public FXDialogBox
             ID_MODIFY,
             ID_DELETE,
             ID_SAVECLOSE,
+            ID_LAST
         };
 
-        FXServerInfoArray GetServers() { return serverList; }
+        dxServerInfoArray GetServers() { return serverList; }
         FXint GetIndexJoin() { return indexJoin; }
 
         long OnJoin(FXObject*,FXSelector,void*);
@@ -59,7 +60,7 @@ class ServerDialog: public FXDialogBox
         ServerDialog() {}
         ServerDialog(const ServerDialog&);
 
-        FXServerInfoArray serverList;
+        dxServerInfoArray serverList;
         FXint indexJoin;
         FXVerticalFrame *contents, *listframe;
         FXHorizontalFrame *buttonframe, *serverframe;

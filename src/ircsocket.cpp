@@ -43,7 +43,6 @@ IrcSocket::IrcSocket(FXApp *app, FXObject *tgt, FXSelector sel, FXString channel
     realName = nickName;
     receiveRest = "";
     connected = false;
-    FillCommands();
 }
 
 IrcSocket::~IrcSocket()
@@ -1265,39 +1264,6 @@ void IrcSocket::SendEvent(IrcEventType eventType, const FXString &param1, const 
     {
         targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
     }
-}
-
-void IrcSocket::FillCommands()
-{
-    commands.append("ADMIN");
-    commands.append("AWAY");
-    commands.append("BANLIST");
-    commands.append("CONNECT");
-    commands.append("COMMANDS");
-    commands.append("CTCP");
-    commands.append("DEOP");
-    commands.append("DEVOICE");
-    commands.append("INVITE");
-    commands.append("JOIN");
-    commands.append("KICK");
-    commands.append("KILL");
-    commands.append("LIST");
-    commands.append("ME");
-    commands.append("MSG");
-    commands.append("NAMES");
-    commands.append("NICK");
-    commands.append("NOTICE");
-    commands.append("OP");
-    commands.append("OPER");
-    commands.append("PART");
-    commands.append("QUIT");
-    commands.append("RAW");
-    commands.append("TOPIC");
-    commands.append("VOICE");
-    commands.append("WALLOPS");
-    commands.append("WHO");
-    commands.append("WHOIS");
-    commands.append("WHOWAS");
 }
 
 //This's from Xfe, thanks

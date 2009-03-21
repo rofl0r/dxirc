@@ -25,7 +25,7 @@
 #ifdef WIN32
  #include <windows.h>
 #endif
-#include <fx.h>
+#include "defs.h"
 #include <FX885910Codec.h>
 #include <FX885911Codec.h>
 #include <FX885913Codec.h>
@@ -78,6 +78,12 @@ namespace utils
     FXString GetParam(FXString, FXint, FXbool);
     FXString GetParam(FXString, FXint, FXbool, const FXchar&);
     FXString CreateModes(FXchar sign, FXchar mode, FXString nicks);
+    void SetAlias();
+    void SetAliases(dxStringMap);
+    FXString GetAlias(FXString key);
+    dxStringMap GetAliases();
+    FXint CommandsNo();
+    FXString CommandsAt(FXint);
 }
 
 

@@ -51,7 +51,6 @@ class IrcSocket: public FXObject
             ID_SERVER,
             ID_LAST
         };
-        FXCommandsArray commands;
 
         FXint Connect();
         void Disconnect();
@@ -72,7 +71,7 @@ class IrcSocket: public FXObject
         void SetRealName(const FXString &rname) { realName = rname; }
         void SetStartChannels(const FXString &channels) { startChannels = channels; }
         void SetStartCommands(const FXString &commands) { startCommands = commands; }
-        void SetUsersList(const FXIgnoreUserArray &ulst) { usersList = ulst;}
+        void SetUsersList(const dxIgnoreUserArray &ulst) { usersList = ulst;}
         FXbool GetConnected() { return connected; }
         void AddIgnoreCommands(const FXString &command);
         void RemoveIgnoreCommands(const FXString &command);
@@ -121,10 +120,10 @@ class IrcSocket: public FXObject
         FXint serverPort;
         FXString serverName, realServerName, serverPassword, nickName, realName, userName, startChannels, startCommands;
         FXString receiveRest;
-        FXTargetsArray targets;
-        FXCommandsArray ignoreCommands;
-        FXIgnoreUserArray usersList;
-        FXNicksArray nicks;
+        dxTargetsArray targets;
+        dxCommandsArray ignoreCommands;
+        dxIgnoreUserArray usersList;
+        dxNicksArray nicks;
         #ifdef WIN32
             SOCKET socketid;
             WSAEVENT event;
@@ -161,7 +160,6 @@ class IrcSocket: public FXObject
         void Mode(const FXString&, const FXString&);
         void Error(const FXString&);
         void Unknown(const FXString&, const FXString&);
-        void FillCommands();
         FXbool IsUserIgnored(const FXString &nick, const FXString &on);
         void CloseConnection();
 
