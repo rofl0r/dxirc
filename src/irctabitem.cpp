@@ -452,7 +452,18 @@ long IrcTabItem::OnCommandline(FXObject *, FXSelector, void *)
     commandline->setText("");
     FXString command = (commandtext[0] == '/' ? commandtext.before(' ') : "");
     if(!utils::GetAlias(command).empty())
-        ProcessCommand(utils::GetAlias(command) + (command == commandtext? "" : " "+commandtext.after(' ')));
+    {
+        FXString acommand = utils::GetAlias(command);
+        FXint num = acommand.contains('/');
+        if(num>1)
+        {
+            for(FXint i=0; i<num; i++)
+            {
+                ProcessCommand("/"+acommand.section('/',i+1));
+            }
+        }
+        else ProcessCommand(utils::GetAlias(command) + (command == commandtext? "" : " "+commandtext.after(' ')));
+    }
     else ProcessCommand(commandtext);
     return 1;
 }
