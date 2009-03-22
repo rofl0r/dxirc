@@ -54,6 +54,9 @@ extern FXIcon *channelicon;
 extern FXIcon *queryicon;
 extern FXIcon *clearicon;
 extern FXIcon *flagicon;
+extern FXIcon *newm;
+extern FXIcon *unewm;
+extern FXIcon *chnewm;
 
 extern const unsigned char empty[];
 extern const unsigned char admin[];

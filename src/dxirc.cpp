@@ -1134,7 +1134,12 @@ long dxirc::OnTabBook(FXObject *, FXSelector, void *)
 {
     FXint index = tabbook->getCurrent()*2;
     IrcTabItem *currenttab = (IrcTabItem *)tabbook->childAtIndex(index);
-    if (appTheme.fore != currenttab->getTextColor()) currenttab->setTextColor(appTheme.fore);
+    if (appTheme.fore != currenttab->getTextColor())
+    {
+        currenttab->setTextColor(appTheme.fore);
+        if(currenttab->GetType() == CHANNEL) currenttab->setIcon(channelicon);
+        if(currenttab->GetType() == QUERY) currenttab->setIcon(queryicon);
+    }
     return 1;
 }
 
@@ -1191,7 +1196,12 @@ long dxirc::OnCommandClearAll(FXObject *, FXSelector sel, void *)
     for (FXint i = 0; i<tabbook->numChildren(); i=i+2)
     {
         ((IrcTabItem *)tabbook->childAtIndex(i))->ClearChat();
-        if (appTheme.fore != ((IrcTabItem *)tabbook->childAtIndex(i))->getTextColor()) ((IrcTabItem *)tabbook->childAtIndex(i))->setTextColor(appTheme.fore);
+        if (appTheme.fore != ((IrcTabItem *)tabbook->childAtIndex(i))->getTextColor())
+        {
+            ((IrcTabItem *)tabbook->childAtIndex(i))->setTextColor(appTheme.fore);
+            if(((IrcTabItem *)tabbook->childAtIndex(i))->GetType() == CHANNEL) ((IrcTabItem *)tabbook->childAtIndex(i))->setIcon(channelicon);
+            if(((IrcTabItem *)tabbook->childAtIndex(i))->GetType() == QUERY) ((IrcTabItem *)tabbook->childAtIndex(i))->setIcon(queryicon);
+        }
     }
     return 1;
 }

@@ -1260,8 +1260,13 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
             else AppendIrcText("<"+ev->param1+"> "+ev->param3);
             if(FXRGB(255,0,0) != this->getTextColor() && !IsCurrent())
             {
-                if(ev->param3.contains(server->GetNickName())) this->setTextColor(FXRGB(255,0,0));
+                if(ev->param3.contains(server->GetNickName()))
+                {
+                    this->setTextColor(FXRGB(255,0,0));
+                    if(type == CHANNEL) this->setIcon(chnewm);                    
+                }
                 else this->setTextColor(FXRGB(0,0,255));
+                if(type == QUERY) this->setIcon(unewm);
             }
         }
         return 1;
@@ -1275,8 +1280,13 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
                 AppendIrcStyledText(ev->param1+" "+ev->param3, 2);
                 if(FXRGB(255,0,0) != this->getTextColor() && !IsCurrent())
                 {
-                    if(ev->param3.contains(server->GetNickName())) this->setTextColor(FXRGB(255,0,0));
+                    if(ev->param3.contains(server->GetNickName()))
+                    {
+                        this->setTextColor(FXRGB(255,0,0));
+                        if(type == CHANNEL) this->setIcon(chnewm);
+                    }
                     else this->setTextColor(FXRGB(0,0,255));
+                    if(type == QUERY) this->setIcon(unewm);
                 }
             }
         }
@@ -1346,8 +1356,13 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
                 AppendIrcStyledText(FXStringFormat(_("%s's NOTICE: %s"), ev->param1.text(), ev->param3.text()), 2);
                 if(FXRGB(255,0,0) != this->getTextColor() && !IsCurrent())
                 {
-                    if(ev->param3.contains(server->GetNickName())) this->setTextColor(FXRGB(255,0,0));
+                    if(ev->param3.contains(server->GetNickName()))
+                    {
+                        this->setTextColor(FXRGB(255,0,0));
+                        if(type == CHANNEL) this->setIcon(chnewm);
+                    }
                     else this->setTextColor(FXRGB(0,0,255));
+                    if(type == QUERY) this->setIcon(unewm);
                 }
             }
         }
@@ -1576,7 +1591,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
             {
                 //this->setText(server->GetRealServerName());
                 AppendIrcText(ev->param1);
-                if(FXRGB(0,0,0) == this->getTextColor() && !IsCurrent()) this->setTextColor(FXRGB(0,0,255));
+                if(getApp()->getForeColor() == this->getTextColor() && !IsCurrent()) this->setTextColor(FXRGB(0,0,255));
             }
         }
         else
@@ -1600,7 +1615,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
             if(type == SERVER)
             {
                 AppendIrcStyledText(ev->param1, 4);
-                if(FXRGB(0,0,0) == this->getTextColor() && !IsCurrent()) this->setTextColor(FXRGB(0,0,255));
+                if(getApp()->getForeColor() == this->getTextColor() && !IsCurrent()) this->setTextColor(FXRGB(0,0,255));
             }
         }
         else
@@ -1620,7 +1635,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
             if(type == SERVER)
             {
                 AppendIrcStyledText(FXStringFormat(_("Unhandled command '%s' params: %s"), ev->param1.text(), ev->param2.text()), 4);
-                if(FXRGB(0,0,0) == this->getTextColor() && !IsCurrent()) this->setTextColor(FXRGB(0,0,255));
+                if(getApp()->getForeColor() == this->getTextColor() && !IsCurrent()) this->setTextColor(FXRGB(0,0,255));
             }
         }
         else
@@ -1784,7 +1799,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
             if(type == SERVER)
             {
                 AppendIrcText(ev->param1);
-                if(FXRGB(0,0,0) == this->getTextColor() && !IsCurrent()) this->setTextColor(FXRGB(0,0,255));
+                if(getApp()->getForeColor() == this->getTextColor() && !IsCurrent()) this->setTextColor(FXRGB(0,0,255));
             }
         }
         else
