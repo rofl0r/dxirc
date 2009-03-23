@@ -24,7 +24,7 @@
 FXTextCodec *lcodec = NULL;
 FXString iniFile = FXString::null;
 dxStringMap aliases;
-dxCommandsArray bcommands, commands;
+dxCommandsArray commands;
 
 
 
@@ -32,38 +32,36 @@ namespace utils
 {
     void FillCommands()
     {
-        bcommands.clear();
         commands.clear();        
-        bcommands.append("ADMIN");
-        bcommands.append("AWAY");
-        bcommands.append("BANLIST");
-        bcommands.append("CONNECT");
-        bcommands.append("COMMANDS");
-        bcommands.append("CTCP");
-        bcommands.append("DEOP");
-        bcommands.append("DEVOICE");
-        bcommands.append("INVITE");
-        bcommands.append("JOIN");        
-        bcommands.append("KICK");
-        bcommands.append("KILL");
-        bcommands.append("LIST");
-        bcommands.append("ME");
-        bcommands.append("MSG");
-        bcommands.append("NAMES");
-        bcommands.append("NICK");
-        bcommands.append("NOTICE");
-        bcommands.append("OP");
-        bcommands.append("OPER");
-        bcommands.append("PART");
-        bcommands.append("QUIT");
-        bcommands.append("RAW");
-        bcommands.append("TOPIC");
-        bcommands.append("VOICE");
-        bcommands.append("WALLOPS");
-        bcommands.append("WHO");
-        bcommands.append("WHOIS");
-        bcommands.append("WHOWAS");
-        commands.append(bcommands);
+        commands.append("ADMIN");
+        commands.append("AWAY");
+        commands.append("BANLIST");
+        commands.append("CONNECT");
+        commands.append("COMMANDS");
+        commands.append("CTCP");
+        commands.append("DEOP");
+        commands.append("DEVOICE");
+        commands.append("INVITE");
+        commands.append("JOIN");        
+        commands.append("KICK");
+        commands.append("KILL");
+        commands.append("LIST");
+        commands.append("ME");
+        commands.append("MSG");
+        commands.append("NAMES");
+        commands.append("NICK");
+        commands.append("NOTICE");
+        commands.append("OP");
+        commands.append("OPER");
+        commands.append("PART");
+        commands.append("QUIT");
+        commands.append("RAW");
+        commands.append("TOPIC");
+        commands.append("VOICE");
+        commands.append("WALLOPS");
+        commands.append("WHO");
+        commands.append("WHOIS");
+        commands.append("WHOWAS");
         StringIt it;
         for(it=aliases.begin(); it!=aliases.end(); it++)
         {
