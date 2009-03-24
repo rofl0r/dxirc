@@ -44,7 +44,7 @@ class IrcSocket: public FXObject
 {
     FXDECLARE(IrcSocket)
     public:
-        IrcSocket(FXApp*, FXObject*, FXSelector, FXString, FXString);
+        IrcSocket(FXApp*, FXObject*, FXString, FXString);
         virtual ~IrcSocket();
         enum {
             ID_READ,
@@ -115,7 +115,6 @@ class IrcSocket: public FXObject
         IrcSocket(){}
 
         FXApp *application;
-        FXSelector selector;
         FXbool connected;
         FXint serverPort;
         FXString serverName, realServerName, serverPassword, nickName, realName, userName, startChannels, startCommands;

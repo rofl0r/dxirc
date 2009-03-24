@@ -30,8 +30,8 @@ FXDEFMAP(IrcSocket) IrcSocketMap[] = {
 
 FXIMPLEMENT(IrcSocket, FXObject, IrcSocketMap, ARRAYNUMBER(IrcSocketMap))
 
-IrcSocket::IrcSocket(FXApp *app, FXObject *tgt, FXSelector sel, FXString channels, FXString commands)
-    : application(app), selector(sel), startChannels(channels), startCommands(commands)
+IrcSocket::IrcSocket(FXApp *app, FXObject *tgt, FXString channels, FXString commands)
+    : application(app), startChannels(channels), startCommands(commands)
 {
     targets.append(tgt);
     serverName = "localhost";

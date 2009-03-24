@@ -109,7 +109,7 @@ dxirc::dxirc(FXApp *app)
     packing &= ~PACK_UNIFORM_WIDTH;
     tabbook->setPackingHints(packing);
 
-    IrcSocket *server = new IrcSocket(app, this, 0, "", "");
+    IrcSocket *server = new IrcSocket(app, this, "", "");
     server->SetUsersList(usersList);
     servers.append(server);
 
@@ -164,6 +164,9 @@ dxirc::~dxirc()
     delete queryicon;
     delete clearicon;
     delete flagicon;
+    delete newm;
+    delete unewm;
+    delete chnewm;
     delete servermenu;
     delete editmenu;
     delete helpmenu;
@@ -324,7 +327,7 @@ void dxirc::ReadServersConfig()
                 }
                 else if(!ServerExist(server.hostname, server.port))
                 {
-                    IrcSocket *newserver = new IrcSocket(app, this, 0, server.channels, server.commands);
+                    IrcSocket *newserver = new IrcSocket(app, this, server.channels, server.commands);
                     newserver->SetUsersList(usersList);
                     servers.prepend(newserver);
                     servers[0]->SetServerName(server.hostname);
@@ -921,7 +924,7 @@ void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString
     }
     else if(!ServerExist(hostname, port))
     {
-        IrcSocket *server = new IrcSocket(app, this, 0, channels.length()>1 ? channels : "", commands.length() ? commands : "");
+        IrcSocket *server = new IrcSocket(app, this, channels.length()>1 ? channels : "", commands.length() ? commands : "");
         server->SetUsersList(usersList);
         servers.prepend(server);
         servers[0]->SetServerName(hostname);
