@@ -1165,7 +1165,6 @@ long dxirc::OnCommandNextUnread(FXObject *, FXSelector, void*)
         {
             if (appTheme.fore != ((IrcTabItem *)tabbook->childAtIndex(i))->getTextColor())
             {
-                ((IrcTabItem *)tabbook->childAtIndex(i))->setTextColor(appTheme.fore);
                 tabbook->setCurrent(i/2, true);
                 return 1;
             }
@@ -1174,7 +1173,6 @@ long dxirc::OnCommandNextUnread(FXObject *, FXSelector, void*)
         {
             if (appTheme.fore != ((IrcTabItem *)tabbook->childAtIndex(i))->getTextColor())
             {
-                ((IrcTabItem *)tabbook->childAtIndex(i))->setTextColor(appTheme.fore);
                 tabbook->setCurrent(i/2, true);
                 return 1;
             }
