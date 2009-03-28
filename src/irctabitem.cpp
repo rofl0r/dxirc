@@ -645,22 +645,21 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 {
                     if(!pipe)
                         pipe = new dxPipe(getApp(), this);
+                    pipeStrings.clear();
                     if(params.before(' ').contains("-o"))
                     {
                         sendPipe = true;
-                        pipeStrings.clear();
                         pipe->ExecCmd(params.after(' '));
                     }
                     else if(params.before(' ').contains("-c"))
                     {
                         sendPipe = false;
-                        pipeStrings.clear();
                         pipe->StopCmd();
                     }
                     else
                     {
-                        pipe->ExecCmd(params);
                         sendPipe = false;
+                        pipe->ExecCmd(params);                        
                     }
                     return true;
                 }
@@ -1105,22 +1104,21 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
             {
                 if(!pipe)
                     pipe = new dxPipe(getApp(), this);
+                pipeStrings.clear();
                 if(params.before(' ').contains("-o"))
                 {
-                    sendPipe = true;
-                    pipeStrings.clear();
+                    sendPipe = true;                    
                     pipe->ExecCmd(params.after(' '));
                 }
                 else if(params.before(' ').contains("-c"))
                 {
-                    sendPipe = false;
-                    pipeStrings.clear();
+                    sendPipe = false;                    
                     pipe->StopCmd();
                 }
                 else
                 {
-                    pipe->ExecCmd(params);
                     sendPipe = false;
+                    pipe->ExecCmd(params);
                 }
                 return true;
             }
@@ -1897,8 +1895,8 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
 long IrcTabItem::OnPipe(FXObject*, FXSelector, void *ptr)
 {
     FXString text = *(FXString*)ptr;
-    AppendIrcText(text);
-    if(sendPipe)
+    AppendIrcText(sendPipe && server->GetConnected() ? "<"+server->GetNickName()+"> "+text : text);
+    if(sendPipe && (type == CHANNEL || type == QUERY))
     {
         if(!getApp()->hasTimeout(this, ID_PTIME)) getApp()->addTimeout(this, ID_PTIME);
         pipeStrings.append(text);
@@ -1934,18 +1932,21 @@ long IrcTabItem::OnTimeout(FXObject *, FXSelector, void*)
 
 long IrcTabItem::OnPipeTimeout(FXObject*, FXSelector, void*)
 {
-    if(pipeStrings.no() > 3)
+    if(type == CHANNEL || type == QUERY)
     {
-        server->SendMsg(getText(), pipeStrings[0]);
-        pipeStrings.erase(0);
-        getApp()->addTimeout(this, ID_PTIME, 3000);
-    }
-    else
-    {
-        while(pipeStrings.no())
+        if(pipeStrings.no() > 3)
         {
             server->SendMsg(getText(), pipeStrings[0]);
             pipeStrings.erase(0);
+            getApp()->addTimeout(this, ID_PTIME, 3000);
+        }
+        else
+        {
+            while(pipeStrings.no())
+            {
+                server->SendMsg(getText(), pipeStrings[0]);
+                pipeStrings.erase(0);
+            }
         }
     }
     return 1;
