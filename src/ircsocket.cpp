@@ -152,7 +152,7 @@ void IrcSocket::CloseConnection()
 #endif
 }
 
-long IrcSocket::ReadData()
+int IrcSocket::ReadData()
 {
     FXchar buffer[1024];
     int size;
@@ -167,7 +167,7 @@ long IrcSocket::ReadData()
         if (size > 0)
         {
             buffer[size] = '\0';
-            if (IsUtf8(buffer, size)) data.append(buffer);
+            if (utils::IsUtf8(buffer, size)) data.append(buffer);
             else data.append(utils::LocaleToUtf8(buffer));
             while (data.contains('\n'))
             {
@@ -190,7 +190,7 @@ long IrcSocket::ReadData()
     if (size > 0)
     {
         buffer[size] = '\0';
-        if (IsUtf8(buffer, size)) data.append(buffer);
+        if (utils::IsUtf8(buffer, size)) data.append(buffer);
         else data.append(utils::LocaleToUtf8(buffer));
         while (data.contains('\n'))
         {
@@ -1264,58 +1264,6 @@ void IrcSocket::SendEvent(IrcEventType eventType, const FXString &param1, const 
     {
         targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
     }
-}
-
-//This's from Xfe, thanks
-FXbool IrcSocket::IsUtf8(const FXchar* string, FXuint length)
-{
-    FXchar s[4];
-    const FXchar BOM[] = { 0xEF, 0xBB, 0xBF, '\0' };
-
-    // Keep only length left bytes
-    FXString str=string;
-    str=str.left(length);
-
-    // Convert forth and back to UTF8
-    FXUTF8Codec utf8;
-    FXString utf8str=utf8.mb2utf(utf8.utf2mb(str));
-
-    // Strings are equal => UTF8
-    if (str==utf8str)
-        return TRUE;
-
-    // Strings not equal => test if BOM is present
-    else
-    {
-        // String too small to contain BOM
-        if (length<=2)
-            return FALSE;
-
-        // Test if string contains BOM
-        else
-        {
-            s[0]=string[0];
-            s[1]=string[1];
-            s[2]=string[2];
-            s[3]='\0';
-
-            // String contains BOM => UTF8
-            if (Streq(s,BOM))
-                return TRUE;
-
-            // String don't contain BOM
-            else
-                return FALSE;
-        }
-    }
-}
-
-//This's from Xfe, thanks
-int IrcSocket::Streq(const FXchar *a, const FXchar *b)
-{
-    if (a == NULL || b == NULL)
-        return 0;
-    return (strcmp(a, b) == 0);
 }
 
 void IrcSocket::AppendTarget(FXObject *tgt)

@@ -62,7 +62,8 @@ binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_dxirc_OBJECTS = configdialog.$(OBJEXT) dxirc.$(OBJEXT) \
 	icons.$(OBJEXT) ircsocket.$(OBJEXT) irctabitem.$(OBJEXT) \
-	serverdialog.$(OBJEXT) utils.$(OBJEXT) aliasdialog.$(OBJEXT)
+	serverdialog.$(OBJEXT) utils.$(OBJEXT) aliasdialog.$(OBJEXT) \
+	dxpipe.$(OBJEXT)
 dxirc_OBJECTS = $(am_dxirc_OBJECTS)
 dxirc_DEPENDENCIES =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
@@ -228,7 +229,8 @@ dxirc_SOURCES = configdialog.cpp \
 			      irctabitem.cpp \
 			      serverdialog.cpp \
                               utils.cpp \
-                              aliasdialog.cpp
+                              aliasdialog.cpp \
+                              dxpipe.cpp
 
 dxirc_LDADD = @LIBINTL@
 INCLUDES = -I. -I$(top_srcdir) -I$(top_srcdir)/intl
@@ -242,7 +244,8 @@ EXTRA_DIST = configdialog.h \
 			  irctabitem.h \
 			  serverdialog.h \
                           utils.h \
-                          aliasdialog.h
+                          aliasdialog.h \
+                          dxpipe.h
 
 all: all-am
 
@@ -313,6 +316,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/aliasdialog.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/configdialog.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dxirc.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dxpipe.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/icons.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ircsocket.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/irctabitem.Po@am__quote@

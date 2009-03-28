@@ -37,6 +37,7 @@ FXDEFMAP(IrcTabItem) IrcTabItemMap[] = {
     FXMAPFUNC(SEL_KEYPRESS,             IrcTabItem::ID_COMMANDLINE,     IrcTabItem::OnKeyPress),
     FXMAPFUNC(SEL_COMMAND,              IrcSocket::ID_SERVER,           IrcTabItem::OnIrcEvent),
     FXMAPFUNC(SEL_TIMEOUT,              IrcTabItem::ID_TIME,            IrcTabItem::OnTimeout),
+    FXMAPFUNC(SEL_TIMEOUT,              IrcTabItem::ID_PTIME,           IrcTabItem::OnPipeTimeout),
     FXMAPFUNC(SEL_RIGHTBUTTONRELEASE,   IrcTabItem::ID_USERS,           IrcTabItem::OnRightMouse),
     FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_NEWQUERY,        IrcTabItem::OnNewQuery),
     FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_WHOIS,           IrcTabItem::OnWhois),
@@ -48,6 +49,7 @@ FXDEFMAP(IrcTabItem) IrcTabItemMap[] = {
     FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_BAN,             IrcTabItem::OnBan),
     FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_KICKBAN,         IrcTabItem::OnKickban),
     FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_TOPIC,           IrcTabItem::OnTopic),
+    FXMAPFUNC(SEL_COMMAND,              dxPipe::ID_PIPE,                IrcTabItem::OnPipe),
 };
 
 FXIMPLEMENT(IrcTabItem, FXTabItem, IrcTabItemMap, ARRAYNUMBER(IrcTabItemMap))
@@ -63,6 +65,8 @@ IrcTabItem::IrcTabItem(FXTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FX
     iamOp = false;
     topic = _("No topic is set");
     editableTopic = true;
+    pipe = NULL;
+    sendPipe = false;
 
     if(type == CHANNEL && server->GetConnected())
     {
@@ -148,7 +152,9 @@ IrcTabItem::IrcTabItem(FXTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FX
 IrcTabItem::~IrcTabItem()
 {
     this->StopLogging();
+    pipeStrings.clear();
     getApp()->removeTimeout(this, ID_TIME);
+    getApp()->removeTimeout(this, ID_PTIME);
 }
 
 void IrcTabItem::CreateGeom()
@@ -627,6 +633,38 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     }
                 }
             }
+            if(command == "exec")
+            {
+                FXString params = commandtext.after(' ');
+                if(params.empty())
+                {
+                    AppendIrcStyledText(_("/exec [-o|-c] <command>, execute command, -o send output to channel/query, -c close running command"), 4);
+                    return false;
+                }
+                else
+                {
+                    if(!pipe)
+                        pipe = new dxPipe(getApp(), this);
+                    if(params.before(' ').contains("-o"))
+                    {
+                        sendPipe = true;
+                        pipeStrings.clear();
+                        pipe->ExecCmd(params.after(' '));
+                    }
+                    else if(params.before(' ').contains("-c"))
+                    {
+                        sendPipe = false;
+                        pipeStrings.clear();
+                        pipe->StopCmd();
+                    }
+                    else
+                    {
+                        pipe->ExecCmd(params);
+                        sendPipe = false;
+                    }
+                    return true;
+                }
+            }
             if(command == "invite")
             {
                 FXString params = commandtext.after(' ');
@@ -1054,6 +1092,38 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
             }
             AppendIrcStyledText(commandstr, 3);           
             return true;
+        }
+        if(command == "exec")
+        {
+            FXString params = commandtext.after(' ');
+            if(params.empty())
+            {
+                AppendIrcStyledText(_("/exec [-o|-c] <command>, execute command, -o send output to channel/query, -c close running command"), 4);
+                return false;
+            }
+            else
+            {
+                if(!pipe)
+                    pipe = new dxPipe(getApp(), this);
+                if(params.before(' ').contains("-o"))
+                {
+                    sendPipe = true;
+                    pipeStrings.clear();
+                    pipe->ExecCmd(params.after(' '));
+                }
+                else if(params.before(' ').contains("-c"))
+                {
+                    sendPipe = false;
+                    pipeStrings.clear();
+                    pipe->StopCmd();
+                }
+                else
+                {
+                    pipe->ExecCmd(params);
+                    sendPipe = false;
+                }
+                return true;
+            }
         }
         else
         {
@@ -1824,6 +1894,18 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
     return 1;
 }
 
+long IrcTabItem::OnPipe(FXObject*, FXSelector, void *ptr)
+{
+    FXString text = *(FXString*)ptr;
+    AppendIrcText(text);
+    if(sendPipe)
+    {
+        if(!getApp()->hasTimeout(this, ID_PTIME)) getApp()->addTimeout(this, ID_PTIME);
+        pipeStrings.append(text);
+    }
+    return 1;
+}
+
 long IrcTabItem::OnTimeout(FXObject *, FXSelector, void*)
 {
     getApp()->addTimeout(this, ID_TIME, 180000);
@@ -1845,6 +1927,25 @@ long IrcTabItem::OnTimeout(FXObject *, FXSelector, void*)
                 server->SendWho(getText());
                 server->AddIgnoreCommands("who "+getText());
             }
+        }
+    }
+    return 1;
+}
+
+long IrcTabItem::OnPipeTimeout(FXObject*, FXSelector, void*)
+{
+    if(pipeStrings.no() > 3)
+    {
+        server->SendMsg(getText(), pipeStrings[0]);
+        pipeStrings.erase(0);
+        getApp()->addTimeout(this, ID_PTIME, 3000);
+    }
+    else
+    {
+        while(pipeStrings.no())
+        {
+            server->SendMsg(getText(), pipeStrings[0]);
+            pipeStrings.erase(0);
         }
     }
     return 1;

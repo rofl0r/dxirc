@@ -84,6 +84,7 @@ namespace utils
     dxStringMap GetAliases();
     FXint CommandsNo();
     FXString CommandsAt(FXint);
+    FXbool IsUtf8(const FXchar* string, FXuint length);
 }
 
 

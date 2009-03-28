@@ -120,7 +120,7 @@ class IrcSocket: public FXObject
         FXString serverName, realServerName, serverPassword, nickName, realName, userName, startChannels, startCommands;
         FXString receiveRest;
         dxTargetsArray targets;
-        dxCommandsArray ignoreCommands;
+        dxStringArray ignoreCommands;
         dxIgnoreUserArray usersList;
         dxNicksArray nicks;
         #ifdef WIN32
@@ -131,12 +131,10 @@ class IrcSocket: public FXObject
         #endif
         sockaddr_in serverSock;
 
-        long ReadData();
+        int ReadData();
         FXbool SendLine(const FXString &line);
         void SendCommands();
         FXbool SendCommand(const FXString &commandtext);
-        FXbool IsUtf8(const FXchar *string, FXuint length);
-        int Streq(const FXchar *a, const FXchar *b);
         void ParseLine(const FXString &line);
         void SendEvent(IrcEventType);
         void SendEvent(IrcEventType, const FXString&);

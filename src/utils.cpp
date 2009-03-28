@@ -24,7 +24,7 @@
 FXTextCodec *lcodec = NULL;
 FXString iniFile = FXString::null;
 dxStringMap aliases;
-dxCommandsArray commands;
+dxStringArray commands;
 
 
 
@@ -41,6 +41,9 @@ namespace utils
         commands.append("CTCP");
         commands.append("DEOP");
         commands.append("DEVOICE");
+#ifndef WIN32
+        commands.append("EXEC");
+#endif
         commands.append("INVITE");
         commands.append("JOIN");        
         commands.append("KICK");
@@ -820,5 +823,57 @@ namespace utils
     FXString CommandsAt(FXint i)
     {
         return commands.at(i);
+    }
+
+    //This's from Xfe, thanks
+    int Streq(const FXchar *a, const FXchar *b)
+    {
+        if (a == NULL || b == NULL)
+            return 0;
+        return (strcmp(a, b) == 0);
+    }
+
+    //This's from Xfe, thanks
+    FXbool IsUtf8(const FXchar* string, FXuint length)
+    {
+        FXchar s[4];
+        const FXchar BOM[] = { 0xEF, 0xBB, 0xBF, '\0' };
+
+        // Keep only length left bytes
+        FXString str=string;
+        str=str.left(length);
+
+        // Convert forth and back to UTF8
+        FXUTF8Codec utf8;
+        FXString utf8str=utf8.mb2utf(utf8.utf2mb(str));
+
+        // Strings are equal => UTF8
+        if (str==utf8str)
+            return TRUE;
+
+        // Strings not equal => test if BOM is present
+        else
+        {
+            // String too small to contain BOM
+            if (length<=2)
+                return FALSE;
+
+            // Test if string contains BOM
+            else
+            {
+                s[0]=string[0];
+                s[1]=string[1];
+                s[2]=string[2];
+                s[3]='\0';
+
+                // String contains BOM => UTF8
+                if (Streq(s,BOM))
+                    return TRUE;
+
+                // String don't contain BOM
+                else
+                    return FALSE;
+            }
+        }
     }
 }

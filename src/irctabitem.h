@@ -25,6 +25,7 @@
 
 #include <fstream>
 #include "ircsocket.h"
+#include "dxpipe.h"
 #include "defs.h"
 
 class IrcTabItem: public FXTabItem
@@ -38,6 +39,7 @@ class IrcTabItem: public FXTabItem
             ID_CDIALOG,
             ID_TABQUIT,
             ID_TIME,
+            ID_PTIME,
             ID_USERS,
             ID_NEWQUERY,
             ID_WHOIS,
@@ -76,6 +78,7 @@ class IrcTabItem: public FXTabItem
         long OnKeyPress(FXObject *, FXSelector, void*);
         long OnIrcEvent(FXObject *, FXSelector, void*);
         long OnTimeout(FXObject *, FXSelector, void*);
+        long OnPipeTimeout(FXObject *, FXSelector, void*);
         long OnRightMouse(FXObject *, FXSelector, void*);
         long OnNewQuery(FXObject *, FXSelector, void*);
         long OnWhois(FXObject *, FXSelector, void*);
@@ -87,12 +90,14 @@ class IrcTabItem: public FXTabItem
         long OnBan(FXObject *, FXSelector, void*);
         long OnKickban(FXObject *, FXSelector, void*);
         long OnTopic(FXObject *, FXSelector, void*);
+        long OnPipe(FXObject *, FXSelector, void*);
 
     private:
         IrcTabItem(){}
 
         FXTabBook *parent;
         IrcSocket *server;
+        dxPipe *pipe;
         TYPE type;
         FXVerticalFrame *textframe, *usersframe, *mainframe;
         FXSplitter *splitter;
@@ -100,8 +105,8 @@ class IrcTabItem: public FXTabItem
         FXList *users;
         FXTextField *commandline, *topicline;
         FXint currentPosition, historyMax, numberUsers;
-        FXbool checkAway, iamOp, usersShown, logging, ownServerWindow, sameCmd, sameList, editableTopic;
-        dxHistoryArray commandsHistory;
+        FXbool checkAway, iamOp, usersShown, logging, ownServerWindow, sameCmd, sameList, editableTopic, sendPipe;
+        dxStringArray commandsHistory, pipeStrings;
         FXHiliteStyle textStyleList[8];
         IrcColor colors;
         NickInfo nickOnRight;

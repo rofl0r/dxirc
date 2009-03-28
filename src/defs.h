@@ -132,10 +132,9 @@ struct ColorTheme {
     FXColor hilite;
 };
 
-typedef FXArray<FXString> dxHistoryArray;
 typedef FXArray<IrcSocket*> dxServersArray;
 typedef FXArray<FXObject*> dxTargetsArray;
-typedef FXArray<FXString> dxCommandsArray;
+typedef FXArray<FXString> dxStringArray;
 typedef FXArray<NickInfo> dxNicksArray;
 typedef FXArray<ServerInfo> dxServerInfoArray;
 typedef FXArray<IgnoreUser> dxIgnoreUserArray;

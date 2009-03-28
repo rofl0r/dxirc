@@ -8,7 +8,8 @@ dxirc_SOURCES = configdialog.cpp \
 			      irctabitem.cpp \
 			      serverdialog.cpp \
                               utils.cpp \
-                              aliasdialog.cpp
+                              aliasdialog.cpp \
+                              dxpipe.cpp
 
 dxirc_LDADD = @LIBINTL@
 
@@ -28,6 +29,7 @@ EXTRA_DIST =  configdialog.h \
 			  irctabitem.h \
 			  serverdialog.h \
                           utils.h \
-                          aliasdialog.h
+                          aliasdialog.h \
+                          dxpipe.h
 
 
