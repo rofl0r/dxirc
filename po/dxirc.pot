@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-02-28 13:35+0100\n"
+"POT-Creation-Date: 2009-03-28 23:40+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,10 +24,11 @@ msgstr ""
 msgid "&Close"
 msgstr ""
 
-#: src/configdialog.cpp:133 src/configdialog.cpp:469 src/configdialog.cpp:507
-#: src/configdialog.cpp:549 src/dxirc.cpp:860 src/dxirc.cpp:943
-#: src/irctabitem.cpp:1802 src/irctabitem.cpp:1823 src/irctabitem.cpp:1848
+#: src/configdialog.cpp:133 src/configdialog.cpp:470 src/configdialog.cpp:508
+#: src/configdialog.cpp:550 src/dxirc.cpp:886 src/dxirc.cpp:969
+#: src/irctabitem.cpp:2093 src/irctabitem.cpp:2114 src/irctabitem.cpp:2139
 #: src/serverdialog.cpp:101 src/serverdialog.cpp:167 src/serverdialog.cpp:239
+#: src/aliasdialog.cpp:63 src/aliasdialog.cpp:84 src/aliasdialog.cpp:113
 msgid "Cancel"
 msgstr ""
 
@@ -79,17 +80,17 @@ msgstr ""
 msgid "Ignore commands and users"
 msgstr ""
 
-#: src/configdialog.cpp:170
+#: src/configdialog.cpp:170 src/aliasdialog.cpp:52
 msgid "Commands"
 msgstr ""
 
 #: src/configdialog.cpp:172 src/configdialog.cpp:178 src/configdialog.cpp:208
-#: src/serverdialog.cpp:91
+#: src/serverdialog.cpp:91 src/aliasdialog.cpp:57
 msgid "Add"
 msgstr ""
 
 #: src/configdialog.cpp:173 src/configdialog.cpp:180 src/configdialog.cpp:209
-#: src/serverdialog.cpp:96
+#: src/serverdialog.cpp:96 src/aliasdialog.cpp:60
 msgid "Delete"
 msgstr ""
 
@@ -97,7 +98,7 @@ msgstr ""
 msgid "Users"
 msgstr ""
 
-#: src/configdialog.cpp:179 src/serverdialog.cpp:93
+#: src/configdialog.cpp:179 src/serverdialog.cpp:93 src/aliasdialog.cpp:58
 msgid "Modify"
 msgstr ""
 
@@ -258,202 +259,206 @@ msgstr ""
 msgid "I&gnore"
 msgstr ""
 
-#: src/configdialog.cpp:459
+#: src/configdialog.cpp:460
 msgid "Select ignore command"
 msgstr ""
 
-#: src/configdialog.cpp:463
+#: src/configdialog.cpp:464 src/aliasdialog.cpp:79 src/aliasdialog.cpp:107
 msgid "Command:"
 msgstr ""
 
-#: src/configdialog.cpp:468 src/configdialog.cpp:506 src/configdialog.cpp:548
-#: src/dxirc.cpp:799 src/dxirc.cpp:942 src/irctabitem.cpp:1801
-#: src/irctabitem.cpp:1822 src/irctabitem.cpp:1847 src/serverdialog.cpp:166
-#: src/serverdialog.cpp:238
+#: src/configdialog.cpp:469 src/configdialog.cpp:507 src/configdialog.cpp:549
+#: src/dxirc.cpp:825 src/dxirc.cpp:968 src/irctabitem.cpp:2092
+#: src/irctabitem.cpp:2113 src/irctabitem.cpp:2138 src/serverdialog.cpp:166
+#: src/serverdialog.cpp:238 src/aliasdialog.cpp:83 src/aliasdialog.cpp:112
 msgid "OK"
 msgstr ""
 
-#: src/configdialog.cpp:490
+#: src/configdialog.cpp:491
 msgid "Add ignore user"
 msgstr ""
 
-#: src/configdialog.cpp:494 src/configdialog.cpp:537
+#: src/configdialog.cpp:495 src/configdialog.cpp:538
 msgid "Nick:"
 msgstr ""
 
-#: src/configdialog.cpp:497 src/configdialog.cpp:540 src/dxirc.cpp:848
+#: src/configdialog.cpp:498 src/configdialog.cpp:541 src/dxirc.cpp:874
 #: src/serverdialog.cpp:152 src/serverdialog.cpp:222
 msgid "Channel(s):\tChannels need to be comma separated"
 msgstr ""
 
-#: src/configdialog.cpp:500
+#: src/configdialog.cpp:501
 msgid "Channels need to be comma separated"
 msgstr ""
 
-#: src/configdialog.cpp:501 src/configdialog.cpp:543
+#: src/configdialog.cpp:502 src/configdialog.cpp:544
 msgid "Server:"
 msgstr ""
 
-#: src/configdialog.cpp:533
+#: src/configdialog.cpp:534
 msgid "Modify ignore user"
 msgstr ""
 
-#: src/configdialog.cpp:588
+#: src/configdialog.cpp:589
 msgid "Select theme directory"
 msgstr ""
 
-#: src/configdialog.cpp:631 src/configdialog.cpp:650
+#: src/configdialog.cpp:632 src/configdialog.cpp:651
 msgid "Select font"
 msgstr ""
 
-#: src/configdialog.cpp:872
+#: src/configdialog.cpp:873
 msgid "Select log directory"
 msgstr ""
 
-#: src/configdialog.cpp:938
+#: src/configdialog.cpp:939
 msgid "Current"
 msgstr ""
 
-#: src/configdialog.cpp:945
+#: src/configdialog.cpp:946
 msgid "User Defined"
 msgstr ""
 
-#: src/configdialog.cpp:1002
+#: src/configdialog.cpp:1003
 msgid "Information"
 msgstr ""
 
-#: src/configdialog.cpp:1002
+#: src/configdialog.cpp:1003
 msgid "Some changes need restart application"
 msgstr ""
 
-#: src/dxirc.cpp:74
+#: src/dxirc.cpp:76
 msgid "&Server list\tF2"
 msgstr ""
 
-#: src/dxirc.cpp:75
+#: src/dxirc.cpp:77
 msgid "Quick &connect\tCtrl-K"
 msgstr ""
 
-#: src/dxirc.cpp:76
+#: src/dxirc.cpp:78
 msgid "&Disconnect\tCtrl-D"
 msgstr ""
 
-#: src/dxirc.cpp:79
+#: src/dxirc.cpp:81
 msgid "&Quit\tAlt-F4"
 msgstr ""
 
-#: src/dxirc.cpp:80
+#: src/dxirc.cpp:82
 msgid "&Server"
 msgstr ""
 
-#: src/dxirc.cpp:83
+#: src/dxirc.cpp:85
 msgid "Close current tab\tCtrl-W"
 msgstr ""
 
-#: src/dxirc.cpp:86
+#: src/dxirc.cpp:88
 msgid "Clear window\tCtrl-L"
 msgstr ""
 
-#: src/dxirc.cpp:87
+#: src/dxirc.cpp:89
 msgid "Clear all windows\tCtrl-Shift-L"
 msgstr ""
 
-#: src/dxirc.cpp:89
+#: src/dxirc.cpp:91
 msgid "Users list\tCtrl-U\tShow/Hide users list"
 msgstr ""
 
-#: src/dxirc.cpp:91
+#: src/dxirc.cpp:93
+msgid "&Aliases"
+msgstr ""
+
+#: src/dxirc.cpp:94
 msgid "&Preferences"
 msgstr ""
 
-#: src/dxirc.cpp:92
+#: src/dxirc.cpp:95
 msgid "&Edit"
 msgstr ""
 
-#: src/dxirc.cpp:95
+#: src/dxirc.cpp:98
 msgid "&Help\tF1"
 msgstr ""
 
-#: src/dxirc.cpp:96
+#: src/dxirc.cpp:99
 msgid "&About..."
 msgstr ""
 
-#: src/dxirc.cpp:97
+#: src/dxirc.cpp:100
 msgid "&Help"
 msgstr ""
 
-#: src/dxirc.cpp:433
+#: src/dxirc.cpp:452
 msgid "Help"
 msgstr ""
 
-#: src/dxirc.cpp:442
+#: src/dxirc.cpp:461
 msgid "Close"
 msgstr ""
 
-#: src/dxirc.cpp:794
+#: src/dxirc.cpp:820
 #, c-format
 msgid "About %s"
 msgstr ""
 
-#: src/dxirc.cpp:797
+#: src/dxirc.cpp:823
 msgid "Copyright (C) 2008~ David Vachulka (david@konstrukce-cad.com)\n"
 msgstr ""
 
-#: src/dxirc.cpp:798
+#: src/dxirc.cpp:824
 #, c-format
 msgid ""
 "This software uses the FOX Toolkit Library version %d.%d.%d (http://www.fox-"
 "toolkit.org).\n"
 msgstr ""
 
-#: src/dxirc.cpp:824
+#: src/dxirc.cpp:850
 msgid "Quick connect"
 msgstr ""
 
-#: src/dxirc.cpp:829 src/serverdialog.cpp:58 src/serverdialog.cpp:133
+#: src/dxirc.cpp:855 src/serverdialog.cpp:58 src/serverdialog.cpp:133
 #: src/serverdialog.cpp:201
 msgid "Hostname:"
 msgstr ""
 
-#: src/dxirc.cpp:833 src/serverdialog.cpp:61 src/serverdialog.cpp:137
+#: src/dxirc.cpp:859 src/serverdialog.cpp:61 src/serverdialog.cpp:137
 #: src/serverdialog.cpp:205
 msgid "Port:"
 msgstr ""
 
-#: src/dxirc.cpp:838 src/serverdialog.cpp:64 src/serverdialog.cpp:142
+#: src/dxirc.cpp:864 src/serverdialog.cpp:64 src/serverdialog.cpp:142
 #: src/serverdialog.cpp:210
 msgid "Password:"
 msgstr ""
 
-#: src/dxirc.cpp:841 src/serverdialog.cpp:67 src/serverdialog.cpp:145
+#: src/dxirc.cpp:867 src/serverdialog.cpp:67 src/serverdialog.cpp:145
 #: src/serverdialog.cpp:214
 msgid "Nickname:"
 msgstr ""
 
-#: src/dxirc.cpp:845 src/serverdialog.cpp:70 src/serverdialog.cpp:149
+#: src/dxirc.cpp:871 src/serverdialog.cpp:70 src/serverdialog.cpp:149
 #: src/serverdialog.cpp:218
 msgid "Realname:"
 msgstr ""
 
-#: src/dxirc.cpp:852 src/serverdialog.cpp:76 src/serverdialog.cpp:156
+#: src/dxirc.cpp:878 src/serverdialog.cpp:76 src/serverdialog.cpp:156
 #: src/serverdialog.cpp:226
 msgid "Commands on connection:"
 msgstr ""
 
-#: src/dxirc.cpp:859
+#: src/dxirc.cpp:885
 msgid "&OK"
 msgstr ""
 
-#: src/dxirc.cpp:938
+#: src/dxirc.cpp:964
 msgid "Confirm disconnect"
 msgstr ""
 
-#: src/dxirc.cpp:940
+#: src/dxirc.cpp:966
 #, c-format
 msgid "Disconnect server: %s:%d?"
 msgstr ""
 
-#: src/dxirc.cpp:1408
+#: src/dxirc.cpp:1442
 msgid ""
 "\n"
 "Usage: dxirc [options] \n"
@@ -466,814 +471,820 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/ircsocket.cpp:67
+#: src/ircsocket.cpp:66
 #, c-format
 msgid "Connecting to %s"
 msgstr ""
 
-#: src/ircsocket.cpp:71
+#: src/ircsocket.cpp:70
 msgid "Unable initiliaze socket"
 msgstr ""
 
-#: src/ircsocket.cpp:79
+#: src/ircsocket.cpp:78
 #, c-format
 msgid "Bad host: %s"
 msgstr ""
 
-#: src/ircsocket.cpp:86
+#: src/ircsocket.cpp:85
 msgid "Unable create socket"
 msgstr ""
 
-#: src/ircsocket.cpp:99
+#: src/ircsocket.cpp:98
 #, c-format
 msgid "Unable connect to: %s"
 msgstr ""
 
-#: src/ircsocket.cpp:112
+#: src/ircsocket.cpp:111
 #, c-format
 msgid "Connected to %s"
 msgstr ""
 
-#: src/ircsocket.cpp:134
+#: src/ircsocket.cpp:133
 #, c-format
 msgid "Server %s was disconnected"
 msgstr ""
 
-#: src/ircsocket.cpp:182 src/ircsocket.cpp:205
+#: src/ircsocket.cpp:181 src/ircsocket.cpp:204
 #, c-format
 msgid "Error in reading data from %s"
 msgstr ""
 
-#: src/ircsocket.cpp:255
+#: src/ircsocket.cpp:254
 msgid "End of STATS report"
 msgstr ""
 
-#: src/ircsocket.cpp:259
+#: src/ircsocket.cpp:258
 #, c-format
 msgid "Server Up %s days %s"
 msgstr ""
 
-#: src/ircsocket.cpp:267
+#: src/ircsocket.cpp:266
 msgid "You are no longer marked as being away"
 msgstr ""
 
-#: src/ircsocket.cpp:271
+#: src/ircsocket.cpp:270
 msgid "You have been marked as being away"
 msgstr ""
 
-#: src/ircsocket.cpp:275
+#: src/ircsocket.cpp:274
 msgid "Start of WHOIS"
 msgstr ""
 
-#: src/ircsocket.cpp:278
+#: src/ircsocket.cpp:277
 msgid "Realname: "
 msgstr ""
 
-#: src/ircsocket.cpp:282
+#: src/ircsocket.cpp:281
 msgid "Server: "
 msgstr ""
 
-#: src/ircsocket.cpp:286
+#: src/ircsocket.cpp:285
 #, c-format
 msgid "%s is an IRC operator"
 msgstr ""
 
-#: src/ircsocket.cpp:301
+#: src/ircsocket.cpp:300
 msgid "End of WHO list"
 msgstr ""
 
-#: src/ircsocket.cpp:306
+#: src/ircsocket.cpp:305
 msgid "Idle: "
 msgstr ""
 
-#: src/ircsocket.cpp:309 src/ircsocket.cpp:346
+#: src/ircsocket.cpp:308 src/ircsocket.cpp:345
 #, c-format
 msgid "%x %X"
 msgstr ""
 
-#: src/ircsocket.cpp:310
+#: src/ircsocket.cpp:309
 msgid "Signon: "
 msgstr ""
 
-#: src/ircsocket.cpp:314
+#: src/ircsocket.cpp:313
 msgid "End of WHOIS"
 msgstr ""
 
-#: src/ircsocket.cpp:318
+#: src/ircsocket.cpp:317
 msgid "Channels: "
 msgstr ""
 
-#: src/ircsocket.cpp:322
+#: src/ircsocket.cpp:321
 #, c-format
 msgid "%s : is identified to services"
 msgstr ""
 
-#: src/ircsocket.cpp:323
+#: src/ircsocket.cpp:322
 #, c-format
 msgid "%s : is signed on as account %s"
 msgstr ""
 
-#: src/ircsocket.cpp:336 src/irctabitem.cpp:64 src/irctabitem.cpp:217
+#: src/ircsocket.cpp:335 src/irctabitem.cpp:66 src/irctabitem.cpp:223
 msgid "No topic is set"
 msgstr ""
 
-#: src/ircsocket.cpp:340
+#: src/ircsocket.cpp:339
 #, c-format
 msgid "Topic for %s : %s"
 msgstr ""
 
-#: src/ircsocket.cpp:347
+#: src/ircsocket.cpp:346
 #, c-format
 msgid "Set %s %s"
 msgstr ""
 
-#: src/ircsocket.cpp:351
+#: src/ircsocket.cpp:350
 #, c-format
 msgid "You invite %s to %s"
 msgstr ""
 
-#: src/ircsocket.cpp:355
+#: src/ircsocket.cpp:354
 #, c-format
 msgid "%s :Summoning user to IRC"
 msgstr ""
 
-#: src/ircsocket.cpp:393
+#: src/ircsocket.cpp:392
 msgid "End of WHOWAS"
 msgstr ""
 
-#: src/ircsocket.cpp:401
+#: src/ircsocket.cpp:400
 msgid "End of INFO list"
 msgstr ""
 
-#: src/ircsocket.cpp:405
+#: src/ircsocket.cpp:404
 msgid "End of /MOTD command"
 msgstr ""
 
-#: src/ircsocket.cpp:419
+#: src/ircsocket.cpp:418
 msgid "You are now an IRC operator"
 msgstr ""
 
-#: src/ircsocket.cpp:423
+#: src/ircsocket.cpp:422
 #, c-format
 msgid "%s :No such nick/channel"
 msgstr ""
 
-#: src/ircsocket.cpp:427
+#: src/ircsocket.cpp:426
 #, c-format
 msgid "%s :No such server"
 msgstr ""
 
-#: src/ircsocket.cpp:431
+#: src/ircsocket.cpp:430
 #, c-format
 msgid "%s :No such channel"
 msgstr ""
 
-#: src/ircsocket.cpp:435
+#: src/ircsocket.cpp:434
 #, c-format
 msgid "%s :Cannot send to channel"
 msgstr ""
 
-#: src/ircsocket.cpp:439
+#: src/ircsocket.cpp:438
 #, c-format
 msgid "%s :You have joined too many channels"
 msgstr ""
 
-#: src/ircsocket.cpp:443
+#: src/ircsocket.cpp:442
 #, c-format
 msgid "%s :There was no such nickname"
 msgstr ""
 
-#: src/ircsocket.cpp:447
+#: src/ircsocket.cpp:446
 #, c-format
 msgid "%s :Too many targets"
 msgstr ""
 
-#: src/ircsocket.cpp:451
+#: src/ircsocket.cpp:450
 #, c-format
 msgid "%s :No such service"
 msgstr ""
 
-#: src/ircsocket.cpp:455
+#: src/ircsocket.cpp:454
 msgid "No origin specified"
 msgstr ""
 
-#: src/ircsocket.cpp:459
+#: src/ircsocket.cpp:458
 msgid "No recipient given"
 msgstr ""
 
-#: src/ircsocket.cpp:463
+#: src/ircsocket.cpp:462
 msgid "No text to send"
 msgstr ""
 
-#: src/ircsocket.cpp:467
+#: src/ircsocket.cpp:466
 #, c-format
 msgid "%s :No toplevel domain specified"
 msgstr ""
 
-#: src/ircsocket.cpp:471
+#: src/ircsocket.cpp:470
 #, c-format
 msgid "%s :Wildcard in toplevel domain"
 msgstr ""
 
-#: src/ircsocket.cpp:475
+#: src/ircsocket.cpp:474
 #, c-format
 msgid "%s :Bad Server/host mask"
 msgstr ""
 
-#: src/ircsocket.cpp:479
+#: src/ircsocket.cpp:478
 #, c-format
 msgid "%s :Unknown command"
 msgstr ""
 
-#: src/ircsocket.cpp:483
+#: src/ircsocket.cpp:482
 msgid "MOTD File is missing"
 msgstr ""
 
-#: src/ircsocket.cpp:497
+#: src/ircsocket.cpp:496
 #, c-format
 msgid "%s :No administrative info available"
 msgstr ""
 
-#: src/ircsocket.cpp:501
+#: src/ircsocket.cpp:500
 msgid "File error doing"
 msgstr ""
 
-#: src/ircsocket.cpp:505
+#: src/ircsocket.cpp:504
 msgid "No nickname given"
 msgstr ""
 
-#: src/ircsocket.cpp:509
+#: src/ircsocket.cpp:508
 #, c-format
 msgid "%s :Erroneous nickname"
 msgstr ""
 
-#: src/ircsocket.cpp:513
+#: src/ircsocket.cpp:514
 #, c-format
 msgid "%s :Nickname is already in use"
 msgstr ""
 
-#: src/ircsocket.cpp:519
+#: src/ircsocket.cpp:520
 #, c-format
 msgid "%s :Nickname collision"
 msgstr ""
 
-#: src/ircsocket.cpp:523
+#: src/ircsocket.cpp:524
 #, c-format
 msgid "%s :Nick/channel is temporarily unavailable"
 msgstr ""
 
-#: src/ircsocket.cpp:527
+#: src/ircsocket.cpp:528
 #, c-format
 msgid "%s %s :They aren't on that channel"
 msgstr ""
 
-#: src/ircsocket.cpp:531
+#: src/ircsocket.cpp:532
 #, c-format
 msgid "%s :You're not on that channel"
 msgstr ""
 
-#: src/ircsocket.cpp:535
+#: src/ircsocket.cpp:536
 #, c-format
 msgid "%s %s :is already on channel"
 msgstr ""
 
-#: src/ircsocket.cpp:539
+#: src/ircsocket.cpp:540
 #, c-format
 msgid "%s :User not logged in"
 msgstr ""
 
-#: src/ircsocket.cpp:543
+#: src/ircsocket.cpp:544
 msgid "SUMMON has been disabled"
 msgstr ""
 
-#: src/ircsocket.cpp:547
+#: src/ircsocket.cpp:548
 msgid "USERS has been disabled"
 msgstr ""
 
-#: src/ircsocket.cpp:551
+#: src/ircsocket.cpp:552
 msgid "You have not registered"
 msgstr ""
 
-#: src/ircsocket.cpp:555
+#: src/ircsocket.cpp:556
 #, c-format
 msgid "%s :Not enough parameters"
 msgstr ""
 
-#: src/ircsocket.cpp:559
+#: src/ircsocket.cpp:560
 msgid "Unauthorized command (already registered)"
 msgstr ""
 
-#: src/ircsocket.cpp:563
+#: src/ircsocket.cpp:564
 msgid "Your host isn't among the privileged"
 msgstr ""
 
-#: src/ircsocket.cpp:567
+#: src/ircsocket.cpp:568
 msgid "Password incorrect"
 msgstr ""
 
-#: src/ircsocket.cpp:571
+#: src/ircsocket.cpp:572
 msgid "You are banned from this server"
 msgstr ""
 
-#: src/ircsocket.cpp:575
+#: src/ircsocket.cpp:576
 msgid "You will be banned from this server"
 msgstr ""
 
-#: src/ircsocket.cpp:579
+#: src/ircsocket.cpp:580
 #, c-format
 msgid "%s :Channel key already set"
 msgstr ""
 
-#: src/ircsocket.cpp:583
+#: src/ircsocket.cpp:584
 #, c-format
 msgid "%s :Cannot join channel (+l)"
 msgstr ""
 
-#: src/ircsocket.cpp:587
+#: src/ircsocket.cpp:588
 #, c-format
 msgid "%s :is unknown mode char to me for channel"
 msgstr ""
 
-#: src/ircsocket.cpp:591
+#: src/ircsocket.cpp:592
 #, c-format
 msgid "%s :Cannot join channel (+i)"
 msgstr ""
 
-#: src/ircsocket.cpp:595
+#: src/ircsocket.cpp:596
 #, c-format
 msgid "%s :Cannot join channel (+b)"
 msgstr ""
 
-#: src/ircsocket.cpp:599
+#: src/ircsocket.cpp:600
 #, c-format
 msgid "%s :Cannot join channel (+k)"
 msgstr ""
 
-#: src/ircsocket.cpp:603
+#: src/ircsocket.cpp:604
 #, c-format
 msgid "%s :Bad Channel Mask"
 msgstr ""
 
-#: src/ircsocket.cpp:608
+#: src/ircsocket.cpp:609
 #, c-format
 msgid "%s :Channel doesn't support modes"
 msgstr ""
 
-#: src/ircsocket.cpp:613
+#: src/ircsocket.cpp:614
 #, c-format
 msgid "%s %s :Channel list is full"
 msgstr ""
 
-#: src/ircsocket.cpp:618
+#: src/ircsocket.cpp:619
 msgid "Permission Denied- You're not an IRC operator"
 msgstr ""
 
-#: src/ircsocket.cpp:622
+#: src/ircsocket.cpp:623
 #, c-format
 msgid "%s :You're not channel operator"
 msgstr ""
 
-#: src/ircsocket.cpp:626
+#: src/ircsocket.cpp:627
 msgid "You can't kill a server!"
 msgstr ""
 
-#: src/ircsocket.cpp:630
+#: src/ircsocket.cpp:631
 msgid "Your connection is restricted!"
 msgstr ""
 
-#: src/ircsocket.cpp:634
+#: src/ircsocket.cpp:635
 msgid "You're not the original channel operator"
 msgstr ""
 
-#: src/ircsocket.cpp:638
+#: src/ircsocket.cpp:639
 msgid "No O-lines for your host"
 msgstr ""
 
-#: src/ircsocket.cpp:642
+#: src/ircsocket.cpp:643
 msgid "Unknown MODE flag"
 msgstr ""
 
-#: src/ircsocket.cpp:646
+#: src/ircsocket.cpp:647
 msgid "Cannot change mode for other users"
 msgstr ""
 
-#: src/ircsocket.cpp:693
+#: src/ircsocket.cpp:694
 msgid "DCC (not supported. Contact developer if you need it)"
 msgstr ""
 
-#: src/ircsocket.cpp:759
+#: src/ircsocket.cpp:760
 msgid "PONG from "
 msgstr ""
 
-#: src/ircsocket.cpp:1012
+#: src/ircsocket.cpp:1013
 msgid "Unable send data"
 msgstr ""
 
-#: src/ircsocket.cpp:1191
+#: src/ircsocket.cpp:1192
 #, c-format
 msgid "Bad command on connection:%s"
 msgstr ""
 
-#: src/irctabitem.cpp:473
+#: src/irctabitem.cpp:502
 msgid "/banlist <channel>, see banlist for channel."
 msgstr ""
 
-#: src/irctabitem.cpp:483 src/irctabitem.cpp:937
+#: src/irctabitem.cpp:511 src/irctabitem.cpp:1073
 msgid ""
 "/connect <server> [port] [nick] [password] [realname] [channels], connect "
 "for given server."
 msgstr ""
 
-#: src/irctabitem.cpp:500 src/irctabitem.cpp:954
+#: src/irctabitem.cpp:529 src/irctabitem.cpp:1091
 msgid "Available commnads: "
 msgstr ""
 
-#: src/irctabitem.cpp:513
+#: src/irctabitem.cpp:543
 msgid "/ctcp <nick> <message>, sends a CTCP message to a user."
 msgstr ""
 
-#: src/irctabitem.cpp:523
+#: src/irctabitem.cpp:555
 msgid "/deop <nicks>, remove operator status from one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:524 src/irctabitem.cpp:549
+#: src/irctabitem.cpp:560 src/irctabitem.cpp:589
 msgid "/deop <channel> <nicks>, remove operator status from one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:559
+#: src/irctabitem.cpp:601
 msgid "/devoice <nicks>, remove voice from one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:560 src/irctabitem.cpp:585
+#: src/irctabitem.cpp:606 src/irctabitem.cpp:635
 msgid "/devoice <channel> <nicks>, remove voice from one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:593 src/irctabitem.cpp:594
+#: src/irctabitem.cpp:645 src/irctabitem.cpp:1104
+msgid ""
+"/exec [-o|-c] <command>, execute command, -o send output to channel/query, -"
+"c close running command"
+msgstr ""
+
+#: src/irctabitem.cpp:676 src/irctabitem.cpp:681
 msgid "/invite <nick> <channel>, invites someone to a channel."
 msgstr ""
 
-#: src/irctabitem.cpp:607
+#: src/irctabitem.cpp:696
 msgid "/join <channel>, join a channel."
 msgstr ""
 
-#: src/irctabitem.cpp:617
+#: src/irctabitem.cpp:708
 msgid "/kick <nick>, kick a user from a channel."
 msgstr ""
 
-#: src/irctabitem.cpp:618 src/irctabitem.cpp:643
+#: src/irctabitem.cpp:713 src/irctabitem.cpp:742
 msgid "/kick <channel> <nick>, kick a user from a channel."
 msgstr ""
 
-#: src/irctabitem.cpp:653
+#: src/irctabitem.cpp:754
 msgid "/kill <user> [reason], kill a user from the network."
 msgstr ""
 
-#: src/irctabitem.cpp:669
+#: src/irctabitem.cpp:770
 msgid "/me <message>, sends the action to the current channel."
 msgstr ""
 
-#: src/irctabitem.cpp:691
+#: src/irctabitem.cpp:796
 msgid "/me <to> <message>, sends the action."
 msgstr ""
 
-#: src/irctabitem.cpp:706
+#: src/irctabitem.cpp:813
 msgid "/msg <nick/channel> <message>, sends a normal message."
 msgstr ""
 
-#: src/irctabitem.cpp:720
+#: src/irctabitem.cpp:829
 msgid "/names <channel>, for nicks on a channel."
 msgstr ""
 
-#: src/irctabitem.cpp:729
+#: src/irctabitem.cpp:840
 msgid "/nick <nick>, change nick."
 msgstr ""
 
-#: src/irctabitem.cpp:745
+#: src/irctabitem.cpp:855
 #, c-format
 msgid "%s's NOTICE: "
 msgstr ""
 
-#: src/irctabitem.cpp:747
+#: src/irctabitem.cpp:860
 msgid "/notice <nick/channel> <message>, sends a notice."
 msgstr ""
 
-#: src/irctabitem.cpp:756
+#: src/irctabitem.cpp:871
 msgid "/op <nicks>, give operator status for one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:757 src/irctabitem.cpp:782
+#: src/irctabitem.cpp:876 src/irctabitem.cpp:905
 msgid "/op <channel> <nicks>, give operator status for one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:793
+#: src/irctabitem.cpp:918
 msgid "/oper <login> <password>, oper up."
 msgstr ""
 
-#: src/irctabitem.cpp:842
+#: src/irctabitem.cpp:964
 msgid "/topic <channel> [topic], view or change channel topic."
 msgstr ""
 
-#: src/irctabitem.cpp:852
+#: src/irctabitem.cpp:976
 msgid "/voice <nicks>, give voice for one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:853 src/irctabitem.cpp:878
+#: src/irctabitem.cpp:981 src/irctabitem.cpp:1010
 msgid "/voice <channel> <nicks>, give voice for one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:886
+#: src/irctabitem.cpp:1020
 msgid "/wallops <message>, send wallop message."
 msgstr ""
 
-#: src/irctabitem.cpp:894
+#: src/irctabitem.cpp:1030
 msgid ""
 "/who <mask> [o], search for mask on network, if o is supplied, only search "
 "for opers."
 msgstr ""
 
-#: src/irctabitem.cpp:902
+#: src/irctabitem.cpp:1040
 msgid "/whois <nick>, whois nick."
 msgstr ""
 
-#: src/irctabitem.cpp:910
+#: src/irctabitem.cpp:1050
 msgid "/whowas <nick>, whowas nick."
 msgstr ""
 
-#: src/irctabitem.cpp:915
+#: src/irctabitem.cpp:1055
 #, c-format
 msgid "Unknown command '%s', type /commands for available commands"
 msgstr ""
 
-#: src/irctabitem.cpp:965
+#: src/irctabitem.cpp:1132
 msgid "You aren't connected"
-msgstr ""
-
-#: src/irctabitem.cpp:1196
-#, c-format
-msgid "CTCP %s reply from %s: %s"
-msgstr ""
-
-#: src/irctabitem.cpp:1204
-#, c-format
-msgid "CTCP %s request from %s"
-msgstr ""
-
-#: src/irctabitem.cpp:1212
-#, c-format
-msgid "%s has joined to %s"
-msgstr ""
-
-#: src/irctabitem.cpp:1224 src/irctabitem.cpp:1233
-#, c-format
-msgid "%s has quit"
-msgstr ""
-
-#: src/irctabitem.cpp:1228
-#, c-format
-msgid "%s has quit (%s)"
-msgstr ""
-
-#: src/irctabitem.cpp:1241
-#, c-format
-msgid "%s has parted %s"
-msgstr ""
-
-#: src/irctabitem.cpp:1242
-#, c-format
-msgid "%s has parted %s (%s)"
-msgstr ""
-
-#: src/irctabitem.cpp:1253 src/irctabitem.cpp:1263 src/irctabitem.cpp:1272
-#, c-format
-msgid "%s's NOTICE: %s"
-msgstr ""
-
-#: src/irctabitem.cpp:1271
-#, c-format
-msgid "NOTICE for you: %s"
-msgstr ""
-
-#: src/irctabitem.cpp:1280
-#, c-format
-msgid "you changes nick to %s"
-msgstr ""
-
-#: src/irctabitem.cpp:1281
-#, c-format
-msgid "%s changes nick to %s"
-msgstr ""
-
-#: src/irctabitem.cpp:1294
-#, c-format
-msgid "%s Set new topic for %s: %s"
-msgstr ""
-
-#: src/irctabitem.cpp:1304
-#, c-format
-msgid "%s invites you to: %s"
-msgstr ""
-
-#: src/irctabitem.cpp:1314
-#, c-format
-msgid "%s was kicked from: %s"
-msgstr ""
-
-#: src/irctabitem.cpp:1315
-#, c-format
-msgid "%s was kicked from: %s (%s)"
-msgstr ""
-
-#: src/irctabitem.cpp:1321
-#, c-format
-msgid "you was kicked from: %s"
-msgstr ""
-
-#: src/irctabitem.cpp:1322
-#, c-format
-msgid "you was kicked from: %s (%s)"
-msgstr ""
-
-#: src/irctabitem.cpp:1330
-#, c-format
-msgid "Mode change [%s] for %s"
-msgstr ""
-
-#: src/irctabitem.cpp:1361
-#, c-format
-msgid "%s gave you admin"
-msgstr ""
-
-#: src/irctabitem.cpp:1362
-#, c-format
-msgid "%s gave %s admin"
-msgstr ""
-
-#: src/irctabitem.cpp:1370
-#, c-format
-msgid "%s removed you admin"
 msgstr ""
 
 #: src/irctabitem.cpp:1371
 #, c-format
-msgid "%s removed %s admin"
+msgid "CTCP %s reply from %s: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:1385
+#: src/irctabitem.cpp:1379
 #, c-format
-msgid "%s gave you op"
+msgid "CTCP %s request from %s"
 msgstr ""
 
-#: src/irctabitem.cpp:1386
+#: src/irctabitem.cpp:1387
 #, c-format
-msgid "%s gave %s op"
+msgid "%s has joined to %s"
 msgstr ""
 
-#: src/irctabitem.cpp:1394
+#: src/irctabitem.cpp:1399 src/irctabitem.cpp:1408
 #, c-format
-msgid "%s removed you op"
+msgid "%s has quit"
 msgstr ""
 
-#: src/irctabitem.cpp:1395
+#: src/irctabitem.cpp:1403
 #, c-format
-msgid "%s removed %s op"
+msgid "%s has quit (%s)"
 msgstr ""
 
-#: src/irctabitem.cpp:1410
+#: src/irctabitem.cpp:1416
 #, c-format
-msgid "%s gave you voice"
+msgid "%s has parted %s"
 msgstr ""
 
-#: src/irctabitem.cpp:1411
+#: src/irctabitem.cpp:1417
 #, c-format
-msgid "%s gave %s voice"
+msgid "%s has parted %s (%s)"
 msgstr ""
 
-#: src/irctabitem.cpp:1419
+#: src/irctabitem.cpp:1428 src/irctabitem.cpp:1443 src/irctabitem.cpp:1452
 #, c-format
-msgid "%s removed you voice"
+msgid "%s's NOTICE: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:1420
+#: src/irctabitem.cpp:1451
 #, c-format
-msgid "%s removed %s voice"
+msgid "NOTICE for you: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:1434
+#: src/irctabitem.cpp:1460
 #, c-format
-msgid "%s gave you halfop"
-msgstr ""
-
-#: src/irctabitem.cpp:1435
-#, c-format
-msgid "%s gave %s halfop"
-msgstr ""
-
-#: src/irctabitem.cpp:1443
-#, c-format
-msgid "%s removed you halfop"
-msgstr ""
-
-#: src/irctabitem.cpp:1444
-#, c-format
-msgid "%s removed %s halfop"
+msgid "you changes nick to %s"
 msgstr ""
 
 #: src/irctabitem.cpp:1461
 #, c-format
-msgid "%s set Mode: %s"
+msgid "%s changes nick to %s"
 msgstr ""
 
-#: src/irctabitem.cpp:1529 src/irctabitem.cpp:1535
+#: src/irctabitem.cpp:1474
 #, c-format
-msgid "Unhandled command '%s' params: %s"
+msgid "%s Set new topic for %s: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:1543
+#: src/irctabitem.cpp:1484
 #, c-format
-msgid "%s is away: %s"
+msgid "%s invites you to: %s"
+msgstr ""
+
+#: src/irctabitem.cpp:1494
+#, c-format
+msgid "%s was kicked from: %s"
+msgstr ""
+
+#: src/irctabitem.cpp:1495
+#, c-format
+msgid "%s was kicked from: %s (%s)"
+msgstr ""
+
+#: src/irctabitem.cpp:1501
+#, c-format
+msgid "you was kicked from: %s"
+msgstr ""
+
+#: src/irctabitem.cpp:1502
+#, c-format
+msgid "you was kicked from: %s (%s)"
+msgstr ""
+
+#: src/irctabitem.cpp:1510
+#, c-format
+msgid "Mode change [%s] for %s"
+msgstr ""
+
+#: src/irctabitem.cpp:1541
+#, c-format
+msgid "%s gave you admin"
+msgstr ""
+
+#: src/irctabitem.cpp:1542
+#, c-format
+msgid "%s gave %s admin"
+msgstr ""
+
+#: src/irctabitem.cpp:1550
+#, c-format
+msgid "%s removed you admin"
+msgstr ""
+
+#: src/irctabitem.cpp:1551
+#, c-format
+msgid "%s removed %s admin"
+msgstr ""
+
+#: src/irctabitem.cpp:1565
+#, c-format
+msgid "%s gave you op"
+msgstr ""
+
+#: src/irctabitem.cpp:1566
+#, c-format
+msgid "%s gave %s op"
+msgstr ""
+
+#: src/irctabitem.cpp:1574
+#, c-format
+msgid "%s removed you op"
+msgstr ""
+
+#: src/irctabitem.cpp:1575
+#, c-format
+msgid "%s removed %s op"
+msgstr ""
+
+#: src/irctabitem.cpp:1590
+#, c-format
+msgid "%s gave you voice"
 msgstr ""
 
 #: src/irctabitem.cpp:1591
 #, c-format
-msgid "Users on %s: %s"
+msgid "%s gave %s voice"
 msgstr ""
 
-#: src/irctabitem.cpp:1722
-msgid "Give op"
+#: src/irctabitem.cpp:1599
+#, c-format
+msgid "%s removed you voice"
+msgstr ""
+
+#: src/irctabitem.cpp:1600
+#, c-format
+msgid "%s removed %s voice"
+msgstr ""
+
+#: src/irctabitem.cpp:1614
+#, c-format
+msgid "%s gave you halfop"
+msgstr ""
+
+#: src/irctabitem.cpp:1615
+#, c-format
+msgid "%s gave %s halfop"
+msgstr ""
+
+#: src/irctabitem.cpp:1623
+#, c-format
+msgid "%s removed you halfop"
+msgstr ""
+
+#: src/irctabitem.cpp:1624
+#, c-format
+msgid "%s removed %s halfop"
+msgstr ""
+
+#: src/irctabitem.cpp:1641
+#, c-format
+msgid "%s set Mode: %s"
+msgstr ""
+
+#: src/irctabitem.cpp:1709 src/irctabitem.cpp:1715
+#, c-format
+msgid "Unhandled command '%s' params: %s"
 msgstr ""
 
 #: src/irctabitem.cpp:1723
+#, c-format
+msgid "%s is away: %s"
+msgstr ""
+
+#: src/irctabitem.cpp:1849
+#, c-format
+msgid "Users on %s: %s"
+msgstr ""
+
+#: src/irctabitem.cpp:2014
+msgid "Give op"
+msgstr ""
+
+#: src/irctabitem.cpp:2015
 msgid "Remove op"
 msgstr ""
 
-#: src/irctabitem.cpp:1725
+#: src/irctabitem.cpp:2017
 msgid "Give voice"
 msgstr ""
 
-#: src/irctabitem.cpp:1726
+#: src/irctabitem.cpp:2018
 msgid "Remove voice"
 msgstr ""
 
-#: src/irctabitem.cpp:1728
+#: src/irctabitem.cpp:2020
 msgid "Kick"
 msgstr ""
 
-#: src/irctabitem.cpp:1730
+#: src/irctabitem.cpp:2022
 msgid "Ban"
 msgstr ""
 
-#: src/irctabitem.cpp:1731
+#: src/irctabitem.cpp:2023
 msgid "KickBan"
 msgstr ""
 
-#: src/irctabitem.cpp:1733
+#: src/irctabitem.cpp:2025
 #, c-format
 msgid "User: %s@%s"
 msgstr ""
 
-#: src/irctabitem.cpp:1734
+#: src/irctabitem.cpp:2026
 #, c-format
 msgid "Realname: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:1738
+#: src/irctabitem.cpp:2030
 msgid "Query"
 msgstr ""
 
-#: src/irctabitem.cpp:1739
+#: src/irctabitem.cpp:2031
 msgid "User information (WHOIS)"
 msgstr ""
 
-#: src/irctabitem.cpp:1740
+#: src/irctabitem.cpp:2032
 msgid "Operator actions"
 msgstr ""
 
-#: src/irctabitem.cpp:1793
+#: src/irctabitem.cpp:2084
 msgid "Kick dialog"
 msgstr ""
 
-#: src/irctabitem.cpp:1797 src/irctabitem.cpp:1838
+#: src/irctabitem.cpp:2088 src/irctabitem.cpp:2129
 msgid "Kick reason:"
 msgstr ""
 
-#: src/irctabitem.cpp:1813
+#: src/irctabitem.cpp:2104
 msgid "Ban dialog"
 msgstr ""
 
-#: src/irctabitem.cpp:1817 src/irctabitem.cpp:1842
+#: src/irctabitem.cpp:2108 src/irctabitem.cpp:2133
 msgid "Banmask:"
 msgstr ""
 
-#: src/irctabitem.cpp:1834
+#: src/irctabitem.cpp:2125
 msgid "Kick/Ban dialog"
 msgstr ""
 
-#: src/irctabitem.cpp:1880
+#: src/irctabitem.cpp:2171
 #, c-format
 msgid "You was banned by %s"
 msgstr ""
 
-#: src/irctabitem.cpp:1883
+#: src/irctabitem.cpp:2174
 #, c-format
 msgid "%s was banned by %s"
 msgstr ""
@@ -1298,12 +1309,33 @@ msgstr ""
 msgid "Join"
 msgstr ""
 
-#: src/serverdialog.cpp:99
+#: src/serverdialog.cpp:99 src/aliasdialog.cpp:62
 msgid "Save&&Close"
 msgstr ""
 
 #: src/serverdialog.cpp:129 src/serverdialog.cpp:197
 msgid "Server edit"
+msgstr ""
+
+#: src/aliasdialog.cpp:42
+msgid "Aliases list"
+msgstr ""
+
+#: src/aliasdialog.cpp:48
+msgid "Aliases"
+msgstr ""
+
+#: src/aliasdialog.cpp:74 src/aliasdialog.cpp:101
+msgid "Alias edit"
+msgstr ""
+
+#: src/aliasdialog.cpp:77 src/aliasdialog.cpp:104
+msgid "Alias:"
+msgstr ""
+
+#: src/dxpipe.cpp:93
+#, c-format
+msgid "Command %s stopped"
 msgstr ""
 
 #: src/help.h:7

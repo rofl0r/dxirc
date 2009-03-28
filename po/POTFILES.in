@@ -3,6 +3,8 @@ src/dxirc.cpp
 src/ircsocket.cpp
 src/irctabitem.cpp
 src/serverdialog.cpp
+src/aliasdialog.cpp
+src/dxpipe.cpp
 src/help.h
 
 
