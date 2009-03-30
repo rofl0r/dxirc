@@ -87,6 +87,7 @@ FXint dxPipe::ExecCmd(FXString cmd)
 
 void dxPipe::StopCmd()
 {
+#ifndef WIN32
     if(running)
     {
         kill(pid, SIGKILL);
@@ -94,6 +95,7 @@ void dxPipe::StopCmd()
         target->handle(this, FXSEL(SEL_COMMAND, ID_PIPE), &send);
     }
     running = false;
+#endif
 }
 
 int dxPipe::ReadData()

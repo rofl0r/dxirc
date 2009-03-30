@@ -502,6 +502,7 @@ long dxirc::OnCommandOptions(FXObject*, FXSelector, void*)
         {
             servers[i]->SetUsersList(usersList);
         }
+        SaveConfig();
     }
     return 1;
 }
@@ -509,7 +510,10 @@ long dxirc::OnCommandOptions(FXObject*, FXSelector, void*)
 long dxirc::OnCommandAlias(FXObject*, FXSelector, void*)
 {
     AliasDialog dialog(this);
-    dialog.execute(PLACEMENT_CURSOR);
+    if(dialog.execute(PLACEMENT_CURSOR))
+    {
+        SaveConfig();
+    }
     return 1;
 }
 
@@ -841,6 +845,7 @@ long dxirc::OnCommandServers(FXObject*, FXSelector, void*)
         {
             ConnectServer(serverList[indexJoin].hostname, serverList[indexJoin].port, serverList[indexJoin].passwd, serverList[indexJoin].nick, serverList[indexJoin].realname, serverList[indexJoin].channels, serverList[indexJoin].commands);
         }
+        SaveConfig();
     }
     return 1;
 }
