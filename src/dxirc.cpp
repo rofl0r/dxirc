@@ -19,6 +19,9 @@
  *      MA 02110-1301, USA.
  */
 
+#include "ircsocket.h"
+
+
 #ifdef WIN32
  #include <windows.h>
 #endif
@@ -300,6 +303,7 @@ void dxirc::ReadServersConfig()
             server.channels = set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "channels", "");
             server.commands = set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "commands", "");
             server.autoConnect = set.readBoolEntry(FXStringFormat("SERVER%d", i).text(), "autoconnect", false);
+            server.useSsl = set.readBoolEntry(FXStringFormat("SERVER%d", i).text(), "ssl", false);
             if(server.autoConnect)
             {
                 autoConnect++;
@@ -313,6 +317,11 @@ void dxirc::ReadServersConfig()
                     server.realname.length() ? servers[0]->SetRealName(server.realname) : servers[0]->SetRealName(server.nick.length() ? server.nick : "_xxx_");
                     if(server.channels.length()>1) servers[0]->SetStartChannels(server.channels);
                     if(server.commands.length()) servers[0]->SetStartCommands(server.commands);
+#ifdef HAVE_OPENSSL
+                    servers[0]->SetUseSsl(server.useSsl);
+#else
+                    servers[0]->SetUseSsl(false);
+#endif
                     if (!tabbook->numChildren())
                     {
                         IrcTabItem *tabitem = new IrcTabItem(tabbook, server.hostname, servericon, TAB_BOTTOM, SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList);
@@ -335,7 +344,12 @@ void dxirc::ReadServersConfig()
                     servers[0]->SetServerPassword(server.passwd);
                     server.nick.length() ? servers[0]->SetNickName(server.nick) : servers[0]->SetNickName("_xxx_");
                     server.nick.length() ? servers[0]->SetUserName(server.nick) : servers[0]->SetUserName("_xxx_");
-                    server.realname.length() ? servers[0]->SetRealName(server.realname) : servers[0]->SetRealName(server.nick.length() ? server.nick : "_xxx_");                    
+                    server.realname.length() ? servers[0]->SetRealName(server.realname) : servers[0]->SetRealName(server.nick.length() ? server.nick : "_xxx_");
+#ifdef HAVE_OPENSSL
+                    servers[0]->SetUseSsl(server.useSsl);
+#else
+                    servers[0]->SetUseSsl(false);
+#endif
                     IrcTabItem *tabitem = new IrcTabItem(tabbook, server.hostname, servericon, TAB_BOTTOM, SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList);
                     servers[0]->AppendTarget(tabitem);
                     tabitem->create();
@@ -368,6 +382,7 @@ void dxirc::SaveConfig()
             set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "channels", serverList[i].channels.text());
             set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "commands", serverList[i].commands.text());
             set.writeBoolEntry(FXStringFormat("SERVER%d", i).text(), "autoconnect", serverList[i].autoConnect);
+            set.writeBoolEntry(FXStringFormat("SERVER%d", i).text(), "ssl", serverList[i].useSsl);
         }
     }
     set.writeBoolEntry("SETTINGS", "usersShown", usersShown);
@@ -843,7 +858,7 @@ long dxirc::OnCommandServers(FXObject*, FXSelector, void*)
         indexJoin = dialog->GetIndexJoin();
         if (indexJoin != -1 && !ServerExist(serverList[indexJoin].hostname, serverList[indexJoin].port))
         {
-            ConnectServer(serverList[indexJoin].hostname, serverList[indexJoin].port, serverList[indexJoin].passwd, serverList[indexJoin].nick, serverList[indexJoin].realname, serverList[indexJoin].channels, serverList[indexJoin].commands);
+            ConnectServer(serverList[indexJoin].hostname, serverList[indexJoin].port, serverList[indexJoin].passwd, serverList[indexJoin].nick, serverList[indexJoin].realname, serverList[indexJoin].channels, serverList[indexJoin].commands, serverList[indexJoin].useSsl);
         }
         SaveConfig();
     }
@@ -873,12 +888,17 @@ long dxirc::OnCommandConnect(FXObject*, FXSelector, void*)
     FXTextField *nick = new FXTextField(matrix, 25, NULL, 0, TEXTFIELD_ENTER_ONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     nick->setText(FXSystem::currentUserName());
 
-    new FXLabel(matrix, _("Realname:"),NULL,JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    new FXLabel(matrix, _("Realname:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     FXTextField* realname = new FXTextField(matrix, 25, NULL, 0, TEXTFIELD_ENTER_ONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
 
     new FXLabel(matrix, _("Channel(s):\tChannels need to be comma separated"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     FXTextField *channel = new FXTextField(matrix, 25, NULL, 0, TEXTFIELD_ENTER_ONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     channel->setText("#");
+
+#ifdef HAVE_OPENSSL
+    new FXLabel(matrix, _("Use SSL:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    FXCheckButton *ussl = new FXCheckButton(matrix, "", NULL, 0);
+#endif
 
     new FXLabel(matrix, _("Commands on connection:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     FXHorizontalFrame *commandsbox=new FXHorizontalFrame(matrix, LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW|FRAME_SUNKEN|FRAME_THICK,0,0,0,0, 0,0,0,0);
@@ -891,7 +911,11 @@ long dxirc::OnCommandConnect(FXObject*, FXSelector, void*)
     new FXButton(buttonframe, _("Cancel"), NULL, &serverEdit, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
     if (serverEdit.execute(PLACEMENT_OWNER))
     {
-        ConnectServer(hostname->getText(), port->getValue(), passwd->getText(), nick->getText(), realname->getText(), channel->getText(), command->getText());
+#ifdef HAVE_OPENSSL
+        ConnectServer(hostname->getText(), port->getValue(), passwd->getText(), nick->getText(), realname->getText(), channel->getText(), command->getText(), ussl->getCheck());
+#else
+        ConnectServer(hostname->getText(), port->getValue(), passwd->getText(), nick->getText(), realname->getText(), channel->getText(), command->getText(), false);
+#endif
     }
     return 1;
 }
@@ -899,11 +923,11 @@ long dxirc::OnCommandConnect(FXObject*, FXSelector, void*)
 long dxirc::OnTabConnect(FXObject*, FXSelector, void *data)
 {
     ServerInfo *srv = (ServerInfo*)data;
-    ConnectServer(srv->hostname, srv->port, srv->passwd, srv->nick, srv->realname, srv->channels, "");
+    ConnectServer(srv->hostname, srv->port, srv->passwd, srv->nick, srv->realname, srv->channels, "", false);
     return 1;
 }
 
-void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString nick, FXString rname, FXString channels, FXString commands)
+void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString nick, FXString rname, FXString channels, FXString commands, FXbool ssl)
 {
     if(servers.no() == 1 && !servers[0]->GetConnected())
     {
@@ -915,6 +939,11 @@ void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString
         rname.length() ? servers[0]->SetRealName(rname) : servers[0]->SetRealName(nick.length() ? nick : "_xxx_");
         if(channels.length()>1) servers[0]->SetStartChannels(channels);
         if(commands.length()) servers[0]->SetStartCommands(commands);
+#ifdef HAVE_OPENSSL
+        servers[0]->SetUseSsl(ssl);
+#else
+        servers[0]->SetUseSsl(false);
+#endif
         if (!tabbook->numChildren())
         {
             IrcTabItem *tabitem = new IrcTabItem(tabbook, hostname, servericon, TAB_BOTTOM, SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList);
@@ -940,6 +969,11 @@ void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString
         rname.length() ? servers[0]->SetRealName(rname) : servers[0]->SetRealName(nick.length() ? nick : "_xxx_");
         IrcTabItem *tabitem = new IrcTabItem(tabbook, hostname, servericon, TAB_BOTTOM, SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList);
         servers[0]->AppendTarget(tabitem);
+#ifdef HAVE_OPENSSL
+        servers[0]->SetUseSsl(ssl);
+#else
+        servers[0]->SetUseSsl(false);
+#endif
         tabitem->create();
         tabitem->CreateGeom();
         //tabbook->setCurrent(tabbook->numChildren()/2);

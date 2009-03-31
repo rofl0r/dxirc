@@ -49,6 +49,7 @@ public:
     long OnListSelected(FXObject*,FXSelector,void*);
     long OnListDeselected(FXObject*,FXSelector,void*);
     long OnListChanged(FXObject*,FXSelector,void*);
+    long OnKeyPress(FXObject*,FXSelector,void*);
 
 private:
     AliasDialog() {}

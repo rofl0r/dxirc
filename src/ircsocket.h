@@ -39,6 +39,12 @@
 #endif
 
 #include "defs.h"
+#include "config.h"
+
+#ifdef HAVE_OPENSSL
+#include <openssl/ssl.h>
+#include <openssl/bio.h>
+#endif
 
 class IrcSocket: public FXObject
 {
@@ -72,6 +78,7 @@ class IrcSocket: public FXObject
         void SetStartChannels(const FXString &channels) { startChannels = channels; }
         void SetStartCommands(const FXString &commands) { startCommands = commands; }
         void SetUsersList(const dxIgnoreUserArray &ulst) { usersList = ulst;}
+        void SetUseSsl(const FXbool &ussl) { useSsl = ussl;}
         FXbool GetConnected() { return connected; }
         void AddIgnoreCommands(const FXString &command);
         void RemoveIgnoreCommands(const FXString &command);
@@ -115,7 +122,7 @@ class IrcSocket: public FXObject
         IrcSocket(){}
 
         FXApp *application;
-        FXbool connected;
+        FXbool connected, useSsl;
         FXint serverPort;
         FXString serverName, realServerName, serverPassword, nickName, realName, userName, startChannels, startCommands;
         FXString receiveRest;
@@ -159,6 +166,14 @@ class IrcSocket: public FXObject
         void Unknown(const FXString&, const FXString&);
         FXbool IsUserIgnored(const FXString &nick, const FXString &on);
         void CloseConnection();
+
+#ifdef HAVE_OPENSSL
+        SSL_CTX *ctx;
+        SSL *ssl;
+        FXint err;
+
+        void InitSSL();
+#endif
 
 };
 

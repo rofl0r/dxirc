@@ -91,7 +91,7 @@ class dxirc: public FXMainWindow
         FXbool ServerExist(const FXString&, const FXint&);
         FXint GetServerTab(IrcSocket*);
         FXbool IsLastTab(IrcSocket*);
-        void ConnectServer(FXString, FXint, FXString, FXString, FXString, FXString, FXString);
+        void ConnectServer(FXString, FXint, FXString, FXString, FXString, FXString, FXString, FXbool);
         void ReadServersConfig();
         void ReadConfig();
         void SaveConfig();

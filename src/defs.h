@@ -104,6 +104,7 @@ struct ServerInfo {
     FXString channels;
     FXString commands;
     FXbool autoConnect;
+    FXbool useSsl;
 };
 
 struct IrcColor {

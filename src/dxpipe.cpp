@@ -112,13 +112,20 @@ int dxPipe::ReadData()
         buffer[size] = '\0';
         if (utils::IsUtf8(buffer, size)) data.append(buffer);
         else data.append(utils::LocaleToUtf8(buffer));
-        while (data.contains('\n'))
+        if(!data.contains('\n'))
         {
-            FXString send = data.before('\n');
-            target->handle(this, FXSEL(SEL_COMMAND, ID_PIPE), &send);
-            data = data.after('\n');
+            target->handle(this, FXSEL(SEL_COMMAND, ID_PIPE), &data);
         }
-        strprev = data;
+        else
+        {
+            while (data.contains('\n'))
+            {
+                FXString send = data.before('\n');
+                target->handle(this, FXSEL(SEL_COMMAND, ID_PIPE), &send);
+                data = data.after('\n');
+            }
+            strprev = data;
+        }
     }
     else if(size == 0)
     {

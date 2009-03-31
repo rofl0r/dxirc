@@ -30,7 +30,9 @@ FXDEFMAP(AliasDialog) AliasDialogMap[] = {
     FXMAPFUNC(SEL_COMMAND,  AliasDialog::ID_MODIFY,     AliasDialog::OnModify),
     FXMAPFUNC(SEL_COMMAND,  AliasDialog::ID_DELETE,     AliasDialog::OnDelete),
     FXMAPFUNC(SEL_COMMAND,  AliasDialog::ID_CANCEL,     AliasDialog::OnCancel),
+    FXMAPFUNC(SEL_CLOSE,    0,                          AliasDialog::OnCancel),
     FXMAPFUNC(SEL_COMMAND,  AliasDialog::ID_SAVECLOSE,  AliasDialog::OnSaveClose),
+    FXMAPFUNC(SEL_KEYPRESS, 0,                          AliasDialog::OnKeyPress),
     FXMAPFUNCS(SEL_SELECTED,    AliasDialog::ID_KEYS, AliasDialog::ID_VALUES,   AliasDialog::OnListSelected),
     FXMAPFUNCS(SEL_DESELECTED,  AliasDialog::ID_KEYS, AliasDialog::ID_VALUES,   AliasDialog::OnListDeselected),
     FXMAPFUNCS(SEL_CHANGED,     AliasDialog::ID_KEYS, AliasDialog::ID_VALUES,   AliasDialog::OnListChanged)
@@ -149,6 +151,17 @@ long AliasDialog::OnSaveClose(FXObject*, FXSelector, void*)
     getApp()->stopModal(this,TRUE);
     hide();
     return 1;
+}
+
+long AliasDialog::OnKeyPress(FXObject *sender, FXSelector sel, void *ptr)
+{
+    if(FXTopWindow::onKeyPress(sender,sel,ptr)) return 1;
+    if(((FXEvent*)ptr)->code == KEY_Escape)
+    {
+        handle(this,FXSEL(SEL_COMMAND,ID_CANCEL),NULL);
+        return 1;
+    }
+    return 0;
 }
 
 long AliasDialog::OnListSelected(FXObject*, FXSelector, void *ptr)

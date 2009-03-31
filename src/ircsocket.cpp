@@ -20,9 +20,11 @@
  */
 
 #include "ircsocket.h"
-#include "config.h"
 #include "i18n.h"
 #include "utils.h"
+#ifdef HAVE_OPENSSL
+#include <openssl/err.h>
+#endif
 
 FXDEFMAP(IrcSocket) IrcSocketMap[] = {
     FXMAPFUNC(SEL_IO_READ,      IrcSocket::ID_READ,     IrcSocket::OnIORead)
@@ -31,7 +33,10 @@ FXDEFMAP(IrcSocket) IrcSocketMap[] = {
 FXIMPLEMENT(IrcSocket, FXObject, IrcSocketMap, ARRAYNUMBER(IrcSocketMap))
 
 IrcSocket::IrcSocket(FXApp *app, FXObject *tgt, FXString channels, FXString commands)
-    : application(app), startChannels(channels), startCommands(commands)
+    : application(app), startChannels(channels), startCommands(commands),
+#ifdef HAVE_OPENSSL
+        ctx(NULL), ssl(NULL)/*, bio(NULL)*/
+#endif
 {
     targets.append(tgt);
     serverName = "localhost";
@@ -48,6 +53,10 @@ IrcSocket::IrcSocket(FXApp *app, FXObject *tgt, FXString channels, FXString comm
 IrcSocket::~IrcSocket()
 {
     if(connected) Disconnect();
+#ifdef HAVE_OPENSSL
+    if(ssl) SSL_free(ssl);
+    if(ctx) SSL_CTX_free(ctx);
+#endif
 }
 
 long IrcSocket::OnIORead(FXObject *, FXSelector, void *)
@@ -98,6 +107,11 @@ FXint IrcSocket::Connect()
         SendEvent(IRC_ERROR, FXStringFormat(_("Unable connect to: %s"), serverName.text()));
         startChannels.clear();
         startCommands.clear();
+#ifdef WIN32
+        closesocket(socketid);
+#else
+        close(socketid);
+#endif
         return -1;
     }
 #ifdef WIN32
@@ -107,6 +121,59 @@ FXint IrcSocket::Connect()
 #else
     application->addInput((FXInputHandle)socketid, INPUT_READ, this, ID_READ);
 #endif
+#ifdef HAVE_OPENSSL
+    if(useSsl)
+    {
+        InitSSL();
+        ssl = SSL_new(ctx);
+        if(!ssl)
+        {
+#ifdef WIN32
+            shutdown(socketid, SD_BOTH);
+            closesocket(socketid);
+            if(event)
+            {
+                application->removeInput((FXInputHandle)event, INPUT_READ);
+                WSACloseEvent(event);
+                event = NULL;
+            }
+#else
+#ifndef SHUT_RDWR
+#define SHUT_RDWR 2
+#endif
+            shutdown(socketid, SHUT_RDWR);
+            close(socketid);
+            application->removeInput(socketid, INPUT_READ);
+#endif
+            SendEvent(IRC_ERROR, _("SSL creation error"));
+            return -1;
+        }
+        SSL_set_fd(ssl, socketid);
+        err = SSL_connect(ssl);
+        if(!err)
+        {
+#ifdef WIN32
+            shutdown(socketid, SD_BOTH);
+            closesocket(socketid);
+            if(event)
+            {
+                application->removeInput((FXInputHandle)event, INPUT_READ);
+                WSACloseEvent(event);
+                event = NULL;
+            }
+#else
+#ifndef SHUT_RDWR
+#define SHUT_RDWR 2
+#endif
+            shutdown(socketid, SHUT_RDWR);
+            close(socketid);
+            application->removeInput(socketid, INPUT_READ);
+#endif
+            SendEvent(IRC_ERROR, FXStringFormat(_("SSL connect error %d"), err));
+            return -1;
+        }
+    }
+#endif //HAVE_OPENSSL
     connected = true;
     SendEvent(IRC_CONNECT, FXStringFormat(_("Connected to %s"), serverName.text()));
     if (!serverPassword.empty()) SendLine("PASS "+serverPassword);
@@ -133,6 +200,17 @@ void IrcSocket::CloseConnection()
     SendEvent(IRC_DISCONNECT, FXStringFormat(_("Server %s was disconnected"), serverName.text()));
     startChannels.clear();
     startCommands.clear();
+#ifdef HAVE_OPENSSL
+    if(useSsl)
+    {
+        if(ssl)
+        {
+            SSL_shutdown(ssl);
+            SSL_free(ssl);
+        }
+        if(ctx) SSL_CTX_free(ctx);
+    }
+#endif
 #ifdef WIN32
     shutdown(socketid, SD_BOTH);
     closesocket(socketid);
@@ -158,11 +236,54 @@ int IrcSocket::ReadData()
     int size;
 
     FXString data = receiveRest;
-#ifdef WIN32
-    WSANETWORKEVENTS network_events;
-    WSAEnumNetworkEvents(socketid, event, &network_events);
-    if (network_events.lNetworkEvents&FD_READ)
+    if(useSsl)
     {
+#ifdef HAVE_OPENSSL
+        size = SSL_read(ssl, buffer, 1023);
+        if (size > 0)
+        {
+            buffer[size] = '\0';
+            if (utils::IsUtf8(buffer, size)) data.append(buffer);
+            else data.append(utils::LocaleToUtf8(buffer));
+            while (data.contains('\n'))
+            {
+                ParseLine(data.before('\n').before('\r'));
+                data = data.after('\n');
+            }
+            receiveRest = data;
+        }
+#endif
+    }
+    else
+    {
+#ifdef WIN32
+        WSANETWORKEVENTS network_events;
+        WSAEnumNetworkEvents(socketid, event, &network_events);
+        if (network_events.lNetworkEvents&FD_READ)
+        {
+            size = recv(socketid, buffer, 1023, 0);
+            if (size > 0)
+            {
+                buffer[size] = '\0';
+                if (utils::IsUtf8(buffer, size)) data.append(buffer);
+                else data.append(utils::LocaleToUtf8(buffer));
+                while (data.contains('\n'))
+                {
+                    ParseLine(data.before('\n').before('\r'));
+                    data = data.after('\n');
+                }
+                receiveRest = data;
+            }
+            else if (size < 0)
+            {
+                SendEvent(IRC_ERROR, FXStringFormat(_("Error in reading data from %s"), serverName.text()));
+                CloseConnection();
+            }
+            else CloseConnection();
+        }
+        //else if (network_events.lNetworkEvents&FD_CONNECT) ;
+        else if (network_events.lNetworkEvents&FD_CLOSE) CloseConnection();
+#else
         size = recv(socketid, buffer, 1023, 0);
         if (size > 0)
         {
@@ -182,30 +303,8 @@ int IrcSocket::ReadData()
             CloseConnection();
         }
         else CloseConnection();
-    }
-    //else if (network_events.lNetworkEvents&FD_CONNECT) ;
-    else if (network_events.lNetworkEvents&FD_CLOSE) CloseConnection();
-#else
-    size = recv(socketid, buffer, 1023, 0);
-    if (size > 0)
-    {
-        buffer[size] = '\0';
-        if (utils::IsUtf8(buffer, size)) data.append(buffer);
-        else data.append(utils::LocaleToUtf8(buffer));
-        while (data.contains('\n'))
-        {
-            ParseLine(data.before('\n').before('\r'));
-            data = data.after('\n');
-        }
-        receiveRest = data;
-    }
-    else if (size < 0)
-    {
-        SendEvent(IRC_ERROR, FXStringFormat(_("Error in reading data from %s"), serverName.text()));
-        CloseConnection();
-    }
-    else CloseConnection();
 #endif
+    }
     return size;
 }
 
@@ -1008,14 +1107,23 @@ FXbool IrcSocket::SendLine(const FXString& line)
     int size;
     if (connected)
     {
-        if ((size = send(socketid, toSend.text(), toSend.length(), 0)) == -1)
+        if(useSsl)
         {
-            SendEvent(IRC_ERROR, _("Unable send data"));
-#ifdef WIN32
-            WSACleanup();
+#ifdef HAVE_OPENSSL
+            size = SSL_write(ssl, toSend.text(), toSend.length());
 #endif
-            CloseConnection();
-            return false;
+        }
+        else
+        {
+            if ((size = send(socketid, toSend.text(), toSend.length(), 0)) == -1)
+            {
+                SendEvent(IRC_ERROR, _("Unable send data"));
+#ifdef WIN32
+                WSACleanup();
+#endif
+                CloseConnection();
+                return false;
+            }
         }
         return true;
     }
@@ -1431,3 +1539,13 @@ FXbool IrcSocket::IsUserIgnored(const FXString &nick, const FXString &on)
     }
     return user && channel && host;
 }
+
+#ifdef HAVE_OPENSSL
+void IrcSocket::InitSSL()
+{
+    SSL_load_error_strings();
+    SSL_library_init();
+    ctx = SSL_CTX_new(SSLv3_client_method());
+    SSL_CTX_set_options(ctx, SSL_OP_ALL);
+}
+#endif

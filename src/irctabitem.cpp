@@ -929,7 +929,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
             }
             if(command == "quit")
             {                
-                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_TABQUIT), NULL);
+                //parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_TABQUIT), NULL);
                 if(commandtext.after(' ').empty()) server->Disconnect();
                 else server->Disconnect(commandtext.after(' '));
                 return true;
