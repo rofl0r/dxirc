@@ -19,9 +19,6 @@
  *      MA 02110-1301, USA.
  */
 
-#include "ircsocket.h"
-
-
 #ifdef WIN32
  #include <windows.h>
 #endif
