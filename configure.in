@@ -42,7 +42,7 @@ if test "$enable_ssl" = "yes"; then
       AC_CHECK_HEADERS(openssl/ssl.h openssl/err.h, [
         SSL_LIBS="-lssl -lcrypto"
         AC_SUBST(SSL_LIBS)
-	have_openssl=yes
+    have_openssl=yes
       ])
     ],, -lcrypto)
   fi
@@ -63,7 +63,7 @@ AC_CHECK_HEADERS(fox-1.6/fx.h,,AC_MSG_ERROR("fox-1.6/fx.h not found"))
 dnl Check if fox-config exists
 AC_CHECK_PROGS(FOX_CONFIG,fox-config-1.6 fox-1.6-config fox-config)
 if test no"$FOX_CONFIG" = no ; then
-	AC_MSG_ERROR("fox-config not found")               
+    AC_MSG_ERROR("fox-config not found")               
 fi
 
 dnl Include flags for the FOX library
@@ -79,9 +79,9 @@ AC_MSG_CHECKING(for debugging)
 AC_ARG_ENABLE(debug,[  --enable-debug          compile for debugging])
 AC_MSG_RESULT([$enable_debug])
 if test "x$enable_debug" = "xyes" ; then
-	CXXFLAGS="${CXXFLAGS} -Wall -g -DDEBUG"
+    CXXFLAGS="${CXXFLAGS} -Wall -g -DDEBUG"
 else
-	CXXFLAGS="-O2 ${CXXFLAGS}"
+    CXXFLAGS="-O2 ${CXXFLAGS}"
 fi
 
 dnl Building for release
@@ -89,10 +89,10 @@ AC_MSG_CHECKING(for release build)
 AC_ARG_ENABLE(release,[  --enable-release        compile for release (advanced optimizations)])
 AC_MSG_RESULT([$enable_release])
 if test "x$enable_release" = "xyes" ; then
-	CXXFLAGS="${CXXFLAGS} -DNDEBUG"
-	if test "${GXX}" = "yes" ; then
-		CXXFLAGS="${CXXFLAGS} -Wuninitialized -ffast-math -finline-functions -fomit-frame-pointer -fexpensive-optimizations -fno-strict-aliasing"
-	fi
+    CXXFLAGS="${CXXFLAGS} -DNDEBUG"
+    if test "${GXX}" = "yes" ; then
+        CXXFLAGS="${CXXFLAGS} -Wuninitialized -ffast-math -finline-functions -fomit-frame-pointer -fexpensive-optimizations -fno-strict-aliasing"
+    fi
 fi
 
 dnl Output

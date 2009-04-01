@@ -20,6 +20,7 @@
  */
 
 #include "ircsocket.h"
+#include "config.h"
 #include "i18n.h"
 #include "utils.h"
 #ifdef HAVE_OPENSSL
@@ -33,9 +34,9 @@ FXDEFMAP(IrcSocket) IrcSocketMap[] = {
 FXIMPLEMENT(IrcSocket, FXObject, IrcSocketMap, ARRAYNUMBER(IrcSocketMap))
 
 IrcSocket::IrcSocket(FXApp *app, FXObject *tgt, FXString channels, FXString commands)
-    : application(app), startChannels(channels), startCommands(commands),
+    : application(app), startChannels(channels), startCommands(commands)
 #ifdef HAVE_OPENSSL
-        ctx(NULL), ssl(NULL)/*, bio(NULL)*/
+        ,ctx(NULL), ssl(NULL)
 #endif
 {
     targets.append(tgt);
@@ -236,9 +237,9 @@ int IrcSocket::ReadData()
     int size;
 
     FXString data = receiveRest;
+#ifdef HAVE_OPENSSL
     if(useSsl)
     {
-#ifdef HAVE_OPENSSL
         size = SSL_read(ssl, buffer, 1023);
         if (size > 0)
         {
@@ -252,9 +253,9 @@ int IrcSocket::ReadData()
             }
             receiveRest = data;
         }
-#endif
     }
     else
+#endif
     {
 #ifdef WIN32
         WSANETWORKEVENTS network_events;
@@ -310,6 +311,9 @@ int IrcSocket::ReadData()
 
 void IrcSocket::ParseLine(const FXString &line)
 {
+#ifdef DEBUG
+    fxmessage("%s\n",line.text());
+#endif
     FXString from, command, params;
     if (line[0] == ':')
     {
@@ -884,7 +888,8 @@ void IrcSocket::Notice(const FXString &from, const FXString &params)
 void IrcSocket::Nick(const FXString &from, const FXString &params)
 {
     FXString nick = from.before('!');
-    FXString newnick = utils::GetParam(params, 1, false).after(':');
+    FXString newnick = utils::GetParam(params, 1, false);
+    if(newnick[0] == ':') newnick = newnick.after(':');
     if(nickName == nick) nickName = newnick;
     SendEvent(IRC_NICK, nick, newnick);
     for(FXint i = 0; i < nicks.no(); i++)

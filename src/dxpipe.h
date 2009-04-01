@@ -25,7 +25,7 @@
 #include <fx.h>
 #ifndef WIN32
 #include <unistd.h>
-#include <wait.h>
+#include <sys/wait.h>
 #endif
 
 class dxPipe : public FXObject

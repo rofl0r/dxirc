@@ -14976,7 +14976,7 @@ _ACEOF
 
         SSL_LIBS="-lssl -lcrypto"
 
-	have_openssl=yes
+    have_openssl=yes
 
 fi
 
@@ -15688,7 +15688,7 @@ fi
 done
 
 if test no"$FOX_CONFIG" = no ; then
-	{ { $as_echo "$as_me:$LINENO: error: \"fox-config not found\"" >&5
+    { { $as_echo "$as_me:$LINENO: error: \"fox-config not found\"" >&5
 $as_echo "$as_me: error: \"fox-config not found\"" >&2;}
    { (exit 1); exit 1; }; }
 fi
@@ -15936,9 +15936,9 @@ fi
 { $as_echo "$as_me:$LINENO: result: $enable_debug" >&5
 $as_echo "$enable_debug" >&6; }
 if test "x$enable_debug" = "xyes" ; then
-	CXXFLAGS="${CXXFLAGS} -Wall -g -DDEBUG"
+    CXXFLAGS="${CXXFLAGS} -Wall -g -DDEBUG"
 else
-	CXXFLAGS="-O2 ${CXXFLAGS}"
+    CXXFLAGS="-O2 ${CXXFLAGS}"
 fi
 
 { $as_echo "$as_me:$LINENO: checking for release build" >&5
@@ -15951,10 +15951,10 @@ fi
 { $as_echo "$as_me:$LINENO: result: $enable_release" >&5
 $as_echo "$enable_release" >&6; }
 if test "x$enable_release" = "xyes" ; then
-	CXXFLAGS="${CXXFLAGS} -DNDEBUG"
-	if test "${GXX}" = "yes" ; then
-		CXXFLAGS="${CXXFLAGS} -Wuninitialized -ffast-math -finline-functions -fomit-frame-pointer -fexpensive-optimizations -fno-strict-aliasing"
-	fi
+    CXXFLAGS="${CXXFLAGS} -DNDEBUG"
+    if test "${GXX}" = "yes" ; then
+        CXXFLAGS="${CXXFLAGS} -Wuninitialized -ffast-math -finline-functions -fomit-frame-pointer -fexpensive-optimizations -fno-strict-aliasing"
+    fi
 fi
 
 ac_config_files="$ac_config_files Makefile intl/Makefile m4/Makefile po/Makefile.in dxirc.spec src/Makefile icons/Makefile icons/default/Makefile icons/flags/Makefile"

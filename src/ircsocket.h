@@ -43,7 +43,6 @@
 
 #ifdef HAVE_OPENSSL
 #include <openssl/ssl.h>
-#include <openssl/bio.h>
 #endif
 
 class IrcSocket: public FXObject
