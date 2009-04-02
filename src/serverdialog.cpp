@@ -79,9 +79,14 @@ ServerDialog::ServerDialog(FXMainWindow *owner, dxServerInfoArray servers)
     commands->setVisibleRows(4);
     commands->setVisibleColumns(25);
 
+#ifdef HAVE_OPENSSL
+    new FXLabel(matrix, _("Use SSL:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    buttonSsl = new FXCheckButton(matrix, "", NULL, 0);
+#endif
+
     new FXLabel(matrix, _("Auto connect:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     buttonAuto = new FXCheckButton(matrix, "", NULL, 0);
-    buttonAuto->disable();
+    //buttonAuto->disable();
 
     buttonframe = new FXHorizontalFrame(contents, LAYOUT_FILL_X|LAYOUT_FILL_Y);
 
@@ -159,6 +164,11 @@ long ServerDialog::OnAdd(FXObject*,FXSelector,void*)
     command->setVisibleRows(4);
     command->setVisibleColumns(25);
 
+#ifdef HAVE_OPENSSL
+    new FXLabel(matrix, _("Use SSL:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    FXCheckButton *buttonSsl = new FXCheckButton(matrix, "", NULL, 0);
+#endif
+
     new FXLabel(matrix, _("Auto connect:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     FXCheckButton *buttonAuto = new FXCheckButton(matrix, "", NULL, 0);
 
@@ -178,6 +188,11 @@ long ServerDialog::OnAdd(FXObject*,FXSelector,void*)
             server.passwd = passwd->getText();
             (channel->getText().length()>1) ? server.channels = channel->getText() : server.channels = "";
             (command->getText().length()) ? server.commands = command->getText() : server.commands = "";
+#ifdef HAVE_OPENSSL
+            server.useSsl = buttonSsl->getCheck();
+#else
+            server.useSsl = false;
+#endif
             server.autoConnect = buttonAuto->getCheck();
             serverList.append(server);
         }
@@ -230,6 +245,12 @@ long ServerDialog::OnModify(FXObject*,FXSelector,void*)
     command->setVisibleColumns(25);
     command->setText(serverList[index].commands);
 
+#ifdef HAVE_OPENSSL
+    new FXLabel(matrix, _("Use SSL:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    FXCheckButton *buttonSsl = new FXCheckButton(matrix, "", NULL, 0);
+    buttonSsl->setCheck(serverList[index].useSsl);
+#endif
+
     new FXLabel(matrix, _("Auto connect:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     FXCheckButton *buttonAuto = new FXCheckButton(matrix, "", NULL, 0);
     buttonAuto->setCheck(serverList[index].autoConnect);
@@ -250,6 +271,11 @@ long ServerDialog::OnModify(FXObject*,FXSelector,void*)
             server.passwd = passwd->getText();
             (channel->getText().length()>1) ? server.channels = channel->getText() : server.channels = "";
             (command->getText().length()) ? server.commands = command->getText() : server.commands = "";
+#ifdef HAVE_OPENSSL
+            server.useSsl = buttonSsl->getCheck();
+#else
+            server.useSsl = false;
+#endif
             server.autoConnect = buttonAuto->getCheck();
             serverList[index] = server;
         }
@@ -366,6 +392,9 @@ void ServerDialog::UpdateDetails()
         commands->setText(serverList[index].commands);
             if(commands->getNumRows()>4) commands->setTipText(serverList[index].commands);
             else commands->setTipText("");
+#ifdef HAVE_OPENSSL
+        buttonSsl->setCheck(serverList[index].useSsl);
+#endif
         buttonAuto->setCheck(serverList[index].autoConnect);
     }
     else

@@ -69,7 +69,7 @@ class ServerDialog: public FXDialogBox
         FXList *names;
         FXTextField *hostname, *port, *passwd, *nick, *realname, *channels;
         FXText *commands;
-        FXCheckButton *buttonAuto;
+        FXCheckButton *buttonAuto, *buttonSsl;
         FXButton *buttonJoin, *buttonAdd, *buttonModify, *buttonDelete, *buttonCancel, *buttonSaveClose;
 
         FXbool HostnameExist(const FXString&);
