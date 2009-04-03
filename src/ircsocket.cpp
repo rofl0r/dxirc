@@ -1263,7 +1263,7 @@ FXbool IrcSocket::SendCommand(const FXString& commandtext)
             FXString password = params.after(' ');
             return SendOper(login, password);
         }
-        if(command == "raw")
+        if(command == "quote")
         {
             return SendQuote(commandtext.after(' '));
         }
