@@ -1063,7 +1063,7 @@ FXbool IrcSocket::SendPart(const FXString& chan, const FXString& reason)
     return SendLine("PART "+chan+" :"+reason);
 }
 
-FXbool IrcSocket::SendRaw(const FXString& text)
+FXbool IrcSocket::SendQuote(const FXString& text)
 {
     return SendLine(text);
 }
@@ -1265,7 +1265,7 @@ FXbool IrcSocket::SendCommand(const FXString& commandtext)
         }
         if(command == "raw")
         {
-            return SendRaw(commandtext.after(' '));
+            return SendQuote(commandtext.after(' '));
         }
         if(command == "topic")
         {

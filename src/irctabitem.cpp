@@ -934,9 +934,9 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 else server->Disconnect(commandtext.after(' '));
                 return true;
             }
-            if(command == "raw")
+            if(command == "quote")
             {
-                return server->SendRaw(commandtext.after(' '));
+                return server->SendQuote(commandtext.after(' '));
             }
             if(command == "topic")
             {

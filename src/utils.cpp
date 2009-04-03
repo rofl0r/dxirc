@@ -58,7 +58,7 @@ namespace utils
         commands.append("OPER");
         commands.append("PART");
         commands.append("QUIT");
-        commands.append("RAW");
+        commands.append("QUOTE");
         commands.append("TOPIC");
         commands.append("VOICE");
         commands.append("WALLOPS");

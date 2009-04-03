@@ -1169,9 +1169,9 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
     return 1;
 }
 
-long dxirc::OnTabBook(FXObject *, FXSelector, void *)
+long dxirc::OnTabBook(FXObject *, FXSelector, void *ptr)
 {
-    FXint index = tabbook->getCurrent()*2;
+    FXint index = (FXint)(FXival)ptr*2;
     IrcTabItem *currenttab = (IrcTabItem *)tabbook->childAtIndex(index);
     if (appTheme.fore != currenttab->getTextColor())
     {
@@ -1179,6 +1179,7 @@ long dxirc::OnTabBook(FXObject *, FXSelector, void *)
         if(currenttab->GetType() == CHANNEL) currenttab->setIcon(channelicon);
         if(currenttab->GetType() == QUERY) currenttab->setIcon(queryicon);
     }
+    currenttab->setFocus();
     return 1;
 }
 
