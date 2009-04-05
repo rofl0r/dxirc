@@ -52,6 +52,7 @@ class IrcTabItem: public FXTabItem
             ID_KICKBAN,
             ID_TOPIC,
             ID_CSERVER,
+            ID_TEXT,
             ID_LAST
         };
 
@@ -80,6 +81,7 @@ class IrcTabItem: public FXTabItem
         long OnTimeout(FXObject *, FXSelector, void*);
         long OnPipeTimeout(FXObject *, FXSelector, void*);
         long OnRightMouse(FXObject *, FXSelector, void*);
+        long OnLeftMouse(FXObject *, FXSelector, void *);
         long OnNewQuery(FXObject *, FXSelector, void*);
         long OnWhois(FXObject *, FXSelector, void*);
         long OnOp(FXObject *, FXSelector, void*);
@@ -107,7 +109,7 @@ class IrcTabItem: public FXTabItem
         FXint currentPosition, historyMax, numberUsers;
         FXbool checkAway, iamOp, usersShown, logging, ownServerWindow, sameCmd, sameList, editableTopic, sendPipe;
         dxStringArray commandsHistory, pipeStrings;
-        FXHiliteStyle textStyleList[8];
+        FXHiliteStyle textStyleList[9];
         IrcColor colors;
         NickInfo nickOnRight;
         FXString commandsList, logPath, topic;
@@ -138,7 +140,9 @@ class IrcTabItem: public FXTabItem
         void SetNoticeColor(FXColor);
         void SetErrorColor(FXColor);
         void SetHilightColor(FXColor);
+        void SetLinkColor(FXColor);
         FXbool ProcessCommand(const FXString &);
+        FXint LaunchLink(const FXString &);
 };
 
 #endif // IRCTABITEM_H

@@ -220,6 +220,7 @@ void dxirc::ReadConfig()
     colors.notice = set.readColorEntry("SETTINGS", "noticeColor", FXRGB(0,0,255));
     colors.error = set.readColorEntry("SETTINGS", "errorColor", FXRGB(255,0,0));
     colors.hilight = set.readColorEntry("SETTINGS", "hilightColor", FXRGB(0,255,0));
+    colors.link = set.readColorEntry("SETTINGS", "linkColor", FXRGB(0,0,255));
     ircfontspec = set.readStringEntry("SETTINGS", "ircFont", "");
     sameCmd = set.readBoolEntry("SETTINGS", "sameCmd", false);
     sameList = set.readBoolEntry("SETTINGS", "sameList", false);
@@ -393,6 +394,7 @@ void dxirc::SaveConfig()
     set.writeColorEntry("SETTINGS", "noticeColor", colors.notice);
     set.writeColorEntry("SETTINGS", "errorColor", colors.error);
     set.writeColorEntry("SETTINGS", "hilightColor", colors.hilight);
+    set.writeColorEntry("SETTINGS", "linkColor", colors.link);
     set.writeStringEntry("SETTINGS", "ircFont", ircFont->getFont().text());
     set.writeIntEntry("SETTINGS", "maxAway", maxAway);
     set.writeBoolEntry("SETTINGS", "logging", logging);

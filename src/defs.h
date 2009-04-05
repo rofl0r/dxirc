@@ -115,6 +115,7 @@ struct IrcColor {
     FXColor notice;
     FXColor error;
     FXColor hilight;
+    FXColor link;
 };
 
 struct ColorTheme {

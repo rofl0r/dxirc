@@ -38,6 +38,7 @@ FXDEFMAP(IrcTabItem) IrcTabItemMap[] = {
     FXMAPFUNC(SEL_COMMAND,              IrcSocket::ID_SERVER,           IrcTabItem::OnIrcEvent),
     FXMAPFUNC(SEL_TIMEOUT,              IrcTabItem::ID_TIME,            IrcTabItem::OnTimeout),
     FXMAPFUNC(SEL_TIMEOUT,              IrcTabItem::ID_PTIME,           IrcTabItem::OnPipeTimeout),
+    FXMAPFUNC(SEL_LEFTBUTTONRELEASE,    IrcTabItem::ID_TEXT,            IrcTabItem::OnLeftMouse),
     FXMAPFUNC(SEL_RIGHTBUTTONRELEASE,   IrcTabItem::ID_USERS,           IrcTabItem::OnRightMouse),
     FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_NEWQUERY,        IrcTabItem::OnNewQuery),
     FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_WHOIS,           IrcTabItem::OnWhois),
@@ -85,7 +86,7 @@ IrcTabItem::IrcTabItem(FXTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FX
         topicline->hide();
     }
     topicline->setFont(fnt);
-    text = new FXText(textframe, NULL, 0, FRAME_SUNKEN|LAYOUT_FILL_X|LAYOUT_FILL_Y|TEXT_READONLY|TEXT_WORDWRAP|TEXT_SHOWACTIVE|TEXT_AUTOSCROLL);
+    text = new FXText(textframe, this, ID_TEXT, FRAME_SUNKEN|LAYOUT_FILL_X|LAYOUT_FILL_Y|TEXT_READONLY|TEXT_WORDWRAP|TEXT_SHOWACTIVE|TEXT_AUTOSCROLL);
     text->setFont(fnt);
 
     usersframe = new FXVerticalFrame(splitter, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y|LAYOUT_FIX_WIDTH);
@@ -102,7 +103,7 @@ IrcTabItem::IrcTabItem(FXTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FX
     commandline = new FXTextField(mainframe, 25, this, ID_COMMANDLINE, TEXTFIELD_ENTER_ONLY|FRAME_SUNKEN|JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_BOTTOM, 0, 0, 0, 0, 1, 1, 1, 1);
     if(sameCmd) commandline->setFont(fnt);
 
-    for(int i=0; i<8; i++)
+    for(int i=0; i<9; i++)
     {
         textStyleList[i].normalForeColor = colors.text;
         textStyleList[i].normalBackColor = colors.back;
@@ -130,6 +131,9 @@ IrcTabItem::IrcTabItem(FXTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FX
     textStyleList[6].style ^=FXText::STYLE_BOLD;
     //highlight text
     textStyleList[7].normalForeColor = colors.hilight;
+    //link style
+    textStyleList[8].normalForeColor = colors.link;
+    textStyleList[8].style = FXText::STYLE_UNDERLINE;
 
     text->setStyled(TRUE);
     text->setHiliteStyles(textStyleList);
@@ -246,11 +250,12 @@ void IrcTabItem::SetColor(IrcColor clrs)
     SetNoticeColor(clrs.notice);
     SetErrorColor(clrs.error);
     SetHilightColor(clrs.hilight);
+    SetLinkColor(colors.link);
 }
 
 void IrcTabItem::SetTextBackColor(FXColor clr)
 {
-    for(int i=0; i<8; i++)
+    for(int i=0; i<9; i++)
     {
         textStyleList[i].normalBackColor = clr;
         textStyleList[i].activeBackColor = clr;
@@ -298,6 +303,11 @@ void IrcTabItem::SetErrorColor(FXColor clr)
 void IrcTabItem::SetHilightColor(FXColor clr)
 {
     textStyleList[7].normalForeColor = clr;
+}
+
+void IrcTabItem::SetLinkColor(FXColor clr)
+{
+    textStyleList[8].normalForeColor = clr;
 }
 
 void IrcTabItem::SetCommandsList(FXString clst)
@@ -349,37 +359,55 @@ void IrcTabItem::SetSameList(FXbool slst)
 void IrcTabItem::AppendIrcText(FXString msg)
 {
     text->appendText("["+FXSystem::time("%H:%M:%S", FXSystem::now()) +"] ");
-    FXRex rx("(\\002|\\003|\\037)");
-    if(rx.match(msg)) //contains mirc colors,styles
+    if(msg.right(1) != " ") msg.append(" ");
+    for(FXint i=0; i<msg.contains(' '); i++)
     {
-        msg = StripColors(msg, false);
-        FXbool bold = false;
-        FXbool under = false;
-        FXint i = 0;
-        while(msg[i] != '\0') {
-            if(msg[i] == '\002') {
-                bold = !bold;
-            }
-            else if(msg[i] == '\037') {
-                under = !under;
-            }
-            else {
-                FXString txt;
-                txt += msg[i];
-                if(bold && under) text->appendStyledText(txt, 7);
-                else if(bold && !under) text->appendStyledText(txt, 5);
-                else if(!bold && under) text->appendStyledText(txt, 6);
-                else text->appendText(txt);
-            }
-            i++;
+        FXString sec = msg.section(' ',i);
+        if(comparecase(sec.section(':',0), "http")==0 || comparecase(sec.section(':',0), "https")==0 || comparecase(sec.section(':',0), "ftp")==0)
+        {
+            text->appendStyledText(sec,9);
+            text->appendText(" ");
         }
-        text->appendText("\n");
-        MakeLastRowVisible(false);
+        else
+        {
+            FXRex rx("(\\002|\\003|\\037)");
+            if(rx.match(sec)) //contains mirc colors,styles
+            {
+                sec = StripColors(sec, false);
+                FXbool bold = false;
+                FXbool under = false;
+                FXint i = 0;
+                while(sec[i] != '\0')
+                {
+                    if(sec[i] == '\002')
+                    {
+                        bold = !bold;
+                    }
+                    else if(sec[i] == '\037')
+                    {
+                        under = !under;
+                    }
+                    else
+                    {
+                        FXString txt;
+                        txt += sec[i];
+                        if(bold && under) text->appendStyledText(txt, 7);
+                        else if(bold && !under) text->appendStyledText(txt, 5);
+                        else if(!bold && under) text->appendStyledText(txt, 6);
+                        else text->appendText(txt);
+                    }
+                    i++;
+                }
+                text->appendText(" ");
+            }
+            else
+            {
+                text->appendText(sec+" ");
+            }
+        }
     }
-    else {
-        text->appendText(msg+"\n");
-        MakeLastRowVisible(false);
-    }
+    text->appendText("\n");
+    MakeLastRowVisible(false);
     this->LogLine(StripColors(msg, true));
 }
 
@@ -1457,8 +1485,8 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
     {
         if(users->findItem(ev->param1) != -1)
         {
-            if(ev->param2 == server->GetNickName() && !IsCommandIgnored("nick")) AppendIrcStyledText(FXStringFormat(_("you changes nick to %s"), ev->param2.text()), 1);
-            else if(!IsCommandIgnored("nick")) AppendIrcStyledText(FXStringFormat(_("%s changes nick to %s"), ev->param1.text(), ev->param2.text()), 1);
+            if(ev->param2 == server->GetNickName() && !IsCommandIgnored("nick")) AppendIrcStyledText(FXStringFormat(_("You're now known as %s"), ev->param2.text()), 1);
+            else if(!IsCommandIgnored("nick")) AppendIrcStyledText(FXStringFormat(_("%s is now known as %s"), ev->param1.text(), ev->param2.text()), 1);
             ChangeNickUser(ev->param1, ev->param2);
         }
         if(type == QUERY && ev->param1 == getText())
@@ -1491,15 +1519,15 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
         {
             if(ev->param2 != server->GetNickName())
             {
-                if(ev->param4.empty()) AppendIrcStyledText(FXStringFormat(_("%s was kicked from: %s"), ev->param2.text(), ev->param3.text()), 1);
-                else AppendIrcStyledText(FXStringFormat(_("%s was kicked from: %s (%s)"), ev->param2.text(), ev->param3.text(), ev->param4.text()), 1);
+                if(ev->param4.empty()) AppendIrcStyledText(FXStringFormat(_("%s was kicked from %s by %s"), ev->param2.text(), ev->param3.text(), ev->param1.text()), 1);
+                else AppendIrcStyledText(FXStringFormat(_("%s was kicked from %s by %s (%s)"), ev->param2.text(), ev->param3.text(), ev->param1.text(), ev->param4.text()), 1);
                 RemoveUser(ev->param2);
             }
         }
         if(ev->param2 == server->GetNickName() && (type == SERVER || IsCurrent() || IsNoCurrent()))
         {
-            if(ev->param4.empty()) AppendIrcStyledText(FXStringFormat(_("you was kicked from: %s"), ev->param3.text()), 1);
-            else AppendIrcStyledText(FXStringFormat(_("you was kicked from: %s (%s)"), ev->param3.text(), ev->param4.text()), 1);
+            if(ev->param4.empty()) AppendIrcStyledText(FXStringFormat(_("You were kicked from %s by %s"), ev->param3.text(), ev->param1.text()), 1);
+            else AppendIrcStyledText(FXStringFormat(_("You were kicked from %s by %s (%s)"), ev->param3.text(), ev->param1.text(), ev->param4.text()), 1);
         }
         return 1;
     }
@@ -1997,6 +2025,26 @@ void IrcTabItem::OnAway()
     }
 }
 
+long IrcTabItem::OnLeftMouse(FXObject *, FXSelector, void *ptr)
+{
+    FXEvent* event = (FXEvent*)ptr;
+    if(event->moved) return 1;
+    FXint pos = text->getPosAt(event->win_x,event->win_y);
+    FXint style = text->getStyle(pos);
+#ifdef DEBUG
+    fxmessage("Style:%d\n", style);
+#endif
+    if(style == 9)
+    {
+        text->setDelimiters(" ");
+        FXString link;
+        text->extractText(link, text->wordStart(pos), text->wordEnd(pos)-text->wordStart(pos));
+        LaunchLink(link);
+        text->setDelimiters(FXText::textDelimiters);
+    }
+    return 1;
+}
+
 long IrcTabItem::OnRightMouse(FXObject *, FXSelector, void *ptr)
 {
     //focus();
@@ -2226,4 +2274,43 @@ FXString IrcTabItem::StripColors(const FXString &text, const FXbool stripOther)
 FXString IrcTabItem::GetNick(int i)
 {
     return users->getItemText(i);
+}
+
+FXint IrcTabItem::LaunchLink(const FXString &link)
+{
+#ifdef WIN32
+    return ((FXint)ShellExecute(NULL,"open",FXPath::enquote(link).text(),NULL,NULL,SW_SHOWNORMAL)) > 32;
+#else
+    static const char * browsers[]={"xdg-open","firefox","konqueror","opera","netscape","dillo",NULL};
+    FXString path = FXSystem::getExecPath();
+    FXString exec;
+    for(int i=0; browsers[i]!=NULL; i++)
+    {
+        exec = FXPath::search(path, browsers[i]);
+        if(!exec.empty()) break;
+    }
+    if(exec.empty()) return 0;
+    exec += " "+link;
+    pid_t pid = fork();
+    if (pid == -1)
+    { //Failure delivered to Parent Process
+        return 0;
+    }
+    else if (pid == 0)
+    { //Child Process
+        int i = sysconf(_SC_OPEN_MAX);
+        while (--i >= 3)
+        {
+            close(i);
+        }
+
+        execlp("/bin/sh", "sh", "-c", exec.text(), (char *) 0);
+        exit(EXIT_FAILURE);
+    }
+    else
+    { //Parent Process
+        return 1;
+    }
+    return 1;
+#endif
 }
