@@ -363,10 +363,34 @@ void IrcTabItem::AppendIrcText(FXString msg)
     for(FXint i=0; i<msg.contains(' '); i++)
     {
         FXString sec = msg.section(' ',i);
-        if(comparecase(sec.section(':',0), "http")==0 || comparecase(sec.section(':',0), "https")==0 || comparecase(sec.section(':',0), "ftp")==0)
+        FXRex rxl("\\L");
+        if(rxl.match(sec.left(1)) && ((comparecase(sec.mid(1,7), "http://")==0 && sec.length()>7)
+                || (comparecase(sec.mid(1,8), "https://")==0 && sec.length()>8)
+                || (comparecase(sec.mid(1,6), "ftp://")==0 && sec.length()>6)
+                || (comparecase(sec.mid(1,4), "www.")==0 && sec.length()>4)))
+        {
+            text->appendText(sec.left(1));
+            FXRex rxr("\\W");
+            if(rxr.match(sec.right(1)))
+            {
+                text->appendStyledText(sec.mid(1,sec.length()-2),9);
+                text->appendText(sec.right(1));
+            }
+            else
+            {
+                text->appendStyledText(sec.mid(1,sec.length()-1),9);
+            }
+            text->appendText(" ");
+            continue;
+        }
+        if((comparecase(sec.left(7), "http://")==0 && sec.length()>7)
+                || (comparecase(sec.left(8), "https://")==0 && sec.length()>8)
+                || (comparecase(sec.left(6), "ftp://")==0 && sec.length()>6)
+                || (comparecase(sec.left(4), "www.")==0 && sec.length()>4))
         {
             text->appendStyledText(sec,9);
             text->appendText(" ");
+            continue;
         }
         else
         {
@@ -2039,6 +2063,14 @@ long IrcTabItem::OnLeftMouse(FXObject *, FXSelector, void *ptr)
         text->setDelimiters(" ");
         FXString link;
         text->extractText(link, text->wordStart(pos), text->wordEnd(pos)-text->wordStart(pos));
+        FXRex rxl("\\L");        
+        if(rxl.match(link.left(1)))
+        {
+            link = link.mid(1, link.length()-1);
+            FXRex rxr("\\W");
+            if(rxr.match(link.right(1)))
+                link = link.mid(0, link.length()-1);
+        }
         LaunchLink(link);
         text->setDelimiters(FXText::textDelimiters);
     }
