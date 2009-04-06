@@ -28,6 +28,16 @@
 #include "dxpipe.h"
 #include "defs.h"
 
+class dxText: public FXText
+{
+    FXDECLARE(dxText)
+public:
+    dxText(FXComposite *p, FXObject *tgt, FXSelector sel, FXuint opts);
+    long onMotion(FXObject*, FXSelector, void*);
+private:
+    dxText() {}
+};
+
 class IrcTabItem: public FXTabItem
 {
     FXDECLARE(IrcTabItem)
@@ -103,7 +113,7 @@ class IrcTabItem: public FXTabItem
         TYPE type;
         FXVerticalFrame *textframe, *usersframe, *mainframe;
         FXSplitter *splitter;
-        FXText *text;
+        dxText *text;
         FXList *users;
         FXTextField *commandline, *topicline;
         FXint currentPosition, historyMax, numberUsers;

@@ -32,6 +32,78 @@ static const FXListSortFunc sortfuncs[] = {
     FXList::descending
 };
 
+FXDEFMAP(dxText) dxTextMap[] = {
+    FXMAPFUNC(SEL_MOTION, 0, dxText::onMotion)
+};
+
+FXIMPLEMENT(dxText, FXText, dxTextMap, ARRAYNUMBER(dxTextMap))
+
+dxText::dxText(FXComposite *p, FXObject* tgt, FXSelector sel, FXuint opts)
+    : FXText(p, tgt, sel, opts)
+{
+
+}
+
+static inline FXint fxabs(FXint a) { return a<0?-a:a; }
+
+long dxText::onMotion(FXObject*, FXSelector, void*ptr)
+{
+    FXEvent* event = (FXEvent*) ptr;
+    FXint pos;
+    FXint style = getStyle(getPosAt(event->win_x, event->win_y));
+    if (style == 9)
+        setDefaultCursor(getApp()->getDefaultCursor(DEF_HAND_CURSOR));
+    else
+        setDefaultCursor(getApp()->getDefaultCursor(DEF_TEXT_CURSOR));
+    switch (mode)
+    {
+    case MOUSE_CHARS:
+        if (startAutoScroll(event, FALSE)) return 1;
+        if ((fxabs(event->win_x - event->click_x) > getApp()->getDragDelta()) || (fxabs(event->win_y - event->click_y) > getApp()->getDragDelta()))
+        {
+            pos = getPosAt(event->win_x, event->win_y);
+            setCursorPos(pos, TRUE);
+            extendSelection(cursorpos, SELECT_CHARS, TRUE);
+        }
+        return 1;
+    case MOUSE_WORDS:
+        if (startAutoScroll(event, FALSE)) return 1;
+        if ((fxabs(event->win_x - event->click_x) > getApp()->getDragDelta()) || (fxabs(event->win_y - event->click_y) > getApp()->getDragDelta()))
+        {
+            pos = getPosAt(event->win_x, event->win_y);
+            setCursorPos(pos, TRUE);
+            extendSelection(cursorpos, SELECT_WORDS, TRUE);
+        }
+        return 1;
+    case MOUSE_LINES:
+        if (startAutoScroll(event, FALSE)) return 1;
+        if ((fxabs(event->win_x - event->click_x) > getApp()->getDragDelta()) || (fxabs(event->win_y - event->click_y) > getApp()->getDragDelta()))
+        {
+            pos = getPosAt(event->win_x, event->win_y);
+            setCursorPos(pos, TRUE);
+            extendSelection(cursorpos, SELECT_LINES, TRUE);
+        }
+        return 1;
+    case MOUSE_SCROLL:
+        setPosition(event->win_x - grabx, event->win_y - graby);
+        return 1;
+    case MOUSE_DRAG:
+        handle(this, FXSEL(SEL_DRAGGED, 0), ptr);
+        return 1;
+    case MOUSE_TRYDRAG:
+        if (event->moved)
+        {
+            mode = MOUSE_NONE;
+            if (handle(this, FXSEL(SEL_BEGINDRAG, 0), ptr))
+            {
+                mode = MOUSE_DRAG;
+            }
+        }
+        return 1;
+    }
+    return 0;
+}
+
 FXDEFMAP(IrcTabItem) IrcTabItemMap[] = {
     FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_COMMANDLINE,     IrcTabItem::OnCommandline),
     FXMAPFUNC(SEL_KEYPRESS,             IrcTabItem::ID_COMMANDLINE,     IrcTabItem::OnKeyPress),
@@ -86,7 +158,7 @@ IrcTabItem::IrcTabItem(FXTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FX
         topicline->hide();
     }
     topicline->setFont(fnt);
-    text = new FXText(textframe, this, ID_TEXT, FRAME_SUNKEN|LAYOUT_FILL_X|LAYOUT_FILL_Y|TEXT_READONLY|TEXT_WORDWRAP|TEXT_SHOWACTIVE|TEXT_AUTOSCROLL);
+    text = new dxText(textframe, this, ID_TEXT, FRAME_SUNKEN|LAYOUT_FILL_X|LAYOUT_FILL_Y|TEXT_READONLY|TEXT_WORDWRAP|TEXT_SHOWACTIVE|TEXT_AUTOSCROLL);
     text->setFont(fnt);
 
     usersframe = new FXVerticalFrame(splitter, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y|LAYOUT_FIX_WIDTH);
