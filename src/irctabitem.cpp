@@ -1450,7 +1450,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
     IrcEvent *ev = (IrcEvent *) data;
     if(ev->eventType == IRC_PRIVMSG)
     {
-        if((ev->param2.lower() == getText().lower() && type == CHANNEL) || (ev->param1 == getText() && type == QUERY && ev->param2 == server->GetNickName()))
+        if((ev->param2.lower() == getText().lower() && type == CHANNEL) || (ev->param1 == getText() && type == QUERY && ev->param2 == server->GetNickName().lower()))
         {
             if(ev->param3.contains(server->GetNickName())) AppendIrcStyledText("<"+ev->param1+"> "+ev->param3, 8);
             else AppendIrcText("<"+ev->param1+"> "+ev->param3);
@@ -1469,7 +1469,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
     }
     if(ev->eventType == IRC_ACTION)
     {
-        if((ev->param2.lower() == getText().lower() && type == CHANNEL) || (ev->param1 == getText() && type == QUERY && ev->param2 == server->GetNickName()))
+        if((ev->param2.lower() == getText().lower() && type == CHANNEL) || (ev->param1 == getText() && type == QUERY && ev->param2 == server->GetNickName().lower()))
         {
             if(!IsCommandIgnored("me"))
             {
@@ -1545,7 +1545,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
     }
     if(ev->eventType == IRC_CHNOTICE)
     {
-        if((ev->param2.lower() == getText().lower() && type == CHANNEL) || (ev->param1 == getText() && type == QUERY && ev->param2 == server->GetNickName()))
+        if((ev->param2.lower() == getText().lower() && type == CHANNEL) || (ev->param1 == getText() && type == QUERY && ev->param2 == server->GetNickName().lower()))
         {
             if(!IsCommandIgnored("notice"))
             {
