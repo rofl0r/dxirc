@@ -88,7 +88,7 @@ class dxirc: public FXMainWindow
         ColorTheme appTheme;
         
         FXbool TabExist(IrcSocket*, FXString);
-        FXbool ServerExist(const FXString&, const FXint&);
+        FXbool ServerExist(const FXString&, const FXint&, const FXString&);
         FXint GetServerTab(IrcSocket*);
         FXbool IsLastTab(IrcSocket*);
         void ConnectServer(FXString, FXint, FXString, FXString, FXString, FXString, FXString, FXbool);

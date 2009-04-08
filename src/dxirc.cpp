@@ -332,7 +332,7 @@ void dxirc::ReadServersConfig()
                     SortTabs();
                     servers[0]->Connect();
                 }
-                else if(!ServerExist(server.hostname, server.port))
+                else if(!ServerExist(server.hostname, server.port, server.nick))
                 {
                     IrcSocket *newserver = new IrcSocket(app, this, server.channels, server.commands);
                     newserver->SetUsersList(usersList);
@@ -855,7 +855,7 @@ long dxirc::OnCommandServers(FXObject*, FXSelector, void*)
     {
         serverList = dialog->GetServers();
         indexJoin = dialog->GetIndexJoin();
-        if (indexJoin != -1 && !ServerExist(serverList[indexJoin].hostname, serverList[indexJoin].port))
+        if (indexJoin != -1 && !ServerExist(serverList[indexJoin].hostname, serverList[indexJoin].port, serverList[indexJoin].nick))
         {
             ConnectServer(serverList[indexJoin].hostname, serverList[indexJoin].port, serverList[indexJoin].passwd, serverList[indexJoin].nick, serverList[indexJoin].realname, serverList[indexJoin].channels, serverList[indexJoin].commands, serverList[indexJoin].useSsl);
         }
@@ -955,7 +955,7 @@ void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString
         SortTabs();
         servers[0]->Connect();
     }
-    else if(!ServerExist(hostname, port))
+    else if(!ServerExist(hostname, port, nick))
     {
         IrcSocket *server = new IrcSocket(app, this, channels.length()>1 ? channels : "", commands.length() ? commands : "");
         server->SetUsersList(usersList);
@@ -1001,7 +1001,7 @@ long dxirc::OnCommandDisconnect(FXObject*, FXSelector, void*)
         {
             FXDialogBox confirmDialog(this, _("Confirm disconnect"), DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0);
             FXVerticalFrame *contents = new FXVerticalFrame(&confirmDialog, LAYOUT_SIDE_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 10,10,10,10, 0,0);
-            new FXLabel(contents, FXStringFormat(_("Disconnect server: %s:%d?"), currentserver->GetServerName().text(), currentserver->GetServerPort()),NULL);
+            new FXLabel(contents, FXStringFormat(_("Disconnect server: %s\nPort: %d\nNick: %s?"), currentserver->GetServerName().text(), currentserver->GetServerPort(), currentserver->GetNickName().text()), NULL, JUSTIFY_LEFT|ICON_BEFORE_TEXT);
             FXHorizontalFrame* buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y);
             new FXButton(buttonframe, _("OK"), NULL, &confirmDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
             new FXButton(buttonframe, _("Cancel"), NULL, &confirmDialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
@@ -1103,7 +1103,7 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
                     FXint index;
                     for(FXint j = 0; j < tabbook->numChildren(); j=j+2)
                     {
-                        if((((IrcTabItem *)tabbook->childAtIndex(j))->getText().lower() == ev->param2.lower()) && (((IrcTabItem *)tabbook->childAtIndex(j))->GetServerName() == server->GetServerName())) index = j;
+                        if((comparecase(((IrcTabItem *)tabbook->childAtIndex(j))->getText(), ev->param2) == 0) && server->FindTarget((IrcTabItem *)tabbook->childAtIndex(j))) index = j;
                     }
                     server->RemoveTarget((IrcTabItem *)tabbook->childAtIndex(index));
                     delete tabbook->childAtIndex(index);
@@ -1136,7 +1136,7 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
                 FXint index;
                 for(FXint j = 0; j < tabbook->numChildren(); j=j+2)
                 {
-                    if((((IrcTabItem *)tabbook->childAtIndex(j))->getText().lower() == ev->param3.lower()) && server->FindTarget((IrcTabItem *)tabbook->childAtIndex(j))) index = j;
+                    if((comparecase(((IrcTabItem *)tabbook->childAtIndex(j))->getText(), ev->param3) == 0) && server->FindTarget((IrcTabItem *)tabbook->childAtIndex(j))) index = j;
                 }
                 server->RemoveTarget((IrcTabItem *)tabbook->childAtIndex(index));
                 delete tabbook->childAtIndex(index);
@@ -1381,16 +1381,16 @@ FXbool dxirc::TabExist(IrcSocket *server, FXString name)
 {
     for(FXint i = 0; i < tabbook->numChildren(); i=i+2)
     {
-        if(server->FindTarget((IrcTabItem *)tabbook->childAtIndex(i)) && ((IrcTabItem *)tabbook->childAtIndex(i))->getText().lower() == name.lower()) return true;
+        if(server->FindTarget((IrcTabItem *)tabbook->childAtIndex(i)) && comparecase(((IrcTabItem *)tabbook->childAtIndex(i))->getText(), name) == 0) return true;
     }
     return false;
 }
 
-FXbool dxirc::ServerExist(const FXString &server, const FXint &port)
+FXbool dxirc::ServerExist(const FXString &server, const FXint &port, const FXString &nick)
 {
     for(FXint i = 0; i < servers.no(); i++)
     {
-        if(servers[i]->GetServerName() == server && servers[i]->GetServerPort() == port && servers[i]->GetConnected()) return true;
+        if(servers[i]->GetServerName() == server && servers[i]->GetServerPort() == port && servers[i]->GetNickName() == nick && servers[i]->GetConnected()) return true;
     }
     return false;
 }

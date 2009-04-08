@@ -19,8 +19,6 @@
  *      MA 02110-1301, USA.
  */
 
-#include <fxkeys.h>
-
 #include "serverdialog.h"
 #include "config.h"
 #include "i18n.h"
@@ -178,7 +176,7 @@ long ServerDialog::OnAdd(FXObject*,FXSelector,void*)
 
     if(serverEdit.execute(PLACEMENT_OWNER))
     {
-        if(!hostname->getText().empty() && !nick->getText().empty() && !HostnameExist(hostname->getText()))
+        if(!hostname->getText().empty() && !nick->getText().empty() && !HostnameExist(hostname->getText(), port->getValue(), nick->getText()))
         {
             ServerInfo server;
             server.hostname = hostname->getText();
@@ -208,6 +206,8 @@ long ServerDialog::OnModify(FXObject*,FXSelector,void*)
 {
     FXint index = names->getCurrentItem();
     FXString oldhostname = serverList[index].hostname;
+    FXint oldport = serverList[index].port;
+    FXString oldnick = serverList[index].nick;
 
     FXDialogBox serverEdit(this, _("Server edit"), DECOR_TITLE|DECOR_BORDER, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     FXVerticalFrame *contents = new FXVerticalFrame(&serverEdit, LAYOUT_SIDE_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0, 0, 0, 0, 10, 10, 10, 10, 0, 0);
@@ -261,7 +261,7 @@ long ServerDialog::OnModify(FXObject*,FXSelector,void*)
 
     if(serverEdit.execute(PLACEMENT_OWNER))
     {
-        if(!hostname->getText().empty() && !nick->getText().empty() && (!HostnameExist(hostname->getText()) || oldhostname==hostname->getText()))
+        if(!hostname->getText().empty() && !nick->getText().empty() && (!HostnameExist(hostname->getText(), port->getValue(), nick->getText()) || (oldhostname==hostname->getText() && oldport==port->getValue() && oldnick == nick->getText())))
         {
             ServerInfo server;
             server.hostname = hostname->getText();
@@ -348,11 +348,11 @@ long ServerDialog::OnDoubleClick(FXObject*, FXSelector, void *ptr)
     return 1;
 }
 
-FXbool ServerDialog::HostnameExist(const FXString &name)
+FXbool ServerDialog::HostnameExist(const FXString &hostname, const FXint &port, const FXString &nick)
 {
     for(FXint i=0; i < serverList.no(); i++)
     {
-        if(serverList[i].hostname == name) return true;
+        if(serverList[i].hostname == hostname && serverList[i].port == port && serverList[i].nick == nick) return true;
     }
     return false;
 }

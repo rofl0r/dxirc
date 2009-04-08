@@ -1272,13 +1272,13 @@ long IrcTabItem::OnKeyPress(FXObject *, FXSelector, void *ptr)
                 {
                     for (FXint i = 0; i < utils::CommandsNo(); i++)
                     {
-                        if(commandline->getText().after('/').before(' ').lower() == utils::CommandsAt(i).lower())
+                        if(comparecase(commandline->getText().after('/').before(' '), utils::CommandsAt(i)) == 0)
                         {
                             if((i+1) < utils::CommandsNo()) commandline->setText("/"+utils::CommandsAt(++i)+" ");
                             else commandline->setText("/"+utils::CommandsAt(0)+" ");
                             break;
                         }
-                        else if(commandline->getText().after('/').lower() == utils::CommandsAt(i).left(commandline->getText().after('/').length()).lower())
+                        else if(comparecase(commandline->getText().after('/'), utils::CommandsAt(i).left(commandline->getText().after('/').length())) == 0)
                         {
                             commandline->setText("/"+utils::CommandsAt(i)+" ");
                             break;
@@ -1290,11 +1290,11 @@ long IrcTabItem::OnKeyPress(FXObject *, FXSelector, void *ptr)
                 {
                     for(FXint j = 0; j < users->getNumItems() ; j++)
                     {
-                        if(commandline->getText().lower() == GetNick(j).left(commandline->getText().length()).lower())
+                        if(comparecase(commandline->getText(), GetNick(j).left(commandline->getText().length())) == 0)
                         {
                             commandline->setText(GetNick(j)+nickCompletionChar+" ");
                         }
-                        else if(commandline->getText().section(nickCompletionChar, 0, 1).lower() == GetNick(j).lower())
+                        else if(comparecase(commandline->getText().section(nickCompletionChar, 0, 1), GetNick(j)) == 0)
                         {
                             if((j+1) < users->getNumItems()) commandline->setText(GetNick(++j)+nickCompletionChar+" ");
                             else commandline->setText(GetNick(0)+nickCompletionChar+" ");
@@ -1308,13 +1308,13 @@ long IrcTabItem::OnKeyPress(FXObject *, FXSelector, void *ptr)
                     FXString toCompletion = commandline->getText().rafter(' ');
                     for(FXint j = 0; j < users->getNumItems(); j++)
                     {
-                        if(toCompletion.lower() == GetNick(j).lower())
+                        if(comparecase(toCompletion, GetNick(j)) == 0)
                         {
                             if((j+1) < users->getNumItems()) commandline->setText(line+GetNick(++j));
                             else commandline->setText(line+GetNick(0));
                             break;
                         }
-                        else if(toCompletion.lower() == GetNick(j).left(toCompletion.length()).lower())
+                        else if(comparecase(toCompletion, GetNick(j).left(toCompletion.length())) == 0)
                         {
                             commandline->setText(line+GetNick(j));
                             break;
@@ -1357,7 +1357,7 @@ FXbool IrcTabItem::IsCurrent()
 FXbool IrcTabItem::IsNoCurrent()
 {
     FXint index = parent->getCurrent()*2;
-    if(((IrcTabItem *)parent->childAtIndex(index))->GetServerName() == server->GetServerName()) return false;
+    if(server->FindTarget((IrcTabItem *)parent->childAtIndex(index))) return false;
     return true;
 }
 
@@ -1450,7 +1450,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
     IrcEvent *ev = (IrcEvent *) data;
     if(ev->eventType == IRC_PRIVMSG)
     {
-        if((ev->param2.lower() == getText().lower() && type == CHANNEL) || (ev->param1 == getText() && type == QUERY && ev->param2 == server->GetNickName().lower()))
+        if((comparecase(ev->param2, getText()) == 0 && type == CHANNEL) || (ev->param1 == getText() && type == QUERY && ev->param2 == server->GetNickName()))
         {
             if(ev->param3.contains(server->GetNickName())) AppendIrcStyledText("<"+ev->param1+"> "+ev->param3, 8);
             else AppendIrcText("<"+ev->param1+"> "+ev->param3);
@@ -1469,7 +1469,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
     }
     if(ev->eventType == IRC_ACTION)
     {
-        if((ev->param2.lower() == getText().lower() && type == CHANNEL) || (ev->param1 == getText() && type == QUERY && ev->param2 == server->GetNickName().lower()))
+        if((comparecase(ev->param2, getText()) == 0 && type == CHANNEL) || (ev->param1 == getText() && type == QUERY && ev->param2 == server->GetNickName()))
         {
             if(!IsCommandIgnored("me"))
             {
@@ -1506,7 +1506,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
     }
     if(ev->eventType == IRC_JOIN)
     {
-        if(ev->param2.lower() == getText().lower() && ev->param1 != server->GetNickName())
+        if(comparecase(ev->param2, getText()) == 0 && ev->param1 != server->GetNickName())
         {
             if(!IsCommandIgnored("join")) AppendIrcStyledText(FXStringFormat(_("%s has joined to %s"), ev->param1.text(), ev->param2.text()), 1);
             AddUser(ev->param1);
@@ -1535,7 +1535,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
     }
     if(ev->eventType == IRC_PART)
     {
-        if(ev->param2.lower() == getText().lower())
+        if(comparecase(ev->param2, getText()) == 0)
         {
             if(ev->param3.empty() && !IsCommandIgnored("part")) AppendIrcStyledText(FXStringFormat(_("%s has parted %s"), ev->param1.text(), ev->param2.text()), 1);
             else if(!IsCommandIgnored("part")) AppendIrcStyledText(FXStringFormat(_("%s has parted %s (%s)"), ev->param1.text(), ev->param2.text(), ev->param3.text()), 1);
@@ -1545,7 +1545,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
     }
     if(ev->eventType == IRC_CHNOTICE)
     {
-        if((ev->param2.lower() == getText().lower() && type == CHANNEL) || (ev->param1 == getText() && type == QUERY && ev->param2 == server->GetNickName().lower()))
+        if((comparecase(ev->param2, getText()) == 0 && type == CHANNEL) || (ev->param1 == getText() && type == QUERY && ev->param2 == server->GetNickName()))
         {
             if(!IsCommandIgnored("notice"))
             {
@@ -1593,7 +1593,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
     }
     if(ev->eventType == IRC_TOPIC)
     {
-        if(ev->param2.lower() == getText().lower())
+        if(comparecase(ev->param2, getText()) == 0)
         {
             AppendIrcText(FXStringFormat(_("%s Set new topic for %s: %s"), ev->param1.text(), ev->param2.text(), ev->param3.text()));
             topic = ev->param3;
@@ -1611,7 +1611,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
     }
     if(ev->eventType == IRC_KICK)
     {
-        if(ev->param3.lower() == getText().lower())
+        if(comparecase(ev->param3, getText()) == 0)
         {
             if(ev->param2 != server->GetNickName())
             {
@@ -1641,7 +1641,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
         FXString channel = ev->param2;
         FXString modes = ev->param3;
         FXString args = ev->param4;
-        if(channel.lower() == getText().lower())
+        if(comparecase(channel, getText()) == 0)
         {
             FXbool sign = false;
             int argsiter = 1;
@@ -1773,7 +1773,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
     {
         FXString channel = ev->param1;
         FXString modes = ev->param2;
-        if(channel.lower() == getText().lower())
+        if(comparecase(channel, getText()) == 0)
         {
             if(modes.contains('t')) editableTopic = false;
         }
@@ -1928,7 +1928,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
     }
     if(ev->eventType == IRC_331 || ev->eventType == IRC_332 || ev->eventType == IRC_333)
     {
-        if(ev->param1.lower() == getText().lower())
+        if(comparecase(ev->param1, getText()) == 0)
         {
             AppendIrcText(ev->param2);
             if(ev->eventType == IRC_331)
@@ -1950,7 +1950,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
         FXString usersStr = ev->param2;
         FXString myNick = server->GetNickName();
         if(usersStr.right(1) != " ") usersStr.append(" ");
-        if(channel.lower() == getText().lower())
+        if(comparecase(channel, getText()) == 0)
         {
             while (usersStr.contains(' '))
             {
@@ -1964,7 +1964,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
             FXbool channelOn = false;
             for (FXint i = 0; i<parent->numChildren(); i=i+2)
             {
-                if(server->FindTarget((IrcTabItem *)parent->childAtIndex(i)) && ((IrcTabItem *)parent->childAtIndex(i))->getText().lower() == channel.lower())
+                if(server->FindTarget((IrcTabItem *)parent->childAtIndex(i)) && comparecase(((IrcTabItem *)parent->childAtIndex(i))->getText(), channel) == 0)
                 {
                     channelOn = true;
                     break;
@@ -1976,7 +1976,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
     }
     if(ev->eventType == IRC_366)
     {
-        if(ev->param1.lower() == getText().lower())
+        if(comparecase(ev->param1, getText()) == 0)
         {
             server->SendWho(getText());
             server->AddIgnoreCommands("who "+getText());
@@ -2006,7 +2006,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
     }
     if(ev->eventType == IRC_AWAY)
     {
-        if(ev->param1.lower() == getText().lower())
+        if(comparecase(ev->param1, getText()) == 0)
         {
             OnAway();
         }

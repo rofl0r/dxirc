@@ -72,7 +72,7 @@ class ServerDialog: public FXDialogBox
         FXCheckButton *buttonAuto, *buttonSsl;
         FXButton *buttonJoin, *buttonAdd, *buttonModify, *buttonDelete, *buttonCancel, *buttonSaveClose;
 
-        FXbool HostnameExist(const FXString&);
+        FXbool HostnameExist(const FXString&, const FXint&, const FXString&);
         void UpdateList();
         void UpdateDetails();
 };

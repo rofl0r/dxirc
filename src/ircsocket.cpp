@@ -392,7 +392,7 @@ void IrcSocket::Numeric(const FXint &command, const FXString &params)
             FXbool ignoreEvent = false;
             for(FXint i=0; i < ignoreCommands.no(); i++)
             {
-                if((utils::GetParam(ignoreCommands[i], 1, false) == "who") && (utils::GetParam(ignoreCommands[i], 2, true).lower() == utils::GetParam(params, 2, false).lower()))
+                if((utils::GetParam(ignoreCommands[i], 1, false) == "who") && comparecase(utils::GetParam(ignoreCommands[i], 2, true), utils::GetParam(params, 2, false)) == 0)
                 {
                     ignoreCommands.erase(i);
                     ignoreEvent = true;
@@ -461,7 +461,7 @@ void IrcSocket::Numeric(const FXint &command, const FXString &params)
             FXbool ignoreEvent = false;
             for(FXint i=0; i < ignoreCommands.no(); i++)
             {
-                if((utils::GetParam(ignoreCommands[i], 1, false) == "who") && (utils::GetParam(ignoreCommands[i], 2, true).lower() == utils::GetParam(params, 2, false).lower()))
+                if((utils::GetParam(ignoreCommands[i], 1, false) == "who") && comparecase(utils::GetParam(ignoreCommands[i], 2, true), utils::GetParam(params, 2, false)) == 0)
                 {
                     //param:xxx #test ~dvx localhost dvx.irc.dvx dvx H :0 dvx
                     AddNick(utils::GetParam(params, 6, false), utils::GetParam(params, 3, false), utils::GetParam(params, 9, true), utils::GetParam(params, 4, false), utils::GetParam(params, 7, false)[0] == 'H' ? false : true);

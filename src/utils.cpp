@@ -240,7 +240,7 @@ namespace utils
             {
                 locale = "en_US";
             }
-            locale = locale.lower();
+            locale.lower();
             if(locale.contains("utf")) locale = locale.before('.');
             language = locale.before('_');
             territory = locale.after('_').before('.').before('@');
