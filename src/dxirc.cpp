@@ -1458,22 +1458,22 @@ void dxirc::UpdateMenus()
 
 FXString dxirc::Encrypt(const FXString &text)
 {
-    FXString result = text;
-    int key[8] = {13,15,0,8,9,4,39,26};
+    FXString result = "";
+    FXchar key[8] = {'K','l','i','k','a','n','o','6'};
     for(FXint i=0; i<text.count(); i++)
     {
-        result[i] = char(int(text[i])+key[i%8]);
+        result += text[i];
+        result += key[i%8];
     }
     return result;
 }
 
 FXString dxirc::Decrypt(const FXString &text)
 {
-    FXString result = text;
-    int key[8] = {13,15,0,8,9,4,39,26};
+    FXString result = "";
     for(FXint i=0; i<text.count(); i++)
     {
-        result[i] = char(int(text[i])-key[i%8]);
+        if((i+1)%2) result += text[i];
     }
     return result;
 }
