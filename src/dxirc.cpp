@@ -52,16 +52,18 @@ FXDEFMAP(dxirc) dxircMap[] = {
     FXMAPFUNC(SEL_KEYPRESS, dxirc::ID_NEXTTAB,          dxirc::OnCommandNextTab),
     FXMAPFUNC(SEL_KEYPRESS, dxirc::ID_NEXTUNREAD,       dxirc::OnCommandNextUnread),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_ALIAS,            dxirc::OnCommandAlias),
+    FXMAPFUNC(SEL_COMMAND,  dxirc::ID_TRAY,             dxirc::OnTrayClicked),
     FXMAPFUNC(SEL_COMMAND,  IrcSocket::ID_SERVER,       dxirc::OnIrcEvent),
     FXMAPFUNC(SEL_COMMAND,  IrcTabItem::ID_CDIALOG,     dxirc::OnCommandConnect),
     FXMAPFUNC(SEL_COMMAND,  IrcTabItem::ID_CSERVER,     dxirc::OnTabConnect),
     FXMAPFUNC(SEL_COMMAND,  IrcTabItem::ID_TABQUIT,     dxirc::OnCommandDisconnect),
+    FXMAPFUNC(SEL_COMMAND,  IrcTabItem::ID_NEWMSG,      dxirc::OnNewMsg)
 };
 
 FXIMPLEMENT(dxirc, FXMainWindow, dxircMap, ARRAYNUMBER(dxircMap))
 
 dxirc::dxirc(FXApp *app)
-    : FXMainWindow(app, PACKAGE, 0, 0, DECOR_ALL, 0, 0, 800, 600), app(app)
+    : FXMainWindow(app, PACKAGE, 0, 0, DECOR_ALL, 0, 0, 800, 600), app(app), trayIcon(NULL)
 {
     setIcon(bigicon);
     setMiniIcon(smallicon);
@@ -116,6 +118,14 @@ dxirc::dxirc(FXApp *app)
     IrcTabItem *tabitem = new IrcTabItem(tabbook, "(server)", servericon, TAB_BOTTOM, SERVER, server, ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList);
     server->AppendTarget(tabitem);
 
+    if(useTray)
+    {
+        trayIcon = new FXTrayIcon(app, "dxirc", trayicon, 0, this, ID_TRAY, TRAY_CMD_ON_LEFT|TRAY_MENU_ON_RIGHT);
+        traymenu = new FXPopup(trayIcon);
+        new FXMenuCommand(traymenu, _("&Quit"), quiticon, this, ID_QUIT);
+        trayIcon->setMenu(traymenu);
+    }
+
     new FXToolTip(app,0);
 
     UpdateTheme();
@@ -164,6 +174,7 @@ dxirc::~dxirc()
     delete queryicon;
     delete clearicon;
     delete flagicon;
+    delete trayicon;
     delete newm;
     delete unewm;
     delete chnewm;
@@ -236,6 +247,7 @@ void dxirc::ReadConfig()
     maxAway = set.readIntEntry("SETTINGS", "maxAway", 200);
     logging = set.readBoolEntry("SETTINGS", "logging", false);
     ownServerWindow = set.readBoolEntry("SETTINGS", "serverWindow", true);
+    useTray = set.readBoolEntry("SETTINGS", "tray", false);
     nickCompletionChar = FXString(set.readStringEntry("SETTINGS", "nickCompletionChar", ":")).left(1);
     tempServerWindow = ownServerWindow;
     logPath = set.readStringEntry("SETTINGS", "logPath");
@@ -400,6 +412,7 @@ void dxirc::SaveConfig()
     set.writeBoolEntry("SETTINGS", "logging", logging);
     set.writeBoolEntry("SETTINGS", "sameCmd", sameCmd);
     set.writeBoolEntry("SETTINGS", "sameList", sameList);
+    set.writeBoolEntry("SETTINGS", "tray", useTray);
     if(ownServerWindow == tempServerWindow) set.writeBoolEntry("SETTINGS", "serverWindow", ownServerWindow);
     else set.writeBoolEntry("SETTINGS", "serverWindow", tempServerWindow);
     set.writeStringEntry("SETTINGS", "logPath", logPath.text());
@@ -491,7 +504,7 @@ long dxirc::OnCommandUsers(FXObject*, FXSelector, void*)
 
 long dxirc::OnCommandOptions(FXObject*, FXSelector, void*)
 {
-    ConfigDialog dialog(this, colors, commandsList, usersList, themePath, themesList, maxAway, logging, logPath, tempServerWindow, nickCompletionChar, ircFont->getFont(), sameCmd, sameList, appTheme);
+    ConfigDialog dialog(this, colors, commandsList, usersList, themePath, themesList, maxAway, logging, logPath, tempServerWindow, nickCompletionChar, ircFont->getFont(), sameCmd, sameList, appTheme, useTray);
     if(dialog.execute(PLACEMENT_CURSOR))
     {
         commandsList = dialog.GetCommandsList();
@@ -507,6 +520,7 @@ long dxirc::OnCommandOptions(FXObject*, FXSelector, void*)
         sameCmd = dialog.GetSameCmd();
         sameList = dialog.GetSameList();
         appTheme = dialog.GetTheme();
+        useTray = dialog.GetUseTray();
         UpdateTheme();
         UpdateFont(dialog.GetFont());
         ircFont = new FXFont(getApp(), dialog.GetIrcFont());
@@ -1377,6 +1391,24 @@ long dxirc::OnCommandSelectTab(FXObject*, FXSelector, void *ptr)
     return 1;
 }
 
+long dxirc::OnTrayClicked(FXObject*, FXSelector, void*)
+{
+    if(shown())
+        hide();
+    else
+        show();
+    if(trayIcon->getIcon() == newm)
+        trayIcon->setIcon(smallicon);
+    return 1;
+}
+
+long dxirc::OnNewMsg(FXObject*, FXSelector, void*)
+{
+    if(trayIcon->getIcon() == smallicon && !shown())
+        trayIcon->setIcon(newm);
+    return 1;
+}
+
 FXbool dxirc::TabExist(IrcSocket *server, FXString name)
 {
     for(FXint i = 0; i < tabbook->numChildren(); i=i+2)
@@ -1459,11 +1491,10 @@ void dxirc::UpdateMenus()
 FXString dxirc::Encrypt(const FXString &text)
 {
     FXString result = "";
-    FXchar key[8] = {'K','l','i','k','a','n','o','6'};
     for(FXint i=0; i<text.count(); i++)
     {
         result += text[i];
-        result += key[i%8];
+        result += FXchar((rand()%126)+33);
     }
     return result;
 }
@@ -1516,7 +1547,7 @@ int main(int argc,char *argv[])
         }
     }
 
-    FXApp app(PACKAGE, FXString::null);
+    FXTrayApp app(PACKAGE, FXString::null);
     app.reg().setAsciiMode(true);
     app.init(argc,argv);
     loadIcon = MakeAllIcons(&app, utils::GetIniFile());    

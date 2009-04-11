@@ -24,8 +24,8 @@
 #define DXIRC_H
 
 #include "defs.h"
-
-
+#include "FXTrayApp.h"
+#include "FXTrayIcon.h"
 
 class dxirc: public FXMainWindow
 {
@@ -50,6 +50,7 @@ class dxirc: public FXMainWindow
             ID_ABOUT,
             ID_TABS,
             ID_ALIAS,
+            ID_TRAY,
             ID_LAST
         };
 
@@ -73,19 +74,23 @@ class dxirc: public FXMainWindow
         long OnCommandOptions(FXObject*, FXSelector, void*);
         long OnCommandAlias(FXObject*, FXSelector, void*);
         long OnTabConnect(FXObject*, FXSelector, void*);
+        long OnTrayClicked(FXObject*, FXSelector, void*);
+        long OnNewMsg(FXObject*, FXSelector, void*);
 
     private:
         dxirc(){}
         FXApp *app;
         dxServerInfoArray serverList;
         dxIgnoreUserArray usersList;
-        FXbool usersShown, logging, ownServerWindow, tempServerWindow, sameCmd, sameList;
+        FXbool usersShown, logging, ownServerWindow, tempServerWindow, sameCmd, sameList, useTray;
         IrcColor colors;
         FXString commandsList, themesList, themePath, logPath;
         FXint maxAway;
         FXString nickCompletionChar, fontSpec;
         FXFont *ircFont;
         ColorTheme appTheme;
+        FXPopup *traymenu;
+        FXTrayIcon *trayIcon;
         
         FXbool TabExist(IrcSocket*, FXString);
         FXbool ServerExist(const FXString&, const FXint&, const FXString&);

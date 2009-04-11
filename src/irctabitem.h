@@ -63,6 +63,7 @@ class IrcTabItem: public FXTabItem
             ID_TOPIC,
             ID_CSERVER,
             ID_TEXT,
+            ID_NEWMSG,
             ID_LAST
         };
 

@@ -83,7 +83,7 @@ class ConfigDialog: public FXDialogBox
 {
     FXDECLARE(ConfigDialog)
     public:
-        ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, dxIgnoreUserArray ulist, FXString tpth, FXString thm, FXint maxa, FXbool log, FXString lpth, FXbool srvw, FXString nichar, FXString fnt, FXbool scmd, FXbool slst, ColorTheme atheme);
+        ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, dxIgnoreUserArray ulist, FXString tpth, FXString thm, FXint maxa, FXbool log, FXString lpth, FXbool srvw, FXString nichar, FXString fnt, FXbool scmd, FXbool slst, ColorTheme atheme, FXbool utray);
         virtual ~ConfigDialog();
         enum {
             ID_ADDCOMMAND = FXTopWindow::ID_LAST,
@@ -108,7 +108,9 @@ class ConfigDialog: public FXDialogBox
             ID_LOG,
             ID_LOGPATH,
             ID_SERVERWINDOW,
+            ID_TRAY,
             ID_NICK,
+            ID_LAST
         };
 
         long OnCommandsSelected(FXObject*,FXSelector,void*);
@@ -136,6 +138,7 @@ class ConfigDialog: public FXDialogBox
         long OnThemeColorChanged(FXObject*,FXSelector,void*);
         long OnFont(FXObject*,FXSelector,void*);
         long OnIrcFont(FXObject*,FXSelector,void*);
+        long OnTray(FXObject*,FXSelector,void*);
 
         FXString GetCommandsList() { return commandsList; }
         dxIgnoreUserArray GetUsersList() { return usersList; }
@@ -152,6 +155,7 @@ class ConfigDialog: public FXDialogBox
         FXbool GetSameList() { return sameList; }
         ColorTheme GetTheme() { return themeCurrent; }
         FXString GetFont() { return font->getFont(); }
+        FXbool GetUseTray() { return useTray; }
 
     private:
         ConfigDialog() {}
@@ -161,10 +165,9 @@ class ConfigDialog: public FXDialogBox
         FXButton *addCommand, *deleteCommand, *addUser, *modifyUser, *deleteUser, *addTheme, *deleteTheme, *selectPath;
         FXButton *icon1, *icon2, *icon3, *icon4, *icon5, *icon6, *icon7;
         FXButton *fontButton, *ircfontButton;
-        FXCheckButton *logCheck, *serverCheck;
         FXTextField *folder, *nickCharField, *textTest;
         FXString commandsList, themePath, themesList, logPath;
-        FXbool logging, serverWindow, sameCmd, sameList;
+        FXbool logging, serverWindow, sameCmd, sameList, useTray;
         dxIgnoreUserArray usersList;
         FXToolBar *iconsBar;
         IrcColor colors;
@@ -172,6 +175,7 @@ class ConfigDialog: public FXDialogBox
         FXSpinner *maxAwaySpinner;
         FXString nickChar;
         FXDataTarget textTarget, backTarget, userTarget, actionTarget, noticeTarget, errorTarget, hilightTarget, linkTarget;
+        FXDataTarget trayTarget, logTarget, serverTarget;
         FXHiliteStyle textStyle[6];
         FXText *text;
         ColorTheme themeCurrent, themeUser;

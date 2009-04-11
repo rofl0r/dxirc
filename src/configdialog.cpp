@@ -39,6 +39,7 @@ FXDEFMAP(ConfigDialog) ConfigDialogMap[] = {
     FXMAPFUNC(SEL_SELECTED, ConfigDialog::ID_ICONS, ConfigDialog::OnIconsChanged),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_ADDICONS, ConfigDialog::OnAddIcons),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_DELETEICONS, ConfigDialog::OnDeleteIcons),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_TRAY, ConfigDialog::OnTray),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_LOG, ConfigDialog::OnLogChanged),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_LOGPATH, ConfigDialog::OnPathSelect),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_SERVERWINDOW, ConfigDialog::OnServerWindow),
@@ -58,9 +59,9 @@ FXDEFMAP(ConfigDialog) ConfigDialogMap[] = {
 
 FXIMPLEMENT(ConfigDialog, FXDialogBox, ConfigDialogMap, ARRAYNUMBER(ConfigDialogMap))
 
-ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, dxIgnoreUserArray ulist, FXString tpth, FXString thm, FXint maxa, FXbool log, FXString lpth, FXbool srvw, FXString nichar, FXString fnt, FXbool scmd, FXbool slst, ColorTheme atheme)
+ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, dxIgnoreUserArray ulist, FXString tpth, FXString thm, FXint maxa, FXbool log, FXString lpth, FXbool srvw, FXString nichar, FXString fnt, FXbool scmd, FXbool slst, ColorTheme atheme, FXbool utray)
     : FXDialogBox(owner, _("Preferences"), DECOR_RESIZE|DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0),
-        commandsList(clist), themePath(tpth), themesList(thm), logPath(lpth), logging(log), serverWindow(srvw), sameCmd(scmd), sameList(slst), usersList(ulist), colors(clrs), maxAway(maxa), nickChar(nichar), themeCurrent(atheme)
+        commandsList(clist), themePath(tpth), themesList(thm), logPath(lpth), logging(log), serverWindow(srvw), sameCmd(scmd), sameList(slst), useTray(utray), usersList(ulist), colors(clrs), maxAway(maxa), nickChar(nichar), themeCurrent(atheme)
 {
     textTarget.connect(colors.text);
     textTarget.setTarget(this);
@@ -120,6 +121,16 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, d
     targetTipfore.connect(themeCurrent.tipfore);
     targetTipfore.setTarget(this);
     targetTipfore.setSelector(ID_COLORS);
+
+    trayTarget.connect(useTray);
+    trayTarget.setTarget(this);
+    trayTarget.setSelector(ID_TRAY);
+    serverTarget.connect(serverWindow);
+    serverTarget.setTarget(this);
+    serverTarget.setSelector(ID_SERVERWINDOW);
+    logTarget.connect(logging);
+    logTarget.setTarget(this);
+    logTarget.setSelector(ID_LOG);
 
     getApp()->getNormalFont()->create();
     FXFontDesc fontdescription;
@@ -242,10 +253,9 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, d
     new FXLabel(nickpane, _("Nick completion char"), NULL, LAYOUT_LEFT);
     nickCharField = new FXTextField(nickpane, 1, this, ID_NICK, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_X);
     nickCharField->setText(nickChar);
-    serverCheck = new FXCheckButton(otherpane, _("Special tab for server messages"), this, ID_SERVERWINDOW);
-    serverCheck->setCheck(serverWindow);
-    logCheck = new FXCheckButton(otherpane, _("Logging chats"), this, ID_LOG);
-    logCheck->setCheck(logging);
+    new FXCheckButton(otherpane, _("Use trayicon"), &trayTarget, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
+    new FXCheckButton(otherpane, _("Special tab for server messages"), &serverTarget, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
+    new FXCheckButton(otherpane, _("Logging chats"), &logTarget, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
     FXHorizontalFrame *logpane = new FXHorizontalFrame(otherpane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     new FXLabel(logpane, _("Log path"), NULL, LAYOUT_LEFT);
     folder = new FXTextField(logpane, 25, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_X);
@@ -860,7 +870,6 @@ void ConfigDialog::UpdateIrcFont()
 
 long ConfigDialog::OnLogChanged(FXObject*, FXSelector, void*)
 {
-    logging = logCheck->getCheck();
     if(logging) selectPath->enable();
     else selectPath->disable();
     return 1;
@@ -875,7 +884,12 @@ long ConfigDialog::OnNickCharChanged(FXObject*, FXSelector, void*)
 
 long ConfigDialog::OnServerWindow(FXObject*, FXSelector, void*)
 {
-    serverWindow = serverCheck->getCheck();
+    ShowMessage();
+    return 1;
+}
+
+long ConfigDialog::OnTray(FXObject*, FXSelector, void*)
+{
     ShowMessage();
     return 1;
 }

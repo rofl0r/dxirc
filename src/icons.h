@@ -24,6 +24,7 @@
 #define ICONS_H
 
 FXIcon* MakeIcon(FXApp *app, const FXString path, const FXString name, const FXbool menu);
+FXIcon* MakeIcon(FXApp *app, const FXString path, const FXString name);
 FXIcon* MakeAwayIcon(FXApp *app, const FXString path, const FXString name);
 FXbool MakeAllIcons(FXApp *app, const FXString &iniFile);
 FXString CheckThemePath(const FXString &path);
@@ -54,6 +55,7 @@ extern FXIcon *channelicon;
 extern FXIcon *queryicon;
 extern FXIcon *clearicon;
 extern FXIcon *flagicon;
+extern FXIcon *trayicon;
 extern FXIcon *newm;
 extern FXIcon *unewm;
 extern FXIcon *chnewm;

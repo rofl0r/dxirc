@@ -9,7 +9,9 @@ dxirc_SOURCES = configdialog.cpp \
 			      serverdialog.cpp \
                               utils.cpp \
                               aliasdialog.cpp \
-                              dxpipe.cpp
+                              dxpipe.cpp \
+                              FXTrayApp.cpp \
+                              FXTrayIcon.cpp
 
 dxirc_LDADD = @LIBINTL@
 
@@ -30,6 +32,8 @@ EXTRA_DIST =  configdialog.h \
 			  serverdialog.h \
                           utils.h \
                           aliasdialog.h \
-                          dxpipe.h
+                          dxpipe.h \
+                          FXTrayApp.h \
+                          FXTrayIcon.h
 
 

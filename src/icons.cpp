@@ -28,7 +28,7 @@ FXIcon *bigicon, *smallicon;
 FXIcon *irc_owner_icon, *irc_admin_icon, *irc_op_icon, *irc_voice_icon, *irc_halfop_icon, *irc_normal_icon;
 FXIcon *irc_away_owner_icon, *irc_away_admin_icon, *irc_away_op_icon, *irc_away_voice_icon, *irc_away_halfop_icon, *irc_away_normal_icon;
 FXIcon *serverlisticon, *connecticon, *disconnecticon, *quiticon, *closeicon, *optionicon, *helpicon;
-FXIcon *servericon, *channelicon, *queryicon, *clearicon, *flagicon, *newm, *unewm, *chnewm;
+FXIcon *servericon, *channelicon, *queryicon, *clearicon, *flagicon, *trayicon, *newm, *unewm, *chnewm;
 FXColor menuColor, textBackColor;
 
 /* created by reswrap from file empty.png */
@@ -144,6 +144,29 @@ const unsigned char voice[]={
   0x00,0xce,0xae,0x03,0x04,0x63,0x8f,0x6b,0x2e,0x00,0x00,0x00,0x00,0x49,0x45,0x4e,
   0x44,0xae,0x42,0x60,0x82
 };
+
+FXIcon* MakeIcon(FXApp *app, const FXString path, const FXString name)
+{
+    FXIcon *icon = NULL;
+    FXString file = FXPath::search(path, name);
+    if(!file.empty())
+    {
+        icon = new FXPNGIcon(app);
+        if(icon)
+        {
+            FXFileStream stream;
+            if(stream.open(file, FXStreamLoad))
+            {
+                icon->loadPixels(stream);
+                icon->create();
+                stream.close();
+                return icon;
+            }
+        }
+        delete icon;
+    }
+    return NULL;
+}
 
 FXIcon* MakeIcon(FXApp *app, const FXString path, const FXString name, const FXbool menu)
 {
@@ -289,7 +312,8 @@ FXbool MakeAllIcons(FXApp *app, const FXString &iniFile)
     success = ((queryicon = MakeIcon(app, mainpath, "user.png", true)) != NULL) &success;
     success = ((clearicon = MakeIcon(app, mainpath, "clear.png", true)) != NULL) &success;
     success = ((flagicon = MakeIcon(app, flagpath, "cz.png", true)) != NULL) &success;
-    success = ((newm = MakeIcon(app, mainpath, "newm.png", true)) != NULL) &success;
+    success = ((trayicon = MakeIcon(app, mainpath, "small_dxirc.png")) != NULL) &success;
+    success = ((newm = MakeIcon(app, mainpath, "newm.png")) != NULL) &success;
     success = ((unewm = MakeIcon(app, mainpath, "unewm.png", true)) != NULL) &success;
     success = ((chnewm = MakeIcon(app, mainpath, "chnewm.png", true)) != NULL) &success;
 

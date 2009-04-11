@@ -1459,11 +1459,13 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
                 if(ev->param3.contains(server->GetNickName()))
                 {
                     this->setTextColor(FXRGB(255,0,0));
-                    if(type == CHANNEL) this->setIcon(chnewm);                    
+                    if(type == CHANNEL) this->setIcon(chnewm);
                 }
                 else this->setTextColor(FXRGB(0,0,255));
-                if(type == QUERY) this->setIcon(unewm);
+                if(type == QUERY) this->setIcon(unewm);                    
             }
+            if((type == CHANNEL && ev->param3.contains(server->GetNickName())) || type == QUERY)
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_NEWMSG), NULL);
         }
         return 1;
     }
@@ -1484,6 +1486,8 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
                     else this->setTextColor(FXRGB(0,0,255));
                     if(type == QUERY) this->setIcon(unewm);
                 }
+                if((type == CHANNEL && ev->param3.contains(server->GetNickName())) || type == QUERY)
+                    parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_NEWMSG), NULL);
             }
         }
         return 1;
@@ -1560,6 +1564,8 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
                     else this->setTextColor(FXRGB(0,0,255));
                     if(type == QUERY) this->setIcon(unewm);
                 }
+                if((type == CHANNEL && ev->param3.contains(server->GetNickName())) || type == QUERY)
+                    parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_NEWMSG), NULL);
             }
         }
         else if(type == SERVER || IsCurrent() || IsNoCurrent())
