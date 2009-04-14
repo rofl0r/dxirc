@@ -53,6 +53,7 @@ FXDEFMAP(dxirc) dxircMap[] = {
     FXMAPFUNC(SEL_KEYPRESS, dxirc::ID_NEXTUNREAD,       dxirc::OnCommandNextUnread),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_ALIAS,            dxirc::OnCommandAlias),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_TRAY,             dxirc::OnTrayClicked),
+    FXMAPFUNC(SEL_COMMAND,  dxirc::ID_TCANCEL,          dxirc::OnTrayCancel),
     FXMAPFUNC(SEL_COMMAND,  IrcSocket::ID_SERVER,       dxirc::OnIrcEvent),
     FXMAPFUNC(SEL_COMMAND,  IrcTabItem::ID_CDIALOG,     dxirc::OnCommandConnect),
     FXMAPFUNC(SEL_COMMAND,  IrcTabItem::ID_CSERVER,     dxirc::OnTabConnect),
@@ -122,6 +123,8 @@ dxirc::dxirc(FXApp *app)
     {
         trayIcon = new FXTrayIcon(app, "dxirc", trayicon, 0, this, ID_TRAY, TRAY_CMD_ON_LEFT|TRAY_MENU_ON_RIGHT);
         traymenu = new FXPopup(trayIcon);
+        new FXMenuCommand(traymenu, _("&Cancel"), NULL, this, ID_TCANCEL);
+        new FXMenuSeparator(traymenu);
         new FXMenuCommand(traymenu, _("&Quit"), quiticon, this, ID_QUIT);
         trayIcon->setMenu(traymenu);
     }
@@ -1399,6 +1402,12 @@ long dxirc::OnTrayClicked(FXObject*, FXSelector, void*)
         show();
     if(trayIcon->getIcon() == newm)
         trayIcon->setIcon(smallicon);
+    return 1;
+}
+
+long dxirc::OnTrayCancel(FXObject*, FXSelector, void*)
+{
+    traymenu->popdown();
     return 1;
 }
 
