@@ -25,6 +25,7 @@
 #include <fx.h>
 #ifndef WIN32
 #include <unistd.h>
+#include <signal.h>
 #include <sys/wait.h>
 #endif
 
