@@ -1400,7 +1400,7 @@ long dxirc::OnTrayClicked(FXObject*, FXSelector, void*)
         hide();
     else
         show();
-    if(trayIcon->getIcon() == newm)
+    if(trayIcon && trayIcon->getIcon() == newm)
         trayIcon->setIcon(trayicon);
     return 1;
 }
@@ -1413,7 +1413,7 @@ long dxirc::OnTrayCancel(FXObject*, FXSelector, void*)
 
 long dxirc::OnNewMsg(FXObject*, FXSelector, void*)
 {
-    if(trayIcon->getIcon() == trayicon && !shown())
+    if(trayIcon && trayIcon->getIcon() == trayicon && !shown())
         trayIcon->setIcon(newm);
     return 1;
 }
