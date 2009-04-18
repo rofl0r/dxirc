@@ -955,11 +955,10 @@ void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString
         rname.length() ? servers[0]->SetRealName(rname) : servers[0]->SetRealName(nick.length() ? nick : "_xxx_");
         if(channels.length()>1) servers[0]->SetStartChannels(channels);
         if(commands.length()) servers[0]->SetStartCommands(commands);
-#ifdef HAVE_OPENSSL
-        servers[0]->SetUseSsl(ssl);
-#else
-        servers[0]->SetUseSsl(false);
+#ifndef HAVE_OPENSSL
+        ssl = false;
 #endif
+        servers[0]->SetUseSsl(ssl);
         if (!tabbook->numChildren())
         {
             IrcTabItem *tabitem = new IrcTabItem(tabbook, hostname, servericon, TAB_BOTTOM, SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList);
@@ -970,7 +969,10 @@ void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString
         }
         ((IrcTabItem *)tabbook->childAtIndex(0))->SetType(SERVER, hostname);
         SortTabs();
-        servers[0]->Connect();
+        if(ssl)
+            servers[0]->ConnectSSL();
+        else
+            servers[0]->Connect();
     }
     else if(!ServerExist(hostname, port, nick))
     {
@@ -985,16 +987,18 @@ void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString
         rname.length() ? servers[0]->SetRealName(rname) : servers[0]->SetRealName(nick.length() ? nick : "_xxx_");
         IrcTabItem *tabitem = new IrcTabItem(tabbook, hostname, servericon, TAB_BOTTOM, SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList);
         servers[0]->AppendTarget(tabitem);
-#ifdef HAVE_OPENSSL
-        servers[0]->SetUseSsl(ssl);
-#else
-        servers[0]->SetUseSsl(false);
+#ifndef HAVE_OPENSSL
+        ssl = false;
 #endif
+        servers[0]->SetUseSsl(ssl);
         tabitem->create();
         tabitem->CreateGeom();
         //tabbook->setCurrent(tabbook->numChildren()/2);
         SortTabs();
-        servers[0]->Connect();
+        if(ssl)
+            servers[0]->ConnectSSL();
+        else
+            servers[0]->Connect();
     }
     UpdateMenus();
 }

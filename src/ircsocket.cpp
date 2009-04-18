@@ -122,64 +122,116 @@ FXint IrcSocket::Connect()
 #else
     application->addInput((FXInputHandle)socketid, INPUT_READ, this, ID_READ);
 #endif
-#ifdef HAVE_OPENSSL
-    if(useSsl)
-    {
-        InitSSL();
-        ssl = SSL_new(ctx);
-        if(!ssl)
-        {
-#ifdef WIN32
-            shutdown(socketid, SD_BOTH);
-            closesocket(socketid);
-            if(event)
-            {
-                application->removeInput((FXInputHandle)event, INPUT_READ);
-                WSACloseEvent(event);
-                event = NULL;
-            }
-#else
-#ifndef SHUT_RDWR
-#define SHUT_RDWR 2
-#endif
-            shutdown(socketid, SHUT_RDWR);
-            close(socketid);
-            application->removeInput(socketid, INPUT_READ);
-#endif
-            SendEvent(IRC_ERROR, _("SSL creation error"));
-            return -1;
-        }
-        SSL_set_fd(ssl, socketid);
-        err = SSL_connect(ssl);
-        if(!err)
-        {
-#ifdef WIN32
-            shutdown(socketid, SD_BOTH);
-            closesocket(socketid);
-            if(event)
-            {
-                application->removeInput((FXInputHandle)event, INPUT_READ);
-                WSACloseEvent(event);
-                event = NULL;
-            }
-#else
-#ifndef SHUT_RDWR
-#define SHUT_RDWR 2
-#endif
-            shutdown(socketid, SHUT_RDWR);
-            close(socketid);
-            application->removeInput(socketid, INPUT_READ);
-#endif
-            SendEvent(IRC_ERROR, FXStringFormat(_("SSL connect error %d"), err));
-            return -1;
-        }
-    }
-#endif //HAVE_OPENSSL
     connected = true;
     SendEvent(IRC_CONNECT, FXStringFormat(_("Connected to %s"), serverName.text()));
     if (!serverPassword.empty()) SendLine("PASS "+serverPassword);
     SendLine("NICK "+nickName);
     SendLine("USER "+userName+" 0 * :"+realName);
+    return 1;
+}
+
+FXint IrcSocket::ConnectSSL()
+{
+#ifdef HAVE_OPENSSL
+#ifdef WIN32
+    WORD wVersionRequested = MAKEWORD(2,0);
+    WSADATA data;
+#endif
+    hostent *host;
+    SendEvent(IRC_CONNECT, FXStringFormat(_("Connecting to %s"), serverName.text()));
+#ifdef WIN32
+    if (WSAStartup(wVersionRequested, &data) != 0)
+    {
+        SendEvent(IRC_ERROR, _("Unable initiliaze socket"));
+        startChannels.clear();
+        startCommands.clear();
+        return -1;
+    }
+#endif
+    if ((host = gethostbyname(serverName.text())) == NULL)
+    {
+        SendEvent(IRC_ERROR, FXStringFormat(_("Bad host: %s"), serverName.text()));
+        startChannels.clear();
+        startCommands.clear();
+        return -1;
+    }
+    if ((socketid = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
+    {
+        SendEvent(IRC_ERROR, _("Unable create socket"));
+        startChannels.clear();
+        startCommands.clear();
+#ifdef WIN32
+        WSACleanup();
+#endif
+        return -1;
+    }
+    serverSock.sin_family = AF_INET;
+    serverSock.sin_port = htons(serverPort);
+    memcpy(&(serverSock.sin_addr), host->h_addr, host->h_length);
+    if (connect(socketid, (sockaddr *)&serverSock, sizeof(serverSock)) == -1)
+    {
+        SendEvent(IRC_ERROR, FXStringFormat(_("Unable connect to: %s"), serverName.text()));
+        startChannels.clear();
+        startCommands.clear();
+#ifdef WIN32
+        closesocket(socketid);
+#else
+        close(socketid);
+#endif
+        return -1;
+    }
+    SSLeay_add_ssl_algorithms();
+    SSL_load_error_strings();    
+    ctx = SSL_CTX_new(SSLv3_client_method());
+    SSL_CTX_set_options(ctx, SSL_OP_ALL);
+    ssl = SSL_new(ctx);
+    if(!ssl)
+    {
+#ifdef WIN32
+        shutdown(socketid, SD_BOTH);
+        closesocket(socketid);
+#else
+#ifndef SHUT_RDWR
+#define SHUT_RDWR 2
+#endif
+        shutdown(socketid, SHUT_RDWR);
+        close(socketid);
+#endif
+        SendEvent(IRC_ERROR, _("SSL creation error"));
+        return -1;
+    }
+    SSL_set_fd(ssl, socketid);
+    err = SSL_connect(ssl);
+    if(!err)
+    {
+#ifdef WIN32
+        shutdown(socketid, SD_BOTH);
+        closesocket(socketid);
+#else
+#ifndef SHUT_RDWR
+#define SHUT_RDWR 2
+#endif
+        shutdown(socketid, SHUT_RDWR);
+        close(socketid);
+#endif
+        SendEvent(IRC_ERROR, FXStringFormat(_("SSL connect error %d"), err));
+        return -1;
+    }
+    connected = true;
+    SendEvent(IRC_CONNECT, FXStringFormat(_("Connected to %s"), serverName.text()));
+    if (!serverPassword.empty()) SendLine("PASS "+serverPassword);
+    SendLine("NICK "+nickName);
+    SendLine("USER "+userName+" 0 * :"+realName);
+#ifdef WIN32
+    event = WSACreateEvent();
+    WSAEventSelect(socketid, event, FD_CONNECT|FD_READ|FD_CLOSE); // sets non-blocking!!
+    application->addInput((FXInputHandle)event, INPUT_READ, this, ID_READ);
+#else
+    application->addInput((FXInputHandle)socketid, INPUT_READ, this, ID_READ);
+#endif
+#else
+    connected = false;
+#endif //HAVE_OPENSSL
     return 1;
 }
 
@@ -1544,13 +1596,3 @@ FXbool IrcSocket::IsUserIgnored(const FXString &nick, const FXString &on)
     }
     return user && channel && host;
 }
-
-#ifdef HAVE_OPENSSL
-void IrcSocket::InitSSL()
-{
-    SSL_load_error_strings();
-    SSL_library_init();
-    ctx = SSL_CTX_new(SSLv3_client_method());
-    SSL_CTX_set_options(ctx, SSL_OP_ALL);
-}
-#endif

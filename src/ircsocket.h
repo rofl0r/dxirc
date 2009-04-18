@@ -58,6 +58,7 @@ class IrcSocket: public FXObject
         };
 
         FXint Connect();
+        FXint ConnectSSL();
         void Disconnect();
         void Disconnect(const FXString &reason);
         void AppendTarget(FXObject*);
@@ -129,12 +130,10 @@ class IrcSocket: public FXObject
         dxStringArray ignoreCommands;
         dxIgnoreUserArray usersList;
         dxNicksArray nicks;
-        #ifdef WIN32
-            SOCKET socketid;
+        #ifdef WIN32            
             WSAEVENT event;
-        #else
-            int socketid;
         #endif
+            int socketid;        
         sockaddr_in serverSock;
 
         int ReadData();
@@ -170,8 +169,6 @@ class IrcSocket: public FXObject
         SSL_CTX *ctx;
         SSL *ssl;
         FXint err;
-
-        void InitSSL();
 #endif
 
 };
