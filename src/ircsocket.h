@@ -54,6 +54,7 @@ class IrcSocket: public FXObject
         enum {
             ID_READ,
             ID_SERVER,
+            ID_SSLTIME,
             ID_LAST
         };
 

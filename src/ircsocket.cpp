@@ -25,10 +25,12 @@
 #include "utils.h"
 #ifdef HAVE_OPENSSL
 #include <openssl/err.h>
+#include <openssl/rand.h>
 #endif
 
 FXDEFMAP(IrcSocket) IrcSocketMap[] = {
-    FXMAPFUNC(SEL_IO_READ,      IrcSocket::ID_READ,     IrcSocket::OnIORead)
+    FXMAPFUNC(SEL_IO_READ,      IrcSocket::ID_READ,     IrcSocket::OnIORead),
+    FXMAPFUNC(SEL_TIMEOUT,      IrcSocket::ID_SSLTIME,  IrcSocket::OnIORead)
 };
 
 FXIMPLEMENT(IrcSocket, FXObject, IrcSocketMap, ARRAYNUMBER(IrcSocketMap))
@@ -62,6 +64,10 @@ IrcSocket::~IrcSocket()
 
 long IrcSocket::OnIORead(FXObject *, FXSelector, void *)
 {
+#ifdef WIN32
+    if(useSsl)
+        application->addTimeout(this, ID_SSLTIME, 300);
+#endif
     if(connected) ReadData();
     return 1;
 }
@@ -184,6 +190,14 @@ FXint IrcSocket::ConnectSSL()
     SSL_load_error_strings();    
     ctx = SSL_CTX_new(SSLv3_client_method());
     SSL_CTX_set_options(ctx, SSL_OP_ALL);
+#ifdef WIN32
+    int i,r;
+    for(i=0; i<128; i++)
+    {
+        r = rand();
+        RAND_seed((unsigned char *)&r, sizeof(r));
+    }
+#endif
     ssl = SSL_new(ctx);
     if(!ssl)
     {
@@ -225,7 +239,10 @@ FXint IrcSocket::ConnectSSL()
 #ifdef WIN32
     event = WSACreateEvent();
     WSAEventSelect(socketid, event, FD_CONNECT|FD_READ|FD_CLOSE); // sets non-blocking!!
+    /* now here 'dirty' solution with timeout
     application->addInput((FXInputHandle)event, INPUT_READ, this, ID_READ);
+    */
+    application->addTimeout(this, ID_SSLTIME, 300);
 #else
     application->addInput((FXInputHandle)socketid, INPUT_READ, this, ID_READ);
 #endif
