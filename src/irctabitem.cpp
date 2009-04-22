@@ -510,7 +510,45 @@ void IrcTabItem::AppendIrcText(FXString msg)
 void IrcTabItem::AppendIrcStyledText(FXString styled, FXint stylenum)
 {
     text->appendText("["+FXSystem::time("%H:%M:%S", FXSystem::now()) +"] ");
-    text->appendStyledText(StripColors(styled, true)+"\n", stylenum);
+    if(styled.right(1) != " ") styled.append(" ");
+    for(FXint i=0; i<styled.contains(' '); i++)
+    {
+        FXString sec = styled.section(' ',i);
+        FXRex rxl("\\L");
+        if(rxl.match(sec.left(1)) && ((comparecase(sec.mid(1,7), "http://")==0 && sec.length()>7)
+                || (comparecase(sec.mid(1,8), "https://")==0 && sec.length()>8)
+                || (comparecase(sec.mid(1,6), "ftp://")==0 && sec.length()>6)
+                || (comparecase(sec.mid(1,4), "www.")==0 && sec.length()>4)))
+        {
+            text->appendStyledText(sec.left(1), stylenum);
+            FXRex rxr("\\W");
+            if(rxr.match(sec.right(1)))
+            {
+                text->appendStyledText(sec.mid(1,sec.length()-2),9);
+                text->appendStyledText(sec.right(1), stylenum);
+            }
+            else
+            {
+                text->appendStyledText(sec.mid(1,sec.length()-1),9);
+            }
+            text->appendText(" ");
+            continue;
+        }
+        if((comparecase(sec.left(7), "http://")==0 && sec.length()>7)
+                || (comparecase(sec.left(8), "https://")==0 && sec.length()>8)
+                || (comparecase(sec.left(6), "ftp://")==0 && sec.length()>6)
+                || (comparecase(sec.left(4), "www.")==0 && sec.length()>4))
+        {
+            text->appendStyledText(sec,9);
+            text->appendText(" ");
+            continue;
+        }
+        else
+        {
+            text->appendStyledText(sec+" ", stylenum);
+        }
+    }    
+    text->appendText("\n");
     MakeLastRowVisible(false);
     this->LogLine(StripColors(styled, true));
 }
