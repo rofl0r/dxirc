@@ -513,7 +513,7 @@ void IrcTabItem::AppendIrcStyledText(FXString styled, FXint stylenum)
     if(styled.right(1) != " ") styled.append(" ");
     for(FXint i=0; i<styled.contains(' '); i++)
     {
-        FXString sec = styled.section(' ',i);
+        FXString sec = StripColors(styled.section(' ',i), true);
         FXRex rxl("\\L");
         if(rxl.match(sec.left(1)) && ((comparecase(sec.mid(1,7), "http://")==0 && sec.length()>7)
                 || (comparecase(sec.mid(1,8), "https://")==0 && sec.length()>8)

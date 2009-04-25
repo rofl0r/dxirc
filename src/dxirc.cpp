@@ -302,7 +302,6 @@ void dxirc::ReadServersConfig()
     FXSettings set;
     set.parseFile(utils::GetIniFile(), true);
     FXint serversNum = set.readIntEntry("SERVERS", "number", 0);
-    FXint autoConnect = 0;
     if(serversNum)
     {
         for(FXint i=0; i<serversNum; i++)
@@ -319,58 +318,7 @@ void dxirc::ReadServersConfig()
             server.useSsl = set.readBoolEntry(FXStringFormat("SERVER%d", i).text(), "ssl", false);
             if(server.autoConnect)
             {
-                autoConnect++;
-                if(servers.no() == 1 && !servers[0]->GetConnected() && autoConnect < 2)
-                {
-                    servers[0]->SetServerName(server.hostname);
-                    servers[0]->SetServerPort(server.port);
-                    servers[0]->SetServerPassword(server.passwd);
-                    server.nick.length() ? servers[0]->SetNickName(server.nick) : servers[0]->SetNickName("_xxx_");
-                    server.nick.length() ? servers[0]->SetUserName(server.nick) : servers[0]->SetUserName("_xxx_");
-                    server.realname.length() ? servers[0]->SetRealName(server.realname) : servers[0]->SetRealName(server.nick.length() ? server.nick : "_xxx_");
-                    if(server.channels.length()>1) servers[0]->SetStartChannels(server.channels);
-                    if(server.commands.length()) servers[0]->SetStartCommands(server.commands);
-#ifdef HAVE_OPENSSL
-                    servers[0]->SetUseSsl(server.useSsl);
-#else
-                    servers[0]->SetUseSsl(false);
-#endif
-                    if (!tabbook->numChildren())
-                    {
-                        IrcTabItem *tabitem = new IrcTabItem(tabbook, server.hostname, servericon, TAB_BOTTOM, SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList);
-                        servers[0]->AppendTarget(tabitem);
-                        tabitem->create();
-                        tabitem->CreateGeom();
-                        //tabbook->setCurrent(tabbook->numChildren()/2);
-                    }
-                    ((IrcTabItem *)tabbook->childAtIndex(0))->SetType(SERVER, server.hostname);
-                    SortTabs();
-                    servers[0]->Connect();
-                }
-                else if(!ServerExist(server.hostname, server.port, server.nick))
-                {
-                    IrcSocket *newserver = new IrcSocket(app, this, server.channels, server.commands);
-                    newserver->SetUsersList(usersList);
-                    servers.prepend(newserver);
-                    servers[0]->SetServerName(server.hostname);
-                    servers[0]->SetServerPort(server.port);
-                    servers[0]->SetServerPassword(server.passwd);
-                    server.nick.length() ? servers[0]->SetNickName(server.nick) : servers[0]->SetNickName("_xxx_");
-                    server.nick.length() ? servers[0]->SetUserName(server.nick) : servers[0]->SetUserName("_xxx_");
-                    server.realname.length() ? servers[0]->SetRealName(server.realname) : servers[0]->SetRealName(server.nick.length() ? server.nick : "_xxx_");
-#ifdef HAVE_OPENSSL
-                    servers[0]->SetUseSsl(server.useSsl);
-#else
-                    servers[0]->SetUseSsl(false);
-#endif
-                    IrcTabItem *tabitem = new IrcTabItem(tabbook, server.hostname, servericon, TAB_BOTTOM, SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList);
-                    servers[0]->AppendTarget(tabitem);
-                    tabitem->create();
-                    tabitem->CreateGeom();
-                    SortTabs();
-                    //tabbook->setCurrent(tabbook->numChildren()/2);
-                    servers[0]->Connect();
-                }
+                ConnectServer(server.hostname, server.port, server.passwd, server.nick, server.realname, server.channels, server.commands, server.useSsl);
             }
             serverList.append(server);
         }
