@@ -72,6 +72,13 @@ long IrcSocket::OnIORead(FXObject *, FXSelector, void *)
     return 1;
 }
 
+void IrcSocket::StartConnection()
+{
+    ConnectThread *thread = new ConnectThread(this);
+    thread->start();
+    thread->detach();
+}
+
 FXint IrcSocket::Connect()
 {
 #ifdef WIN32
@@ -1612,4 +1619,18 @@ FXbool IrcSocket::IsUserIgnored(const FXString &nick, const FXString &on)
         if(FXRex(FXString("\\<"+usersList[i].server+"\\>").substitute("*","\\w*")).match(serverName)) host = true;
     }
     return user && channel && host;
+}
+
+ConnectThread::ConnectThread(IrcSocket *sct) : socket(sct)
+{
+}
+
+ConnectThread::~ConnectThread()
+{
+}
+
+FXint ConnectThread::run()
+{
+    if(socket->GetUseSsl()) return socket->ConnectSSL();
+    else return socket->Connect();
 }

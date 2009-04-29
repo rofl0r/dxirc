@@ -58,6 +58,7 @@ class IrcSocket: public FXObject
             ID_LAST
         };
 
+        void StartConnection();
         FXint Connect();
         FXint ConnectSSL();
         void Disconnect();
@@ -81,6 +82,7 @@ class IrcSocket: public FXObject
         void SetUsersList(const dxIgnoreUserArray &ulst) { usersList = ulst;}
         void SetUseSsl(const FXbool &ussl) { useSsl = ussl;}
         FXbool GetConnected() { return connected; }
+        FXbool GetUseSsl() { return useSsl; }
         void AddIgnoreCommands(const FXString &command);
         void RemoveIgnoreCommands(const FXString &command);
         void AddNick(const FXString &nick, const FXString &user, const FXString &real, const FXString &host, const FXbool &away);
@@ -171,6 +173,18 @@ class IrcSocket: public FXObject
         SSL *ssl;
         FXint err;
 #endif
+
+};
+
+class ConnectThread : public FXThread
+{
+    public:
+        ConnectThread(IrcSocket*);
+        virtual ~ConnectThread();
+    protected:
+        FXint run();
+    private:
+        IrcSocket *socket;
 
 };
 
