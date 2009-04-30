@@ -82,6 +82,7 @@ class IrcSocket: public FXObject
         void SetUsersList(const dxIgnoreUserArray &ulst) { usersList = ulst;}
         void SetUseSsl(const FXbool &ussl) { useSsl = ussl;}
         FXbool GetConnected() { return connected; }
+        FXbool GetConnecting() { return connecting; }
         FXbool GetUseSsl() { return useSsl; }
         void AddIgnoreCommands(const FXString &command);
         void RemoveIgnoreCommands(const FXString &command);
@@ -125,7 +126,7 @@ class IrcSocket: public FXObject
         IrcSocket(){}
 
         FXApp *application;
-        FXbool connected, useSsl;
+        FXbool connected, useSsl, connecting;
         FXint serverPort;
         FXString serverName, realServerName, serverPassword, nickName, realName, userName, startChannels, startCommands;
         FXString receiveRest;

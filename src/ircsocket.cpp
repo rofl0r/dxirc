@@ -51,6 +51,7 @@ IrcSocket::IrcSocket(FXApp *app, FXObject *tgt, FXString channels, FXString comm
     realName = nickName;
     receiveRest = "";
     connected = false;
+    connecting = false;
 }
 
 IrcSocket::~IrcSocket()
@@ -76,11 +77,11 @@ void IrcSocket::StartConnection()
 {
     ConnectThread *thread = new ConnectThread(this);
     thread->start();
-    thread->detach();
 }
 
 FXint IrcSocket::Connect()
 {
+    connecting = true;
 #ifdef WIN32
     WORD wVersionRequested = MAKEWORD(2,0);
     WSADATA data;
@@ -101,6 +102,7 @@ FXint IrcSocket::Connect()
         SendEvent(IRC_ERROR, FXStringFormat(_("Bad host: %s"), serverName.text()));
         startChannels.clear();
         startCommands.clear();
+        connecting = false;
         return -1;
     }
     if ((socketid = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
@@ -111,6 +113,7 @@ FXint IrcSocket::Connect()
 #ifdef WIN32
         WSACleanup();
 #endif
+        connecting = false;
         return -1;
     }
     serverSock.sin_family = AF_INET;
@@ -126,6 +129,7 @@ FXint IrcSocket::Connect()
 #else
         close(socketid);
 #endif
+        connecting = false;
         return -1;
     }
 #ifdef WIN32
@@ -136,6 +140,7 @@ FXint IrcSocket::Connect()
     application->addInput((FXInputHandle)socketid, INPUT_READ, this, ID_READ);
 #endif
     connected = true;
+    connecting = false;
     SendEvent(IRC_CONNECT, FXStringFormat(_("Connected to %s"), serverName.text()));
     if (!serverPassword.empty()) SendLine("PASS "+serverPassword);
     SendLine("NICK "+nickName);
@@ -145,6 +150,7 @@ FXint IrcSocket::Connect()
 
 FXint IrcSocket::ConnectSSL()
 {
+    connecting = true;
 #ifdef HAVE_OPENSSL
 #ifdef WIN32
     WORD wVersionRequested = MAKEWORD(2,0);
@@ -166,6 +172,7 @@ FXint IrcSocket::ConnectSSL()
         SendEvent(IRC_ERROR, FXStringFormat(_("Bad host: %s"), serverName.text()));
         startChannels.clear();
         startCommands.clear();
+        connecting = false;
         return -1;
     }
     if ((socketid = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
@@ -176,6 +183,7 @@ FXint IrcSocket::ConnectSSL()
 #ifdef WIN32
         WSACleanup();
 #endif
+        connecting = false;
         return -1;
     }
     serverSock.sin_family = AF_INET;
@@ -191,6 +199,7 @@ FXint IrcSocket::ConnectSSL()
 #else
         close(socketid);
 #endif
+        connecting = false;
         return -1;
     }
     SSLeay_add_ssl_algorithms();
@@ -219,6 +228,7 @@ FXint IrcSocket::ConnectSSL()
         close(socketid);
 #endif
         SendEvent(IRC_ERROR, _("SSL creation error"));
+        connecting = false;
         return -1;
     }
     SSL_set_fd(ssl, socketid);
@@ -236,6 +246,7 @@ FXint IrcSocket::ConnectSSL()
         close(socketid);
 #endif
         SendEvent(IRC_ERROR, FXStringFormat(_("SSL connect error %d"), err));
+        connecting = false;
         return -1;
     }
     connected = true;
@@ -256,6 +267,7 @@ FXint IrcSocket::ConnectSSL()
 #else
     connected = false;
 #endif //HAVE_OPENSSL
+    connecting = false;
     return 1;
 }
 
