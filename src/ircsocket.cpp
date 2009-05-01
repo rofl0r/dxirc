@@ -77,6 +77,7 @@ void IrcSocket::StartConnection()
 {
     ConnectThread *thread = new ConnectThread(this);
     thread->start();
+    thread->join();
 }
 
 FXint IrcSocket::Connect()
