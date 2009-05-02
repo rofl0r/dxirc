@@ -45,6 +45,8 @@
 #include <openssl/ssl.h>
 #endif
 
+class ConnectThread;
+
 class IrcSocket: public FXObject
 {
     FXDECLARE(IrcSocket)
@@ -139,6 +141,7 @@ class IrcSocket: public FXObject
         #endif
             int socketid;        
         sockaddr_in serverSock;
+        ConnectThread *thread;
 
         int ReadData();
         FXbool SendLine(const FXString &line);

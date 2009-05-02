@@ -52,6 +52,7 @@ IrcSocket::IrcSocket(FXApp *app, FXObject *tgt, FXString channels, FXString comm
     receiveRest = "";
     connected = false;
     connecting = false;
+    thread = new ConnectThread(this);
 }
 
 IrcSocket::~IrcSocket()
@@ -61,6 +62,7 @@ IrcSocket::~IrcSocket()
     if(ssl) SSL_free(ssl);
     if(ctx) SSL_CTX_free(ctx);
 #endif
+    delete thread;
 }
 
 long IrcSocket::OnIORead(FXObject *, FXSelector, void *)
@@ -75,9 +77,7 @@ long IrcSocket::OnIORead(FXObject *, FXSelector, void *)
 
 void IrcSocket::StartConnection()
 {
-    ConnectThread *thread = new ConnectThread(this);
     thread->start();
-    thread->join();
 }
 
 FXint IrcSocket::Connect()
@@ -1644,6 +1644,7 @@ ConnectThread::~ConnectThread()
 
 FXint ConnectThread::run()
 {
-    if(socket->GetUseSsl()) return socket->ConnectSSL();
-    else return socket->Connect();
+    if(socket->GetUseSsl()) socket->ConnectSSL();
+    else socket->Connect();
+    return 1;
 }

@@ -917,10 +917,6 @@ void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString
         }
         ((IrcTabItem *)tabbook->childAtIndex(0))->SetType(SERVER, hostname);
         SortTabs();
-        //if(ssl)
-            //servers[0]->ConnectSSL();
-        //else
-            //servers[0]->Connect();
         servers[0]->StartConnection();
     }
     else if(!ServerExist(hostname, port, nick))
@@ -944,10 +940,6 @@ void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString
         tabitem->CreateGeom();
         //tabbook->setCurrent(tabbook->numChildren()/2);
         SortTabs();
-        //if(ssl)
-            //servers[0]->ConnectSSL();
-        //else
-            //servers[0]->Connect();
         servers[0]->StartConnection();
     }
     UpdateMenus();
