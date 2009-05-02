@@ -77,12 +77,12 @@ long IrcSocket::OnIORead(FXObject *, FXSelector, void *)
 
 void IrcSocket::StartConnection()
 {
+    connecting = true;
     thread->start();
 }
 
 FXint IrcSocket::Connect()
-{
-    connecting = true;
+{    
 #ifdef WIN32
     WORD wVersionRequested = MAKEWORD(2,0);
     WSADATA data;
@@ -95,6 +95,7 @@ FXint IrcSocket::Connect()
         SendEvent(IRC_ERROR, _("Unable initiliaze socket"));
         startChannels.clear();
         startCommands.clear();
+        connecting = false;
         return -1;
     }
 #endif
@@ -151,7 +152,6 @@ FXint IrcSocket::Connect()
 
 FXint IrcSocket::ConnectSSL()
 {
-    connecting = true;
 #ifdef HAVE_OPENSSL
 #ifdef WIN32
     WORD wVersionRequested = MAKEWORD(2,0);
@@ -165,6 +165,7 @@ FXint IrcSocket::ConnectSSL()
         SendEvent(IRC_ERROR, _("Unable initiliaze socket"));
         startChannels.clear();
         startCommands.clear();
+        connecting = false;
         return -1;
     }
 #endif
