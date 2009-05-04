@@ -681,6 +681,7 @@ namespace utils
         if(!iniFile.empty() && !FXStat::isExecutable(iniFile))
         {
             pathname = FXPath::directory(iniFile);
+            if(pathname.empty()) pathname = FXSystem::getCurrentDirectory();
             if(!FXStat::exists(pathname))
             {
                 if(!FXDir::create(pathname))
