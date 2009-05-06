@@ -1455,7 +1455,8 @@ FXString dxirc::Encrypt(const FXString &text)
     for(FXint i=0; i<text.count(); i++)
     {
         result += text[i];
-        result += FXchar((rand()%126)+33);
+        FXint r = rand()%127;
+        result += FXchar(r<33 ? r+33 : r);
     }
     return result;
 }
