@@ -815,6 +815,9 @@ long dxirc::OnCommandAbout(FXObject*, FXSelector, void*)
 
 long dxirc::OnCommandServers(FXObject*, FXSelector, void*)
 {
+#ifdef DEBUG
+    fxmessage("OnCommandServers\n");
+#endif
     ServerDialog *dialog = new ServerDialog(this, serverList);
     FXint indexJoin = -1;
     if (dialog->execute(PLACEMENT_OWNER))
@@ -894,6 +897,9 @@ long dxirc::OnTabConnect(FXObject*, FXSelector, void *data)
 
 void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString nick, FXString rname, FXString channels, FXString commands, FXbool ssl)
 {
+#ifdef DEBUG
+    fxmessage("ConnectServer\n");
+#endif
     if(servers.no() == 1 && !servers[0]->GetConnected() && !servers[0]->GetConnecting())
     {
         servers[0]->SetServerName(hostname);

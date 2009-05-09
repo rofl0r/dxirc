@@ -77,12 +77,18 @@ long IrcSocket::OnIORead(FXObject *, FXSelector, void *)
 
 void IrcSocket::StartConnection()
 {
+#ifdef DEBUG
+    fxmessage("StartConnection\n");
+#endif
     connecting = true;
     thread->start();
 }
 
 FXint IrcSocket::Connect()
-{    
+{
+#ifdef DEBUG
+    fxmessage("Connect\n");
+#endif
 #ifdef WIN32
     WORD wVersionRequested = MAKEWORD(2,0);
     WSADATA data;
@@ -152,6 +158,9 @@ FXint IrcSocket::Connect()
 
 FXint IrcSocket::ConnectSSL()
 {
+#ifdef DEBUG
+    fxmessage("ConnectSSL\n");
+#endif
 #ifdef HAVE_OPENSSL
 #ifdef WIN32
     WORD wVersionRequested = MAKEWORD(2,0);
