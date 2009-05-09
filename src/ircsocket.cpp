@@ -69,7 +69,7 @@ long IrcSocket::OnIORead(FXObject *, FXSelector, void *)
 {
 #ifdef WIN32
     if(useSsl)
-        application->addTimeout(this, ID_SSLTIME, 300);
+        application->addTimeout(this, ID_SSLTIME, 100);
 #endif
     if(connected) ReadData();
     return 1;
@@ -262,7 +262,7 @@ FXint IrcSocket::ConnectSSL()
     /* now here 'dirty' solution with timeout
     application->addInput((FXInputHandle)event, INPUT_READ, this, ID_READ);
     */
-    application->addTimeout(this, ID_SSLTIME, 300);
+    application->addTimeout(this, ID_SSLTIME, 100);
 #else
     application->addInput((FXInputHandle)socketid, INPUT_READ, this, ID_READ);
 #endif
@@ -331,7 +331,29 @@ int IrcSocket::ReadData()
     if(useSsl)
     {
         size = SSL_read(ssl, buffer, 1023);
-        if (size > 0)
+        if(size == -1)
+        {
+            size = SSL_get_error(ssl, size);
+            switch (size)
+            {
+            case SSL_ERROR_NONE:
+            case SSL_ERROR_WANT_READ:
+            case SSL_ERROR_WANT_WRITE:
+                break;
+            case SSL_ERROR_ZERO_RETURN:
+                SendEvent(IRC_ERROR, _("SSL_read() returns zero - closing socket"));
+                CloseConnection();
+                break;
+            default:
+                SendEvent(IRC_ERROR, FXStringFormat(_("SSL read problem, errcode = %d"), size));
+                CloseConnection();
+            }
+        }
+        else if(!size)
+        {
+            CloseConnection();
+        }
+        else if(size > 0 && size <= 1023)
         {
             buffer[size] = '\0';
             if (utils::IsUtf8(buffer, size)) data.append(buffer);
@@ -342,6 +364,10 @@ int IrcSocket::ReadData()
                 data = data.after('\n');
             }
             receiveRest = data;
+        }
+        else
+        {
+            SendEvent(IRC_ERROR, _("Abnormal value from SSL read"));
         }
     }
     else
