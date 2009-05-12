@@ -57,6 +57,7 @@ namespace utils
         commands.append("OP");
         commands.append("OPER");
         commands.append("PART");
+        commands.append("QUERY");
         commands.append("QUIT");
         commands.append("QUOTE");
         commands.append("TOPIC");

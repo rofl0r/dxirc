@@ -1089,6 +1089,22 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     else return server->SendPart(getText(), commandtext.after(' '));
                 }
             }
+            if(command == "query")
+            {
+                if(commandtext.after(' ').empty())
+                {
+                    AppendIrcStyledText(_("/query <nick>, open query with nick"), 4);
+                    return false;
+                }
+                else
+                {
+                    IrcEvent ev;
+                    ev.eventType = IRC_QUERY;
+                    ev.param1 = commandtext.after(' ').before(' ');
+                    parent->getParent()->getParent()->handle(server, FXSEL(SEL_COMMAND, IrcSocket::ID_SERVER), &ev);
+                    return true;
+                }
+            }
             if(command == "quit")
             {                
                 //parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_TABQUIT), NULL);
