@@ -1149,6 +1149,9 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
 long dxirc::OnTabBook(FXObject *, FXSelector, void *ptr)
 {
     FXint index = (FXint)(FXival)ptr*2;
+    #ifdef DEBUG
+    fxmessage("OnTabBook(%d)\n", index);
+#endif
     IrcTabItem *currenttab = (IrcTabItem *)tabbook->childAtIndex(index);
     if (appTheme.fore != currenttab->getTextColor())
     {
@@ -1253,8 +1256,12 @@ long dxirc::OnCommandCloseTab(FXObject *, FXSelector, void *)
             {
                 currentserver->RemoveTarget(currenttab);
                 delete tabbook->childAtIndex(index);
-                delete tabbook->childAtIndex(index);
+                delete tabbook->childAtIndex(index);                
                 tabbook->recalc();
+                if(tabbook->numChildren())
+                {
+                    tabbook->setCurrent(index/2-1, true);
+                }
             }
         }
         else if(currenttab->GetType() == CHANNEL)
@@ -1277,6 +1284,10 @@ long dxirc::OnCommandCloseTab(FXObject *, FXSelector, void *)
                 delete tabbook->childAtIndex(index);
                 delete tabbook->childAtIndex(index);
                 tabbook->recalc();
+                if(tabbook->numChildren())
+                {
+                    tabbook->setCurrent(index/2-1, true);
+                }
             }
         }
         else if(currenttab->GetType() == SERVER)
@@ -1290,6 +1301,10 @@ long dxirc::OnCommandCloseTab(FXObject *, FXSelector, void *)
                     delete tabbook->childAtIndex(i);
                     delete tabbook->childAtIndex(i);
                     tabbook->recalc();
+                    if(tabbook->numChildren())
+                    {
+                        tabbook->setCurrent(index/2-1, true);
+                    }
                 }
             }
         }
