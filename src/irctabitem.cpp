@@ -622,12 +622,12 @@ long IrcTabItem::OnCommandline(FXObject *, FXSelector, void *)
     if(!utils::GetAlias(command).empty())
     {
         FXString acommand = utils::GetAlias(command);        
-        FXint num = acommand.contains('&');
-        if(num)
+        FXint num = acommand.contains('/');
+        if(num>1 && utils::IsCommand(acommand.section('/',2).before(' ')))
         {
-            for(FXint i=0; i<=num; i++)
+            for(FXint i=1; i<=num; i++)
             {
-                ProcessCommand(acommand.section('&',i).trim());
+                ProcessCommand(acommand.section('/',i).prepend('/').trim());
             }
         }
         else

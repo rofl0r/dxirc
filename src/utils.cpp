@@ -827,6 +827,15 @@ namespace utils
         return commands.at(i);
     }
 
+    FXbool IsCommand(const FXString &command)
+    {
+        for(FXint i=0; i<commands.no(); i++)
+        {
+            if(comparecase(command, commands.at(i)) == 0) return true;
+        }
+        return false;
+    }
+
     //This's from Xfe, thanks
     int Streq(const FXchar *a, const FXchar *b)
     {

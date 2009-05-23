@@ -120,7 +120,7 @@ int dxPipe::ReadData()
         {
             while (data.contains('\n'))
             {
-                FXString send = data.before('\n');
+                FXString send = data.before('\n').before('\r');
                 target->handle(this, FXSEL(SEL_COMMAND, ID_PIPE), &send);
                 data = data.after('\n');
             }
