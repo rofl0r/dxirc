@@ -807,7 +807,7 @@ namespace utils
 
     FXString GetAlias(FXString key)
     {
-        if(aliases.count(key)>0)
+        if(aliases.count(key.lower())>0)
             return aliases.find(key)->second;
         return FXString::null;
     }
