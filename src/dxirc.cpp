@@ -319,7 +319,7 @@ void dxirc::ReadServersConfig()
             if(server.autoConnect)
             {
                 ConnectServer(server.hostname, server.port, server.passwd, server.nick, server.realname, server.channels, server.commands, server.useSsl);
-                fxsleep(1000);
+                fxsleep(500000);
             }
             serverList.append(server);
         }
