@@ -5,14 +5,14 @@ UnitCount=26
 Type=0
 Ver=1
 ObjFiles=
-Includes=.
+Includes=.;C:\OpenSSL\include
 Libs=
 PrivateResource=dxirc_private.rc
 ResourceIncludes=
 MakeIncludes=
 Compiler=-I"<INCLUDE>\Fox-1.6"_@@__@@__@@_
-CppCompiler=-I"<INCLUDE>\Fox-1.6"_@@_-DDXIRC_DATADIR=\".\"_@@_-DFOXDLL_@@_-DUNICODE_@@__@@_
-Linker=-lFOXDLL-1.6_@@_-lws2_32_@@_-lpng12_@@_-lintl_@@_-ljpeg_@@_-ltiff_@@__@@__@@_
+CppCompiler=-I"<INCLUDE>\Fox-1.6"_@@_-DDXIRC_DATADIR=\".\"_@@_-DFOXDLL_@@_-DUNICODE_@@_-DHAVE_OPENSSL_@@_
+Linker=-lFOXDLL-1.6_@@_-lws2_32_@@_-lpng12_@@_-lintl_@@_-ljpeg_@@_-ltiff_@@_../../../../OpenSSL/lib/MinGW/libeay32.a_@@_../../../../OpenSSL/lib/MinGW/ssleay32.a_@@__@@_
 IsCpp=1
 Icon=dxirc.ico
 ExeOutput=..\

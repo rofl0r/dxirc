@@ -806,6 +806,9 @@ long dxirc::OnCommandAbout(FXObject*, FXSelector, void*)
     new FXLabel(content, FXStringFormat("%s %s\n", PACKAGE, VERSION), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     new FXLabel(content, _("Copyright (C) 2008~ David Vachulka (david@konstrukce-cad.com)\n"), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     new FXLabel(content, FXStringFormat(_("This software uses the FOX Toolkit Library version %d.%d.%d (http://www.fox-toolkit.org).\n"),FOX_MAJOR,FOX_MINOR,FOX_LEVEL), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+#ifdef HAVE_OPENSSL
+    new FXLabel(content, FXStringFormat(_("This software uses %s\n"), OPENSSL_VERSION_TEXT), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+#endif
     FXButton *button = new FXButton(content, _("OK"), 0, &about, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
     button->setFocus();
     about.execute(PLACEMENT_OWNER);
