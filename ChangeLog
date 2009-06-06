@@ -1,3 +1,13 @@
+Version 0.20.0 (released 06-06-2009)
+- enabled connection via SSL.
+- introduced URL highlighting.
+- implemented capability to reside in system tray.
+- added support for user defined aliases.
+- added /exec command enabling user to invoke external shell commands
+  from inside the client, redirecting their output either to the client
+  window, or -- using the -o option -- sending it to the channel/query.
+- added /query command opening the query window with selected user.
+
 Version 0.10.3 (released 28-02-2009)
 - new startup option -l [FILE] and location for config file
 - new command /connect

@@ -799,6 +799,13 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     }
                 }
             }
+            if(command == "egg")
+            {
+                AppendIrcStyledText("ahoj sem pan Vajíčko", 3);
+                AppendIrcStyledText("místo abys mně házel po Paroubeggovi", 3);
+                AppendIrcStyledText("udělej si ze mně dobrý volský oko", 3);
+                return true;
+            }
             if(command == "exec")
             {
                 FXString params = commandtext.after(' ');

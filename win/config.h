@@ -4,7 +4,7 @@
 #define ENABLE_NLS 1
 #define HAVE_SETLOCALE 1
 #define PACKAGE "dxirc"
-#define VERSION "0.11-svn"
+#define VERSION "0.20.0"
 #define LOCALEDIR "./locale"
 
 #endif
