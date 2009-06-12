@@ -119,6 +119,7 @@ dxirc::dxirc(FXApp *app)
     IrcTabItem *tabitem = new IrcTabItem(tabbook, "(server)", servericon, TAB_BOTTOM, SERVER, server, ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList);
     server->AppendTarget(tabitem);
 
+#ifdef HAVE_TRAY
     if(useTray)
     {
         trayIcon = new FXTrayIcon(app, "dxirc", trayicon, 0, this, ID_TRAY, TRAY_CMD_ON_LEFT|TRAY_MENU_ON_RIGHT);
@@ -128,6 +129,7 @@ dxirc::dxirc(FXApp *app)
         new FXMenuCommand(traymenu, _("&Quit"), quiticon, this, ID_QUIT);
         trayIcon->setMenu(traymenu);
     }
+#endif
 
     new FXToolTip(app,0);
 
@@ -250,7 +252,11 @@ void dxirc::ReadConfig()
     maxAway = set.readIntEntry("SETTINGS", "maxAway", 200);
     logging = set.readBoolEntry("SETTINGS", "logging", false);
     ownServerWindow = set.readBoolEntry("SETTINGS", "serverWindow", true);
+#ifdef HAVE_TRAY
     useTray = set.readBoolEntry("SETTINGS", "tray", false);
+#else
+    useTray = false;
+#endif
     nickCompletionChar = FXString(set.readStringEntry("SETTINGS", "nickCompletionChar", ":")).left(1);
     tempServerWindow = ownServerWindow;
     logPath = set.readStringEntry("SETTINGS", "logPath");
@@ -1373,25 +1379,31 @@ long dxirc::OnCommandSelectTab(FXObject*, FXSelector, void *ptr)
 
 long dxirc::OnTrayClicked(FXObject*, FXSelector, void*)
 {
+#ifdef HAVE_TRAY
     if(shown())
         hide();
     else
         show();
     if(trayIcon && trayIcon->getIcon() == newm)
         trayIcon->setIcon(trayicon);
+#endif
     return 1;
 }
 
 long dxirc::OnTrayCancel(FXObject*, FXSelector, void*)
 {
+#ifdef HAVE_TRAY
     traymenu->popdown();
+#endif
     return 1;
 }
 
 long dxirc::OnNewMsg(FXObject*, FXSelector, void*)
 {
+#ifdef HAVE_TRAY
     if(trayIcon && trayIcon->getIcon() == trayicon && !shown())
         trayIcon->setIcon(newm);
+#endif
     return 1;
 }
 
@@ -1534,7 +1546,11 @@ int main(int argc,char *argv[])
         }
     }
 
+#ifdef HAVE_TRAY
     FXTrayApp app(PACKAGE, FXString::null);
+#else
+    FXApp app(PACKAGE, FXString::null);
+#endif
     app.reg().setAsciiMode(true);
     app.init(argc,argv);
     loadIcon = MakeAllIcons(&app, utils::GetIniFile());    

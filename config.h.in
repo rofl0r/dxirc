@@ -219,6 +219,9 @@
 /* Define to 1 if you have the <sys/types.h> header file. */
 #undef HAVE_SYS_TYPES_H
 
+/* Build with trayicon */
+#undef HAVE_TRAY
+
 /* Define to 1 if you have the `tsearch' function. */
 #undef HAVE_TSEARCH
 

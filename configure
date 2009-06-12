@@ -645,6 +645,9 @@ CXXCPP
 SSL_LIBS
 SSL_CFLAGS
 PKG_CONFIG
+HAVE_TRAY_FALSE
+HAVE_TRAY_TRUE
+enable_tray
 POSUB
 LTLIBINTL
 LIBINTL
@@ -793,6 +796,7 @@ with_libpth_prefix
 with_libiconv_prefix
 with_included_gettext
 with_libintl_prefix
+enable_tray
 enable_ssl
 enable_debug
 enable_release
@@ -1449,6 +1453,7 @@ Optional Features:
                           specify multithreading API
   --disable-threads       build without multithread safety
   --disable-rpath         do not hardcode runtime library paths
+  --disable-tray          Disable trayicon
   --disable-ssl           Disable Secure Sockets Layer support
   --enable-debug          compile for debugging
   --enable-release        compile for release (advanced optimizations)
@@ -14658,6 +14663,39 @@ _ACEOF
 
 
 
+# Check whether --enable-tray was given.
+if test "${enable_tray+set}" = set; then
+  enableval=$enable_tray; enable_tray=no
+else
+  enable_tray=yes
+fi
+
+
+if test "$enable_tray" = "yes"; then
+
+cat >>confdefs.h <<\_ACEOF
+#define HAVE_TRAY 1
+_ACEOF
+
+   if true; then
+  HAVE_TRAY_TRUE=
+  HAVE_TRAY_FALSE='#'
+else
+  HAVE_TRAY_TRUE='#'
+  HAVE_TRAY_FALSE=
+fi
+
+else
+   if false; then
+  HAVE_TRAY_TRUE=
+  HAVE_TRAY_FALSE='#'
+else
+  HAVE_TRAY_TRUE='#'
+  HAVE_TRAY_FALSE=
+fi
+
+fi
+
 # Check whether --enable-ssl was given.
 if test "${enable_ssl+set}" = set; then
   enableval=$enable_ssl;
@@ -16179,6 +16217,20 @@ if test -z "${am__fastdepCXX_TRUE}" && test -z "${am__fastdepCXX_FALSE}"; then
   { { $as_echo "$as_me:$LINENO: error: conditional \"am__fastdepCXX\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
 $as_echo "$as_me: error: conditional \"am__fastdepCXX\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${HAVE_TRAY_TRUE}" && test -z "${HAVE_TRAY_FALSE}"; then
+  { { $as_echo "$as_me:$LINENO: error: conditional \"HAVE_TRAY\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+$as_echo "$as_me: error: conditional \"HAVE_TRAY\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${HAVE_TRAY_TRUE}" && test -z "${HAVE_TRAY_FALSE}"; then
+  { { $as_echo "$as_me:$LINENO: error: conditional \"HAVE_TRAY\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+$as_echo "$as_me: error: conditional \"HAVE_TRAY\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
