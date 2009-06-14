@@ -2452,7 +2452,7 @@ FXint IrcTabItem::LaunchLink(const FXString &link)
 #ifdef WIN32
     return ((FXint)ShellExecuteA(NULL,"open",FXPath::enquote(link).text(),NULL,NULL,SW_NORMAL)) > 32;
 #else
-    static const char * browsers[]={/*"xdg-open",*/"firefox","konqueror","opera","netscape","dillo",NULL};
+    static const char * browsers[]={/*"xdg-open",*/"firefox","konqueror","opera","netscape","dillo","safari",NULL};
     FXString path = FXSystem::getExecPath();
     FXString exec;
     for(int i=0; browsers[i]!=NULL; i++)
