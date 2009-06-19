@@ -32,6 +32,7 @@
 #include "configdialog.h"
 #include "serverdialog.h"
 #include "aliasdialog.h"
+#include "logviewer.h"
 #include "utils.h"
 
 FXDEFMAP(dxirc) dxircMap[] = {
@@ -52,6 +53,7 @@ FXDEFMAP(dxirc) dxircMap[] = {
     FXMAPFUNC(SEL_KEYPRESS, dxirc::ID_NEXTTAB,          dxirc::OnCommandNextTab),
     FXMAPFUNC(SEL_KEYPRESS, dxirc::ID_NEXTUNREAD,       dxirc::OnCommandNextUnread),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_ALIAS,            dxirc::OnCommandAlias),
+    FXMAPFUNC(SEL_COMMAND,  dxirc::ID_LOG,              dxirc::OnCommandLog),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_TRAY,             dxirc::OnTrayClicked),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_TCANCEL,          dxirc::OnTrayCancel),
     FXMAPFUNC(SEL_COMMAND,  IrcSocket::ID_SERVER,       dxirc::OnIrcEvent),
@@ -80,6 +82,9 @@ dxirc::dxirc(FXApp *app)
     new FXMenuCommand(servermenu, _("Quick &connect\tCtrl-K"), connecticon, this, ID_CONNECT);
     disconnect = new FXMenuCommand(servermenu, _("&Disconnect\tCtrl-D"), disconnecticon, this, ID_DISCONNECT);
     disconnect->disable();
+    new FXMenuSeparator(servermenu);
+    logviewer = new FXMenuCommand(servermenu, _("&Log viewer"), NULL, this, ID_LOG);
+    if(!logging) logviewer->disable();
     new FXMenuSeparator(servermenu);
     new FXMenuCommand(servermenu, _("&Quit\tAlt-F4"), quiticon, this, ID_QUIT);
     new FXMenuTitle(menubar, _("&Server"), NULL, servermenu);
@@ -149,6 +154,8 @@ dxirc::dxirc(FXApp *app)
     getAccelTable()->addAccel(MKUINT(KEY_Tab, CONTROLMASK), this, FXSEL(SEL_KEYPRESS, ID_NEXTTAB));
     getAccelTable()->addAccel(MKUINT(KEY_n, CONTROLMASK), this, FXSEL(SEL_KEYPRESS, ID_NEXTUNREAD));
     getAccelTable()->addAccel(MKUINT(KEY_N, CONTROLMASK), this, FXSEL(SEL_KEYPRESS, ID_NEXTUNREAD));
+
+    viewer = NULL;
 }
 
 dxirc::~dxirc()
@@ -183,6 +190,9 @@ dxirc::~dxirc()
     delete newm;
     delete unewm;
     delete chnewm;
+    delete foldericon;
+    delete ofoldericon;
+    delete fileicon;
     delete servermenu;
     delete editmenu;
     delete helpmenu;
@@ -472,6 +482,8 @@ long dxirc::OnCommandOptions(FXObject*, FXSelector, void*)
         themesList = dialog.GetThemesList();
         maxAway = dialog.GetMaxAway();
         logging = dialog.GetLogging();
+        if(logging) logviewer->enable();
+        else logviewer->disable();
         tempServerWindow = dialog.GetServerWindow();
         logPath = dialog.GetLogPath();
         nickCompletionChar = dialog.GetNickCompletionChar();
@@ -500,6 +512,14 @@ long dxirc::OnCommandAlias(FXObject*, FXSelector, void*)
     {
         SaveConfig();
     }
+    return 1;
+}
+
+long dxirc::OnCommandLog(FXObject*, FXSelector, void*)
+{
+    if(viewer == NULL)
+        viewer = new LogViewer(app, logPath);
+    viewer->create();
     return 1;
 }
 

@@ -26,6 +26,7 @@
 #include "defs.h"
 #include "FXTrayApp.h"
 #include "FXTrayIcon.h"
+#include "logviewer.h"
 
 class dxirc: public FXMainWindow
 {
@@ -52,6 +53,7 @@ class dxirc: public FXMainWindow
             ID_ALIAS,
             ID_TRAY,
             ID_TCANCEL,
+            ID_LOG,
             ID_LAST
         };
 
@@ -74,6 +76,7 @@ class dxirc: public FXMainWindow
         long OnCommandUsers(FXObject*, FXSelector, void*);
         long OnCommandOptions(FXObject*, FXSelector, void*);
         long OnCommandAlias(FXObject*, FXSelector, void*);
+        long OnCommandLog(FXObject*, FXSelector, void*);
         long OnTabConnect(FXObject*, FXSelector, void*);
         long OnTrayClicked(FXObject*, FXSelector, void*);
         long OnNewMsg(FXObject*, FXSelector, void*);
@@ -115,11 +118,12 @@ class dxirc: public FXMainWindow
     protected:
         FXMenuBar *menubar;
         FXMenuPane *servermenu, *helpmenu, *editmenu;
-        FXMenuCommand *disconnect, *closeTab, *clearTab, *clearTabs;
+        FXMenuCommand *disconnect, *closeTab, *clearTab, *clearTabs, *logviewer;
         FXMenuCheck *users;
         FXStatusBar *statusbar;
         FXVerticalFrame *mainframe;
         FXTabBook *tabbook;
+        LogViewer *viewer;
         dxServersArray servers;
 };
 

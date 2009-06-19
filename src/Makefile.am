@@ -9,7 +9,8 @@ dxirc_SOURCES = configdialog.cpp \
                   serverdialog.cpp \
                   utils.cpp \
                   aliasdialog.cpp \
-                  dxpipe.cpp
+                  dxpipe.cpp \
+                  logviewer.cpp
 
 if HAVE_TRAY
 dxirc_SOURCES += FXTrayApp.cpp \
@@ -36,6 +37,7 @@ EXTRA_DIST =  configdialog.h \
               utils.h \
               aliasdialog.h \
               dxpipe.h \
+              logviewer.h \
               FXTrayApp.h \
               FXTrayIcon.h
 

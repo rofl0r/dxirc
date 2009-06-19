@@ -25,13 +25,6 @@
 #include "i18n.h"
 #include "utils.h"
 
-static const FXListSortFunc sortfuncs[] = {
-    FXList::ascendingCase,
-    FXList::descendingCase,
-    FXList::ascending,
-    FXList::descending
-};
-
 FXDEFMAP(dxText) dxTextMap[] = {
     FXMAPFUNC(SEL_MOTION, 0, dxText::onMotion)
 };
@@ -163,7 +156,7 @@ IrcTabItem::IrcTabItem(FXTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FX
 
     usersframe = new FXVerticalFrame(splitter, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y|LAYOUT_FIX_WIDTH);
     users = new FXList(usersframe, this, ID_USERS, LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    users->setSortFunc(sortfuncs[0]);
+    users->setSortFunc(FXList::ascendingCase);
     users->setScrollStyle(HSCROLLING_OFF);
     if(sameList) users->setFont(fnt);
     if(type != CHANNEL || !usersShown)
@@ -2452,7 +2445,7 @@ FXint IrcTabItem::LaunchLink(const FXString &link)
 #ifdef WIN32
     return ((FXint)ShellExecuteA(NULL,"open",FXPath::enquote(link).text(),NULL,NULL,SW_NORMAL)) > 32;
 #else
-    static const char * browsers[]={/*"xdg-open",*/"firefox","konqueror","opera","netscape","dillo","safari",NULL};
+    static const char * browsers[]={/*"xdg-open",*/"firefox","konqueror","opera","netscape","dillo","open",NULL};
     FXString path = FXSystem::getExecPath();
     FXString exec;
     for(int i=0; browsers[i]!=NULL; i++)

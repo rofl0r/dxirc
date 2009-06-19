@@ -1,7 +1,7 @@
 [Project]
 FileName=dxirc.dev
 Name=dxirc
-UnitCount=26
+UnitCount=28
 Type=0
 Ver=1
 ObjFiles=
@@ -11,7 +11,7 @@ PrivateResource=dxirc_private.rc
 ResourceIncludes=
 MakeIncludes=
 Compiler=-I"<INCLUDE>\Fox-1.6"_@@__@@__@@_
-CppCompiler=-I"<INCLUDE>\Fox-1.6"_@@_-DDXIRC_DATADIR=\".\"_@@_-DFOXDLL_@@_-DUNICODE_@@_-DHAVE_OPENSSL_@@_
+CppCompiler=-I"<INCLUDE>\Fox-1.6"_@@_-DDXIRC_DATADIR=\".\"_@@_-DFOXDLL_@@_-DUNICODE_@@_-DHAVE_OPENSSL_@@_-DHAVE_TRAY_@@_
 Linker=-lFOXDLL-1.6_@@_-lws2_32_@@_-lpng12_@@_-lintl_@@_-ljpeg_@@_-ltiff_@@_../../../../OpenSSL/lib/MinGW/libeay32.a_@@_../../../../OpenSSL/lib/MinGW/ssleay32.a_@@__@@_
 IsCpp=1
 Icon=dxirc.ico
@@ -31,20 +31,20 @@ CompilerSettings=0000000000000000000000
 
 [VersionInfo]
 Major=0
-Minor=20
+Minor=30
 Release=0
 Build=0
 LanguageID=1029
 CharsetID=1252
 CompanyName=David Vachulka
-FileVersion=0.20.0
+FileVersion=0.30.svn
 FileDescription=dxirc - simple IRC client
 InternalName=dxirc
-LegalCopyright=Copyright (C) 2008 David Vachulka
+LegalCopyright=Copyright (C) 2008~ David Vachulka
 LegalTrademarks=GPL
 OriginalFilename=dxirc.exe
 ProductName=dxirc - simple IRC client
-ProductVersion=0.20.0
+ProductVersion=0.30.svn
 AutoIncBuildNr=0
 
 [Unit1]
@@ -299,6 +299,26 @@ BuildCmd=
 
 [Unit26]
 FileName=..\src\FXTrayIcon.cpp
+CompileCpp=1
+Folder=dxirc
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit27]
+FileName=..\src\logviewer.h
+CompileCpp=1
+Folder=dxirc
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit28]
+FileName=..\src\logviewer.cpp
 CompileCpp=1
 Folder=dxirc
 Compile=1
