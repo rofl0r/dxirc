@@ -91,9 +91,17 @@ LogViewer::LogViewer(FXApp *app, const FXString &lpath)
     text = new FXText(textframe, NULL, 0, FRAME_SUNKEN | LAYOUT_FILL_X | LAYOUT_FILL_Y | TEXT_WORDWRAP | TEXT_READONLY);
     text->setVisibleColumns(80);
     FXVerticalFrame *listframe = new FXVerticalFrame(splitter, FRAME_SUNKEN | FRAME_THICK | LAYOUT_FILL_X | LAYOUT_FILL_Y | LAYOUT_FIX_WIDTH);
-    listHistory = new FXTreeList(listframe, this, ID_LIST, FRAME_SUNKEN | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+    searchframe = new FXHorizontalFrame(listframe, FRAME_SUNKEN | FRAME_THICK | LAYOUT_FILL_X);
+    searchfield = new FXTextField(searchframe, 25, this, ID_SEARCH, TEXTFIELD_ENTER_ONLY|FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    searchfield->setTipText(_("F3 for next"));
+    searchfield->disable();
+    buttonSearch = new FXButton(searchframe, _("&Search"), NULL, this, ID_SEARCH, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X);
+    buttonSearch->disable();
+    listHistory = new FXTreeList(listframe, this, ID_LIST, TREELIST_SHOWS_BOXES | TREELIST_SHOWS_LINES | FRAME_SUNKEN | LAYOUT_FILL_X | LAYOUT_FILL_Y);
     listHistory->setSortFunc(FXTreeList::ascendingCase);
     listHistory->setScrollStyle(HSCROLLING_OFF);
+
+    getAccelTable()->addAccel(MKUINT(KEY_F3, 0), this, FXSEL(SEL_COMMAND,LogViewer::ID_SEARCHNEXT));
 
     searchstring = "";
 }
@@ -123,13 +131,12 @@ long LogViewer::OnSearch(FXObject*, FXSelector, void*)
     FXint beg[10];
     FXint end[10];
     FXint pos;
-    SearchDialog search(this);
     if(text->getLength())
-    {        
+    { 
         pos = text->getCursorPos();
-        if(search.execute(PLACEMENT_CURSOR))
+        if(!searchfield->getText().empty())
         {
-            searchstring = search.searchtext->getText();
+            searchstring = searchfield->getText();
             if(text->findText(searchstring, beg, end, pos, SEARCH_FORWARD|SEARCH_WRAP|SEARCH_IGNORECASE, 10))
             {
                 text->setAnchorPos(beg[0]);
@@ -140,9 +147,10 @@ long LogViewer::OnSearch(FXObject*, FXSelector, void*)
             }
             else
                 getApp()->beep();
+            return 1;
         }
     }
-    return 1;
+    return 0;
 }
 
 long LogViewer::OnSearchNext(FXObject*, FXSelector, void*)
@@ -169,35 +177,33 @@ long LogViewer::OnSearchNext(FXObject*, FXSelector, void*)
 long LogViewer::OnList(FXObject*, FXSelector, void *ptr)
 {
     FXDirItem *item = (FXDirItem*)ptr;
-    if(item->isFile()) LoadFile(GetItemPathname(item));
-    else text->removeText(0, text->getLength());
+    if(item->isFile())
+    {
+        LoadFile(GetItemPathname(item));
+        searchfield->enable();
+        buttonSearch->enable();
+    }
+    else
+    {
+        text->removeText(0, text->getLength());
+        searchfield->disable();
+        buttonSearch->disable();
+    }
     return 1;
 }
 
 long LogViewer::OnKeyPress(FXObject *sender, FXSelector sel, void *ptr)
 {
-    FXint kcode = ((FXEvent*)ptr)->code;
-    switch (kcode)
-    {
-    case KEY_Escape:
+    FXEvent *event = (FXEvent*)ptr;
+    if(event->code == KEY_Escape)
     {
         handle(this, FXSEL(SEL_COMMAND, ID_CLOSE), NULL);
         return 1;
     }
-    case KEY_f:
-    case KEY_F:
-    case KEY_slash:
+    else
     {
-        handle(this, FXSEL(SEL_COMMAND, ID_SEARCH), NULL);
-        return 1;
-    }
-    case KEY_F3:
-    case KEY_N:
-    case KEY_n:
-    {
-        handle(this, FXSEL(SEL_COMMAND, ID_SEARCHNEXT), NULL);
-        return 1;
-    }
+        if(FXTopWindow::onKeyPress(sender,sel,ptr))
+            return 1;
     }
     return 0;
 }

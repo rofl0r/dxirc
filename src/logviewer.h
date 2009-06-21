@@ -203,10 +203,11 @@ private:
     void ListChildItems(LogItem *par);
 
     FXVerticalFrame *listframe, *textframe;
-    FXHorizontalFrame *content, *buttonframe;
+    FXHorizontalFrame *content, *buttonframe, *searchframe;
     FXSplitter *splitter;
     FXTreeList *listHistory;
-    FXButton *buttonClose;
+    FXTextField *searchfield;
+    FXButton *buttonClose, *buttonSearch;
     FXText *text;
     FXString logPath, searchstring;
 };
