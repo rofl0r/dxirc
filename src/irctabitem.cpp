@@ -23,7 +23,6 @@
 #include "icons.h"
 #include "config.h"
 #include "i18n.h"
-#include "utils.h"
 
 FXDEFMAP(dxText) dxTextMap[] = {
     FXMAPFUNC(SEL_MOTION, 0, dxText::onMotion)

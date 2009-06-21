@@ -766,6 +766,22 @@ namespace utils
         }
     }
 
+    FXString RemoveSpaces(const FXString &text)
+    {
+        FXint num = text.contains(' ');
+        FXString removed;
+        if(num)
+        {
+            for(FXint i=0; i<=num; i++)
+            {
+                removed.append(text.section(' ',i));
+            }
+            return removed;
+        }
+        else
+            return text;
+    }
+
     FXString CreateModes(FXchar sign, FXchar mode, FXString nicks)
     {
         FXString modes;

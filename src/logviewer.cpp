@@ -26,11 +26,51 @@
 
 FXIMPLEMENT(LogItem, FXTreeItem, NULL, 0)
 
+FXDEFMAP(SearchDialog) SearchDialogMap[] = {
+    FXMAPFUNC(SEL_COMMAND,  SearchDialog::ID_CLOSE,     SearchDialog::OnClose),
+    FXMAPFUNC(SEL_COMMAND,  SearchDialog::ID_SEARCH,    SearchDialog::OnClose),
+    FXMAPFUNC(SEL_CLOSE,    0,                          SearchDialog::OnClose)
+};
+
+FXIMPLEMENT(SearchDialog, FXDialogBox, SearchDialogMap, ARRAYNUMBER(SearchDialogMap))
+
+SearchDialog::SearchDialog(FXWindow* owner)
+        : FXDialogBox(owner, _("Search"), DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0)
+{
+    contents = new FXVerticalFrame(this, LAYOUT_SIDE_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 10,10,10,10, 0,0);
+    new FXLabel(contents, _("Search for:"), NULL, JUSTIFY_LEFT);
+    searchtext = new FXTextField(contents, 25, this, ID_SEARCH, TEXTFIELD_ENTER_ONLY|FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    new FXButton(buttonframe, _("&Search"), NULL, this, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
+    new FXButton(buttonframe, _("Cancel"), NULL, this, FXDialogBox::ID_CANCEL, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
+}
+
+SearchDialog::~SearchDialog()
+{
+
+}
+
+long SearchDialog::OnClose(FXObject*, FXSelector, void*)
+{
+    getApp()->stopModal(this, TRUE);
+    hide();
+    return 1;
+}
+
+FXuint SearchDialog::execute(FXuint placement)
+{
+    create();
+    searchtext->setFocus();
+    show(placement);
+    return getApp()->runModalFor(this);
+}
+
 FXDEFMAP(LogViewer) LogViewerMap[] = {
     FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_CLOSE,      LogViewer::OnClose),
+    FXMAPFUNC(SEL_CLOSE,    0,                        LogViewer::OnClose),
     FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_LIST,       LogViewer::OnList),
-    FXMAPFUNC(SEL_KEYPRESS, LogViewer::ID_SEARCH,     LogViewer::OnSearch),
-    FXMAPFUNC(SEL_KEYPRESS, LogViewer::ID_SEARCHNEXT, LogViewer::OnSearchNext),
+    FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_SEARCH,     LogViewer::OnSearch),
+    FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_SEARCHNEXT, LogViewer::OnSearchNext),
     FXMAPFUNC(SEL_KEYPRESS, 0,                        LogViewer::OnKeyPress)
 };
 
@@ -54,10 +94,6 @@ LogViewer::LogViewer(FXApp *app, const FXString &lpath)
     listHistory = new FXTreeList(listframe, this, ID_LIST, FRAME_SUNKEN | LAYOUT_FILL_X | LAYOUT_FILL_Y);
     listHistory->setSortFunc(FXTreeList::ascendingCase);
     listHistory->setScrollStyle(HSCROLLING_OFF);
-
-    getAccelTable()->addAccel(MKUINT(KEY_f, CONTROLMASK), this, FXSEL(SEL_KEYPRESS, ID_SEARCH));
-    getAccelTable()->addAccel(MKUINT(KEY_F, CONTROLMASK), this, FXSEL(SEL_KEYPRESS, ID_SEARCH));
-    getAccelTable()->addAccel(KEY_F3, this, FXSEL(SEL_KEYPRESS, ID_SEARCHNEXT));
 
     searchstring = "";
 }
@@ -87,19 +123,13 @@ long LogViewer::OnSearch(FXObject*, FXSelector, void*)
     FXint beg[10];
     FXint end[10];
     FXint pos;
+    SearchDialog search(this);
     if(text->getLength())
-    {
-        FXDialogBox search(this, _("Search"), DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0);
-        FXVerticalFrame *contents = new FXVerticalFrame(&search, LAYOUT_SIDE_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 10,10,10,10, 0,0);
-        new FXLabel(contents, _("Search for:"), NULL, JUSTIFY_LEFT);
-        FXTextField *searchfield = new FXTextField(contents, 25, NULL, 0, TEXTFIELD_ENTER_ONLY|FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-        FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y);
-        new FXButton(buttonframe, _("&Search"), NULL, &search, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
-        new FXButton(buttonframe, _("Cancel"), NULL, &search, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
+    {        
         pos = text->getCursorPos();
-        if(search.execute())
+        if(search.execute(PLACEMENT_CURSOR))
         {
-            searchstring = searchfield->getText();
+            searchstring = search.searchtext->getText();
             if(text->findText(searchstring, beg, end, pos, SEARCH_FORWARD|SEARCH_WRAP|SEARCH_IGNORECASE, 10))
             {
                 text->setAnchorPos(beg[0]);
@@ -130,6 +160,8 @@ long LogViewer::OnSearchNext(FXObject*, FXSelector, void*)
             text->makePositionVisible(beg);
             text->makePositionVisible(end);
         }
+        else
+            getApp()->beep();
     }
     return 1;
 }
@@ -144,11 +176,28 @@ long LogViewer::OnList(FXObject*, FXSelector, void *ptr)
 
 long LogViewer::OnKeyPress(FXObject *sender, FXSelector sel, void *ptr)
 {
-    if(FXTopWindow::onKeyPress(sender,sel,ptr)) return 1;
-    if(((FXEvent*)ptr)->code == KEY_Escape)
+    FXint kcode = ((FXEvent*)ptr)->code;
+    switch (kcode)
     {
-        handle(this,FXSEL(SEL_COMMAND,ID_CLOSE),NULL);
+    case KEY_Escape:
+    {
+        handle(this, FXSEL(SEL_COMMAND, ID_CLOSE), NULL);
         return 1;
+    }
+    case KEY_f:
+    case KEY_F:
+    case KEY_slash:
+    {
+        handle(this, FXSEL(SEL_COMMAND, ID_SEARCH), NULL);
+        return 1;
+    }
+    case KEY_F3:
+    case KEY_N:
+    case KEY_n:
+    {
+        handle(this, FXSEL(SEL_COMMAND, ID_SEARCHNEXT), NULL);
+        return 1;
+    }
     }
     return 0;
 }

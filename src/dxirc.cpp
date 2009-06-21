@@ -32,7 +32,6 @@
 #include "configdialog.h"
 #include "serverdialog.h"
 #include "aliasdialog.h"
-#include "logviewer.h"
 #include "utils.h"
 
 FXDEFMAP(dxirc) dxircMap[] = {
@@ -49,9 +48,9 @@ FXDEFMAP(dxirc) dxircMap[] = {
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_USERS,            dxirc::OnCommandUsers),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_HELP,             dxirc::OnCommandHelp),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_OPTIONS,          dxirc::OnCommandOptions),
-    FXMAPFUNC(SEL_KEYPRESS, dxirc::ID_SELECTTAB,        dxirc::OnCommandSelectTab),
-    FXMAPFUNC(SEL_KEYPRESS, dxirc::ID_NEXTTAB,          dxirc::OnCommandNextTab),
-    FXMAPFUNC(SEL_KEYPRESS, dxirc::ID_NEXTUNREAD,       dxirc::OnCommandNextUnread),
+    FXMAPFUNC(SEL_COMMAND,  dxirc::ID_SELECTTAB,        dxirc::OnCommandSelectTab),
+    FXMAPFUNC(SEL_COMMAND,  dxirc::ID_NEXTTAB,          dxirc::OnCommandNextTab),
+    FXMAPFUNC(SEL_COMMAND,  dxirc::ID_NEXTUNREAD,       dxirc::OnCommandNextUnread),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_ALIAS,            dxirc::OnCommandAlias),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_LOG,              dxirc::OnCommandLog),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_TRAY,             dxirc::OnTrayClicked),
@@ -142,18 +141,18 @@ dxirc::dxirc(FXApp *app)
     UpdateFont(fontSpec);
     UpdateTabs();
 
-    getAccelTable()->addAccel(MKUINT(KEY_1, ALTMASK), this, FXSEL(SEL_KEYPRESS, ID_SELECTTAB));
-    getAccelTable()->addAccel(MKUINT(KEY_2, ALTMASK), this, FXSEL(SEL_KEYPRESS, ID_SELECTTAB));
-    getAccelTable()->addAccel(MKUINT(KEY_3, ALTMASK), this, FXSEL(SEL_KEYPRESS, ID_SELECTTAB));
-    getAccelTable()->addAccel(MKUINT(KEY_4, ALTMASK), this, FXSEL(SEL_KEYPRESS, ID_SELECTTAB));
-    getAccelTable()->addAccel(MKUINT(KEY_5, ALTMASK), this, FXSEL(SEL_KEYPRESS, ID_SELECTTAB));
-    getAccelTable()->addAccel(MKUINT(KEY_6, ALTMASK), this, FXSEL(SEL_KEYPRESS, ID_SELECTTAB));
-    getAccelTable()->addAccel(MKUINT(KEY_7, ALTMASK), this, FXSEL(SEL_KEYPRESS, ID_SELECTTAB));
-    getAccelTable()->addAccel(MKUINT(KEY_8, ALTMASK), this, FXSEL(SEL_KEYPRESS, ID_SELECTTAB));
-    getAccelTable()->addAccel(MKUINT(KEY_9, ALTMASK), this, FXSEL(SEL_KEYPRESS, ID_SELECTTAB));
-    getAccelTable()->addAccel(MKUINT(KEY_Tab, CONTROLMASK), this, FXSEL(SEL_KEYPRESS, ID_NEXTTAB));
-    getAccelTable()->addAccel(MKUINT(KEY_n, CONTROLMASK), this, FXSEL(SEL_KEYPRESS, ID_NEXTUNREAD));
-    getAccelTable()->addAccel(MKUINT(KEY_N, CONTROLMASK), this, FXSEL(SEL_KEYPRESS, ID_NEXTUNREAD));
+    getAccelTable()->addAccel(MKUINT(KEY_1, ALTMASK), this, FXSEL(SEL_COMMAND, ID_SELECTTAB));
+    getAccelTable()->addAccel(MKUINT(KEY_2, ALTMASK), this, FXSEL(SEL_COMMAND, ID_SELECTTAB));
+    getAccelTable()->addAccel(MKUINT(KEY_3, ALTMASK), this, FXSEL(SEL_COMMAND, ID_SELECTTAB));
+    getAccelTable()->addAccel(MKUINT(KEY_4, ALTMASK), this, FXSEL(SEL_COMMAND, ID_SELECTTAB));
+    getAccelTable()->addAccel(MKUINT(KEY_5, ALTMASK), this, FXSEL(SEL_COMMAND, ID_SELECTTAB));
+    getAccelTable()->addAccel(MKUINT(KEY_6, ALTMASK), this, FXSEL(SEL_COMMAND, ID_SELECTTAB));
+    getAccelTable()->addAccel(MKUINT(KEY_7, ALTMASK), this, FXSEL(SEL_COMMAND, ID_SELECTTAB));
+    getAccelTable()->addAccel(MKUINT(KEY_8, ALTMASK), this, FXSEL(SEL_COMMAND, ID_SELECTTAB));
+    getAccelTable()->addAccel(MKUINT(KEY_9, ALTMASK), this, FXSEL(SEL_COMMAND, ID_SELECTTAB));
+    getAccelTable()->addAccel(MKUINT(KEY_Tab, CONTROLMASK), this, FXSEL(SEL_COMMAND, ID_NEXTTAB));
+    getAccelTable()->addAccel(MKUINT(KEY_n, CONTROLMASK), this, FXSEL(SEL_COMMAND, ID_NEXTUNREAD));
+    getAccelTable()->addAccel(MKUINT(KEY_N, CONTROLMASK), this, FXSEL(SEL_COMMAND, ID_NEXTUNREAD));
 
     viewer = NULL;
 }

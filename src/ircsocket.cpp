@@ -36,7 +36,7 @@ FXDEFMAP(IrcSocket) IrcSocketMap[] = {
 FXIMPLEMENT(IrcSocket, FXObject, IrcSocketMap, ARRAYNUMBER(IrcSocketMap))
 
 IrcSocket::IrcSocket(FXApp *app, FXObject *tgt, FXString channels, FXString commands)
-    : application(app), startChannels(channels), startCommands(commands)
+    : application(app), startChannels(utils::RemoveSpaces(channels)), startCommands(commands)
 #ifdef HAVE_OPENSSL
         ,ctx(NULL), ssl(NULL)
 #endif

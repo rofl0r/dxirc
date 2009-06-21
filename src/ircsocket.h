@@ -40,6 +40,7 @@
 
 #include "defs.h"
 #include "config.h"
+#include "utils.h"
 
 #ifdef HAVE_OPENSSL
 #include <openssl/ssl.h>
@@ -79,7 +80,7 @@ class IrcSocket: public FXObject
         FXString GetNickName() { return nickName; }
         void SetUserName(const FXString &user) { userName = user; }
         void SetRealName(const FXString &rname) { realName = rname; }
-        void SetStartChannels(const FXString &channels) { startChannels = channels; }
+        void SetStartChannels(const FXString &channels) { startChannels = utils::RemoveSpaces(channels); }
         void SetStartCommands(const FXString &commands) { startCommands = commands; }
         void SetUsersList(const dxIgnoreUserArray &ulst) { usersList = ulst;}
         void SetUseSsl(const FXbool &ussl) { useSsl = ussl;}
