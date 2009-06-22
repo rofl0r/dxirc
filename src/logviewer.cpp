@@ -87,17 +87,18 @@ LogViewer::LogViewer(FXApp *app, const FXString &lpath)
     content = new FXHorizontalFrame(this,  LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
 
     splitter = new FXSplitter(content, LAYOUT_FILL_X | LAYOUT_FILL_Y | SPLITTER_REVERSED | SPLITTER_TRACKING);
-    FXVerticalFrame *textframe = new FXVerticalFrame(splitter, FRAME_SUNKEN | FRAME_THICK | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+    textframe = new FXVerticalFrame(splitter, FRAME_SUNKEN | FRAME_THICK | LAYOUT_FILL_X | LAYOUT_FILL_Y);
     text = new FXText(textframe, NULL, 0, FRAME_SUNKEN | LAYOUT_FILL_X | LAYOUT_FILL_Y | TEXT_WORDWRAP | TEXT_READONLY);
     text->setVisibleColumns(80);
-    FXVerticalFrame *listframe = new FXVerticalFrame(splitter, FRAME_SUNKEN | FRAME_THICK | LAYOUT_FILL_X | LAYOUT_FILL_Y | LAYOUT_FIX_WIDTH);
+    listframe = new FXVerticalFrame(splitter, FRAME_SUNKEN | FRAME_THICK | LAYOUT_FILL_X | LAYOUT_FILL_Y | LAYOUT_FIX_WIDTH);
     searchframe = new FXHorizontalFrame(listframe, FRAME_SUNKEN | FRAME_THICK | LAYOUT_FILL_X);
     searchfield = new FXTextField(searchframe, 25, this, ID_SEARCH, TEXTFIELD_ENTER_ONLY|FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     searchfield->setTipText(_("F3 for next"));
     searchfield->disable();
     buttonSearch = new FXButton(searchframe, _("&Search"), NULL, this, ID_SEARCH, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X);
     buttonSearch->disable();
-    listHistory = new FXTreeList(listframe, this, ID_LIST, TREELIST_SHOWS_BOXES | TREELIST_SHOWS_LINES | FRAME_SUNKEN | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+    treeframe = new FXVerticalFrame(listframe, FRAME_SUNKEN | FRAME_THICK | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+    listHistory = new FXTreeList(treeframe, this, ID_LIST, TREELIST_SHOWS_BOXES | TREELIST_SHOWS_LINES | FRAME_SUNKEN | LAYOUT_FILL_X | LAYOUT_FILL_Y);
     listHistory->setSortFunc(FXTreeList::ascendingCase);
     listHistory->setScrollStyle(HSCROLLING_OFF);
 

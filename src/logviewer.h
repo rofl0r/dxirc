@@ -202,7 +202,7 @@ private:
     FXString GetItemPathname(const FXTreeItem* item);
     void ListChildItems(LogItem *par);
 
-    FXVerticalFrame *listframe, *textframe;
+    FXVerticalFrame *listframe, *textframe, *treeframe;
     FXHorizontalFrame *content, *buttonframe, *searchframe;
     FXSplitter *splitter;
     FXTreeList *listHistory;
