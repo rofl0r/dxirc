@@ -53,6 +53,7 @@ FXDEFMAP(dxirc) dxircMap[] = {
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_NEXTUNREAD,       dxirc::OnCommandNextUnread),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_ALIAS,            dxirc::OnCommandAlias),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_LOG,              dxirc::OnCommandLog),
+    FXMAPFUNC(SEL_COMMAND,  dxirc::ID_SHOWLOG,          dxirc::OnCommandShowLog),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_TRAY,             dxirc::OnTrayClicked),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_TCANCEL,          dxirc::OnTrayCancel),
     FXMAPFUNC(SEL_COMMAND,  IrcSocket::ID_SERVER,       dxirc::OnIrcEvent),
@@ -91,6 +92,8 @@ dxirc::dxirc(FXApp *app)
     editmenu = new FXMenuPane(this);
     closeTab = new FXMenuCommand(editmenu, _("Close current tab\tCtrl-W"), closeicon, this, ID_CLOSETAB);
     closeTab->disable();
+    showLog = new FXMenuCommand(editmenu, _("Show log\tCtrl-G"), NULL, this, ID_SHOWLOG);
+    showLog->disable();
     new FXMenuSeparator(editmenu);
     clearTab = new FXMenuCommand(editmenu, _("Clear window\tCtrl-L"), clearicon, this, ID_CLEAR);
     clearTabs = new FXMenuCommand(editmenu, _("Clear all windows\tCtrl-Shift-L"), NULL, this, ID_CLEARALL);
@@ -155,6 +158,7 @@ dxirc::dxirc(FXApp *app)
     getAccelTable()->addAccel(MKUINT(KEY_N, CONTROLMASK), this, FXSEL(SEL_COMMAND, ID_NEXTUNREAD));
 
     viewer = NULL;
+    tabviewer = NULL;
 }
 
 dxirc::~dxirc()
@@ -522,6 +526,22 @@ long dxirc::OnCommandLog(FXObject*, FXSelector, void*)
     return 1;
 }
 
+long dxirc::OnCommandShowLog(FXObject*, FXSelector, void*)
+{
+    if(tabbook->numChildren())
+    {
+        FXint index = tabbook->getCurrent()*2;
+        IrcTabItem *currenttab = (IrcTabItem *)tabbook->childAtIndex(index);
+        FXString path = logPath+PATHSEPSTRING+currenttab->GetServerName()+PATHSEPSTRING+currenttab->getText();
+        if(tabviewer == NULL)
+            tabviewer = new LogViewer(app, path, FALSE);
+        else
+            tabviewer->SetLogPath(path);
+        tabviewer->create();
+    }
+    return 1;
+}
+
 void dxirc::UpdateTheme()
 {
     register FXWindow *w = FXApp::instance()->getRootWindow();
@@ -830,10 +850,10 @@ long dxirc::OnCommandAbout(FXObject*, FXSelector, void*)
     FXVerticalFrame *content = new FXVerticalFrame(&about, LAYOUT_SIDE_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 10,10,10,10, 0,0);
     new FXLabel(content, FXStringFormat("%s %s\n", PACKAGE, VERSION), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     new FXLabel(content, _("Copyright (C) 2008~ David Vachulka (david@konstrukce-cad.com)\n"), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    new FXLabel(content, FXStringFormat(_("This software uses the FOX Toolkit Library version %d.%d.%d (http://www.fox-toolkit.org)."),FOX_MAJOR,FOX_MINOR,FOX_LEVEL), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    new FXLabel(content, FXStringFormat(_("This software build with the FOX Toolkit Library version %d.%d.%d (http://www.fox-toolkit.org)."),FOX_MAJOR,FOX_MINOR,FOX_LEVEL), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     new FXLabel(content, _("This sofware uses http://www.famfamfam.com/lab/icons/"), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
 #ifdef HAVE_OPENSSL
-    new FXLabel(content, FXStringFormat(_("This software uses %s"), OPENSSL_VERSION_TEXT), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    new FXLabel(content, FXStringFormat(_("This software build with %s"), OPENSSL_VERSION_TEXT), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
 #endif
     FXButton *button = new FXButton(content, _("OK"), 0, &about, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
     button->setFocus();
@@ -1489,10 +1509,15 @@ void dxirc::UpdateMenus()
         closeTab->enable();
         clearTab->enable();
         clearTabs->enable();
+        FXint index = tabbook->getCurrent()*2;
+        IrcTabItem *currenttab = (IrcTabItem *)tabbook->childAtIndex(index);
+        if(currenttab->GetType() == CHANNEL || currenttab->GetType() == QUERY)
+            showLog->enable();
     }
     else
     {
         closeTab->disable();
+        showLog->disable();
         clearTab->disable();
         clearTabs->disable();
     }

@@ -54,6 +54,7 @@ class dxirc: public FXMainWindow
             ID_TRAY,
             ID_TCANCEL,
             ID_LOG,
+            ID_SHOWLOG,
             ID_LAST
         };
 
@@ -77,6 +78,7 @@ class dxirc: public FXMainWindow
         long OnCommandOptions(FXObject*, FXSelector, void*);
         long OnCommandAlias(FXObject*, FXSelector, void*);
         long OnCommandLog(FXObject*, FXSelector, void*);
+        long OnCommandShowLog(FXObject*, FXSelector, void*);
         long OnTabConnect(FXObject*, FXSelector, void*);
         long OnTrayClicked(FXObject*, FXSelector, void*);
         long OnNewMsg(FXObject*, FXSelector, void*);
@@ -118,12 +120,12 @@ class dxirc: public FXMainWindow
     protected:
         FXMenuBar *menubar;
         FXMenuPane *servermenu, *helpmenu, *editmenu;
-        FXMenuCommand *disconnect, *closeTab, *clearTab, *clearTabs, *logviewer;
+        FXMenuCommand *disconnect, *closeTab, *clearTab, *clearTabs, *logviewer, *showLog;
         FXMenuCheck *users;
         FXStatusBar *statusbar;
         FXVerticalFrame *mainframe;
         FXTabBook *tabbook;
-        LogViewer *viewer;
+        LogViewer *viewer, *tabviewer;
         dxServersArray servers;
 };
 

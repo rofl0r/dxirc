@@ -1,5 +1,5 @@
 /*
- *      aliasdialog.cpp
+ *      logviewer.cpp
  *
  *      Copyright 2009 David Vachulka <david@konstrukce-cad.com>
  *
@@ -68,6 +68,7 @@ FXuint SearchDialog::execute(FXuint placement)
 FXDEFMAP(LogViewer) LogViewerMap[] = {
     FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_CLOSE,      LogViewer::OnClose),
     FXMAPFUNC(SEL_CLOSE,    0,                        LogViewer::OnClose),
+    FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_TREE,       LogViewer::OnTree),
     FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_LIST,       LogViewer::OnList),
     FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_SEARCH,     LogViewer::OnSearch),
     FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_SEARCHNEXT, LogViewer::OnSearchNext),
@@ -76,8 +77,8 @@ FXDEFMAP(LogViewer) LogViewerMap[] = {
 
 FXIMPLEMENT(LogViewer, FXTopWindow, LogViewerMap, ARRAYNUMBER(LogViewerMap))
 
-LogViewer::LogViewer(FXApp *app, const FXString &lpath)
-        : FXTopWindow(app, _("dxirc - log viewer"), NULL, NULL, DECOR_ALL, 0,0,800,500, 0,0,0,0, 0,0), logPath(lpath)
+LogViewer::LogViewer(FXApp *app, const FXString &lpath, FXbool al)
+        : FXTopWindow(app, _("dxirc - log viewer"), NULL, NULL, DECOR_ALL, 0,0,800,500, 0,0,0,0, 0,0), logPath(lpath), allLogs(al)
 {
     setIcon(smallicon);
 
@@ -98,11 +99,19 @@ LogViewer::LogViewer(FXApp *app, const FXString &lpath)
     buttonSearch = new FXButton(searchframe, _("&Search"), NULL, this, ID_SEARCH, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X);
     buttonSearch->disable();
     treeframe = new FXVerticalFrame(listframe, FRAME_THICK | LAYOUT_FILL_X | LAYOUT_FILL_Y);
-    listHistory = new FXTreeList(treeframe, this, ID_LIST, TREELIST_SHOWS_BOXES | TREELIST_SHOWS_LINES | FRAME_SUNKEN | LAYOUT_FILL_X | LAYOUT_FILL_Y);
-    listHistory->setSortFunc(FXTreeList::ascendingCase);
-    listHistory->setScrollStyle(HSCROLLING_OFF);
-
-    getAccelTable()->addAccel(MKUINT(KEY_F3, 0), this, FXSEL(SEL_COMMAND,LogViewer::ID_SEARCHNEXT));
+    if(allLogs)
+    {
+        treeHistory = new FXTreeList(treeframe, this, ID_TREE, TREELIST_SHOWS_BOXES | TREELIST_SHOWS_LINES | FRAME_SUNKEN | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+        treeHistory->setSortFunc(FXTreeList::ascendingCase);
+        treeHistory->setScrollStyle(HSCROLLING_OFF);
+        getAccelTable()->addAccel(MKUINT(KEY_F3, 0), this, FXSEL(SEL_COMMAND,LogViewer::ID_SEARCHNEXT));
+    }
+    else
+    {
+        listHistory = new FXList(treeframe, this, ID_LIST, LAYOUT_FILL_X | LAYOUT_FILL_Y);
+        listHistory->setSortFunc(FXList::ascendingCase);
+        listHistory->setScrollStyle(HSCROLLING_OFF);
+    }    
 
     searchstring = "";
 }
@@ -115,12 +124,14 @@ void LogViewer::create()
 {
     FXTopWindow::create();
     show(PLACEMENT_CURSOR);
-    LoadTree();
+    if(allLogs) LoadTree();
+    else LoadList();
 }
 
 long LogViewer::OnClose(FXObject*, FXSelector, void*)
 {
-    listHistory->clearItems(TRUE);
+    if(allLogs) treeHistory->clearItems(TRUE);
+    else listHistory->clearItems(TRUE);
     text->removeText(0, text->getLength());
     searchstring.clear();
     hide();
@@ -175,7 +186,7 @@ long LogViewer::OnSearchNext(FXObject*, FXSelector, void*)
     return 1;
 }
 
-long LogViewer::OnList(FXObject*, FXSelector, void *ptr)
+long LogViewer::OnTree(FXObject*, FXSelector, void *ptr)
 {
     FXDirItem *item = (FXDirItem*)ptr;
     if(item->isFile())
@@ -190,6 +201,13 @@ long LogViewer::OnList(FXObject*, FXSelector, void *ptr)
         searchfield->disable();
         buttonSearch->disable();
     }
+    return 1;
+}
+
+long LogViewer::OnList(FXObject*, FXSelector, void *ptr)
+{
+    FXint index = (FXint)(FXival)ptr;
+    LoadFile(logPath+PATHSEPSTRING+listHistory->getItemText(index));
     return 1;
 }
 
@@ -270,11 +288,11 @@ FXString LogViewer::GetItemPathname(const FXTreeItem* item)
     FXString pathname;
     if (item)
     {
-        if(item == listHistory->getFirstItem())
+        if(item == treeHistory->getFirstItem())
             return logPath;
         while (1)
         {
-            if(item!=listHistory->getFirstItem()) pathname.prepend(item->getText());
+            if(item!=treeHistory->getFirstItem()) pathname.prepend(item->getText());
             item = item->getParent();
             if(!item) break;
             if(item->getParent()) pathname.prepend(PATHSEP);
@@ -292,9 +310,9 @@ void LogViewer::LoadTree()
     LogItem *ritem = new LogItem(_("Logs"), NULL, NULL, NULL);
     ritem->setDraggable(FALSE);
     ritem->state = LogItem::FOLDER|LogItem::HASITEMS;
-    listHistory->appendItem(NULL, ritem, TRUE);
-    listHistory->sortRootItems();
-    item=(LogItem*)listHistory->getFirstItem();
+    treeHistory->appendItem(NULL, ritem, TRUE);
+    treeHistory->sortRootItems();
+    item=(LogItem*)treeHistory->getFirstItem();
     while (item)
     {
         //if (item->isDirectory() && item->isExpanded())
@@ -306,7 +324,7 @@ void LogViewer::LoadTree()
             /*if (force || (item->date != newdate) || (counter == 0))
             {*/
                 ListChildItems(item);
-                listHistory->sortChildItems(item);
+                treeHistory->sortChildItems(item);
                 item->date = newdate;
             //}
             if (item->first)
@@ -321,9 +339,50 @@ void LogViewer::LoadTree()
         }
         item = (LogItem*) item->next;
     }
-    listHistory->expandTree(ritem, TRUE);
+    treeHistory->expandTree(ritem, TRUE);
 }
 
+void LogViewer::LoadList()
+{
+    FXDir dir;
+    FXStat info;
+    FXint islink;
+    FXString pathname, name;
+
+    islink = FALSE;
+
+    if(dir.open(logPath))
+    {
+        while(dir.next())
+        {
+            name = dir.name();
+            if (name[0] == '.' && (name[1] == 0 || (name[1] == '.' && name[2] == 0))) continue;
+            if (name[0] == '.') continue;
+            pathname = logPath;
+            if (!ISPATHSEP(pathname[pathname.length() - 1])) pathname += PATHSEPSTRING;
+            pathname += name;
+#ifndef WIN32
+            // Get file/link info
+            if (!FXStat::statLink(pathname, info)) continue;
+            // If its a link, get the info on file itself
+            islink = info.isLink();
+            if (islink && !FXStat::statFile(pathname, info)) continue;
+#else
+            // Get file/link info
+            if (!FXStat::statFile(pathname, info)) continue;
+            // Hidden file or directory normally not shown
+            if (info.isHidden()) continue;
+#endif
+            listHistory->appendItem(name, fileicon);
+        }
+        dir.close();
+    }
+}
+
+void LogViewer::SetLogPath(const FXString& pth)
+{
+    logPath = pth;
+}
 // modified FXDirList::listChildItems(FXDirItem *par)
 void LogViewer::ListChildItems(LogItem *par)
 {
@@ -367,7 +426,7 @@ void LogViewer::ListChildItems(LogItem *par)
             if (name[0] == '.' && (name[1] == 0 || (name[1] == '.' && name[2] == 0))) continue;
 
             // Hidden file or directory normally not shown
-            if (name[0] == '.' && !(options & DIRLIST_SHOWHIDDEN)) continue;
+            if (name[0] == '.') continue;
 
             // Build full pathname of entry
             pathname = directory;
@@ -389,7 +448,7 @@ void LogViewer::ListChildItems(LogItem *par)
             if (!FXStat::statFile(pathname, info)) continue;
 
             // Hidden file or directory normally not shown
-            if (info.isHidden() && !(options & DIRLIST_SHOWHIDDEN)) continue;
+            if (info.isHidden()) continue;
 
 #endif
 
@@ -411,7 +470,7 @@ void LogViewer::ListChildItems(LogItem *par)
             // Not found; prepend before list
             //item = (LogItem*) listHistory->appendItem(par, name, ofoldericon, foldericon, NULL, TRUE);
             item = new LogItem(name, ofoldericon, foldericon, NULL);
-            listHistory->appendItem(par, item, TRUE);
+            treeHistory->appendItem(par, item, TRUE);
 
             // Next gets hung after this one
 fnd:
@@ -518,7 +577,7 @@ fnd:
     for (item = oldlist; item; item = link)
     {
         link = item->link;
-        listHistory->removeItem(item, TRUE);
+        treeHistory->removeItem(item, TRUE);
     }
 
     // Now we know for sure whether we really have subitems or not
@@ -531,7 +590,7 @@ fnd:
     par->list = newlist;
 
     // Need to layout
-    listHistory->recalc();
+    treeHistory->recalc();
 }
 
 

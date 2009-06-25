@@ -174,11 +174,12 @@ class LogViewer: public FXTopWindow
 {
     FXDECLARE(LogViewer)
 public:
-    LogViewer(FXApp *app, const FXString &lpath);
+    LogViewer(FXApp *app, const FXString &lpath, FXbool al=TRUE);
     virtual ~LogViewer();
     enum {
         ID_ADD = FXTopWindow::ID_LAST,
         ID_CLOSE,
+        ID_TREE,
         ID_LIST,
         ID_SEARCH,
         ID_SEARCHNEXT,
@@ -186,9 +187,11 @@ public:
     };
 
     virtual void create();
+    void SetLogPath(const FXString &pth);
 
     long OnClose(FXObject*,FXSelector,void*);
     long OnKeyPress(FXObject*,FXSelector,void*);
+    long OnTree(FXObject*,FXSelector,void*);
     long OnList(FXObject*,FXSelector,void*);
     long OnSearch(FXObject*,FXSelector,void*);
     long OnSearchNext(FXObject*,FXSelector,void*);
@@ -199,17 +202,20 @@ private:
 
     FXbool LoadFile(const FXString& file);
     void LoadTree();
+    void LoadList();
     FXString GetItemPathname(const FXTreeItem* item);
     void ListChildItems(LogItem *par);
 
     FXVerticalFrame *listframe, *textframe, *treeframe;
     FXHorizontalFrame *content, *buttonframe, *searchframe;
     FXSplitter *splitter;
-    FXTreeList *listHistory;
+    FXTreeList *treeHistory;
+    FXList *listHistory;
     FXTextField *searchfield;
     FXButton *buttonClose, *buttonSearch;
     FXText *text;
     FXString logPath, searchstring;
+    FXbool allLogs;
 };
 
 #endif	/* LOGVIEWER_H */
