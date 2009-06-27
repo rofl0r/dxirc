@@ -23,47 +23,9 @@
 #include "icons.h"
 #include "config.h"
 #include "i18n.h"
+#include <fstream>
 
 FXIMPLEMENT(LogItem, FXTreeItem, NULL, 0)
-
-FXDEFMAP(SearchDialog) SearchDialogMap[] = {
-    FXMAPFUNC(SEL_COMMAND,  SearchDialog::ID_CLOSE,     SearchDialog::OnClose),
-    FXMAPFUNC(SEL_COMMAND,  SearchDialog::ID_SEARCH,    SearchDialog::OnClose),
-    FXMAPFUNC(SEL_CLOSE,    0,                          SearchDialog::OnClose)
-};
-
-FXIMPLEMENT(SearchDialog, FXDialogBox, SearchDialogMap, ARRAYNUMBER(SearchDialogMap))
-
-SearchDialog::SearchDialog(FXWindow* owner)
-        : FXDialogBox(owner, _("Search"), DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0)
-{
-    contents = new FXVerticalFrame(this, LAYOUT_SIDE_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 10,10,10,10, 0,0);
-    new FXLabel(contents, _("Search for:"), NULL, JUSTIFY_LEFT);
-    searchtext = new FXTextField(contents, 25, this, ID_SEARCH, TEXTFIELD_ENTER_ONLY|FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    new FXButton(buttonframe, _("&Search"), NULL, this, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
-    new FXButton(buttonframe, _("Cancel"), NULL, this, FXDialogBox::ID_CANCEL, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
-}
-
-SearchDialog::~SearchDialog()
-{
-
-}
-
-long SearchDialog::OnClose(FXObject*, FXSelector, void*)
-{
-    getApp()->stopModal(this, TRUE);
-    hide();
-    return 1;
-}
-
-FXuint SearchDialog::execute(FXuint placement)
-{
-    create();
-    searchtext->setFocus();
-    show(placement);
-    return getApp()->runModalFor(this);
-}
 
 FXDEFMAP(LogViewer) LogViewerMap[] = {
     FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_CLOSE,      LogViewer::OnClose),
@@ -95,23 +57,23 @@ LogViewer::LogViewer(FXApp *app, const FXString &lpath, FXbool al)
     searchframe = new FXHorizontalFrame(listframe, FRAME_THICK | LAYOUT_FILL_X);
     searchfield = new FXTextField(searchframe, 25, this, ID_SEARCH, TEXTFIELD_ENTER_ONLY|FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     searchfield->setTipText(_("F3 for next"));
-    searchfield->disable();
+    if(allLogs) searchfield->disable();
     buttonSearch = new FXButton(searchframe, _("&Search"), NULL, this, ID_SEARCH, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X);
-    buttonSearch->disable();
+    if(allLogs) buttonSearch->disable();
     treeframe = new FXVerticalFrame(listframe, FRAME_THICK | LAYOUT_FILL_X | LAYOUT_FILL_Y);
     if(allLogs)
     {
         treeHistory = new FXTreeList(treeframe, this, ID_TREE, TREELIST_SHOWS_BOXES | TREELIST_SHOWS_LINES | FRAME_SUNKEN | LAYOUT_FILL_X | LAYOUT_FILL_Y);
         treeHistory->setSortFunc(FXTreeList::ascendingCase);
-        treeHistory->setScrollStyle(HSCROLLING_OFF);
-        getAccelTable()->addAccel(MKUINT(KEY_F3, 0), this, FXSEL(SEL_COMMAND,LogViewer::ID_SEARCHNEXT));
+        treeHistory->setScrollStyle(HSCROLLING_OFF);        
     }
     else
     {
         listHistory = new FXList(treeframe, this, ID_LIST, LAYOUT_FILL_X | LAYOUT_FILL_Y);
         listHistory->setSortFunc(FXList::ascendingCase);
         listHistory->setScrollStyle(HSCROLLING_OFF);
-    }    
+    }
+    getAccelTable()->addAccel(MKUINT(KEY_F3, 0), this, FXSEL(SEL_COMMAND,LogViewer::ID_SEARCHNEXT));
 
     searchstring = "";
 }
@@ -133,6 +95,7 @@ long LogViewer::OnClose(FXObject*, FXSelector, void*)
     if(allLogs) treeHistory->clearItems(TRUE);
     else listHistory->clearItems(TRUE);
     text->removeText(0, text->getLength());
+    searchfield->setText("");
     searchstring.clear();
     hide();
     return 1;
@@ -140,25 +103,69 @@ long LogViewer::OnClose(FXObject*, FXSelector, void*)
 
 long LogViewer::OnSearch(FXObject*, FXSelector, void*)
 {
-    FXint beg[10];
-    FXint end[10];
-    FXint pos;
-    if(text->getLength())
-    { 
-        pos = text->getCursorPos();
+    if(allLogs)
+    {
+        FXint beg[10];
+        FXint end[10];
+        FXint pos;
+        if(text->getLength())
+        {
+            pos = text->getCursorPos();
+            if(!searchfield->getText().empty())
+            {
+                searchstring = searchfield->getText();
+                if(text->findText(searchstring, beg, end, pos, SEARCH_FORWARD|SEARCH_WRAP|SEARCH_IGNORECASE, 10))
+                {
+                    text->setAnchorPos(beg[0]);
+                    text->extendSelection(end[0],SELECT_CHARS,TRUE);
+                    text->setCursorPos(end[0],TRUE);
+                    text->makePositionVisible(beg[0]);
+                    text->makePositionVisible(end[0]);
+                }
+                else
+                    getApp()->beep();
+                return 1;
+            }
+        }
+    }
+    else
+    {        
+        FXint count = 0;
+        FXRex rex;
+        FXint rexmode = REX_VERBATIM|REX_ICASE;
         if(!searchfield->getText().empty())
         {
             searchstring = searchfield->getText();
-            if(text->findText(searchstring, beg, end, pos, SEARCH_FORWARD|SEARCH_WRAP|SEARCH_IGNORECASE, 10))
+            searchfield->setText("");
+            text->removeText(0, text->getLength());
+            if(rex.parse(searchstring, rexmode) == REGERR_OK)
             {
-                text->setAnchorPos(beg[0]);
-                text->extendSelection(end[0],SELECT_CHARS,TRUE);
-                text->setCursorPos(end[0],TRUE);
-                text->makePositionVisible(beg[0]);
-                text->makePositionVisible(end[0]);
+                for(FXint i=0; i<listHistory->getNumItems(); i++)
+                {
+                    std::ifstream stream((logPath+PATHSEPSTRING+listHistory->getItemText(i)).text());
+                    std::string temp;
+                    bool contain = false;
+                    while(std::getline(stream, temp))
+                    {
+                        if(rex.match(temp.c_str()))
+                        {
+                            contain = true;
+                            count++;
+                            break;
+                        }
+                    }
+                    if(contain) listHistory->enableItem(i);
+                    else listHistory->disableItem(i);
+                }
+                if(count == 0)
+                {
+                    FXMessageBox::information(this, MBOX_OK, _("Information"), _("'%s' didn't found"), searchstring.text());
+                    for(FXint i=0; i<listHistory->getNumItems(); i++)
+                    {
+                        listHistory->enableItem(i);
+                    }
+                }
             }
-            else
-                getApp()->beep();
             return 1;
         }
     }
@@ -170,7 +177,7 @@ long LogViewer::OnSearchNext(FXObject*, FXSelector, void*)
     FXint beg, end;
     FXint pos = text->getCursorPos();
 
-    if(!searchstring.empty())
+    if(!searchstring.empty() && text->getLength())
     {
         if(text->findText(searchstring, &beg, &end, pos, SEARCH_FORWARD|SEARCH_WRAP|SEARCH_IGNORECASE))
         {
@@ -208,6 +215,7 @@ long LogViewer::OnList(FXObject*, FXSelector, void *ptr)
 {
     FXint index = (FXint)(FXival)ptr;
     LoadFile(logPath+PATHSEPSTRING+listHistory->getItemText(index));
+    OnSearchNext(NULL, 0, NULL);
     return 1;
 }
 
@@ -373,6 +381,7 @@ void LogViewer::LoadList()
             // Hidden file or directory normally not shown
             if (info.isHidden()) continue;
 #endif
+            if (!FXPath::match("*-*-*", name))continue;
             listHistory->appendItem(name, fileicon);
         }
         dir.close();
@@ -453,7 +462,7 @@ void LogViewer::ListChildItems(LogItem *par)
 #endif
 
             // If it is not a directory, and not showing files and matching pattern skip it
-            //if (!info.isDirectory() && FXPath::match("*", name))continue;
+            if (!info.isDirectory() && !FXPath::match("*-*-*", name))continue;
 
             // Find it, and take it out from the old list if found
             for (pp = po; (item = *pp) != NULL; pp = &item->link)

@@ -143,33 +143,6 @@ public:
     }
 };
 
-class SearchDialog: public FXDialogBox
-{
-    FXDECLARE(SearchDialog)
-    friend class LogViewer;
-public:
-    SearchDialog(FXWindow *owner);
-    virtual ~SearchDialog();
-    enum {
-        ID_CLOSE = FXTopWindow::ID_LAST,
-        ID_SEARCH,
-        ID_LAST
-    };
-
-    long OnClose(FXObject*,FXSelector,void*);
-
-    virtual FXuint execute(FXuint placement=PLACEMENT_CURSOR);
-
-private:
-    SearchDialog() {}
-    SearchDialog(const SearchDialog& orig);
-
-protected:
-    FXVerticalFrame *contents;
-    FXHorizontalFrame *buttonframe;
-    FXTextField *searchtext;
-};
-
 class LogViewer: public FXTopWindow
 {
     FXDECLARE(LogViewer)
