@@ -147,48 +147,54 @@ class LogViewer: public FXTopWindow
 {
     FXDECLARE(LogViewer)
 public:
-    LogViewer(FXApp *app, const FXString &lpath, FXbool al=TRUE);
+    LogViewer(FXApp *app, const FXString &lpath);
     virtual ~LogViewer();
     enum {
         ID_ADD = FXTopWindow::ID_LAST,
         ID_CLOSE,
         ID_TREE,
-        ID_LIST,
+        ID_RESET,
+        ID_ALL,
+        ID_CHANNEL,
+        ID_FILE,
         ID_SEARCH,
         ID_SEARCHNEXT,
         ID_LAST
     };
 
     virtual void create();
-    void SetLogPath(const FXString &pth);
 
     long OnClose(FXObject*,FXSelector,void*);
     long OnKeyPress(FXObject*,FXSelector,void*);
     long OnTree(FXObject*,FXSelector,void*);
-    long OnList(FXObject*,FXSelector,void*);
     long OnSearch(FXObject*,FXSelector,void*);
     long OnSearchNext(FXObject*,FXSelector,void*);
+    long OnReset(FXObject*,FXSelector,void*);
+    long OnCmdSearchOptions(FXObject*,FXSelector,void*);
 
 private:
     LogViewer() {}
     LogViewer(const LogViewer&);
 
     FXbool LoadFile(const FXString& file);
+    FXbool IsChannelItem(const LogItem *item);
     void LoadTree();
-    void LoadList();
     FXString GetItemPathname(const FXTreeItem* item);
     void ListChildItems(LogItem *par);
+    void EnableAllItems();
 
     FXVerticalFrame *listframe, *textframe, *treeframe;
     FXHorizontalFrame *content, *buttonframe, *searchframe;
     FXSplitter *splitter;
     FXTreeList *treeHistory;
-    FXList *listHistory;
     FXTextField *searchfield;
-    FXButton *buttonClose, *buttonSearch;
+    FXButton *buttonClose, *buttonSearch, *buttonReset;
+    FXGroupBox *group;
+    FXRadioButton *buttonAll, *buttonChannel, *buttonFile;
     FXText *text;
     FXString logPath, searchstring;
-    FXbool allLogs;
+    FXDataTarget targetAll, targetChannel, targetFile;
+    FXbool all, channel, file;
 };
 
 #endif	/* LOGVIEWER_H */

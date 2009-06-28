@@ -53,7 +53,6 @@ FXDEFMAP(dxirc) dxircMap[] = {
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_NEXTUNREAD,       dxirc::OnCommandNextUnread),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_ALIAS,            dxirc::OnCommandAlias),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_LOG,              dxirc::OnCommandLog),
-    FXMAPFUNC(SEL_COMMAND,  dxirc::ID_SHOWLOG,          dxirc::OnCommandShowLog),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_TRAY,             dxirc::OnTrayClicked),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_TCANCEL,          dxirc::OnTrayCancel),
     FXMAPFUNC(SEL_COMMAND,  IrcSocket::ID_SERVER,       dxirc::OnIrcEvent),
@@ -83,7 +82,7 @@ dxirc::dxirc(FXApp *app)
     disconnect = new FXMenuCommand(servermenu, _("&Disconnect\tCtrl-D"), disconnecticon, this, ID_DISCONNECT);
     disconnect->disable();
     new FXMenuSeparator(servermenu);
-    logviewer = new FXMenuCommand(servermenu, _("&Log viewer"), NULL, this, ID_LOG);
+    logviewer = new FXMenuCommand(servermenu, _("&Log viewer\tCtrl-G"), NULL, this, ID_LOG);
     if(!logging) logviewer->disable();
     new FXMenuSeparator(servermenu);
     new FXMenuCommand(servermenu, _("&Quit\tAlt-F4"), quiticon, this, ID_QUIT);
@@ -92,8 +91,6 @@ dxirc::dxirc(FXApp *app)
     editmenu = new FXMenuPane(this);
     closeTab = new FXMenuCommand(editmenu, _("Close current tab\tCtrl-W"), closeicon, this, ID_CLOSETAB);
     closeTab->disable();
-    showLog = new FXMenuCommand(editmenu, _("Show log\tCtrl-G"), NULL, this, ID_SHOWLOG);
-    showLog->disable();
     new FXMenuSeparator(editmenu);
     clearTab = new FXMenuCommand(editmenu, _("Clear window\tCtrl-L"), clearicon, this, ID_CLEAR);
     clearTabs = new FXMenuCommand(editmenu, _("Clear all windows\tCtrl-Shift-L"), NULL, this, ID_CLEARALL);
@@ -526,22 +523,6 @@ long dxirc::OnCommandLog(FXObject*, FXSelector, void*)
     return 1;
 }
 
-long dxirc::OnCommandShowLog(FXObject*, FXSelector, void*)
-{
-    if(tabbook->numChildren())
-    {
-        FXint index = tabbook->getCurrent()*2;
-        IrcTabItem *currenttab = (IrcTabItem *)tabbook->childAtIndex(index);
-        FXString path = logPath+PATHSEPSTRING+currenttab->GetServerName()+PATHSEPSTRING+currenttab->getText();
-        if(tabviewer == NULL)
-            tabviewer = new LogViewer(app, path, FALSE);
-        else
-            tabviewer->SetLogPath(path);
-        tabviewer->create();
-    }
-    return 1;
-}
-
 void dxirc::UpdateTheme()
 {
     register FXWindow *w = FXApp::instance()->getRootWindow();
@@ -604,7 +585,7 @@ void dxirc::UpdateTheme()
             frame->setBorderColor(appTheme.border);
             if ((label = dynamic_cast<FXLabel*> (w)))
             {
-                label->setTextColor(appTheme.fore);
+                if(label->getTextColor() != FXRGB(255,0,0) && label->getTextColor() != FXRGB(0,0,255)) label->setTextColor(appTheme.fore);
                 if ((button = dynamic_cast<FXButton*> (w)))
                 {
                     if (dynamic_cast<FXListBox*> (button->getParent()))
@@ -1198,16 +1179,13 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
 long dxirc::OnTabBook(FXObject *, FXSelector, void *ptr)
 {
     FXint index = (FXint)(FXival)ptr*2;
-    #ifdef DEBUG
+#ifdef DEBUG
     fxmessage("OnTabBook(%d)\n", index);
 #endif
     IrcTabItem *currenttab = (IrcTabItem *)tabbook->childAtIndex(index);
-    if (appTheme.fore != currenttab->getTextColor())
-    {
-        currenttab->setTextColor(appTheme.fore);
-        if(currenttab->GetType() == CHANNEL) currenttab->setIcon(channelicon);
-        if(currenttab->GetType() == QUERY) currenttab->setIcon(queryicon);
-    }
+    if (appTheme.fore != currenttab->getTextColor()) currenttab->setTextColor(appTheme.fore);
+    if(currenttab->GetType() == CHANNEL) currenttab->setIcon(channelicon);
+    if(currenttab->GetType() == QUERY) currenttab->setIcon(queryicon);
     currenttab->setFocus();
     return 1;
 }
@@ -1258,17 +1236,14 @@ long dxirc::OnCommandClear(FXObject *, FXSelector, void *)
     return 1;
 }
 
-long dxirc::OnCommandClearAll(FXObject *, FXSelector sel, void *)
+long dxirc::OnCommandClearAll(FXObject *, FXSelector, void *)
 {
     for (FXint i = 0; i<tabbook->numChildren(); i=i+2)
     {
         ((IrcTabItem *)tabbook->childAtIndex(i))->ClearChat();
-        if (appTheme.fore != ((IrcTabItem *)tabbook->childAtIndex(i))->getTextColor())
-        {
-            ((IrcTabItem *)tabbook->childAtIndex(i))->setTextColor(appTheme.fore);
-            if(((IrcTabItem *)tabbook->childAtIndex(i))->GetType() == CHANNEL) ((IrcTabItem *)tabbook->childAtIndex(i))->setIcon(channelicon);
-            if(((IrcTabItem *)tabbook->childAtIndex(i))->GetType() == QUERY) ((IrcTabItem *)tabbook->childAtIndex(i))->setIcon(queryicon);
-        }
+        if (appTheme.fore != ((IrcTabItem *)tabbook->childAtIndex(i))->getTextColor()) ((IrcTabItem *)tabbook->childAtIndex(i))->setTextColor(appTheme.fore);
+        if(((IrcTabItem *)tabbook->childAtIndex(i))->GetType() == CHANNEL) ((IrcTabItem *)tabbook->childAtIndex(i))->setIcon(channelicon);
+        if(((IrcTabItem *)tabbook->childAtIndex(i))->GetType() == QUERY) ((IrcTabItem *)tabbook->childAtIndex(i))->setIcon(queryicon);
     }
     return 1;
 }
@@ -1509,15 +1484,10 @@ void dxirc::UpdateMenus()
         closeTab->enable();
         clearTab->enable();
         clearTabs->enable();
-        FXint index = tabbook->getCurrent()*2;
-        IrcTabItem *currenttab = (IrcTabItem *)tabbook->childAtIndex(index);
-        if(currenttab->GetType() == CHANNEL || currenttab->GetType() == QUERY)
-            showLog->enable();
     }
     else
     {
         closeTab->disable();
-        showLog->disable();
         clearTab->disable();
         clearTabs->disable();
     }
