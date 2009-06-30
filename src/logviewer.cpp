@@ -102,6 +102,12 @@ void LogViewer::create()
     FXTopWindow::create();
     show(PLACEMENT_CURSOR);
     LoadTree();
+    searchfield->disable();
+    buttonSearch->disable();
+    buttonReset->disable();
+    buttonFile->disable();
+    buttonChannel->disable();
+    buttonAll->disable();
 }
 
 long LogViewer::OnClose(FXObject*, FXSelector, void*)
@@ -135,9 +141,13 @@ long LogViewer::OnSearch(FXObject*, FXSelector, void*)
                     text->setCursorPos(end[0],TRUE);
                     text->makePositionVisible(beg[0]);
                     text->makePositionVisible(end[0]);
+                    buttonReset->enable();
                 }
                 else
-                    getApp()->beep();
+                {
+                    getApp()->beep();                    
+                    FXMessageBox::information(this, MBOX_OK, _("Information"), _("'%s' wasn't found"), searchstring.text());
+                }
                 return 1;
             }
         }
@@ -154,6 +164,7 @@ long LogViewer::OnSearch(FXObject*, FXSelector, void*)
             text->removeText(0, text->getLength());
             if(rex.parse(searchstring, rexmode) == REGERR_OK)
             {
+                getApp()->beginWaitCursor();
                 LogItem *item = (LogItem*)treeHistory->getCurrentItem();
                 if(item->isFile()) item = (LogItem*)item->parent;
                 if(!IsChannelItem(item)) return 0;
@@ -177,9 +188,10 @@ long LogViewer::OnSearch(FXObject*, FXSelector, void*)
                     else treeHistory->disableItem(item);
                     item = (LogItem*)item->next;
                 }
+                getApp()->endWaitCursor();
                 if(count == 0)
                 {
-                    FXMessageBox::information(this, MBOX_OK, _("Information"), _("'%s' didn't found"), searchstring.text());
+                    FXMessageBox::information(this, MBOX_OK, _("Information"), _("'%s' wasn't found"), searchstring.text());
                     item = (LogItem*)chitem->first;
                     while(item)
                     {
@@ -203,6 +215,7 @@ long LogViewer::OnSearch(FXObject*, FXSelector, void*)
             text->removeText(0, text->getLength());
             if(rex.parse(searchstring, rexmode) == REGERR_OK)
             {
+                getApp()->beginWaitCursor();
                 LogItem *item = (LogItem*)treeHistory->getFirstItem();
                 item = (LogItem*)item->first;
                 while(item)
@@ -249,9 +262,10 @@ long LogViewer::OnSearch(FXObject*, FXSelector, void*)
                     }
                     item = (LogItem*) item->next;
                 }
+                getApp()->endWaitCursor();
                 if(count == 0)
                 {
-                    FXMessageBox::information(this, MBOX_OK, _("Information"), _("'%s' didn't found"), searchstring.text());
+                    FXMessageBox::information(this, MBOX_OK, _("Information"), _("'%s' wasn't found"), searchstring.text());
                     EnableAllItems();
                 }
             }
@@ -280,7 +294,6 @@ long LogViewer::OnSearchNext(FXObject*, FXSelector, void*)
             }
             else getApp()->beep();
         }
-        else getApp()->beep();
     }
     return 1;
 }
@@ -288,6 +301,8 @@ long LogViewer::OnSearchNext(FXObject*, FXSelector, void*)
 long LogViewer::OnReset(FXObject*, FXSelector, void*)
 {
     searchstring.clear();
+    text->setSelection(0,0);
+    searchfield->setFocus();
     EnableAllItems();
     return 1;
 }

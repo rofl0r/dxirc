@@ -123,7 +123,7 @@ class dxirc: public FXMainWindow
         FXStatusBar *statusbar;
         FXVerticalFrame *mainframe;
         FXTabBook *tabbook;
-        LogViewer *viewer, *tabviewer;
+        LogViewer *viewer;
         dxServersArray servers;
 };
 

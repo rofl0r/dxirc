@@ -155,7 +155,6 @@ dxirc::dxirc(FXApp *app)
     getAccelTable()->addAccel(MKUINT(KEY_N, CONTROLMASK), this, FXSEL(SEL_COMMAND, ID_NEXTUNREAD));
 
     viewer = NULL;
-    tabviewer = NULL;
 }
 
 dxirc::~dxirc()
