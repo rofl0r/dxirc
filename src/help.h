@@ -34,11 +34,12 @@ dxirc is a simple IRC client for various os (linux, *bsd, windows), written usin
     o Server list - F2\n \
     o Quick connect - Ctrl-k\n \
     o Disconnect - Ctrl-d\n \
+    o Log viewer - Ctrl-g\n \
     o Close current tab - Ctrl-w\n \
     o Clear window - Ctrl-l\n \
     o Clear all windows - Ctrl-shift-l\n \
     o Show/Hide users list - Ctrl-u\n \
-    o Switch between tabs - Alt-0~9 or Ctrl-tab\n \
+    o Switch between tabs - Alt-1~9 or Ctrl-tab\n \
     o Switch between unreaded tabs - Ctrl-n\n\
     o Quit - Alt-F4\n \
 \n \

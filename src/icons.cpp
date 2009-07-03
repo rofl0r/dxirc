@@ -165,6 +165,12 @@ FXIcon* MakeIcon(FXApp *app, const FXString path, const FXString name)
         }
         delete icon;
     }
+    else
+    {
+        icon = new FXPNGIcon(app, empty);
+        icon->create();
+        return icon;
+    }
     return NULL;
 }
 

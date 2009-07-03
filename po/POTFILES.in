@@ -6,6 +6,7 @@ src/serverdialog.cpp
 src/aliasdialog.cpp
 src/dxpipe.cpp
 src/help.h
+src/logviewer.cpp
 
 
 

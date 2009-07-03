@@ -49,6 +49,7 @@ LogViewer::LogViewer(FXApp *app, const FXString &lpath)
     all = TRUE;
     channel = FALSE;
     file = FALSE;
+    icase = FALSE;
     targetAll.connect(all);
     targetAll.setTarget(this);
     targetAll.setSelector(ID_ALL);
@@ -58,6 +59,7 @@ LogViewer::LogViewer(FXApp *app, const FXString &lpath)
     targetFile.connect(file);
     targetFile.setTarget(this);
     targetFile.setSelector(ID_FILE);
+    targetIcase.connect(icase);
 
     buttonframe = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X);
     buttonClose = new FXButton(buttonframe, _("&Close"), NULL, this, ID_CLOSE, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
@@ -78,6 +80,8 @@ LogViewer::LogViewer(FXApp *app, const FXString &lpath)
     buttonReset = new FXButton(searchframe, _("&Reset"), NULL, this, ID_RESET, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X);
     buttonReset->disable();
     group = new FXGroupBox(listframe, _("Search options"), LAYOUT_SIDE_TOP|FRAME_GROOVE|LAYOUT_FILL_X, 0,0,0,0);
+    buttonIcase = new FXCheckButton(group, _("&Ignore case"), &targetIcase, FXDataTarget::ID_VALUE);
+    buttonIcase->disable();
     buttonFile = new FXRadioButton(group, _("Search file"), &targetFile, FXDataTarget::ID_VALUE);
     buttonFile->disable();
     buttonChannel = new FXRadioButton(group, _("Search channel/query"), &targetChannel, FXDataTarget::ID_VALUE);
@@ -105,6 +109,7 @@ void LogViewer::create()
     searchfield->disable();
     buttonSearch->disable();
     buttonReset->disable();
+    buttonIcase->disable();
     buttonFile->disable();
     buttonChannel->disable();
     buttonAll->disable();
@@ -134,7 +139,9 @@ long LogViewer::OnSearch(FXObject*, FXSelector, void*)
             {
                 searchstring = searchfield->getText();
                 searchfield->setText("");
-                if(text->findText(searchstring, beg, end, pos, SEARCH_FORWARD|SEARCH_WRAP|SEARCH_IGNORECASE, 10))
+                FXuint flags = SEARCH_FORWARD|SEARCH_WRAP;
+                if(icase) flags |= SEARCH_IGNORECASE;
+                if(text->findText(searchstring, beg, end, pos, flags, 10))
                 {
                     text->setAnchorPos(beg[0]);
                     text->extendSelection(end[0],SELECT_CHARS,TRUE);
@@ -156,7 +163,8 @@ long LogViewer::OnSearch(FXObject*, FXSelector, void*)
     {        
         FXint count = 0;
         FXRex rex;
-        FXint rexmode = REX_VERBATIM|REX_ICASE;
+        FXint rexmode = REX_VERBATIM;
+        if(icase) rexmode |= REX_ICASE;
         if(!searchfield->getText().empty())
         {
             searchstring = searchfield->getText();
@@ -207,7 +215,8 @@ long LogViewer::OnSearch(FXObject*, FXSelector, void*)
     {
         FXint count = 0;
         FXRex rex;
-        FXint rexmode = REX_VERBATIM|REX_ICASE;
+        FXint rexmode = REX_VERBATIM;
+        if(icase) rexmode |= REX_ICASE;
         if(!searchfield->getText().empty())
         {
             searchstring = searchfield->getText();
@@ -284,7 +293,9 @@ long LogViewer::OnSearchNext(FXObject*, FXSelector, void*)
     {
         if(text->getLength())
         {
-            if(text->findText(searchstring, &beg, &end, pos, SEARCH_FORWARD|SEARCH_WRAP|SEARCH_IGNORECASE))
+            FXuint flags = SEARCH_FORWARD|SEARCH_WRAP;
+            if(icase) flags |= SEARCH_IGNORECASE;
+            if(text->findText(searchstring, &beg, &end, pos, flags))
             {
                 text->setAnchorPos(beg);
                 text->extendSelection(end,SELECT_CHARS,TRUE);
@@ -314,6 +325,7 @@ long LogViewer::OnTree(FXObject*, FXSelector, void *ptr)
     {
         LoadFile(GetItemPathname(item));
         OnSearchNext(NULL, 0, NULL);
+        buttonIcase->enable();
         buttonFile->enable();
         buttonChannel->enable();
         buttonAll->enable();
@@ -324,6 +336,7 @@ long LogViewer::OnTree(FXObject*, FXSelector, void *ptr)
     else
     {
         text->removeText(0, text->getLength());
+        buttonIcase->enable();
         buttonFile->disable();
         file = FALSE;
         if(IsChannelItem(item))

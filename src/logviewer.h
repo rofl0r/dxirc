@@ -20,7 +20,7 @@
  */
 
 #ifndef LOGVIEWER_H
-#define	LOGVIEWER_H
+#define LOGVIEWER_H
 
 #include "defs.h"
 
@@ -191,11 +191,12 @@ private:
     FXButton *buttonClose, *buttonSearch, *buttonReset;
     FXGroupBox *group;
     FXRadioButton *buttonAll, *buttonChannel, *buttonFile;
+    FXCheckButton *buttonIcase;
     FXText *text;
     FXString logPath, searchstring;
-    FXDataTarget targetAll, targetChannel, targetFile;
-    FXbool all, channel, file;
+    FXDataTarget targetAll, targetChannel, targetFile, targetIcase;
+    FXbool all, channel, file, icase;
 };
 
-#endif	/* LOGVIEWER_H */
+#endif  /* LOGVIEWER_H */
 

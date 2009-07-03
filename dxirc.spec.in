@@ -4,8 +4,8 @@ Summary: dxirc is simple IRC client.
 Release: 1
 License: GPL
 Group: Applications/Communications
-Requires: fox >= 1.6 libpng >= 1.2
-BuildRequires: fox-devel >= 1.6 libpng-devel >= 1.2
+Requires: fox >= 1.6 libpng >= 1.2 openssl
+BuildRequires: fox-devel >= 1.6 libpng-devel >= 1.2 openssl-devel
 Source: %{name}-%{version}.tar.gz
 Packager: David Vachulka <david@konstrukce-cad.com>
 BuildRoot: %{_tmppath}/%{name}-buildroot
