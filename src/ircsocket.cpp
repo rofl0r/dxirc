@@ -59,8 +59,15 @@ IrcSocket::~IrcSocket()
 {
     if(connected) Disconnect();
 #ifdef HAVE_OPENSSL
-    if(ssl) SSL_free(ssl);
-    if(ctx) SSL_CTX_free(ctx);
+    if(useSsl && ssl)
+    {
+        SSL_shutdown(ssl);
+        if(ssl)
+        {
+            SSL_free(ssl);
+            ssl = NULL;
+        }
+    };
 #endif
     delete thread;
 }
@@ -301,14 +308,14 @@ void IrcSocket::CloseConnection()
     startChannels.clear();
     startCommands.clear();
 #ifdef HAVE_OPENSSL
-    if(useSsl)
+    if(useSsl && ssl)
     {
+        SSL_shutdown(ssl);
         if(ssl)
-        {
-            SSL_shutdown(ssl);
+        {            
             SSL_free(ssl);
+            ssl = NULL;
         }
-        if(ctx) SSL_CTX_free(ctx);
     }
 #endif
 #ifdef WIN32
