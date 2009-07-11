@@ -119,8 +119,8 @@ FXDEFMAP(IrcTabItem) IrcTabItemMap[] = {
 
 FXIMPLEMENT(IrcTabItem, FXTabItem, IrcTabItemMap, ARRAYNUMBER(IrcTabItemMap))
 
-IrcTabItem::IrcTabItem(FXTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FXuint opts=TAB_TOP_NORMAL, TYPE typ=CHANNEL, IrcSocket *sock=NULL, FXbool oswnd=false, FXbool uswn=true, FXbool logg=false, FXString cmdlst="", FXString lpth="", FXint maxa=200, IrcColor clrs=IrcColor(), FXString nichar=":", FXFont *fnt=NULL, FXbool scmd=false, FXbool slst=false)
-    : FXTabItem(tab, tabtext, ic, opts), parent(tab), server(sock), type(typ), usersShown(uswn), logging(logg), ownServerWindow(oswnd), sameCmd(scmd), sameList(slst), colors(clrs),
+IrcTabItem::IrcTabItem(FXTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FXuint opts=TAB_TOP_NORMAL, TYPE typ=CHANNEL, IrcSocket *sock=NULL, FXbool oswnd=false, FXbool uswn=true, FXbool logg=false, FXString cmdlst="", FXString lpth="", FXint maxa=200, IrcColor clrs=IrcColor(), FXString nichar=":", FXFont *fnt=NULL, FXbool scmd=false, FXbool slst=false, FXbool cnick=false)
+    : FXTabItem(tab, tabtext, ic, opts), parent(tab), server(sock), type(typ), usersShown(uswn), logging(logg), ownServerWindow(oswnd), sameCmd(scmd), sameList(slst), coloredNick(cnick), colors(clrs),
     commandsList(cmdlst), logPath(lpth), maxAway(maxa), nickCompletionChar(nichar), logstream(NULL)
 {
     currentPosition = 0;
@@ -167,7 +167,7 @@ IrcTabItem::IrcTabItem(FXTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FX
     commandline = new FXTextField(mainframe, 25, this, ID_COMMANDLINE, TEXTFIELD_ENTER_ONLY|FRAME_SUNKEN|JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_BOTTOM, 0, 0, 0, 0, 1, 1, 1, 1);
     if(sameCmd) commandline->setFont(fnt);
 
-    for(int i=0; i<9; i++)
+    for(int i=0; i<17; i++)
     {
         textStyleList[i].normalForeColor = colors.text;
         textStyleList[i].normalBackColor = colors.back;
@@ -198,6 +198,15 @@ IrcTabItem::IrcTabItem(FXTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FX
     //link style
     textStyleList[8].normalForeColor = colors.link;
     textStyleList[8].style = FXText::STYLE_UNDERLINE;
+    //next styles for colored nicks
+    textStyleList[9].normalForeColor = FXRGB(217, 166, 65);
+    textStyleList[10].normalForeColor = FXRGB(207, 109, 109);
+    textStyleList[11].normalForeColor = FXRGB(128, 38, 127);
+    textStyleList[12].normalForeColor = FXRGB(173, 216, 230);
+    textStyleList[13].normalForeColor = FXRGB(69, 69, 230);
+    textStyleList[14].normalForeColor = FXRGB(144, 238, 144);
+    textStyleList[15].normalForeColor = FXRGB(25, 85, 85);
+    textStyleList[16].normalForeColor = FXRGB(165, 42, 42);
 
     text->setStyled(TRUE);
     text->setHiliteStyles(textStyleList);
@@ -319,7 +328,7 @@ void IrcTabItem::SetColor(IrcColor clrs)
 
 void IrcTabItem::SetTextBackColor(FXColor clr)
 {
-    for(int i=0; i<9; i++)
+    for(int i=0; i<17; i++)
     {
         textStyleList[i].normalBackColor = clr;
         textStyleList[i].activeBackColor = clr;
@@ -420,6 +429,11 @@ void IrcTabItem::SetSameList(FXbool slst)
     sameList = slst;
 }
 
+void IrcTabItem::SetColoredNick(FXbool cnick)
+{
+    coloredNick = cnick;
+}
+
 void IrcTabItem::AppendIrcText(FXString msg)
 {
     text->appendText("["+FXSystem::time("%H:%M:%S", FXSystem::now()) +"] ");
@@ -497,6 +511,86 @@ void IrcTabItem::AppendIrcText(FXString msg)
     text->appendText("\n");
     MakeLastRowVisible(false);
     this->LogLine(StripColors(msg, true));
+}
+
+void IrcTabItem::AppendIrcNickText(FXString nick, FXString msg, FXint color)
+{
+    text->appendText("["+FXSystem::time("%H:%M:%S", FXSystem::now()) +"] ");
+    text->appendStyledText(nick+": ", color);
+    if(msg.right(1) != " ") msg.append(" ");
+    for(FXint i=0; i<msg.contains(' '); i++)
+    {
+        FXString sec = msg.section(' ',i);
+        FXRex rxl("\\L");
+        if(rxl.match(sec.left(1)) && ((comparecase(sec.mid(1,7), "http://")==0 && sec.length()>7)
+                || (comparecase(sec.mid(1,8), "https://")==0 && sec.length()>8)
+                || (comparecase(sec.mid(1,6), "ftp://")==0 && sec.length()>6)
+                || (comparecase(sec.mid(1,4), "www.")==0 && sec.length()>4)))
+        {
+            text->appendText(sec.left(1));
+            FXRex rxr("\\W");
+            if(rxr.match(sec.right(1)))
+            {
+                text->appendStyledText(sec.mid(1,sec.length()-2),9);
+                text->appendText(sec.right(1));
+            }
+            else
+            {
+                text->appendStyledText(sec.mid(1,sec.length()-1),9);
+            }
+            text->appendText(" ");
+            continue;
+        }
+        if((comparecase(sec.left(7), "http://")==0 && sec.length()>7)
+                || (comparecase(sec.left(8), "https://")==0 && sec.length()>8)
+                || (comparecase(sec.left(6), "ftp://")==0 && sec.length()>6)
+                || (comparecase(sec.left(4), "www.")==0 && sec.length()>4))
+        {
+            text->appendStyledText(sec,9);
+            text->appendText(" ");
+            continue;
+        }
+        else
+        {
+            FXRex rx("(\\002|\\003|\\037)");
+            if(rx.match(sec)) //contains mirc colors,styles
+            {
+                sec = StripColors(sec, false);
+                FXbool bold = false;
+                FXbool under = false;
+                FXint i = 0;
+                while(sec[i] != '\0')
+                {
+                    if(sec[i] == '\002')
+                    {
+                        bold = !bold;
+                    }
+                    else if(sec[i] == '\037')
+                    {
+                        under = !under;
+                    }
+                    else
+                    {
+                        FXString txt;
+                        txt += sec[i];
+                        if(bold && under) text->appendStyledText(txt, 7);
+                        else if(bold && !under) text->appendStyledText(txt, 5);
+                        else if(!bold && under) text->appendStyledText(txt, 6);
+                        else text->appendText(txt);
+                    }
+                    i++;
+                }
+                text->appendText(" ");
+            }
+            else
+            {
+                text->appendText(sec+" ");
+            }
+        }
+    }
+    text->appendText("\n");
+    MakeLastRowVisible(false);
+    this->LogLine(StripColors("<"+nick+"> "+msg, true));
 }
 
 void IrcTabItem::AppendIrcStyledText(FXString styled, FXint stylenum)
@@ -966,7 +1060,11 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 FXString message = params.after(' ');
                 if(!to.empty() && !message.empty())
                 {
-                    if(to == getText()) AppendIrcText("<"+server->GetNickName()+"> "+message);
+                    if(to == getText())
+                    {
+                        if(coloredNick) AppendIrcNickText(server->GetNickName(), message, GetNickColor(server->GetNickName()));
+                        AppendIrcText("<"+server->GetNickName()+"> "+message);
+                    }
                     return server->SendMsg(to, message);
                 }
                 else
@@ -1236,7 +1334,8 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
         {
             if (command.empty() && type != SERVER && !commandtext.empty())
             {
-                AppendIrcText("<"+server->GetNickName()+"> "+commandtext);
+                if(coloredNick) AppendIrcNickText(server->GetNickName(), commandtext, GetNickColor(server->GetNickName()));
+                else AppendIrcText("<"+server->GetNickName()+"> "+commandtext);
                 return server->SendMsg(getText(), commandtext);
             }
         }
@@ -1505,8 +1604,16 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
     {
         if((comparecase(ev->param2, getText()) == 0 && type == CHANNEL) || (ev->param1 == getText() && type == QUERY && ev->param2 == server->GetNickName()))
         {
-            if(ev->param3.contains(server->GetNickName())) AppendIrcStyledText("<"+ev->param1+"> "+ev->param3, 8);
-            else AppendIrcText("<"+ev->param1+"> "+ev->param3);
+            if(coloredNick)
+            {
+                if(ev->param3.contains(server->GetNickName())) AppendIrcStyledText(ev->param1+": "+ev->param3, 8);
+                else AppendIrcNickText(ev->param1, ev->param3, GetNickColor(ev->param1));
+            }
+            else
+            {
+                if(ev->param3.contains(server->GetNickName())) AppendIrcStyledText("<"+ev->param1+"> "+ev->param3, 8);
+                else AppendIrcText("<"+ev->param1+"> "+ev->param3);
+            }
             if(FXRGB(255,0,0) != this->getTextColor() && !IsCurrent())
             {
                 if(ev->param3.contains(server->GetNickName()))
@@ -2082,7 +2189,12 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
 long IrcTabItem::OnPipe(FXObject*, FXSelector, void *ptr)
 {
     FXString text = *(FXString*)ptr;
-    AppendIrcText(sendPipe && server->GetConnected() ? "<"+server->GetNickName()+"> "+text : text);
+    if(coloredNick)
+    {
+        if(sendPipe && server->GetConnected()) AppendIrcNickText(server->GetNickName(), text, GetNickColor(server->GetNickName()));
+        else AppendIrcText(text);
+    }
+    else AppendIrcText(sendPipe && server->GetConnected() ? "<"+server->GetNickName()+"> "+text : text);
     if(sendPipe && (type == CHANNEL || type == QUERY))
     {
         if(!getApp()->hasTimeout(this, ID_PTIME)) getApp()->addTimeout(this, ID_PTIME);
@@ -2476,4 +2588,11 @@ FXint IrcTabItem::LaunchLink(const FXString &link)
     }
     return 1;
 #endif
+}
+
+FXint IrcTabItem::GetNickColor(const FXString &nick)
+{
+    FXint color = 10;
+    color += nick.hash()%8;
+    return color;
 }

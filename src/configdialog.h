@@ -83,7 +83,7 @@ class ConfigDialog: public FXDialogBox
 {
     FXDECLARE(ConfigDialog)
     public:
-        ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, dxIgnoreUserArray ulist, FXString tpth, FXString thm, FXint maxa, FXbool log, FXString lpth, FXbool srvw, FXString nichar, FXString fnt, FXbool scmd, FXbool slst, ColorTheme atheme, FXbool utray);
+        ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, dxIgnoreUserArray ulist, FXString tpth, FXString thm, FXint maxa, FXbool log, FXString lpth, FXbool srvw, FXString nichar, FXString fnt, FXbool scmd, FXbool slst, ColorTheme atheme, FXbool utray, FXbool cnick);
         virtual ~ConfigDialog();
         enum {
             ID_ADDCOMMAND = FXTopWindow::ID_LAST,
@@ -156,6 +156,7 @@ class ConfigDialog: public FXDialogBox
         ColorTheme GetTheme() { return themeCurrent; }
         FXString GetFont() { return font->getFont(); }
         FXbool GetUseTray() { return useTray; }
+        FXbool GetColoredNick() { return coloredNick; }
 
     private:
         ConfigDialog() {}
@@ -167,7 +168,7 @@ class ConfigDialog: public FXDialogBox
         FXButton *fontButton, *ircfontButton;
         FXTextField *folder, *nickCharField, *textTest;
         FXString commandsList, themePath, themesList, logPath;
-        FXbool logging, serverWindow, sameCmd, sameList, useTray;
+        FXbool logging, serverWindow, sameCmd, sameList, useTray, coloredNick;
         dxIgnoreUserArray usersList;
         FXToolBar *iconsBar;
         IrcColor colors;
@@ -181,7 +182,7 @@ class ConfigDialog: public FXDialogBox
         ColorTheme themeCurrent, themeUser;
         FXListBox *themes;
         FXDataTarget targetBack, targetBase, targetBorder, targetFore, targetMenuback, targetMenufore, targetSelback, targetSelfore, targetTipback, targetTipfore;
-        FXDataTarget targetSameCmd, targetSameList;
+        FXDataTarget targetSameCmd, targetSameList, targetColoredNick;
         FXLabel *labelSelected, *labelNocurrent, *labelTip, *label;
         FXVerticalFrame *vframe2, *menuFrame;
         FXLabel *menuLabels[3];

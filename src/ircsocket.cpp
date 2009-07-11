@@ -303,8 +303,7 @@ void IrcSocket::Disconnect(const FXString& reason)
 
 void IrcSocket::CloseConnection()
 {
-    connected = false;
-    SendEvent(IRC_DISCONNECT, FXStringFormat(_("Server %s was disconnected"), serverName.text()));
+    connected = false;    
     startChannels.clear();
     startCommands.clear();
 #ifdef HAVE_OPENSSL
@@ -335,6 +334,7 @@ void IrcSocket::CloseConnection()
     close(socketid);
     application->removeInput(socketid, INPUT_READ);
 #endif
+    SendEvent(IRC_DISCONNECT, FXStringFormat(_("Server %s was disconnected"), serverName.text()));
 }
 
 int IrcSocket::ReadData()
