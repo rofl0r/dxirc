@@ -202,9 +202,9 @@ IrcTabItem::IrcTabItem(FXTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FX
     textStyleList[9].normalForeColor = FXRGB(217, 166, 65);
     textStyleList[10].normalForeColor = FXRGB(207, 109, 109);
     textStyleList[11].normalForeColor = FXRGB(128, 38, 127);
-    textStyleList[12].normalForeColor = FXRGB(173, 216, 230);
+    textStyleList[12].normalForeColor = FXRGB(95, 206, 230);
     textStyleList[13].normalForeColor = FXRGB(69, 69, 230);
-    textStyleList[14].normalForeColor = FXRGB(144, 238, 144);
+    textStyleList[14].normalForeColor = FXRGB(83, 212, 83);
     textStyleList[15].normalForeColor = FXRGB(25, 85, 85);
     textStyleList[16].normalForeColor = FXRGB(165, 42, 42);
 
