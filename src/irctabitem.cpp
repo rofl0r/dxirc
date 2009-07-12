@@ -199,14 +199,14 @@ IrcTabItem::IrcTabItem(FXTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FX
     textStyleList[8].normalForeColor = colors.link;
     textStyleList[8].style = FXText::STYLE_UNDERLINE;
     //next styles for colored nicks
-    textStyleList[9].normalForeColor = FXRGB(217, 166, 65);
-    textStyleList[10].normalForeColor = FXRGB(207, 109, 109);
-    textStyleList[11].normalForeColor = FXRGB(128, 38, 127);
-    textStyleList[12].normalForeColor = FXRGB(95, 206, 230);
-    textStyleList[13].normalForeColor = FXRGB(69, 69, 230);
-    textStyleList[14].normalForeColor = FXRGB(83, 212, 83);
-    textStyleList[15].normalForeColor = FXRGB(25, 85, 85);
-    textStyleList[16].normalForeColor = FXRGB(165, 42, 42);
+    textStyleList[9].normalForeColor = FXRGB(196, 160, 0);
+    textStyleList[10].normalForeColor = FXRGB(206, 92, 0);
+    textStyleList[11].normalForeColor = FXRGB(143, 89, 2);
+    textStyleList[12].normalForeColor = FXRGB(78, 154, 6);
+    textStyleList[13].normalForeColor = FXRGB(32, 74, 135);
+    textStyleList[14].normalForeColor = FXRGB(92, 53, 102);
+    textStyleList[15].normalForeColor = FXRGB(164, 0, 0);
+    textStyleList[16].normalForeColor = FXRGB(85, 87, 83);
 
     text->setStyled(TRUE);
     text->setHiliteStyles(textStyleList);
