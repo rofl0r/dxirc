@@ -1187,8 +1187,22 @@ long dxirc::OnTabBook(FXObject *, FXSelector, void *ptr)
 #endif
     IrcTabItem *currenttab = (IrcTabItem *)tabbook->childAtIndex(index);
     if (appTheme.fore != currenttab->getTextColor()) currenttab->setTextColor(appTheme.fore);
-    if(currenttab->GetType() == CHANNEL) currenttab->setIcon(channelicon);
-    if(currenttab->GetType() == QUERY) currenttab->setIcon(queryicon);
+    if(currenttab->GetType() == CHANNEL && currenttab->getIcon() == chnewm)
+    {
+        currenttab->setIcon(channelicon);
+#ifdef HAVE_TRAY
+        if(trayIcon && trayIcon->getIcon() == newm)
+            trayIcon->setIcon(trayicon);
+#endif
+    }
+    if(currenttab->GetType() == QUERY && currenttab->getIcon() == unewm)
+    {
+        currenttab->setIcon(queryicon);
+#ifdef HAVE_TRAY
+        if(trayIcon && trayIcon->getIcon() == newm)
+            trayIcon->setIcon(trayicon);
+#endif
+    }
     currenttab->setFocus();
     return 1;
 }
@@ -1248,6 +1262,10 @@ long dxirc::OnCommandClearAll(FXObject *, FXSelector, void *)
         if(((IrcTabItem *)tabbook->childAtIndex(i))->GetType() == CHANNEL) ((IrcTabItem *)tabbook->childAtIndex(i))->setIcon(channelicon);
         if(((IrcTabItem *)tabbook->childAtIndex(i))->GetType() == QUERY) ((IrcTabItem *)tabbook->childAtIndex(i))->setIcon(queryicon);
     }
+#ifdef HAVE_TRAY
+    if(trayIcon && trayIcon->getIcon() == newm)
+        trayIcon->setIcon(trayicon);
+#endif
     return 1;
 }
 
@@ -1415,10 +1433,10 @@ long dxirc::OnTrayCancel(FXObject*, FXSelector, void*)
     return 1;
 }
 
-long dxirc::OnNewMsg(FXObject*, FXSelector, void*)
+long dxirc::OnNewMsg(FXObject *obj, FXSelector, void*)
 {
 #ifdef HAVE_TRAY
-    if(trayIcon && trayIcon->getIcon() == trayicon && !shown())
+    if(trayIcon && trayIcon->getIcon() == trayicon && (!shown() || (IrcTabItem *)tabbook->childAtIndex(tabbook->getCurrent()*2) != (IrcTabItem *)obj))
         trayIcon->setIcon(newm);
 #endif
     return 1;
