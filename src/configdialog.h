@@ -83,7 +83,7 @@ class ConfigDialog: public FXDialogBox
 {
     FXDECLARE(ConfigDialog)
     public:
-        ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, dxIgnoreUserArray ulist, FXString tpth, FXString thm, FXint maxa, FXbool log, FXString lpth, FXbool srvw, FXString nichar, FXString fnt, FXbool scmd, FXbool slst, ColorTheme atheme, FXbool utray, FXbool cnick);
+        ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, dxIgnoreUserArray ulist, FXString tpth, FXString thm, FXint maxa, FXbool log, FXString lpth, FXbool srvw, FXString nichar, FXString fnt, FXbool scmd, FXbool slst, ColorTheme atheme, FXbool utray, FXbool cnick, FXbool ctt);
         virtual ~ConfigDialog();
         enum {
             ID_ADDCOMMAND = FXTopWindow::ID_LAST,
@@ -157,6 +157,7 @@ class ConfigDialog: public FXDialogBox
         FXString GetFont() { return font->getFont(); }
         FXbool GetUseTray() { return useTray; }
         FXbool GetColoredNick() { return coloredNick; }
+        FXbool GetCloseToTray() { return closeToTray; }
 
     private:
         ConfigDialog() {}
@@ -166,9 +167,10 @@ class ConfigDialog: public FXDialogBox
         FXButton *addCommand, *deleteCommand, *addUser, *modifyUser, *deleteUser, *addTheme, *deleteTheme, *selectPath;
         FXButton *icon1, *icon2, *icon3, *icon4, *icon5, *icon6, *icon7;
         FXButton *fontButton, *ircfontButton;
+        FXCheckButton *closeToTrayButton;
         FXTextField *folder, *nickCharField, *textTest;
         FXString commandsList, themePath, themesList, logPath;
-        FXbool logging, serverWindow, sameCmd, sameList, useTray, coloredNick;
+        FXbool logging, serverWindow, sameCmd, sameList, useTray, coloredNick, closeToTray;
         dxIgnoreUserArray usersList;
         FXToolBar *iconsBar;
         IrcColor colors;
@@ -182,7 +184,7 @@ class ConfigDialog: public FXDialogBox
         ColorTheme themeCurrent, themeUser;
         FXListBox *themes;
         FXDataTarget targetBack, targetBase, targetBorder, targetFore, targetMenuback, targetMenufore, targetSelback, targetSelfore, targetTipback, targetTipfore;
-        FXDataTarget targetSameCmd, targetSameList, targetColoredNick;
+        FXDataTarget targetSameCmd, targetSameList, targetColoredNick, targetCloseToTray;
         FXLabel *labelSelected, *labelNocurrent, *labelTip, *label;
         FXVerticalFrame *vframe2, *menuFrame;
         FXLabel *menuLabels[3];

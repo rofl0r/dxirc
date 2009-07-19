@@ -77,6 +77,7 @@ class dxirc: public FXMainWindow
         long OnCommandOptions(FXObject*, FXSelector, void*);
         long OnCommandAlias(FXObject*, FXSelector, void*);
         long OnCommandLog(FXObject*, FXSelector, void*);
+        long OnCommandClose(FXObject*, FXSelector, void*);
         long OnTabConnect(FXObject*, FXSelector, void*);
         long OnTrayClicked(FXObject*, FXSelector, void*);
         long OnNewMsg(FXObject*, FXSelector, void*);
@@ -87,7 +88,7 @@ class dxirc: public FXMainWindow
         FXApp *app;
         dxServerInfoArray serverList;
         dxIgnoreUserArray usersList;
-        FXbool usersShown, logging, ownServerWindow, tempServerWindow, sameCmd, sameList, useTray, coloredNick;
+        FXbool usersShown, logging, ownServerWindow, tempServerWindow, sameCmd, sameList, useTray, coloredNick, closeToTray;
         IrcColor colors;
         FXString commandsList, themesList, themePath, logPath;
         FXint maxAway;

@@ -35,7 +35,7 @@
 #include "utils.h"
 
 FXDEFMAP(dxirc) dxircMap[] = {
-    FXMAPFUNC(SEL_CLOSE,    0,                          dxirc::OnCommandQuit),
+    FXMAPFUNC(SEL_CLOSE,    0,                          dxirc::OnCommandClose),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_QUIT,             dxirc::OnCommandQuit),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_ABOUT,            dxirc::OnCommandAbout),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_CONNECT,          dxirc::OnCommandConnect),    
@@ -234,7 +234,7 @@ void dxirc::ReadConfig()
     appTheme.hilite = set.readColorEntry("SETTINGS", "hilitecolor", getApp()->getHiliteColor());
     appTheme.shadow = set.readColorEntry("SETTINGS", "shadowcolor", getApp()->getShadowColor());
     fontSpec = set.readStringEntry("SETTINGS", "normalfont", getApp()->getNormalFont()->getFont().text());
-    usersShown = set.readBoolEntry("SETTINGS", "usersShown", true);
+    usersShown = set.readBoolEntry("SETTINGS", "usersShown", TRUE);
     commandsList = set.readStringEntry("SETTINGS", "commandsList");
     themePath = CheckThemePath(set.readStringEntry("SETTINGS", "themePath", DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "default"));
     themesList = CheckThemesList(set.readStringEntry("SETTINGS", "themesList", FXString(themePath+";").text()));
@@ -247,9 +247,9 @@ void dxirc::ReadConfig()
     colors.hilight = set.readColorEntry("SETTINGS", "hilightColor", FXRGB(0,255,0));
     colors.link = set.readColorEntry("SETTINGS", "linkColor", FXRGB(0,0,255));
     ircfontspec = set.readStringEntry("SETTINGS", "ircFont", "");
-    sameCmd = set.readBoolEntry("SETTINGS", "sameCmd", false);
-    sameList = set.readBoolEntry("SETTINGS", "sameList", false);
-    coloredNick = set.readBoolEntry("SETTINGS", "coloredNick", false);
+    sameCmd = set.readBoolEntry("SETTINGS", "sameCmd", FALSE);
+    sameList = set.readBoolEntry("SETTINGS", "sameList", FALSE);
+    coloredNick = set.readBoolEntry("SETTINGS", "coloredNick", FALSE);
     if(!ircfontspec.empty()) ircFont = new FXFont(getApp(), ircfontspec);
     else
     {
@@ -260,17 +260,21 @@ void dxirc::ReadConfig()
         ircFont->create();
     }
     maxAway = set.readIntEntry("SETTINGS", "maxAway", 200);
-    logging = set.readBoolEntry("SETTINGS", "logging", false);
-    ownServerWindow = set.readBoolEntry("SETTINGS", "serverWindow", true);
+    logging = set.readBoolEntry("SETTINGS", "logging", FALSE);
+    ownServerWindow = set.readBoolEntry("SETTINGS", "serverWindow", TRUE);
 #ifdef HAVE_TRAY
-    useTray = set.readBoolEntry("SETTINGS", "tray", false);
+    useTray = set.readBoolEntry("SETTINGS", "tray", FALSE);
 #else
-    useTray = false;
+    useTray = FALSE;
 #endif
+    if(useTray)
+        closeToTray = set.readBoolEntry("SETTINGS", "closeToTray", FALSE);
+    else
+        closeToTray = FALSE;
     nickCompletionChar = FXString(set.readStringEntry("SETTINGS", "nickCompletionChar", ":")).left(1);
     tempServerWindow = ownServerWindow;
     logPath = set.readStringEntry("SETTINGS", "logPath");
-    if(logging && !FXStat::exists(logPath)) logging = false;
+    if(logging && !FXStat::exists(logPath)) logging = FALSE;
     FXint usersNum = set.readIntEntry("USERS", "number", 0);
     if(usersNum)
     {
@@ -382,6 +386,7 @@ void dxirc::SaveConfig()
     set.writeBoolEntry("SETTINGS", "sameList", sameList);
     set.writeBoolEntry("SETTINGS", "coloredNick", coloredNick);
     set.writeBoolEntry("SETTINGS", "tray", useTray);
+    set.writeBoolEntry("SETTINGS", "closeToTray", closeToTray);
     if(ownServerWindow == tempServerWindow) set.writeBoolEntry("SETTINGS", "serverWindow", ownServerWindow);
     else set.writeBoolEntry("SETTINGS", "serverWindow", tempServerWindow);
     set.writeStringEntry("SETTINGS", "logPath", logPath.text());
@@ -443,6 +448,19 @@ long dxirc::OnCommandQuit(FXObject*, FXSelector, void*)
     return 1;
 }
 
+long dxirc::OnCommandClose(FXObject*, FXSelector, void*)
+{
+#ifdef HAVE_TRAY
+    if(closeToTray)
+        hide();
+    else
+        OnCommandQuit(NULL, 0, NULL);
+#else
+    OnCommandQuit(NULL, 0, NULL);
+#endif
+    return 1;
+}
+
 long dxirc::OnCommandHelp(FXObject*, FXSelector, void*)
 {
     FXDialogBox helpDialog(this, _("Help"), DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0);
@@ -473,7 +491,7 @@ long dxirc::OnCommandUsers(FXObject*, FXSelector, void*)
 
 long dxirc::OnCommandOptions(FXObject*, FXSelector, void*)
 {
-    ConfigDialog dialog(this, colors, commandsList, usersList, themePath, themesList, maxAway, logging, logPath, tempServerWindow, nickCompletionChar, ircFont->getFont(), sameCmd, sameList, appTheme, useTray, coloredNick);
+    ConfigDialog dialog(this, colors, commandsList, usersList, themePath, themesList, maxAway, logging, logPath, tempServerWindow, nickCompletionChar, ircFont->getFont(), sameCmd, sameList, appTheme, useTray, coloredNick, closeToTray);
     if(dialog.execute(PLACEMENT_CURSOR))
     {
         commandsList = dialog.GetCommandsList();
@@ -492,6 +510,7 @@ long dxirc::OnCommandOptions(FXObject*, FXSelector, void*)
         sameList = dialog.GetSameList();
         appTheme = dialog.GetTheme();
         useTray = dialog.GetUseTray();
+        closeToTray = dialog.GetCloseToTray();
         coloredNick = dialog.GetColoredNick();
         UpdateTheme();
         UpdateFont(dialog.GetFont());
