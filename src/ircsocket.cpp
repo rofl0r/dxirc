@@ -57,17 +57,11 @@ IrcSocket::IrcSocket(FXApp *app, FXObject *tgt, FXString channels, FXString comm
 
 IrcSocket::~IrcSocket()
 {
-    if(connected) Disconnect();
 #ifdef HAVE_OPENSSL
-    if(useSsl && ssl)
+    if(ssl)
     {
-        SSL_shutdown(ssl);
-        if(ssl)
-        {
-            SSL_free(ssl);
-            ssl = NULL;
-        }
-    };
+        SSL_free(ssl);
+    }
 #endif
     delete thread;
 }
@@ -306,17 +300,6 @@ void IrcSocket::CloseConnection()
     connected = false;    
     startChannels.clear();
     startCommands.clear();
-#ifdef HAVE_OPENSSL
-    if(useSsl && ssl)
-    {
-        SSL_shutdown(ssl);
-        if(ssl)
-        {            
-            SSL_free(ssl);
-            ssl = NULL;
-        }
-    }
-#endif
 #ifdef WIN32
     shutdown(socketid, SD_BOTH);
     closesocket(socketid);
@@ -333,6 +316,17 @@ void IrcSocket::CloseConnection()
     shutdown(socketid, SHUT_RDWR);
     close(socketid);
     application->removeInput(socketid, INPUT_READ);
+#endif
+#ifdef HAVE_OPENSSL
+    if(useSsl && ssl)
+    {
+        SSL_shutdown(ssl);
+        if(ssl)
+        {            
+            SSL_free(ssl);
+            ssl = NULL;
+        }
+    }
 #endif
     SendEvent(IRC_DISCONNECT, FXStringFormat(_("Server %s was disconnected"), serverName.text()));
 }
