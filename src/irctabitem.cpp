@@ -1053,6 +1053,17 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     }
                 }
             }
+            if(command == "mode")
+            {
+                FXString params = commandtext.after(' ');
+                if(params.empty())
+                {
+                    AppendIrcStyledText(_("/mode <channel> <modes>, set modes for a channel."), 4);
+                    return false;
+                }
+                else
+                    return server->SendMode(params);
+            }
             if(command == "msg")
             {
                 FXString params = commandtext.after(' ');

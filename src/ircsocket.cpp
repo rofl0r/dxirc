@@ -1235,6 +1235,9 @@ FXbool IrcSocket::SendWhowas(const FXString& params)
 FXbool IrcSocket::SendLine(const FXString& line)
 {
     FXString toSend = line + "\r\n";
+#ifdef DEBUG
+    fxmessage("%s", toSend.text());
+#endif
     int size;
     if (connected)
     {

@@ -50,6 +50,7 @@ namespace utils
         commands.append("KILL");
         commands.append("LIST");
         commands.append("ME");
+        commands.append("MODE");
         commands.append("MSG");
         commands.append("NAMES");
         commands.append("NICK");
