@@ -61,6 +61,7 @@ namespace utils
         commands.append("QUERY");
         commands.append("QUIT");
         commands.append("QUOTE");
+        commands.append("SAY");
         commands.append("TOPIC");
         commands.append("VOICE");
         commands.append("WALLOPS");

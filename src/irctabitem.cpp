@@ -1224,6 +1224,16 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
             {
                 return server->SendQuote(commandtext.after(' '));
             }
+            if(command == "say")
+            {
+                if (type != SERVER && !commandtext.after(' ').empty())
+                {
+                    if(coloredNick) AppendIrcNickText(server->GetNickName(), commandtext.after(' '), GetNickColor(server->GetNickName()));
+                    else AppendIrcText("<"+server->GetNickName()+"> "+commandtext.after(' '));
+                    return server->SendMsg(getText(), commandtext.after(' '));
+                }
+                return false;
+            }
             if(command == "topic")
             {
                 FXString params = commandtext.after(' ');
@@ -1349,6 +1359,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 else AppendIrcText("<"+server->GetNickName()+"> "+commandtext);
                 return server->SendMsg(getText(), commandtext);
             }
+            return false;
         }
     }
     else
