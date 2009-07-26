@@ -100,7 +100,6 @@ void IrcSocket::StartConnection()
 #endif
     connecting = true;
     thread->start();
-    thread->join();
 }
 
 FXint IrcSocket::Connect()

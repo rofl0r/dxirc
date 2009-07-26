@@ -1986,13 +1986,14 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
     }
     if(ev->eventType == IRC_CONNECT)
     {
-        if(type == SERVER || IsCurrent() || IsNoCurrent())
-        {
-            AppendIrcStyledText(ev->param1, 3);
-        }
+        AppendIrcStyledText(ev->param1, 3);
         return 1;
     }
-    if(ev->eventType == IRC_SERVERERROR || ev->eventType == IRC_ERROR)
+    if(ev->eventType == IRC_ERROR)
+    {
+        AppendIrcStyledText(ev->param1, 4);
+    }
+    if(ev->eventType == IRC_SERVERERROR)
     {
         if(ownServerWindow)
         {
