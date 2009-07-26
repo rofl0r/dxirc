@@ -23,6 +23,7 @@
 #include "config.h"
 #include "i18n.h"
 #include "utils.h"
+#include "irctabitem.h"
 #ifdef HAVE_OPENSSL
 #include <openssl/err.h>
 #include <openssl/rand.h>
@@ -30,7 +31,8 @@
 
 FXDEFMAP(IrcSocket) IrcSocketMap[] = {
     FXMAPFUNC(SEL_IO_READ,      IrcSocket::ID_READ,     IrcSocket::OnIORead),
-    FXMAPFUNC(SEL_TIMEOUT,      IrcSocket::ID_SSLTIME,  IrcSocket::OnIORead)
+    FXMAPFUNC(SEL_TIMEOUT,      IrcSocket::ID_SSLTIME,  IrcSocket::OnIORead),
+    FXMAPFUNC(SEL_TIMEOUT,      IrcSocket::ID_RTIME,    IrcSocket::OnReconnectTimeout)
 };
 
 FXIMPLEMENT(IrcSocket, FXObject, IrcSocketMap, ARRAYNUMBER(IrcSocketMap))
@@ -52,6 +54,7 @@ IrcSocket::IrcSocket(FXApp *app, FXObject *tgt, FXString channels, FXString comm
     receiveRest = "";
     connected = false;
     connecting = false;
+    attempts = 0;
     thread = new ConnectThread(this);
 }
 
@@ -64,6 +67,19 @@ IrcSocket::~IrcSocket()
     }
 #endif
     delete thread;
+}
+
+long IrcSocket::OnReconnectTimeout(FXObject*, FXSelector, void*)
+{
+    if(attempts < numberAttempt && !connected)
+    {
+        StartConnection();
+        attempts++;
+        application->addTimeout(this, ID_RTIME, delayAttempt*1000);
+    }
+    else
+        ClearAttempts();
+    return 1;
 }
 
 long IrcSocket::OnIORead(FXObject *, FXSelector, void *)
@@ -80,9 +96,11 @@ void IrcSocket::StartConnection()
 {
 #ifdef DEBUG
     fxmessage("StartConnection\n");
+    fxmessage("Attempts on %s-%d-%s: %d\n", serverName.text(), serverPort, nickName.text(), attempts);
 #endif
     connecting = true;
     thread->start();
+    thread->join();
 }
 
 FXint IrcSocket::Connect()
@@ -90,6 +108,8 @@ FXint IrcSocket::Connect()
 #ifdef DEBUG
     fxmessage("Connect\n");
 #endif
+    if(connected)
+        return 1;
 #ifdef WIN32
     WORD wVersionRequested = MAKEWORD(2,0);
     WSADATA data;
@@ -100,8 +120,7 @@ FXint IrcSocket::Connect()
     if (WSAStartup(wVersionRequested, &data) != 0)
     {
         SendEvent(IRC_ERROR, _("Unable initiliaze socket"));
-        startChannels.clear();
-        startCommands.clear();
+        ClearChannelsCommands();
         connecting = false;
         return -1;
     }
@@ -109,16 +128,14 @@ FXint IrcSocket::Connect()
     if ((host = gethostbyname(serverName.text())) == NULL)
     {
         SendEvent(IRC_ERROR, FXStringFormat(_("Bad host: %s"), serverName.text()));
-        startChannels.clear();
-        startCommands.clear();
+        ClearChannelsCommands();
         connecting = false;
         return -1;
     }
     if ((socketid = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
     {
         SendEvent(IRC_ERROR, _("Unable create socket"));
-        startChannels.clear();
-        startCommands.clear();
+        ClearChannelsCommands();
 #ifdef WIN32
         WSACleanup();
 #endif
@@ -131,8 +148,7 @@ FXint IrcSocket::Connect()
     if (connect(socketid, (sockaddr *)&serverSock, sizeof(serverSock)) == -1)
     {
         SendEvent(IRC_ERROR, FXStringFormat(_("Unable connect to: %s"), serverName.text()));
-        startChannels.clear();
-        startCommands.clear();
+        ClearChannelsCommands();
 #ifdef WIN32
         closesocket(socketid);
 #else
@@ -150,6 +166,7 @@ FXint IrcSocket::Connect()
 #endif
     connected = true;
     connecting = false;
+    ClearAttempts();
     SendEvent(IRC_CONNECT, FXStringFormat(_("Connected to %s"), serverName.text()));
     if (!serverPassword.empty()) SendLine("PASS "+serverPassword);
     SendLine("NICK "+nickName);
@@ -162,6 +179,8 @@ FXint IrcSocket::ConnectSSL()
 #ifdef DEBUG
     fxmessage("ConnectSSL\n");
 #endif
+    if(connected)
+        return 1;
 #ifdef HAVE_OPENSSL
 #ifdef WIN32
     WORD wVersionRequested = MAKEWORD(2,0);
@@ -173,8 +192,7 @@ FXint IrcSocket::ConnectSSL()
     if (WSAStartup(wVersionRequested, &data) != 0)
     {
         SendEvent(IRC_ERROR, _("Unable initiliaze socket"));
-        startChannels.clear();
-        startCommands.clear();
+        ClearChannelsCommands();
         connecting = false;
         return -1;
     }
@@ -182,16 +200,14 @@ FXint IrcSocket::ConnectSSL()
     if ((host = gethostbyname(serverName.text())) == NULL)
     {
         SendEvent(IRC_ERROR, FXStringFormat(_("Bad host: %s"), serverName.text()));
-        startChannels.clear();
-        startCommands.clear();
+        ClearChannelsCommands();
         connecting = false;
         return -1;
     }
     if ((socketid = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
     {
         SendEvent(IRC_ERROR, _("Unable create socket"));
-        startChannels.clear();
-        startCommands.clear();
+        ClearChannelsCommands();
 #ifdef WIN32
         WSACleanup();
 #endif
@@ -204,8 +220,7 @@ FXint IrcSocket::ConnectSSL()
     if (connect(socketid, (sockaddr *)&serverSock, sizeof(serverSock)) == -1)
     {
         SendEvent(IRC_ERROR, FXStringFormat(_("Unable connect to: %s"), serverName.text()));
-        startChannels.clear();
-        startCommands.clear();
+        ClearChannelsCommands();
 #ifdef WIN32
         closesocket(socketid);
 #else
@@ -262,6 +277,7 @@ FXint IrcSocket::ConnectSSL()
         return -1;
     }
     connected = true;
+    ClearAttempts();
     SendEvent(IRC_CONNECT, FXStringFormat(_("Connected to %s"), serverName.text()));
     if (!serverPassword.empty()) SendLine("PASS "+serverPassword);
     SendLine("NICK "+nickName);
@@ -297,9 +313,8 @@ void IrcSocket::Disconnect(const FXString& reason)
 
 void IrcSocket::CloseConnection()
 {
-    connected = false;    
-    startChannels.clear();
-    startCommands.clear();
+    connected = false;
+    ClearChannelsCommands();
 #ifdef WIN32
     shutdown(socketid, SD_BOTH);
     closesocket(socketid);
@@ -329,6 +344,10 @@ void IrcSocket::CloseConnection()
     }
 #endif
     SendEvent(IRC_DISCONNECT, FXStringFormat(_("Server %s was disconnected"), serverName.text()));
+    if(reconnect && attempts < numberAttempt)
+    {
+        application->addTimeout(this, ID_RTIME, delayAttempt*1000);
+    }
 }
 
 int IrcSocket::ReadData()
@@ -1535,6 +1554,36 @@ FXbool IrcSocket::FindTarget(FXObject *tgt)
         }
     }
     return false;
+}
+
+void IrcSocket::ClearChannelsCommands()
+{
+    if(reconnect && attempts < numberAttempt)
+    {
+        MakeStartChannels();
+    }
+    else
+    {
+        startChannels.clear();
+        startCommands.clear();
+    }
+}
+
+void IrcSocket::MakeStartChannels()
+{
+    startChannels.clear();
+    IrcTabItem *tab;
+    for(FXint i=0; i < targets.no(); i++)
+    {
+        if((tab = dynamic_cast<IrcTabItem*>(targets[i])))
+        {
+            if(tab->GetType() == CHANNEL)
+                startChannels.append(tab->getText()+",");
+        }
+    }
+#ifdef DEBUG
+    fxmessage("StartChannels: %s\n", startChannels.text());
+#endif
 }
 
 FXbool IrcSocket::ClearTarget()

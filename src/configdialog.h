@@ -83,7 +83,7 @@ class ConfigDialog: public FXDialogBox
 {
     FXDECLARE(ConfigDialog)
     public:
-        ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, dxIgnoreUserArray ulist, FXString tpth, FXString thm, FXint maxa, FXbool log, FXString lpth, FXbool srvw, FXString nichar, FXString fnt, FXbool scmd, FXbool slst, ColorTheme atheme, FXbool utray, FXbool cnick, FXbool ctt);
+        ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, dxIgnoreUserArray ulist, FXString tpth, FXString thm, FXint maxa, FXbool log, FXString lpth, FXbool srvw, FXString nichar, FXString fnt, FXbool scmd, FXbool slst, ColorTheme atheme, FXbool utray, FXbool cnick, FXbool ctt, FXbool rcn, FXint na, FXint da);
         virtual ~ConfigDialog();
         enum {
             ID_ADDCOMMAND = FXTopWindow::ID_LAST,
@@ -110,6 +110,7 @@ class ConfigDialog: public FXDialogBox
             ID_SERVERWINDOW,
             ID_TRAY,
             ID_NICK,
+            ID_RECONNECT,
             ID_LAST
         };
 
@@ -139,6 +140,7 @@ class ConfigDialog: public FXDialogBox
         long OnFont(FXObject*,FXSelector,void*);
         long OnIrcFont(FXObject*,FXSelector,void*);
         long OnTray(FXObject*,FXSelector,void*);
+        long OnReconnect(FXObject*,FXSelector,void*);
 
         FXString GetCommandsList() { return commandsList; }
         dxIgnoreUserArray GetUsersList() { return usersList; }
@@ -158,6 +160,9 @@ class ConfigDialog: public FXDialogBox
         FXbool GetUseTray() { return useTray; }
         FXbool GetColoredNick() { return coloredNick; }
         FXbool GetCloseToTray() { return closeToTray; }
+        FXbool GetReconnect() { return reconnect; }
+        FXint GetNumberAttempt() { return numberAttempt; }
+        FXint GetDelayAttempt() { return delayAttempt; }
 
     private:
         ConfigDialog() {}
@@ -170,12 +175,13 @@ class ConfigDialog: public FXDialogBox
         FXCheckButton *closeToTrayButton;
         FXTextField *folder, *nickCharField, *textTest;
         FXString commandsList, themePath, themesList, logPath;
-        FXbool logging, serverWindow, sameCmd, sameList, useTray, coloredNick, closeToTray;
+        FXbool logging, serverWindow, sameCmd, sameList, useTray, coloredNick, closeToTray, reconnect;
         dxIgnoreUserArray usersList;
         FXToolBar *iconsBar;
         IrcColor colors;
-        FXint maxAway;
-        FXSpinner *maxAwaySpinner;
+        FXint maxAway, numberAttempt, delayAttempt;
+        FXSpinner *numberAttemptSpinner, *delayAttemptSpinner;
+        FXLabel *numberAttemptLabel, *delayAttemptLabel;
         FXString nickChar;
         FXDataTarget textTarget, backTarget, userTarget, actionTarget, noticeTarget, errorTarget, hilightTarget, linkTarget;
         FXDataTarget trayTarget, logTarget, serverTarget;
@@ -185,6 +191,7 @@ class ConfigDialog: public FXDialogBox
         FXListBox *themes;
         FXDataTarget targetBack, targetBase, targetBorder, targetFore, targetMenuback, targetMenufore, targetSelback, targetSelfore, targetTipback, targetTipfore;
         FXDataTarget targetSameCmd, targetSameList, targetColoredNick, targetCloseToTray;
+        FXDataTarget targetMaxAway, targetReconnect, targetNumberAttempt, targetDelayAttempt;
         FXLabel *labelSelected, *labelNocurrent, *labelTip, *label;
         FXVerticalFrame *vframe2, *menuFrame;
         FXLabel *menuLabels[3];

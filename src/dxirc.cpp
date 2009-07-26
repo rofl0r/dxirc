@@ -118,6 +118,9 @@ dxirc::dxirc(FXApp *app)
 
     IrcSocket *server = new IrcSocket(app, this, "", "");
     server->SetUsersList(usersList);
+    server->SetReconnect(reconnect);
+    server->SetNumberAttempt(numberAttempt);
+    server->SetDelayAttempt(delayAttempt);
     servers.append(server);
 
     IrcTabItem *tabitem = new IrcTabItem(tabbook, "(server)", servericon, TAB_BOTTOM, SERVER, server, ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList, coloredNick);
@@ -271,6 +274,9 @@ void dxirc::ReadConfig()
         closeToTray = set.readBoolEntry("SETTINGS", "closeToTray", FALSE);
     else
         closeToTray = FALSE;
+    reconnect = set.readBoolEntry("SETTINGS", "reconnect", FALSE);
+    numberAttempt = set.readIntEntry("SETTINGS", "numberAttempt", 1);
+    delayAttempt = set.readIntEntry("SETTINGS", "delayAttempt", 20);
     nickCompletionChar = FXString(set.readStringEntry("SETTINGS", "nickCompletionChar", ":")).left(1);
     tempServerWindow = ownServerWindow;
     logPath = set.readStringEntry("SETTINGS", "logPath");
@@ -387,6 +393,9 @@ void dxirc::SaveConfig()
     set.writeBoolEntry("SETTINGS", "coloredNick", coloredNick);
     set.writeBoolEntry("SETTINGS", "tray", useTray);
     set.writeBoolEntry("SETTINGS", "closeToTray", closeToTray);
+    set.writeBoolEntry("SETTINGS", "reconnect", reconnect);
+    set.writeIntEntry("SETTINGS", "numberAttempt", numberAttempt);
+    set.writeIntEntry("SETTINGS", "delayAttempt", delayAttempt);
     if(ownServerWindow == tempServerWindow) set.writeBoolEntry("SETTINGS", "serverWindow", ownServerWindow);
     else set.writeBoolEntry("SETTINGS", "serverWindow", tempServerWindow);
     set.writeStringEntry("SETTINGS", "logPath", logPath.text());
@@ -491,7 +500,7 @@ long dxirc::OnCommandUsers(FXObject*, FXSelector, void*)
 
 long dxirc::OnCommandOptions(FXObject*, FXSelector, void*)
 {
-    ConfigDialog dialog(this, colors, commandsList, usersList, themePath, themesList, maxAway, logging, logPath, tempServerWindow, nickCompletionChar, ircFont->getFont(), sameCmd, sameList, appTheme, useTray, coloredNick, closeToTray);
+    ConfigDialog dialog(this, colors, commandsList, usersList, themePath, themesList, maxAway, logging, logPath, tempServerWindow, nickCompletionChar, ircFont->getFont(), sameCmd, sameList, appTheme, useTray, coloredNick, closeToTray, reconnect, numberAttempt, delayAttempt);
     if(dialog.execute(PLACEMENT_CURSOR))
     {
         commandsList = dialog.GetCommandsList();
@@ -512,6 +521,9 @@ long dxirc::OnCommandOptions(FXObject*, FXSelector, void*)
         useTray = dialog.GetUseTray();
         closeToTray = dialog.GetCloseToTray();
         coloredNick = dialog.GetColoredNick();
+        reconnect = dialog.GetReconnect();
+        numberAttempt = dialog.GetNumberAttempt();
+        delayAttempt = dialog.GetDelayAttempt();
         UpdateTheme();
         UpdateFont(dialog.GetFont());
         ircFont = new FXFont(getApp(), dialog.GetIrcFont());
@@ -520,6 +532,9 @@ long dxirc::OnCommandOptions(FXObject*, FXSelector, void*)
         for (FXint i = 0; i<servers.no(); i++)
         {
             servers[i]->SetUsersList(usersList);
+            servers[i]->SetReconnect(reconnect);
+            servers[i]->SetNumberAttempt(numberAttempt);
+            servers[i]->SetDelayAttempt(delayAttempt);
         }
         SaveConfig();
     }
@@ -966,6 +981,9 @@ void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString
         ssl = false;
 #endif
         servers[0]->SetUseSsl(ssl);
+        servers[0]->SetReconnect(reconnect);
+        servers[0]->SetNumberAttempt(numberAttempt);
+        servers[0]->SetDelayAttempt(delayAttempt);
         if (!tabbook->numChildren())
         {
             IrcTabItem *tabitem = new IrcTabItem(tabbook, hostname, servericon, TAB_BOTTOM, SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList, coloredNick);
@@ -976,6 +994,7 @@ void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString
         }
         ((IrcTabItem *)tabbook->childAtIndex(0))->SetType(SERVER, hostname);
         SortTabs();
+        servers[0]->ClearAttempts();
         servers[0]->StartConnection();
     }
     else if(!ServerExist(hostname, port, nick))
@@ -995,10 +1014,14 @@ void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString
         ssl = false;
 #endif
         servers[0]->SetUseSsl(ssl);
+        servers[0]->SetReconnect(reconnect);
+        servers[0]->SetNumberAttempt(numberAttempt);
+        servers[0]->SetDelayAttempt(delayAttempt);
         tabitem->create();
         tabitem->CreateGeom();
         //tabbook->setCurrent(tabbook->numChildren()/2);
         SortTabs();
+        servers[0]->ClearAttempts();
         servers[0]->StartConnection();
     }
     UpdateMenus();
@@ -1068,6 +1091,10 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
     if(ev->eventType == IRC_NEWCHANNEL)
     {
         FXint serverTabIndex = GetServerTab(server);
+        if(TabExist(server, ev->param1))
+        {
+            return 1;
+        }
         if(serverTabIndex != -1 && !ownServerWindow)
         {
             ((IrcTabItem *)tabbook->childAtIndex(serverTabIndex))->SetType(CHANNEL, ev->param1);
@@ -1172,17 +1199,20 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
     }
     if(ev->eventType == IRC_DISCONNECT)
     {
-        for(FXint i = tabbook->numChildren()-2; i > -1; i=i-2)
+        if(!reconnect)
         {
-            if(server->FindTarget((IrcTabItem *)tabbook->childAtIndex(i)))
+            for(FXint i = tabbook->numChildren()-2; i > -1; i=i-2)
             {
-                if(IsLastTab(server)) ((IrcTabItem *)tabbook->childAtIndex(i))->SetType(SERVER, server->GetServerName());
-                else
+                if(server->FindTarget((IrcTabItem *)tabbook->childAtIndex(i)))
                 {
-                    server->RemoveTarget((IrcTabItem *)tabbook->childAtIndex(i));
-                    delete tabbook->childAtIndex(i);
-                    delete tabbook->childAtIndex(i);
-                    tabbook->recalc();
+                    if(IsLastTab(server)) ((IrcTabItem *)tabbook->childAtIndex(i))->SetType(SERVER, server->GetServerName());
+                    else
+                    {
+                        server->RemoveTarget((IrcTabItem *)tabbook->childAtIndex(i));
+                        delete tabbook->childAtIndex(i);
+                        delete tabbook->childAtIndex(i);
+                        tabbook->recalc();
+                    }
                 }
             }
         }

@@ -58,6 +58,7 @@ class IrcSocket: public FXObject
             ID_READ,
             ID_SERVER,
             ID_SSLTIME,
+            ID_RTIME,
             ID_LAST
         };
 
@@ -70,6 +71,7 @@ class IrcSocket: public FXObject
         void RemoveTarget(FXObject*);
         FXbool FindTarget(FXObject*);
         FXbool ClearTarget();
+        void ClearAttempts() { attempts = 0; }
         void SetServerName(const FXString &name) { serverName = name; }
         FXString GetServerName() { return serverName; }
         FXString GetRealServerName() { return realServerName; }
@@ -84,6 +86,9 @@ class IrcSocket: public FXObject
         void SetStartCommands(const FXString &commands) { startCommands = commands; }
         void SetUsersList(const dxIgnoreUserArray &ulst) { usersList = ulst;}
         void SetUseSsl(const FXbool &ussl) { useSsl = ussl;}
+        void SetReconnect(const FXbool &rcn) { reconnect = rcn; }
+        void SetNumberAttempt(const FXint &na) { numberAttempt = na; }
+        void SetDelayAttempt(const FXint &da) { delayAttempt = da; }
         FXbool GetConnected() { return connected; }
         FXbool GetConnecting() { return connecting; }
         FXbool GetUseSsl() { return useSsl; }
@@ -124,13 +129,14 @@ class IrcSocket: public FXObject
         FXbool SendWhowas(const FXString &params);
 
         long OnIORead(FXObject*, FXSelector, void*);
+        long OnReconnectTimeout(FXObject*, FXSelector, void*);
 
     private:
         IrcSocket(){}
 
         FXApp *application;
-        FXbool connected, useSsl, connecting;
-        FXint serverPort;
+        FXbool connected, useSsl, connecting, reconnect;
+        FXint serverPort, numberAttempt, delayAttempt, attempts;
         FXString serverName, realServerName, serverPassword, nickName, realName, userName, startChannels, startCommands;
         FXString receiveRest;
         dxTargetsArray targets;
@@ -172,6 +178,8 @@ class IrcSocket: public FXObject
         void Unknown(const FXString&, const FXString&);
         FXbool IsUserIgnored(const FXString &nick, const FXString &on);
         void CloseConnection();
+        void MakeStartChannels();
+        void ClearChannelsCommands();
 
 #ifdef HAVE_OPENSSL
         SSL_CTX *ctx;

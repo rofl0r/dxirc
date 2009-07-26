@@ -44,6 +44,7 @@ FXDEFMAP(ConfigDialog) ConfigDialogMap[] = {
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_LOGPATH, ConfigDialog::OnPathSelect),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_SERVERWINDOW, ConfigDialog::OnServerWindow),
     FXMAPFUNC(SEL_CHANGED, ConfigDialog::ID_NICK, ConfigDialog::OnNickCharChanged),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_RECONNECT, ConfigDialog::OnReconnect),
     FXMAPFUNC(SEL_KEYPRESS, 0, ConfigDialog::OnKeyPress),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_IRCCOLORS, ConfigDialog::OnColor),
     FXMAPFUNC(SEL_CHANGED, ConfigDialog::ID_IRCCOLORS, ConfigDialog::OnColor),
@@ -59,9 +60,9 @@ FXDEFMAP(ConfigDialog) ConfigDialogMap[] = {
 
 FXIMPLEMENT(ConfigDialog, FXDialogBox, ConfigDialogMap, ARRAYNUMBER(ConfigDialogMap))
 
-ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, dxIgnoreUserArray ulist, FXString tpth, FXString thm, FXint maxa, FXbool log, FXString lpth, FXbool srvw, FXString nichar, FXString fnt, FXbool scmd, FXbool slst, ColorTheme atheme, FXbool utray, FXbool cnick, FXbool ctt)
+ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, dxIgnoreUserArray ulist, FXString tpth, FXString thm, FXint maxa, FXbool log, FXString lpth, FXbool srvw, FXString nichar, FXString fnt, FXbool scmd, FXbool slst, ColorTheme atheme, FXbool utray, FXbool cnick, FXbool ctt, FXbool rcn, FXint na, FXint da)
     : FXDialogBox(owner, _("Preferences"), DECOR_RESIZE|DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0),
-        commandsList(clist), themePath(tpth), themesList(thm), logPath(lpth), logging(log), serverWindow(srvw), sameCmd(scmd), sameList(slst), useTray(utray), coloredNick(cnick), closeToTray(ctt), usersList(ulist), colors(clrs), maxAway(maxa), nickChar(nichar), themeCurrent(atheme)
+        commandsList(clist), themePath(tpth), themesList(thm), logPath(lpth), logging(log), serverWindow(srvw), sameCmd(scmd), sameList(slst), useTray(utray), coloredNick(cnick), closeToTray(ctt), reconnect(rcn), usersList(ulist), colors(clrs), maxAway(maxa), numberAttempt(na), delayAttempt(da), nickChar(nichar), themeCurrent(atheme)
 {
     textTarget.connect(colors.text);
     textTarget.setTarget(this);
@@ -133,6 +134,13 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, d
     logTarget.connect(logging);
     logTarget.setTarget(this);
     logTarget.setSelector(ID_LOG);
+
+    targetReconnect.connect(reconnect);
+    targetReconnect.setTarget(this);
+    targetReconnect.setSelector(ID_RECONNECT);
+    targetNumberAttempt.connect(numberAttempt);
+    targetDelayAttempt.connect(delayAttempt);
+    targetMaxAway.connect(maxAway);
 
     getApp()->getNormalFont()->create();
     FXFontDesc fontdescription;
@@ -247,11 +255,22 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, d
         }
     }
     icons->getNumItems()>1 ? deleteTheme->enable() : deleteTheme->disable();
+    new FXCheckButton(otherpane, _("Reconnect after disconnection"), &targetReconnect, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
+    FXHorizontalFrame *napane = new FXHorizontalFrame(otherpane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    numberAttemptLabel = new FXLabel(napane, _("Number of attempt"), NULL, LAYOUT_LEFT);
+    if(!reconnect) numberAttemptLabel->disable();
+    numberAttemptSpinner = new FXSpinner(napane, 4, &targetNumberAttempt, FXDataTarget::ID_VALUE, SPIN_CYCLIC|FRAME_GROOVE);
+    numberAttemptSpinner->setRange(1,20);
+    if(!reconnect) numberAttemptSpinner->disable();
+    FXHorizontalFrame *dapane = new FXHorizontalFrame(otherpane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    delayAttemptLabel = new FXLabel(dapane, _("Delay between attempts [seconds]"), NULL, LAYOUT_LEFT);
+    if(!reconnect) delayAttemptLabel->disable();
+    delayAttemptSpinner = new FXSpinner(dapane, 4, &targetDelayAttempt, FXDataTarget::ID_VALUE, SPIN_CYCLIC|FRAME_GROOVE);
+    delayAttemptSpinner->setRange(20,120);
+    if(!reconnect) delayAttemptSpinner->disable();
     FXHorizontalFrame *maxpane = new FXHorizontalFrame(otherpane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     new FXLabel(maxpane, _("Max. users number for checking away\tToo high number can be reason for ban"), NULL, LAYOUT_LEFT);
-    maxAwaySpinner = new FXSpinner(maxpane, 4, NULL, 0, SPIN_NOMAX|FRAME_GROOVE);
-    maxAwaySpinner->setValue(maxAway);
-    maxAwaySpinner->setTipText(_("Too high number can be reason for ban"));
+    new FXSpinner(maxpane, 4, &targetMaxAway, FXDataTarget::ID_VALUE, SPIN_NOMAX|FRAME_GROOVE);
     FXHorizontalFrame *nickpane = new FXHorizontalFrame(otherpane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     new FXLabel(nickpane, _("Nick completion char"), NULL, LAYOUT_LEFT);
     nickCharField = new FXTextField(nickpane, 1, this, ID_NICK, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_X);
@@ -458,7 +477,6 @@ long ConfigDialog::OnColor(FXObject*, FXSelector, void*)
 
 long ConfigDialog::OnAccept(FXObject*, FXSelector, void*)
 {
-    maxAway = maxAwaySpinner->getValue();
     getApp()->stopModal(this,TRUE);
     hide();
     return 1;
@@ -904,6 +922,25 @@ long ConfigDialog::OnTray(FXObject*, FXSelector, void*)
         closeToTrayButton->disable();
     }
     ShowMessage();
+    return 1;
+}
+
+long ConfigDialog::OnReconnect(FXObject*, FXSelector, void*)
+{
+    if(reconnect)
+    {
+        numberAttemptLabel->enable();
+        numberAttemptSpinner->enable();
+        delayAttemptLabel->enable();
+        delayAttemptSpinner->enable();
+    }
+    else
+    {
+        numberAttemptLabel->disable();
+        numberAttemptSpinner->disable();
+        delayAttemptLabel->disable();
+        delayAttemptSpinner->disable();
+    }
     return 1;
 }
 

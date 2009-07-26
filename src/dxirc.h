@@ -88,10 +88,11 @@ class dxirc: public FXMainWindow
         FXApp *app;
         dxServerInfoArray serverList;
         dxIgnoreUserArray usersList;
-        FXbool usersShown, logging, ownServerWindow, tempServerWindow, sameCmd, sameList, useTray, coloredNick, closeToTray;
+        FXbool usersShown, logging, ownServerWindow, tempServerWindow, sameCmd;
+        FXbool sameList, useTray, coloredNick, closeToTray, reconnect;
         IrcColor colors;
         FXString commandsList, themesList, themePath, logPath;
-        FXint maxAway;
+        FXint maxAway, numberAttempt, delayAttempt;
         FXString nickCompletionChar, fontSpec;
         FXFont *ircFont;
         ColorTheme appTheme;
