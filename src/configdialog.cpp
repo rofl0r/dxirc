@@ -257,13 +257,13 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, d
     icons->getNumItems()>1 ? deleteTheme->enable() : deleteTheme->disable();
     new FXCheckButton(otherpane, _("Reconnect after disconnection"), &targetReconnect, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
     FXHorizontalFrame *napane = new FXHorizontalFrame(otherpane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    numberAttemptLabel = new FXLabel(napane, _("Number of attempt"), NULL, LAYOUT_LEFT);
+    numberAttemptLabel = new FXLabel(napane, _("Number of attempts"), NULL, LAYOUT_LEFT);
     if(!reconnect) numberAttemptLabel->disable();
     numberAttemptSpinner = new FXSpinner(napane, 4, &targetNumberAttempt, FXDataTarget::ID_VALUE, SPIN_CYCLIC|FRAME_GROOVE);
     numberAttemptSpinner->setRange(1,20);
     if(!reconnect) numberAttemptSpinner->disable();
     FXHorizontalFrame *dapane = new FXHorizontalFrame(otherpane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    delayAttemptLabel = new FXLabel(dapane, _("Delay between attempts [seconds]"), NULL, LAYOUT_LEFT);
+    delayAttemptLabel = new FXLabel(dapane, _("Delay between two attempts in seconds"), NULL, LAYOUT_LEFT);
     if(!reconnect) delayAttemptLabel->disable();
     delayAttemptSpinner = new FXSpinner(dapane, 4, &targetDelayAttempt, FXDataTarget::ID_VALUE, SPIN_CYCLIC|FRAME_GROOVE);
     delayAttemptSpinner->setRange(20,120);
@@ -277,7 +277,7 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, d
     nickCharField->setText(nickChar);
 #ifdef HAVE_TRAY
     new FXCheckButton(otherpane, _("Use trayicon"), &trayTarget, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
-    closeToTrayButton = new FXCheckButton(otherpane, _("Close button hide application"), &targetCloseToTray, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
+    closeToTrayButton = new FXCheckButton(otherpane, _("Close button hides application"), &targetCloseToTray, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
 #endif
     new FXCheckButton(otherpane, _("Special tab for server messages"), &serverTarget, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
     new FXCheckButton(otherpane, _("Logging chats"), &logTarget, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
