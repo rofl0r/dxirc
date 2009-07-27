@@ -87,6 +87,7 @@ namespace utils
     FXString CommandsAt(FXint);
     FXbool IsCommand(const FXString&);
     FXbool IsUtf8(const FXchar* string, FXuint length);
+    FXString GetSvnVersion();
 }
 
 

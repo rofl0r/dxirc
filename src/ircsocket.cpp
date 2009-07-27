@@ -1232,7 +1232,7 @@ FXbool IrcSocket::SendWallops(const FXString& msg)
 
 FXbool IrcSocket::SendVersion(const FXString& to)
 {
-    return SendLine("NOTICE "+to+FXStringFormat(" :\001VERSION dxirc %s (C) 2008~ by David Vachulka\001", VERSION));
+    return SendLine("NOTICE "+to+FXStringFormat(" :\001VERSION dxirc %s r%s (C) 2008~ by David Vachulka\001", VERSION, utils::GetSvnVersion().text()));
 }
 
 FXbool IrcSocket::SendWho(const FXString& mask)

@@ -30,6 +30,12 @@ dxStringArray commands;
 
 namespace utils
 {
+    FXString GetSvnVersion()
+    {
+        FXString theVersion = "$Revision$";
+        return theVersion.section(' ', 1);
+    }
+
     void FillCommands()
     {
         commands.clear();        

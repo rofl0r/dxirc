@@ -215,13 +215,6 @@ int CompareTabs(const void **a,const void **b)
     return comparecase((fa->GetType() == SERVER ? fa->GetServerName() : fa->GetServerName()+fa->getText()), (fb->GetType() == SERVER ? fb->GetServerName() : fb->GetServerName()+fb->getText()));
 }
 
-
-FXString GetSvnVersion()
-{
-    FXString theVersion = "$Revision$";
-    return theVersion.section(' ', 1);
-}
-
 void dxirc::ReadConfig()
 {
     FXString ircfontspec;
@@ -873,7 +866,7 @@ long dxirc::OnCommandAbout(FXObject*, FXSelector, void*)
 {
     FXDialogBox about(this, FXStringFormat(_("About %s"), PACKAGE), DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0);
     FXVerticalFrame *content = new FXVerticalFrame(&about, LAYOUT_SIDE_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 10,10,10,10, 0,0);
-    new FXLabel(content, FXStringFormat("%s %s r%s\n", PACKAGE, VERSION, GetSvnVersion().text()), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    new FXLabel(content, FXStringFormat("%s %s r%s\n", PACKAGE, VERSION, utils::GetSvnVersion().text()), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     new FXLabel(content, _("Copyright (C) 2008~ David Vachulka (david@konstrukce-cad.com)\n"), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     new FXLabel(content, FXStringFormat(_("This software was built with the FOX Toolkit Library version %d.%d.%d (http://www.fox-toolkit.org)."),FOX_MAJOR,FOX_MINOR,FOX_LEVEL), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     new FXLabel(content, _("This sofware uses http://www.famfamfam.com/lab/icons/"), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
