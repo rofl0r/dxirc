@@ -73,7 +73,8 @@ long IrcSocket::OnReconnectTimeout(FXObject*, FXSelector, void*)
 {
     if(attempts < numberAttempt && !connected)
     {
-        StartConnection();
+        if(useSsl) ConnectSSL();
+        else Connect();
         attempts++;
         application->addTimeout(this, ID_RTIME, delayAttempt*1000);
     }
