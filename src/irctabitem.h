@@ -125,7 +125,7 @@ class IrcTabItem: public FXTabItem
         IrcColor colors;
         NickInfo nickOnRight;
         FXString commandsList, logPath, topic;
-        FXint maxAway;
+        FXint maxAway, maxLen;
         FXString nickCompletionChar;
         std::ofstream *logstream;
 
@@ -157,6 +157,7 @@ class IrcTabItem: public FXTabItem
         FXbool ProcessCommand(const FXString &);
         FXint LaunchLink(const FXString &);
         FXint GetNickColor(const FXString &);
+        dxStringArray CutText(FXString, FXint);
 };
 
 #endif // IRCTABITEM_H

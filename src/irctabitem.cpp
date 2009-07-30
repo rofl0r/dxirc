@@ -126,6 +126,7 @@ IrcTabItem::IrcTabItem(FXTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FX
     currentPosition = 0;
     historyMax = 25;
     numberUsers = 0;
+    maxLen = 510;
     checkAway = false;
     iamOp = false;
     topic = _("No topic is set");
@@ -739,7 +740,13 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
             }
             if(command == "away")
             {
-                return server->SendAway(commandtext.after(' '));
+                if(commandtext.after(' ').length() > maxLen-6)
+                {
+                    AppendIrcStyledText(_("Away message is too long."), 4);
+                    return false;
+                }
+                else
+                    return server->SendAway(commandtext.after(' '));
             }
             if(command == "banlist")
             {
@@ -789,6 +796,11 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 if(to.empty() || msg.empty())
                 {
                     AppendIrcStyledText(_("/ctcp <nick> <message>, sends a CTCP message to a user."), 4);
+                    return false;
+                }
+                else if(msg.length() > maxLen-12-to.length())
+                {
+                    AppendIrcStyledText(_("Ctcp message is too long."), 4);
                     return false;
                 }
                 else return server->SendCtcp(to, msg);
@@ -973,14 +985,24 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                         FXString channel = params.before(' ');
                         FXString nick = params.after(' ');
                         FXString reason = params.after(' ', 2);
-                        return server->SendKick(channel, nick, reason);
+                        if(reason.length() > maxLen-8-channel.length()-nick.length())
+                        {
+                            AppendIrcStyledText(_("Reason of kick is too long."), 4);
+                            return false;
+                        }
+                        else return server->SendKick(channel, nick, reason);
                     }
                     else
                     {
                         FXString channel = getText();
                         FXString nick = params.before(' ');
                         FXString reason = params.after(' ');
-                        return server->SendKick(channel, nick, reason);
+                        if(reason.length() > maxLen-8-channel.length()-nick.length())
+                        {
+                            AppendIrcStyledText(_("Reason of kick is too long."), 4);
+                            return false;
+                        }
+                        else return server->SendKick(channel, nick, reason);
                     }
                 }
                 else
@@ -990,7 +1012,12 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                         FXString channel = params.before(' ');
                         FXString nick = params.after(' ');
                         FXString reason = params.after(' ', 2);
-                        return server->SendKick(channel, nick, reason);
+                        if(reason.length() > maxLen-8-channel.length()-nick.length())
+                        {
+                            AppendIrcStyledText(_("Reason of kick is too long."), 4);
+                            return false;
+                        }
+                        else return server->SendKick(channel, nick, reason);
                     }
                     else
                     {
@@ -1007,6 +1034,11 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 if(params.empty())
                 {
                     AppendIrcStyledText(_("/kill <user> [reason], kill a user from the network."), 4);
+                    return false;
+                }
+                if(reason.length() > maxLen-7-nick.length())
+                {
+                    AppendIrcStyledText(_("Reason of kill is too long."), 4);
                     return false;
                 }
                 else return server->SendKill(nick, reason);
@@ -1030,12 +1062,32 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                         FXString channel = params.before(' ');
                         FXString message = params.after(' ');
                         if(channel == getText()) AppendIrcStyledText(server->GetNickName()+" "+message, 2);
-                        return server->SendMe(channel, message);
+                        if(message.length() > maxLen-19-channel.length())
+                        {
+                            dxStringArray messages = CutText(message, maxLen-19-channel.length());
+                            FXbool result = true;
+                            for(FXint i=0; i<messages.no(); i++)
+                            {
+                                result = server->SendMe(channel, messages[i]) &result;
+                            }
+                            return result;
+                        }
+                        else return server->SendMe(channel, message);
                     }
                     else
                     {                        
                         AppendIrcStyledText(server->GetNickName()+" "+params, 2);
-                        return server->SendMe(getText(), params);
+                        if(params.length() > maxLen-19-getText().length())
+                        {
+                            dxStringArray messages = CutText(params, maxLen-19-getText().length());
+                            FXbool result = true;
+                            for(FXint i=0; i<messages.no(); i++)
+                            {
+                                result = server->SendMe(getText(), messages[i]) &result;
+                            }
+                            return result;
+                        }
+                        else return server->SendMe(getText(), params);
                     }
                 }
                 else
@@ -1044,7 +1096,17 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     {
                         FXString to = params.before(' ');
                         FXString message = params.after(' ');
-                        return server->SendMe(to, message);
+                        if(message.length() > maxLen-19-to.length())
+                        {
+                            dxStringArray messages = CutText(message, maxLen-19-to.length());
+                            FXbool result = true;
+                            for(FXint i=0; i<messages.no(); i++)
+                            {
+                                result = server->SendMe(to, messages[i]) &result;
+                            }
+                            return result;
+                        }
+                        else return server->SendMe(to, message);
                     }
                     else
                     {
@@ -1076,7 +1138,17 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                         if(coloredNick) AppendIrcNickText(server->GetNickName(), message, GetNickColor(server->GetNickName()));
                         AppendIrcText("<"+server->GetNickName()+"> "+message);
                     }
-                    return server->SendMsg(to, message);
+                    if(message.length() > maxLen-10-to.length())
+                    {
+                        dxStringArray messages = CutText(message, maxLen-10-to.length());
+                        FXbool result = true;
+                        for(FXint i=0; i<messages.no(); i++)
+                        {
+                            result = server->SendMsg(to, messages[i]) &result;
+                        }
+                        return result;
+                    }
+                    else return server->SendMsg(to, message);
                 }
                 else
                 {
@@ -1123,6 +1195,16 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 if(!to.empty() && !message.empty())
                 {
                     if(to == getText()) AppendIrcStyledText(FXStringFormat(_("%s's NOTICE: "), server->GetNickName().text())+message, 2);
+                    if(message.length() > maxLen-9-to.length())
+                    {
+                        dxStringArray messages = CutText(message, maxLen-9-to.length());
+                        FXbool result = true;
+                        for(FXint i=0; i<messages.no(); i++)
+                        {
+                            result = server->SendNotice(to, messages[i]) &result;
+                        }
+                        return result;
+                    }
                     return server->SendNotice(to, message);
                 }
                 else
@@ -1230,7 +1312,17 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 {
                     if(coloredNick) AppendIrcNickText(server->GetNickName(), commandtext.after(' '), GetNickColor(server->GetNickName()));
                     else AppendIrcText("<"+server->GetNickName()+"> "+commandtext.after(' '));
-                    return server->SendMsg(getText(), commandtext.after(' '));
+                    if(commandtext.after(' ').length() > maxLen-10-getText().length())
+                    {
+                        dxStringArray messages = CutText(commandtext.after(' '), maxLen-10-getText().length());
+                        FXbool result = true;
+                        for(FXint i=0; i<messages.no(); i++)
+                        {
+                            result = server->SendMe(getText(), messages[i]) &result;
+                        }
+                        return result;
+                    }
+                    else return server->SendMsg(getText(), commandtext.after(' '));
                 }
                 return false;
             }
@@ -1244,16 +1336,35 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     {
                         FXString channel = params.before(' ');
                         FXString topic = params.after(' ');
-                        return server->SendTopic(channel, topic);
+                        if(topic.length() > maxLen-8-channel.length())
+                        {
+                            AppendIrcStyledText(_("Topic is too long."), 4);
+                            return false;
+                        }
+                        else return server->SendTopic(channel, topic);
                     }
-                    else return server->SendTopic(getText(), params);
+                    else
+                    {
+                        if(params.length() > maxLen-8-getText().length())
+                        {
+                            AppendIrcStyledText(_("Topic is too long."), 4);
+                            return false;
+                        }
+                        else return server->SendTopic(getText(), params);
+                    }
                 }
-                else {
+                else
+                {
                     if(IsChannel(params))
                     {
                         FXString channel = params.before(' ');
                         FXString topic = params.after(' ');
-                        return server->SendTopic(channel, topic);
+                        if(topic.length() > maxLen-8-channel.length())
+                        {
+                            AppendIrcStyledText(_("Topic is too long."), 4);
+                            return false;
+                        }
+                        else return server->SendTopic(channel, topic);
                     }
                     else
                     {
@@ -1316,7 +1427,20 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     AppendIrcStyledText(_("/wallops <message>, send wallop message."), 4);
                     return false;
                 }
-                else return server->SendWallops(params);
+                else
+                {
+                    if(params.length() > maxLen-9)
+                    {
+                        dxStringArray messages = CutText(params, maxLen-9);
+                        FXbool result = true;
+                        for(FXint i=0; i<messages.no(); i++)
+                        {
+                            result = server->SendWallops(messages[i]) &result;
+                        }
+                        return result;
+                    }
+                    else return server->SendWallops(params);
+                }
             }
             if(command == "who")
             {
@@ -1357,7 +1481,17 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
             {
                 if(coloredNick) AppendIrcNickText(server->GetNickName(), commandtext, GetNickColor(server->GetNickName()));
                 else AppendIrcText("<"+server->GetNickName()+"> "+commandtext);
-                return server->SendMsg(getText(), commandtext);
+                if(commandtext.length() > maxLen-10-getText().length())
+                {
+                    dxStringArray messages = CutText(commandtext, maxLen-10-getText().length());
+                    FXbool result = true;
+                    for(FXint i=0; i<messages.no(); i++)
+                    {
+                        result = server->SendMsg(getText(), messages[i]) &result;
+                    }
+                    return result;
+                }
+                else return server->SendMsg(getText(), commandtext);
             }
             return false;
         }
@@ -2618,4 +2752,19 @@ FXint IrcTabItem::GetNickColor(const FXString &nick)
     FXint color = 10;
     color += nick.hash()%8;
     return color;
+}
+
+dxStringArray IrcTabItem::CutText(FXString text, FXint len)
+{
+    FXint textLen = text.length();
+    FXint previous = 0;
+    dxStringArray texts;
+    while(textLen>len)
+    {
+        texts.append(text.mid(previous, len));
+        previous += len;
+        textLen -= len;
+    }
+    texts.append(text.mid(previous, len));
+    return texts;    
 }
