@@ -92,6 +92,10 @@ class IrcSocket: public FXObject
         FXbool GetConnected() { return connected; }
         FXbool GetConnecting() { return connecting; }
         FXbool GetUseSsl() { return useSsl; }
+        FXint GetNickLen() { return nickLen; }
+        FXint GetTopicLen() { return topicLen; }
+        FXint GetKickLen() { return kickLen; }
+        FXint GetAwayLen() { return awayLen; }
         void AddIgnoreCommands(const FXString &command);
         void RemoveIgnoreCommands(const FXString &command);
         void AddNick(const FXString &nick, const FXString &user, const FXString &real, const FXString &host, const FXbool &away);
@@ -137,6 +141,7 @@ class IrcSocket: public FXObject
         FXApp *application;
         FXbool connected, useSsl, connecting, reconnect;
         FXint serverPort, numberAttempt, delayAttempt, attempts;
+        FXint nickLen, topicLen, kickLen, awayLen;
         FXString serverName, realServerName, serverPassword, nickName, realName, userName, startChannels, startCommands;
         FXString receiveRest;
         dxTargetsArray targets;
@@ -176,6 +181,7 @@ class IrcSocket: public FXObject
         void Mode(const FXString&, const FXString&);
         void Error(const FXString&);
         void Unknown(const FXString&, const FXString&);
+        void ParseRplIsupport(FXString);
         FXbool IsUserIgnored(const FXString &nick, const FXString &on);
         void CloseConnection();
         void MakeStartChannels();

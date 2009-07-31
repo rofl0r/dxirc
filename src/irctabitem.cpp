@@ -740,9 +740,9 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
             }
             if(command == "away")
             {
-                if(commandtext.after(' ').length() > maxLen-6)
+                if(commandtext.after(' ').length() > server->GetAwayLen())
                 {
-                    AppendIrcStyledText(_("Away message is too long."), 4);
+                    AppendIrcStyledText(FXStringFormat(_("Away message is too long. Max. away message length is %d."), server->GetAwayLen()), 4);
                     return false;
                 }
                 else
@@ -800,7 +800,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 }
                 else if(msg.length() > maxLen-12-to.length())
                 {
-                    AppendIrcStyledText(_("Ctcp message is too long."), 4);
+                    AppendIrcStyledText(FXStringFormat(_("Ctcp message is too long. Max. ctcp message length is %d."), maxLen-12-to.length()), 4);
                     return false;
                 }
                 else return server->SendCtcp(to, msg);
@@ -985,9 +985,9 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                         FXString channel = params.before(' ');
                         FXString nick = params.after(' ');
                         FXString reason = params.after(' ', 2);
-                        if(reason.length() > maxLen-8-channel.length()-nick.length())
+                        if(reason.length() > server->GetKickLen())
                         {
-                            AppendIrcStyledText(_("Reason of kick is too long."), 4);
+                            AppendIrcStyledText(FXStringFormat(_("Reason of kick is too long. Max. reason length is %d."), server->GetKickLen()), 4);
                             return false;
                         }
                         else return server->SendKick(channel, nick, reason);
@@ -997,9 +997,9 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                         FXString channel = getText();
                         FXString nick = params.before(' ');
                         FXString reason = params.after(' ');
-                        if(reason.length() > maxLen-8-channel.length()-nick.length())
+                        if(reason.length() > server->GetKickLen())
                         {
-                            AppendIrcStyledText(_("Reason of kick is too long."), 4);
+                            AppendIrcStyledText(FXStringFormat(_("Reason of kick is too long. Max. reason length is %d."), server->GetKickLen()), 4);
                             return false;
                         }
                         else return server->SendKick(channel, nick, reason);
@@ -1012,9 +1012,9 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                         FXString channel = params.before(' ');
                         FXString nick = params.after(' ');
                         FXString reason = params.after(' ', 2);
-                        if(reason.length() > maxLen-8-channel.length()-nick.length())
+                        if(reason.length() > server->GetKickLen())
                         {
-                            AppendIrcStyledText(_("Reason of kick is too long."), 4);
+                            AppendIrcStyledText(FXStringFormat(_("Reason of kick is too long. Max. reason length is %d."), server->GetKickLen()), 4);
                             return false;
                         }
                         else return server->SendKick(channel, nick, reason);
@@ -1038,7 +1038,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 }
                 if(reason.length() > maxLen-7-nick.length())
                 {
-                    AppendIrcStyledText(_("Reason of kill is too long."), 4);
+                    AppendIrcStyledText(FXStringFormat(_("Reason of kill is too long. Max. reason length is %d."), maxLen-7-nick.length()), 4);
                     return false;
                 }
                 else return server->SendKill(nick, reason);
@@ -1180,6 +1180,11 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 if(nick.empty())
                 {
                     AppendIrcStyledText(_("/nick <nick>, change nick."), 4);
+                    return false;
+                }
+                else if(nick.length() > server->GetNickLen())
+                {
+                    AppendIrcStyledText(FXStringFormat(_("Nick is too long. Max. nick length is %d."), server->GetNickLen()), 4);
                     return false;
                 }
                 else
@@ -1336,18 +1341,18 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     {
                         FXString channel = params.before(' ');
                         FXString topic = params.after(' ');
-                        if(topic.length() > maxLen-8-channel.length())
+                        if(topic.length() > server->GetTopicLen())
                         {
-                            AppendIrcStyledText(_("Topic is too long."), 4);
+                            AppendIrcStyledText(FXStringFormat(_("Topic is too long. Max. topic length is %d."), server->GetTopicLen()), 4);
                             return false;
                         }
                         else return server->SendTopic(channel, topic);
                     }
                     else
                     {
-                        if(params.length() > maxLen-8-getText().length())
+                        if(params.length() > server->GetTopicLen())
                         {
-                            AppendIrcStyledText(_("Topic is too long."), 4);
+                            AppendIrcStyledText(FXStringFormat(_("Topic is too long. Max. topic length is %d."), server->GetTopicLen()), 4);
                             return false;
                         }
                         else return server->SendTopic(getText(), params);
@@ -1359,9 +1364,9 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     {
                         FXString channel = params.before(' ');
                         FXString topic = params.after(' ');
-                        if(topic.length() > maxLen-8-channel.length())
+                        if(topic.length() > server->GetTopicLen())
                         {
-                            AppendIrcStyledText(_("Topic is too long."), 4);
+                            AppendIrcStyledText(FXStringFormat(_("Topic is too long. Max. topic length is %d."), server->GetTopicLen()), 4);
                             return false;
                         }
                         else return server->SendTopic(channel, topic);

@@ -55,6 +55,10 @@ IrcSocket::IrcSocket(FXApp *app, FXObject *tgt, FXString channels, FXString comm
     connected = false;
     connecting = false;
     attempts = 0;
+    nickLen = 460;
+    topicLen = 460;
+    kickLen = 460;
+    awayLen = 460;
     thread = new ConnectThread(this);
 }
 
@@ -497,6 +501,11 @@ void IrcSocket::ParseLine(const FXString &line)
 void IrcSocket::Numeric(const FXint &command, const FXString &params)
 {
     switch(command) {
+        case 5: //RPL_ISUPPORT
+        {
+            SendEvent(IRC_SERVERREPLY, utils::GetParam(params, 2, true));
+            ParseRplIsupport(params);
+        }break;
         case 219: //RPL_ENDOFSTATS
         {
             SendEvent(IRC_SERVERREPLY, _("End of STATS report"));
@@ -900,6 +909,42 @@ void IrcSocket::Numeric(const FXint &command, const FXString &params)
             else SendEvent(IRC_SERVERREPLY, utils::GetParam(params, 2, true));
         }
     }
+}
+
+void IrcSocket::ParseRplIsupport(FXString text)
+{
+    // nickLen, topicLen, kickLen, awayLen
+    if(text.right(1) != " ") text.append(" ");
+    for(FXint i=0; i<text.contains(' '); i++)
+    {
+        FXString word = text.section(' ', i);
+        if(word.left(7) == "NICKLEN")
+        {
+            nickLen = FXIntVal(word.after('='));
+            continue;
+        }
+        if(word.left(8) == "TOPICLEN")
+        {
+            topicLen = FXIntVal(word.after('='));
+            continue;
+        }
+        if(word.left(7) == "KICKLEN")
+        {
+            kickLen = FXIntVal(word.after('='));
+            continue;
+        }
+        if(word.left(7) == "AWAYLEN")
+        {
+            awayLen = FXIntVal(word.after('='));
+            continue;
+        }
+    }
+#ifdef DEBUG
+    fxmessage("nickLen=%d\n", nickLen);
+    fxmessage("topicLen=%d\n", topicLen);
+    fxmessage("kickLen=%d\n", kickLen);
+    fxmessage("awayLen=%d\n", awayLen);
+#endif
 }
 
 void IrcSocket::Privmsg(const FXString &from, const FXString &params)
