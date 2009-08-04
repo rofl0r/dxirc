@@ -306,16 +306,16 @@ FXint IrcSocket::ConnectSSL()
 void IrcSocket::Disconnect()
 {
     SendLine("QUIT");
-    CloseConnection();
+    CloseConnection(TRUE);
 }
 
 void IrcSocket::Disconnect(const FXString& reason)
 {
     SendLine("QUIT :"+reason);
-    CloseConnection();
+    CloseConnection(TRUE);
 }
 
-void IrcSocket::CloseConnection()
+void IrcSocket::CloseConnection(FXbool disableReconnect)
 {
     connected = false;
     ClearChannelsCommands();
@@ -348,7 +348,7 @@ void IrcSocket::CloseConnection()
     }
 #endif
     SendEvent(IRC_DISCONNECT, FXStringFormat(_("Server %s was disconnected"), serverName.text()));
-    if(reconnect && attempts < numberAttempt)
+    if(reconnect && attempts < numberAttempt && !disableReconnect)
     {
         application->addTimeout(this, ID_RTIME, delayAttempt*1000);
     }

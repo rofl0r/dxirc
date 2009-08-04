@@ -2397,7 +2397,15 @@ long IrcTabItem::OnPipeTimeout(FXObject*, FXSelector, void*)
     {
         if(pipeStrings.no() > 3)
         {
-            server->SendMsg(getText(), pipeStrings[0]);
+            if(pipeStrings[0].length() > maxLen-10-getText().length())
+            {
+                dxStringArray messages = CutText(pipeStrings[0], maxLen-10-getText().length());
+                for(FXint i=0; i<messages.no(); i++)
+                {
+                    server->SendMsg(getText(), messages[i]);
+                }
+            }
+            else server->SendMsg(getText(), pipeStrings[0]);
             pipeStrings.erase(0);
             getApp()->addTimeout(this, ID_PTIME, 3000);
         }
@@ -2405,7 +2413,15 @@ long IrcTabItem::OnPipeTimeout(FXObject*, FXSelector, void*)
         {
             while(pipeStrings.no())
             {
-                server->SendMsg(getText(), pipeStrings[0]);
+                if(pipeStrings[0].length() > maxLen-10-getText().length())
+                {
+                    dxStringArray messages = CutText(pipeStrings[0], maxLen-10-getText().length());
+                    for(FXint i=0; i<messages.no(); i++)
+                    {
+                        server->SendMsg(getText(), messages[i]);
+                    }
+                }
+                else server->SendMsg(getText(), pipeStrings[0]);
                 pipeStrings.erase(0);
             }
         }
