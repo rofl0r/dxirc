@@ -1626,6 +1626,11 @@ FXbool IrcTabItem::ShowHelp(FXString command)
         return true;
     }
 #endif
+    if(command == "help")
+    {
+        AppendIrcText(_("HELP <command>, shows help for command."));
+        return true;
+    }
     if(command == "invite")
     {
         AppendIrcText(_("INVITE <nick> <channel>, invites someone to a channel."));
