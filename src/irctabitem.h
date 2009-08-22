@@ -155,6 +155,7 @@ class IrcTabItem: public FXTabItem
         void SetHilightColor(FXColor);
         void SetLinkColor(FXColor);
         FXbool ProcessCommand(const FXString &);
+        FXbool ShowHelp(FXString);
         FXint LaunchLink(const FXString &);
         FXint GetNickColor(const FXString &);
         dxStringArray CutText(FXString, FXint);

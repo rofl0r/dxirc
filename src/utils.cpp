@@ -45,6 +45,7 @@ namespace utils
 #ifndef WIN32
         commands.append("EXEC");
 #endif
+        commands.append("HELP");
         commands.append("INVITE");
         commands.append("JOIN");        
         commands.append("KICK");
