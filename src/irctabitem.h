@@ -134,8 +134,7 @@ class IrcTabItem: public FXTabItem
         void AppendIrcStyledText(FXString, FXint);
         void AppendIrcNickText(FXString, FXString, FXint);
         FXString GetNick(int);
-        FXbool IsCurrent();
-        FXbool IsNoCurrent();
+        FXbool IsFirst();
         FXbool IsCommandIgnored(const FXString &command);
         void AddUser(const FXString &user);
         void RemoveUser(const FXString &user);

@@ -1595,10 +1595,10 @@ FXbool IrcSocket::FindTarget(FXObject *tgt)
     {
         if(targets[i] == tgt)
         {
-            return true;
+            return TRUE;
         }
     }
-    return false;
+    return FALSE;
 }
 
 void IrcSocket::ClearChannelsCommands()
