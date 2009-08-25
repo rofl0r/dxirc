@@ -153,6 +153,7 @@ class IrcTabItem: public FXTabItem
         void SetErrorColor(FXColor);
         void SetHilightColor(FXColor);
         void SetLinkColor(FXColor);
+        FXbool ProcessLine(const FXString &);
         FXbool ProcessCommand(const FXString &);
         FXbool ShowHelp(FXString);
         FXint LaunchLink(const FXString &);

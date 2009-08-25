@@ -697,7 +697,7 @@ void IrcTabItem::MakeLastRowVisible(FXbool force)
 
 long IrcTabItem::OnCommandline(FXObject *, FXSelector, void *)
 {
-    FXString commandtext = commandline->getText();
+    FXString commandtext = commandline->getText()+"\n";
     commandsHistory.append(commandtext);
     currentPosition = commandsHistory.no();
     if (currentPosition > historyMax)
@@ -706,26 +706,35 @@ long IrcTabItem::OnCommandline(FXObject *, FXSelector, void *)
         --currentPosition;
     }
     commandline->setText("");
+    while (commandtext.contains('\n'))
+    {
+        ProcessLine(commandtext.before('\n').before('\r'));
+        commandtext = commandtext.after('\n');
+    }
+    return 1;
+}
+
+FXbool IrcTabItem::ProcessLine(const FXString& commandtext)
+{
     FXString command = (commandtext[0] == '/' ? commandtext.before(' ') : "");
     if(!utils::GetAlias(command).empty())
     {
-        FXString acommand = utils::GetAlias(command);        
+        FXString acommand = utils::GetAlias(command);
         FXint num = acommand.contains('/');
         if(num>1 && utils::IsCommand(acommand.section('/',2).before(' ')))
         {
             for(FXint i=1; i<=num; i++)
             {
-                ProcessCommand(acommand.section('/',i).prepend('/').trim());
+                return ProcessCommand(acommand.section('/',i).prepend('/').trim());
             }
         }
         else
         {
-            if(acommand.contains("%s")) ProcessCommand(acommand.substitute("%s", commandtext.after(' ')));
-            else ProcessCommand(acommand + (command == commandtext? "" : " "+commandtext.after(' ')));
+            if(acommand.contains("%s")) return ProcessCommand(acommand.substitute("%s", commandtext.after(' ')));
+            else return ProcessCommand(acommand + (command == commandtext? "" : " "+commandtext.after(' ')));
         }
     }
-    else ProcessCommand(commandtext);
-    return 1;
+    return ProcessCommand(commandtext);
 }
 
 FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
