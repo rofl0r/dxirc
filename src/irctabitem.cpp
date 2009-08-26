@@ -697,7 +697,7 @@ void IrcTabItem::MakeLastRowVisible(FXbool force)
 
 long IrcTabItem::OnCommandline(FXObject *, FXSelector, void *)
 {
-    FXString commandtext = commandline->getText()+"\n";
+    FXString commandtext = commandline->getText();
     commandsHistory.append(commandtext);
     currentPosition = commandsHistory.no();
     if (currentPosition > historyMax)
@@ -706,10 +706,9 @@ long IrcTabItem::OnCommandline(FXObject *, FXSelector, void *)
         --currentPosition;
     }
     commandline->setText("");
-    while (commandtext.contains('\n'))
+    for(FXint i=0; i<=commandtext.contains('\n'); i++)
     {
-        ProcessLine(commandtext.before('\n').before('\r'));
-        commandtext = commandtext.after('\n');
+        ProcessLine(commandtext.section('\n', i).before('\r'));
     }
     return 1;
 }
@@ -906,6 +905,26 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                         return false;
                     }
                 }
+            }
+            if(command == "dxirc")
+            {
+                for(FXint i=0; i<5+rand()%5; i++)
+                {
+                    AppendIrcText("");
+                }
+                AppendIrcText("     __  __         _");
+                AppendIrcText("  _/__//__/|_      | |       _");
+                AppendIrcText(" /_| |_| |/_/|   __| |__  __|_| _ _  ___");
+                AppendIrcText(" |_   _   _|/   / _  |\\ \\/ /| || '_)/ __)");
+                AppendIrcText(" /_| |_| |/_/| | (_| | |  | | || | | (__");
+                AppendIrcText(" |_   _   _|/   \\____|/_/\\_\\|_||_|  \\___)");
+                AppendIrcText("   |_|/|_|/     (c) 2008~ David Vachulka");
+                AppendIrcText("   http://dxirc.org");
+                for(FXint i=0; i<5+rand()%5; i++)
+                {
+                    AppendIrcText("");
+                }
+                return true;
             }
             if(command == "egg")
             {
