@@ -953,6 +953,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     else if(params.before(' ').contains("-c"))
                     {
                         sendPipe = false;
+                        pipeStrings.clear();
                         pipe->StopCmd();
                     }
                     else
@@ -2575,18 +2576,13 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
 
 long IrcTabItem::OnPipe(FXObject*, FXSelector, void *ptr)
 {
-    FXString text = *(FXString*)ptr;
-    if(coloredNick)
-    {
-        if(sendPipe && server->GetConnected()) AppendIrcNickText(server->GetNickName(), text, GetNickColor(server->GetNickName()));
-        else AppendIrcText(text);
-    }
-    else AppendIrcText(sendPipe && server->GetConnected() ? "<"+server->GetNickName()+"> "+text : text);
+    FXString text = *(FXString*)ptr;    
     if(sendPipe && (type == CHANNEL || type == QUERY))
     {
         if(!getApp()->hasTimeout(this, ID_PTIME)) getApp()->addTimeout(this, ID_PTIME);
         pipeStrings.append(text);
     }
+    else AppendIrcText(text);
     return 1;
 }
 
@@ -2627,10 +2623,17 @@ long IrcTabItem::OnPipeTimeout(FXObject*, FXSelector, void*)
                 dxStringArray messages = CutText(pipeStrings[0], maxLen-10-getText().length());
                 for(FXint i=0; i<messages.no(); i++)
                 {
+                    if(coloredNick) AppendIrcNickText(server->GetNickName(), messages[i], GetNickColor(server->GetNickName()));
+                    else AppendIrcText("<"+server->GetNickName()+"> "+messages[i]);
                     server->SendMsg(getText(), messages[i]);
                 }
             }
-            else server->SendMsg(getText(), pipeStrings[0]);
+            else
+            {
+                if(coloredNick) AppendIrcNickText(server->GetNickName(), pipeStrings[0], GetNickColor(server->GetNickName()));
+                else AppendIrcText("<"+server->GetNickName()+"> "+pipeStrings[0]);
+                server->SendMsg(getText(), pipeStrings[0]);
+            }
             pipeStrings.erase(0);
             getApp()->addTimeout(this, ID_PTIME, 3000);
         }
@@ -2643,10 +2646,17 @@ long IrcTabItem::OnPipeTimeout(FXObject*, FXSelector, void*)
                     dxStringArray messages = CutText(pipeStrings[0], maxLen-10-getText().length());
                     for(FXint i=0; i<messages.no(); i++)
                     {
+                        if(coloredNick) AppendIrcNickText(server->GetNickName(), messages[i], GetNickColor(server->GetNickName()));
+                        else AppendIrcText("<"+server->GetNickName()+"> "+messages[i]);
                         server->SendMsg(getText(), messages[i]);
                     }
                 }
-                else server->SendMsg(getText(), pipeStrings[0]);
+                else
+                {
+                    if(coloredNick) AppendIrcNickText(server->GetNickName(), pipeStrings[0], GetNickColor(server->GetNickName()));
+                    else AppendIrcText("<"+server->GetNickName()+"> "+pipeStrings[0]);
+                    server->SendMsg(getText(), pipeStrings[0]);
+                }
                 pipeStrings.erase(0);
             }
         }
