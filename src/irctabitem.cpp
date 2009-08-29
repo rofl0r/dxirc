@@ -2043,7 +2043,11 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
     {
         if(type == SERVER || IsFirst())
         {
-            if(!IsCommandIgnored("ctcp")) AppendIrcStyledText(FXStringFormat(_("CTCP %s reply from %s: %s"), utils::GetParam(ev->param2, 1, false).text(), ev->param1.text(), utils::GetParam(ev->param2, 2, true).text()), 2);
+            if(!IsCommandIgnored("ctcp"))
+            {
+                AppendIrcStyledText(FXStringFormat(_("CTCP %s reply from %s: %s"), utils::GetParam(ev->param2, 1, false).text(), ev->param1.text(), utils::GetParam(ev->param2, 2, true).text()), 2);
+                if(FXRGB(255,0,0) != this->getTextColor() && parent->getCurrent()*2 != parent->indexOfChild(this)) this->setTextColor(FXRGB(0,0,255));
+            }
         }
         return 1;
     }
@@ -2051,7 +2055,11 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
     {
         if(type == SERVER || IsFirst())
         {
-            if(!IsCommandIgnored("ctcp")) AppendIrcStyledText(FXStringFormat(_("CTCP %s request from %s"), ev->param2.text(), ev->param1.text()), 2);
+            if(!IsCommandIgnored("ctcp"))
+            {
+                AppendIrcStyledText(FXStringFormat(_("CTCP %s request from %s"), ev->param2.text(), ev->param1.text()), 2);
+                if(FXRGB(255,0,0) != this->getTextColor() && parent->getCurrent()*2 != parent->indexOfChild(this)) this->setTextColor(FXRGB(0,0,255));
+            }
         }
         return 1;
     }
@@ -2117,7 +2125,11 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
         }
         else if(type == SERVER || IsFirst())
         {
-            if(!IsCommandIgnored("notice")) AppendIrcStyledText(FXStringFormat(_("%s's NOTICE: %s"), ev->param1.text(), ev->param3.text()), 3);
+            if(!IsCommandIgnored("notice"))
+            {
+                AppendIrcStyledText(FXStringFormat(_("%s's NOTICE: %s"), ev->param1.text(), ev->param3.text()), 3);
+                if(FXRGB(255,0,0) != this->getTextColor() && parent->getCurrent()*2 != parent->indexOfChild(this)) this->setTextColor(FXRGB(0,0,255));
+            }
         }
         return 1;
     }
@@ -2125,8 +2137,16 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
     {
         if(type == SERVER || IsFirst())
         {
-            if(ev->param1 == server->GetNickName() && !IsCommandIgnored("notice")) AppendIrcStyledText(FXStringFormat(_("NOTICE for you: %s"), ev->param2.text()), 3);
-            else if(!IsCommandIgnored("notice")) AppendIrcStyledText(FXStringFormat(_("%s's NOTICE: %s"), ev->param1.text(), ev->param2.text()), 3);
+            if(ev->param1 == server->GetNickName() && !IsCommandIgnored("notice"))
+            {
+                AppendIrcStyledText(FXStringFormat(_("NOTICE for you: %s"), ev->param2.text()), 3);
+                if(FXRGB(255,0,0) != this->getTextColor() && parent->getCurrent()*2 != parent->indexOfChild(this)) this->setTextColor(FXRGB(0,0,255));
+            }
+            else if(!IsCommandIgnored("notice"))
+            {
+                AppendIrcStyledText(FXStringFormat(_("%s's NOTICE: %s"), ev->param1.text(), ev->param2.text()), 3);
+                if(FXRGB(255,0,0) != this->getTextColor() && parent->getCurrent()*2 != parent->indexOfChild(this)) this->setTextColor(FXRGB(0,0,255));
+            }
         }
         return 1;
     }
@@ -2159,6 +2179,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
         if(type == SERVER || IsFirst())
         {
             AppendIrcStyledText(FXStringFormat(_("%s invites you to: %s"), ev->param1.text(), ev->param3.text()), 3);
+            if(FXRGB(255,0,0) != this->getTextColor() && parent->getCurrent()*2 != parent->indexOfChild(this)) this->setTextColor(FXRGB(0,0,255));
         }
         return 1;
     }
@@ -2177,6 +2198,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
         {
             if(ev->param4.empty()) AppendIrcStyledText(FXStringFormat(_("You were kicked from %s by %s"), ev->param3.text(), ev->param1.text()), 1);
             else AppendIrcStyledText(FXStringFormat(_("You were kicked from %s by %s (%s)"), ev->param3.text(), ev->param1.text(), ev->param4.text()), 1);
+            if(FXRGB(255,0,0) != this->getTextColor() && parent->getCurrent()*2 != parent->indexOfChild(this)) this->setTextColor(FXRGB(0,0,255));
         }
         return 1;
     }
@@ -2185,6 +2207,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
         if(type == SERVER || IsFirst())
         {
             AppendIrcStyledText(FXStringFormat(_("Mode change [%s] for %s"), ev->param1.text(), ev->param2.text()), 1);
+            if(FXRGB(255,0,0) != this->getTextColor() && parent->getCurrent()*2 != parent->indexOfChild(this)) this->setTextColor(FXRGB(0,0,255));
         }
         return 1;
     }
@@ -2345,7 +2368,11 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
         }
         else
         {
-            if(IsFirst()) AppendIrcText(ev->param1);
+            if(IsFirst())
+            {
+                AppendIrcText(ev->param1);
+                if(FXRGB(255,0,0) != this->getTextColor() && parent->getCurrent()*2 != parent->indexOfChild(this)) this->setTextColor(FXRGB(0,0,255));
+            }
         }
         return 1;
     }
@@ -2370,7 +2397,11 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
         }
         else
         {
-            if(IsFirst()) AppendIrcStyledText(ev->param1, 4);
+            if(IsFirst())
+            {
+                AppendIrcStyledText(ev->param1, 4);
+                if(FXRGB(255,0,0) != this->getTextColor() && parent->getCurrent()*2 != parent->indexOfChild(this)) this->setTextColor(FXRGB(0,0,255));
+            }
         }
         return 1;
     }
@@ -2390,7 +2421,11 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
         }
         else
         {
-            if(IsFirst()) AppendIrcStyledText(FXStringFormat(_("Unhandled command '%s' params: %s"), ev->param1.text(), ev->param2.text()), 4);
+            if(IsFirst())
+            {
+                AppendIrcStyledText(FXStringFormat(_("Unhandled command '%s' params: %s"), ev->param1.text(), ev->param2.text()), 4);
+                if(FXRGB(255,0,0) != this->getTextColor() && parent->getCurrent()*2 != parent->indexOfChild(this)) this->setTextColor(FXRGB(0,0,255));
+            }
         }
         return 1;
     }
@@ -2554,7 +2589,11 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
         }
         else
         {
-            if(IsFirst()) AppendIrcText(ev->param1);
+            if(IsFirst())
+            {
+                AppendIrcText(ev->param1);
+                if(FXRGB(255,0,0) != this->getTextColor() && parent->getCurrent()*2 != parent->indexOfChild(this)) this->setTextColor(FXRGB(0,0,255));
+            }
         }
         return 1;
     }
