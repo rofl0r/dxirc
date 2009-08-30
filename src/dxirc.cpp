@@ -71,6 +71,7 @@ dxirc::dxirc(FXApp *app)
     setMiniIcon(smallicon);
 
     ircFont = NULL;
+    viewer = NULL;
 
     ReadConfig();
 
@@ -155,9 +156,7 @@ dxirc::dxirc(FXApp *app)
     getAccelTable()->addAccel(MKUINT(KEY_9, ALTMASK), this, FXSEL(SEL_COMMAND, ID_SELECTTAB));
     getAccelTable()->addAccel(MKUINT(KEY_Tab, CONTROLMASK), this, FXSEL(SEL_COMMAND, ID_NEXTTAB));
     getAccelTable()->addAccel(MKUINT(KEY_n, CONTROLMASK), this, FXSEL(SEL_COMMAND, ID_NEXTUNREAD));
-    getAccelTable()->addAccel(MKUINT(KEY_N, CONTROLMASK), this, FXSEL(SEL_COMMAND, ID_NEXTUNREAD));
-
-    viewer = NULL;
+    getAccelTable()->addAccel(MKUINT(KEY_N, CONTROLMASK), this, FXSEL(SEL_COMMAND, ID_NEXTUNREAD));    
 }
 
 dxirc::~dxirc()
@@ -554,7 +553,7 @@ long dxirc::OnCommandAlias(FXObject*, FXSelector, void*)
 long dxirc::OnCommandLog(FXObject*, FXSelector, void*)
 {
     if(viewer == NULL)
-        viewer = new LogViewer(app, logPath);
+        viewer = new LogViewer(app, logPath, ircFont);
     viewer->create();
     return 1;
 }
@@ -860,6 +859,8 @@ void dxirc::UpdateTabs()
         ((IrcTabItem *)tabbook->childAtIndex(i))->SetIrcFont(ircFont);
         ((IrcTabItem *)tabbook->childAtIndex(i))->SetColoredNick(coloredNick);
     }
+    //update font in LogViewer too. Both must be same
+    if(viewer) viewer->SetFont(ircFont);
 }
 
 long dxirc::OnCommandAbout(FXObject*, FXSelector, void*)

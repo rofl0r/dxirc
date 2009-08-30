@@ -147,7 +147,7 @@ class LogViewer: public FXTopWindow
 {
     FXDECLARE(LogViewer)
 public:
-    LogViewer(FXApp *app, const FXString &lpath);
+    LogViewer(FXApp *app, const FXString &lpath, FXFont *fnt);
     virtual ~LogViewer();
     enum {
         ID_ADD = FXTopWindow::ID_LAST,
@@ -171,6 +171,7 @@ public:
     long OnSearchNext(FXObject*,FXSelector,void*);
     long OnReset(FXObject*,FXSelector,void*);
     long OnCmdSearchOptions(FXObject*,FXSelector,void*);
+    void SetFont(FXFont*);
 
 private:
     LogViewer() {}

@@ -40,7 +40,7 @@ FXDEFMAP(LogViewer) LogViewerMap[] = {
 
 FXIMPLEMENT(LogViewer, FXTopWindow, LogViewerMap, ARRAYNUMBER(LogViewerMap))
 
-LogViewer::LogViewer(FXApp *app, const FXString &lpath)
+LogViewer::LogViewer(FXApp *app, const FXString &lpath, FXFont *fnt)
         : FXTopWindow(app, _("dxirc - log viewer"), NULL, NULL, DECOR_ALL, 0,0,800,500, 0,0,0,0, 0,0), logPath(lpath)
 {
     setIcon(bigicon);
@@ -69,6 +69,7 @@ LogViewer::LogViewer(FXApp *app, const FXString &lpath)
     splitter = new FXSplitter(content, LAYOUT_FILL_X | LAYOUT_FILL_Y | SPLITTER_REVERSED | SPLITTER_TRACKING);
     textframe = new FXVerticalFrame(splitter, FRAME_SUNKEN | FRAME_THICK | LAYOUT_FILL_X | LAYOUT_FILL_Y);
     text = new FXText(textframe, NULL, 0, FRAME_SUNKEN | LAYOUT_FILL_X | LAYOUT_FILL_Y | TEXT_WORDWRAP | TEXT_READONLY);
+    text->setFont(fnt);
     text->setVisibleColumns(80);
     listframe = new FXVerticalFrame(splitter, FRAME_SUNKEN | FRAME_THICK | LAYOUT_FILL_X | LAYOUT_FILL_Y | LAYOUT_FIX_WIDTH);
     searchframe = new FXHorizontalFrame(listframe, FRAME_THICK | LAYOUT_FILL_X);
@@ -113,6 +114,11 @@ void LogViewer::create()
     buttonFile->disable();
     buttonChannel->disable();
     buttonAll->disable();
+}
+
+void LogViewer::SetFont(FXFont *fnt)
+{
+    text->setFont(fnt);
 }
 
 long LogViewer::OnClose(FXObject*, FXSelector, void*)
