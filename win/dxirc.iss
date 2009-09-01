@@ -7,7 +7,7 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{11B40D37-A7C9-4720-8741-EEC36F2D07DB}
 AppName=dxirc
-AppVerName=dxirc 0.20.0
+AppVerName=dxirc 0.30.0
 AppPublisher=David Vachulka
 AppPublisherURL=http://www.dxirc.org
 AppSupportURL=http://www.dxirc.org
@@ -15,7 +15,7 @@ AppUpdatesURL=http://www.dxirc.org
 DefaultDirName={pf}\dxirc
 DefaultGroupName=dxirc
 LicenseFile=..\COPYING
-OutputBaseFilename=dxirc-0.20.0-setup
+OutputBaseFilename=dxirc-0.30.0-setup
 Compression=lzma
 SolidCompression=yes
 
@@ -28,8 +28,18 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "dxirc.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "*.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "dxirc-nossl.exe"; DestDir: "{app}"; DestName: "dxirc.exe"; Flags: ignoreversion; Check: IsWin64
+Source: "dxirc.exe"; DestDir: "{app}"; Flags: ignoreversion; Check: not IsWin64
+Source: "bzip2.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "FOXDLL-1.6.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "iconv.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "intl.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "jpeg62.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "libeay32.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: not IsWin64
+Source: "libpng-3.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "libtiff3.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "ssleay32.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: not IsWin64
+Source: "zlib1.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "icons\*.png"; DestDir: "{app}\icons"; Flags: recursesubdirs
 Source: "locale\*.mo"; DestDir: "{app}\locale"; Flags: recursesubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
@@ -43,4 +53,3 @@ Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\dxirc"; Filename: 
 
 [Run]
 Filename: "{app}\dxirc.exe"; Description: "{cm:LaunchProgram,dxirc}"; Flags: nowait postinstall skipifsilent
-

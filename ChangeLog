@@ -1,3 +1,13 @@
+Version 0.30.0 (released 01-09-2009)
+- introduced new log viewer for easier history browsing.
+- implemented tray notification on incoming messages.
+- made it possible to display colored nick names.
+- Added support for automatic reconnect.
+- implemented /say and /help commands.
+
+Version 0.20.1 (released 19-07-2009)
+- small issues in configdialog, trayicon fixed
+
 Version 0.20.0 (released 06-06-2009)
 - enabled connection via SSL.
 - introduced URL highlighting.
