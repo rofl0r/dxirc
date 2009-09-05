@@ -156,7 +156,7 @@ dxirc::dxirc(FXApp *app)
     getAccelTable()->addAccel(MKUINT(KEY_9, ALTMASK), this, FXSEL(SEL_COMMAND, ID_SELECTTAB));
     getAccelTable()->addAccel(MKUINT(KEY_Tab, CONTROLMASK), this, FXSEL(SEL_COMMAND, ID_NEXTTAB));
     getAccelTable()->addAccel(MKUINT(KEY_n, CONTROLMASK), this, FXSEL(SEL_COMMAND, ID_NEXTUNREAD));
-    getAccelTable()->addAccel(MKUINT(KEY_N, CONTROLMASK), this, FXSEL(SEL_COMMAND, ID_NEXTUNREAD));    
+    getAccelTable()->addAccel(MKUINT(KEY_N, CONTROLMASK), this, FXSEL(SEL_COMMAND, ID_NEXTUNREAD));
 }
 
 dxirc::~dxirc()
@@ -203,6 +203,19 @@ dxirc::~dxirc()
 void dxirc::create()
 {
     FXMainWindow::create();
+    //Checking for screen resolution and correction size, position
+    FXint maxWidth = getRoot()->getWidth();
+    FXint maxHeight = getRoot()->getHeight();
+    if(getX()+getWidth() > maxWidth || getX()<0)
+    {
+        setX(0);
+        setWidth(maxWidth);
+    }
+    if(getY()+getHeight() > maxHeight || getY()<0)
+    {
+        setY(0);
+        setHeight(maxHeight);
+    }
     ReadServersConfig();
     show();
 }
