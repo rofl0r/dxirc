@@ -23,6 +23,7 @@
 #include "icons.h"
 #include "config.h"
 #include "i18n.h"
+#include <string>
 #include <fstream>
 
 FXIMPLEMENT(LogItem, FXTreeItem, NULL, 0)

@@ -99,13 +99,13 @@ void dxPipe::StopCmd()
 }
 
 int dxPipe::ReadData()
-{
+{   
+#ifndef WIN32
     FXchar buffer[2048];
     int size, status;
 
     FXString data = strprev;
 
-#ifndef WIN32
     size = read(out[0], buffer, sizeof(buffer)-1);
     if (size > 0)
     {
@@ -139,6 +139,8 @@ int dxPipe::ReadData()
         application->removeInput(out[0], INPUT_READ);
         _exit(-1);
     }
-#endif
     return size;
+#else
+    return 0;
+#endif
 }

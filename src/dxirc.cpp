@@ -20,6 +20,7 @@
  */
 
 #ifdef WIN32
+ #define WIN32_LEAN_AND_MEAN
  #include <windows.h>
 #endif
 
@@ -1547,7 +1548,7 @@ void dxirc::SortTabs()
 {
     if(tabbook->numChildren()/2 > 1)
     {
-        IrcTabItem *tabpole[tabbook->numChildren()/2];
+        IrcTabItem* *tabpole = new IrcTabItem*[tabbook->numChildren()/2];
         for(FXint i = 0; i < tabbook->numChildren()/2; i++)
         {
             tabpole[i] = (IrcTabItem*)tabbook->childAtIndex(i*2);
@@ -1558,6 +1559,7 @@ void dxirc::SortTabs()
             tabpole[i]->ReparentTab();
         }
         tabbook->recalc();
+        delete []tabpole;
     }
 }
 

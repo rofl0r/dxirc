@@ -29,16 +29,7 @@ Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescrip
 
 [Files]
 Source: "dxirc.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "bzip2.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "FOXDLL-1.6.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "iconv.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "intl.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "jpeg62.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "libeay32.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "libpng-3.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "libtiff3.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "ssleay32.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "zlib1.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "*.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "icons\*.png"; DestDir: "{app}\icons"; Flags: recursesubdirs
 Source: "locale\*.mo"; DestDir: "{app}\locale"; Flags: recursesubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
