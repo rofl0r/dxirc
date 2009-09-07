@@ -83,7 +83,7 @@ class ConfigDialog: public FXDialogBox
 {
     FXDECLARE(ConfigDialog)
     public:
-        ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, dxIgnoreUserArray ulist, FXString tpth, FXString thm, FXint maxa, FXbool log, FXString lpth, FXbool srvw, FXString nichar, FXString fnt, FXbool scmd, FXbool slst, ColorTheme atheme, FXbool utray, FXbool cnick, FXbool ctt, FXbool rcn, FXint na, FXint da);
+        ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, dxIgnoreUserArray ulist, FXString tpth, FXString thm, FXint maxa, FXbool log, FXString lpth, FXbool srvw, FXString nichar, FXString fnt, FXbool scmd, FXbool slst, ColorTheme atheme, FXbool utray, FXbool cnick, FXbool ctt, FXbool rcn, FXint na, FXint da, FXint tp);
         virtual ~ConfigDialog();
         enum {
             ID_ADDCOMMAND = FXTopWindow::ID_LAST,
@@ -111,6 +111,7 @@ class ConfigDialog: public FXDialogBox
             ID_TRAY,
             ID_NICK,
             ID_RECONNECT,
+            ID_TABPOS,
             ID_LAST
         };
 
@@ -141,6 +142,7 @@ class ConfigDialog: public FXDialogBox
         long OnIrcFont(FXObject*,FXSelector,void*);
         long OnTray(FXObject*,FXSelector,void*);
         long OnReconnect(FXObject*,FXSelector,void*);
+        long OnTabPosition(FXObject*,FXSelector,void*);
 
         FXString GetCommandsList() { return commandsList; }
         dxIgnoreUserArray GetUsersList() { return usersList; }
@@ -163,6 +165,7 @@ class ConfigDialog: public FXDialogBox
         FXbool GetReconnect() { return reconnect; }
         FXint GetNumberAttempt() { return numberAttempt; }
         FXint GetDelayAttempt() { return delayAttempt; }
+        FXint GetTabPosition() { return tabPosition; }
 
     private:
         ConfigDialog() {}
@@ -179,7 +182,7 @@ class ConfigDialog: public FXDialogBox
         dxIgnoreUserArray usersList;
         FXToolBar *iconsBar;
         IrcColor colors;
-        FXint maxAway, numberAttempt, delayAttempt;
+        FXint maxAway, numberAttempt, delayAttempt, tabPosition;
         FXSpinner *numberAttemptSpinner, *delayAttemptSpinner;
         FXLabel *numberAttemptLabel, *delayAttemptLabel;
         FXString nickChar;
@@ -199,6 +202,7 @@ class ConfigDialog: public FXDialogBox
         FXGroupBox *menuGroup;
         FXSeparator *sep1, *sep2;
         FXFont *font, *ircFont;
+        FXListBox *listTabs;
 
         void FillCommnads();
         FXString FillCommandsCombo();

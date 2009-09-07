@@ -112,11 +112,7 @@ dxirc::dxirc(FXApp *app)
 
     mainframe = new FXVerticalFrame(this, LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 1,1,1,1);
 
-    tabbook = new FXTabBook(mainframe, this, ID_TABS, PACK_UNIFORM_WIDTH|PACK_UNIFORM_HEIGHT|LAYOUT_FILL_X|LAYOUT_FILL_Y|LAYOUT_RIGHT);
-    tabbook->setTabStyle(TABBOOK_BOTTOMTABS);
-    FXuint packing = tabbook->getPackingHints();
-    packing &= ~PACK_UNIFORM_WIDTH;
-    tabbook->setPackingHints(packing);
+    tabbook = new FXTabBook(mainframe, this, ID_TABS, PACK_UNIFORM_WIDTH|PACK_UNIFORM_HEIGHT|LAYOUT_FILL_X|LAYOUT_FILL_Y);    
 
     IrcSocket *server = new IrcSocket(app, this, "", "");
     server->SetUsersList(usersList);
@@ -145,6 +141,7 @@ dxirc::dxirc(FXApp *app)
     UpdateTheme();
     UpdateFont(fontSpec);
     UpdateTabs();
+    UpdateTabPosition();
 
     getAccelTable()->addAccel(MKUINT(KEY_1, ALTMASK), this, FXSEL(SEL_COMMAND, ID_SELECTTAB));
     getAccelTable()->addAccel(MKUINT(KEY_2, ALTMASK), this, FXSEL(SEL_COMMAND, ID_SELECTTAB));
@@ -251,6 +248,7 @@ void dxirc::ReadConfig()
     appTheme.shadow = set.readColorEntry("SETTINGS", "shadowcolor", getApp()->getShadowColor());
     fontSpec = set.readStringEntry("SETTINGS", "normalfont", getApp()->getNormalFont()->getFont().text());
     usersShown = set.readBoolEntry("SETTINGS", "usersShown", TRUE);
+    tabPosition = set.readIntEntry("SETTINGS", "tabPosition", 0);
     commandsList = set.readStringEntry("SETTINGS", "commandsList");
     themePath = CheckThemePath(set.readStringEntry("SETTINGS", "themePath", DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "default"));
     themesList = CheckThemesList(set.readStringEntry("SETTINGS", "themesList", FXString(themePath+";").text()));
@@ -428,6 +426,7 @@ void dxirc::SaveConfig()
     set.writeIntEntry("SETTINGS","y",getY());
     set.writeIntEntry("SETTINGS","w",getWidth());
     set.writeIntEntry("SETTINGS","h",getHeight());
+    set.writeIntEntry("SETTINGS", "tabPosition", tabPosition);
     set.writeColorEntry("SETTINGS", "basecolor", appTheme.base);
     set.writeColorEntry("SETTINGS", "bordercolor", appTheme.border);
     set.writeColorEntry("SETTINGS", "backcolor", appTheme.back);
@@ -513,7 +512,7 @@ long dxirc::OnCommandUsers(FXObject*, FXSelector, void*)
 
 long dxirc::OnCommandOptions(FXObject*, FXSelector, void*)
 {
-    ConfigDialog dialog(this, colors, commandsList, usersList, themePath, themesList, maxAway, logging, logPath, tempServerWindow, nickCompletionChar, ircFont->getFont(), sameCmd, sameList, appTheme, useTray, coloredNick, closeToTray, reconnect, numberAttempt, delayAttempt);
+    ConfigDialog dialog(this, colors, commandsList, usersList, themePath, themesList, maxAway, logging, logPath, tempServerWindow, nickCompletionChar, ircFont->getFont(), sameCmd, sameList, appTheme, useTray, coloredNick, closeToTray, reconnect, numberAttempt, delayAttempt, tabPosition);
     if(dialog.execute(PLACEMENT_CURSOR))
     {
         commandsList = dialog.GetCommandsList();
@@ -537,11 +536,13 @@ long dxirc::OnCommandOptions(FXObject*, FXSelector, void*)
         reconnect = dialog.GetReconnect();
         numberAttempt = dialog.GetNumberAttempt();
         delayAttempt = dialog.GetDelayAttempt();
+        tabPosition = dialog.GetTabPosition();
         UpdateTheme();
         UpdateFont(dialog.GetFont());
         ircFont = new FXFont(getApp(), dialog.GetIrcFont());
         ircFont->create();
         UpdateTabs();
+        UpdateTabPosition();
         for (FXint i = 0; i<servers.no(); i++)
         {
             servers[i]->SetUsersList(usersList);
@@ -877,6 +878,67 @@ void dxirc::UpdateTabs()
     if(viewer) viewer->SetFont(ircFont);
 }
 
+void dxirc::UpdateTabPosition()
+{
+    switch(tabPosition) {
+        case 0: //bottom
+            {
+                tabbook->setTabStyle(TABBOOK_BOTTOMTABS);
+                for(FXint i = 0; i<tabbook->numChildren(); i=i+2)
+                {
+                    ((IrcTabItem *)tabbook->childAtIndex(i))->setTabOrientation(TAB_BOTTOM);
+                }
+                FXuint packing = tabbook->getPackingHints();
+                packing &= ~PACK_UNIFORM_WIDTH;
+                tabbook->setPackingHints(packing);
+            }break;
+        case 1: //left
+            {
+                tabbook->setTabStyle(TABBOOK_LEFTTABS);
+                for(FXint i = 0; i<tabbook->numChildren(); i=i+2)
+                {
+                    ((IrcTabItem *)tabbook->childAtIndex(i))->setTabOrientation(TAB_LEFT);
+                }
+                FXuint packing = tabbook->getPackingHints();
+                packing |= PACK_UNIFORM_WIDTH;
+                tabbook->setPackingHints(packing);
+            }break;
+        case 2: //top
+            {
+                tabbook->setTabStyle(TABBOOK_TOPTABS);
+                for(FXint i = 0; i<tabbook->numChildren(); i=i+2)
+                {
+                    ((IrcTabItem *)tabbook->childAtIndex(i))->setTabOrientation(TAB_TOP);
+                }
+                FXuint packing = tabbook->getPackingHints();
+                packing &= ~PACK_UNIFORM_WIDTH;
+                tabbook->setPackingHints(packing);
+            }break;
+        case 3: //right
+            {
+                tabbook->setTabStyle(TABBOOK_RIGHTTABS);
+                for(FXint i = 0; i<tabbook->numChildren(); i=i+2)
+                {
+                    ((IrcTabItem *)tabbook->childAtIndex(i))->setTabOrientation(TAB_RIGHT);
+                }
+                FXuint packing = tabbook->getPackingHints();
+                packing |= PACK_UNIFORM_WIDTH;
+                tabbook->setPackingHints(packing);
+            }break;
+        default:
+            {
+                tabbook->setTabStyle(TABBOOK_BOTTOMTABS);
+                for(FXint i = 0; i<tabbook->numChildren(); i=i+2)
+                {
+                    ((IrcTabItem *)tabbook->childAtIndex(i))->setTabOrientation(TAB_BOTTOM);
+                }
+                FXuint packing = tabbook->getPackingHints();
+                packing &= ~PACK_UNIFORM_WIDTH;
+                tabbook->setPackingHints(packing);
+            }
+    }   
+}
+
 long dxirc::OnCommandAbout(FXObject*, FXSelector, void*)
 {
     FXDialogBox about(this, FXStringFormat(_("About %s"), PACKAGE), DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0);
@@ -1005,7 +1067,7 @@ void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString
             servers[0]->AppendTarget(tabitem);
             tabitem->create();
             tabitem->CreateGeom();
-            //tabbook->setCurrent(tabbook->numChildren()/2);
+            UpdateTabPosition();
         }
         ((IrcTabItem *)tabbook->childAtIndex(0))->SetType(SERVER, hostname);
         SortTabs();
@@ -1034,7 +1096,7 @@ void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString
         servers[0]->SetDelayAttempt(delayAttempt);
         tabitem->create();
         tabitem->CreateGeom();
-        //tabbook->setCurrent(tabbook->numChildren()/2);
+        UpdateTabPosition();
         SortTabs();
         servers[0]->ClearAttempts();
         servers[0]->StartConnection();
@@ -1120,7 +1182,7 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
             server->AppendTarget(tabitem);
             tabitem->create();
             tabitem->CreateGeom();
-            //tabbook->setCurrent(tabbook->numChildren()/2);
+            UpdateTabPosition();
         }
         SortTabs();
         UpdateMenus();
@@ -1139,9 +1201,13 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
             server->AppendTarget(tabitem);
             tabitem->create();
             tabitem->CreateGeom();
-            //tabbook->setCurrent(tabbook->numChildren()/2);
-        }
+            UpdateTabPosition();
+        }        
         SortTabs();
+        for(FXint i = 0; i < tabbook->numChildren(); i=i+2)
+        {
+            if(server->FindTarget((IrcTabItem *)tabbook->childAtIndex(i)) && comparecase(((IrcTabItem *)tabbook->childAtIndex(i))->getText(), ev->param1) == 0) tabbook->setCurrent(i/2, TRUE);
+        }
         UpdateMenus();
         return 1;
     }

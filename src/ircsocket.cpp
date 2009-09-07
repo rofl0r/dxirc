@@ -52,8 +52,9 @@ IrcSocket::IrcSocket(FXApp *app, FXObject *tgt, FXString channels, FXString comm
     userName = nickName;
     realName = nickName;
     receiveRest = "";
-    connected = false;
-    connecting = false;
+    connected = FALSE;
+    connecting = FALSE;
+    endmotd = FALSE;
     attempts = 0;
     nickLen = 460;
     topicLen = 460;
@@ -114,6 +115,7 @@ FXint IrcSocket::Connect()
 #endif
     if(connected)
         return 1;
+    endmotd = FALSE;
 #ifdef WIN32
     WORD wVersionRequested = MAKEWORD(2,0);
     WSADATA data;
@@ -185,6 +187,7 @@ FXint IrcSocket::ConnectSSL()
 #endif
     if(connected)
         return 1;
+    endmotd = FALSE;
 #ifdef HAVE_OPENSSL
 #ifdef WIN32
     WORD wVersionRequested = MAKEWORD(2,0);
@@ -660,6 +663,7 @@ void IrcSocket::Numeric(const FXint &command, const FXString &params)
         {
             SendEvent(IRC_SERVERREPLY, _("End of /MOTD command"));
             SendEvent(IRC_ENDMOTD);
+            endmotd = TRUE;
             if(!startChannels.empty())
             {
                 SendJoin(startChannels);
@@ -738,6 +742,7 @@ void IrcSocket::Numeric(const FXint &command, const FXString &params)
         {
             SendEvent(IRC_SERVERERROR, _("MOTD File is missing"));
             SendEvent(IRC_ENDMOTD);
+            endmotd = TRUE;
             if(!startChannels.empty())
             {
                 SendJoin(startChannels);
@@ -763,14 +768,22 @@ void IrcSocket::Numeric(const FXint &command, const FXString &params)
         case 432: //ERR_ERRONEUSNICKNAME
         {
             SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Erroneous nickname"), utils::GetParam(params, 2, false).text()));
-            nickName = "_xxx_";
-            SendNick(nickName);
+            if(endmotd) SendEvent(IRC_SERVERREPLY, FXStringFormat(_("You still have nick: %s"), nickName.text()));
+            else
+            {
+                nickName = "_xxx_";
+                SendNick(nickName);
+            }
         }break;
         case 433: //ERR_NICKNAMEINUSE
         {
             SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Nickname is already in use"), utils::GetParam(params, 2, false).text()));
-            nickName += "_";
-            SendNick(nickName);
+            if(endmotd) SendEvent(IRC_SERVERREPLY, FXStringFormat(_("You still have nick: %s"), nickName.text()));
+            else
+            {
+                nickName += "_";
+                SendNick(nickName);
+            }
         }break;
         case 436: //ERR_NICKCOLLISION
         {
@@ -1284,6 +1297,11 @@ FXbool IrcSocket::SendVersion(const FXString& to)
 FXbool IrcSocket::SendWho(const FXString& mask)
 {
     return SendLine("WHO "+mask);
+}
+
+FXbool IrcSocket::SendWhoami()
+{
+    return SendLine("WHOIS "+nickName);
 }
 
 FXbool IrcSocket::SendWhois(const FXString& params)

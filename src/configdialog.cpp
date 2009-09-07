@@ -53,6 +53,7 @@ FXDEFMAP(ConfigDialog) ConfigDialogMap[] = {
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_THEME, ConfigDialog::OnTheme),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_FONT, ConfigDialog::OnFont),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_IRCFONT, ConfigDialog::OnIrcFont),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_TABPOS, ConfigDialog::OnTabPosition),
     FXMAPFUNCS(SEL_SELECTED, ConfigDialog::ID_USER, ConfigDialog::ID_SERVER, ConfigDialog::OnUsersSelected),
     FXMAPFUNCS(SEL_DESELECTED, ConfigDialog::ID_USER, ConfigDialog::ID_SERVER, ConfigDialog::OnUsersDeselected),
     FXMAPFUNCS(SEL_CHANGED, ConfigDialog::ID_USER, ConfigDialog::ID_SERVER, ConfigDialog::OnUsersChanged),
@@ -60,9 +61,9 @@ FXDEFMAP(ConfigDialog) ConfigDialogMap[] = {
 
 FXIMPLEMENT(ConfigDialog, FXDialogBox, ConfigDialogMap, ARRAYNUMBER(ConfigDialogMap))
 
-ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, dxIgnoreUserArray ulist, FXString tpth, FXString thm, FXint maxa, FXbool log, FXString lpth, FXbool srvw, FXString nichar, FXString fnt, FXbool scmd, FXbool slst, ColorTheme atheme, FXbool utray, FXbool cnick, FXbool ctt, FXbool rcn, FXint na, FXint da)
+ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, dxIgnoreUserArray ulist, FXString tpth, FXString thm, FXint maxa, FXbool log, FXString lpth, FXbool srvw, FXString nichar, FXString fnt, FXbool scmd, FXbool slst, ColorTheme atheme, FXbool utray, FXbool cnick, FXbool ctt, FXbool rcn, FXint na, FXint da, FXint tb)
     : FXDialogBox(owner, _("Preferences"), DECOR_RESIZE|DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0),
-        commandsList(clist), themePath(tpth), themesList(thm), logPath(lpth), logging(log), serverWindow(srvw), sameCmd(scmd), sameList(slst), useTray(utray), coloredNick(cnick), closeToTray(ctt), reconnect(rcn), usersList(ulist), colors(clrs), maxAway(maxa), numberAttempt(na), delayAttempt(da), nickChar(nichar), themeCurrent(atheme)
+        commandsList(clist), themePath(tpth), themesList(thm), logPath(lpth), logging(log), serverWindow(srvw), sameCmd(scmd), sameList(slst), useTray(utray), coloredNick(cnick), closeToTray(ctt), reconnect(rcn), usersList(ulist), colors(clrs), maxAway(maxa), numberAttempt(na), delayAttempt(da), tabPosition(tb), nickChar(nichar), themeCurrent(atheme)
 {
     textTarget.connect(colors.text);
     textTarget.setTarget(this);
@@ -290,6 +291,16 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, d
     selectPath = new FXButton(logpane, "...", NULL, this, ID_LOGPATH, FRAME_RAISED|FRAME_THICK);
     if(logging) selectPath->enable();
     else selectPath->disable();
+    FXHorizontalFrame *tabpane = new FXHorizontalFrame(otherpane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    new FXLabel(tabpane, _("Tab position"), NULL, LAYOUT_LEFT);
+    listTabs = new FXListBox(tabpane, this, ID_TABPOS);
+    listTabs->appendItem(_("Bottom"));
+    listTabs->appendItem(_("Left"));
+    listTabs->appendItem(_("Top"));
+    listTabs->appendItem(_("Right"));
+    listTabs->setNumVisible(4);
+    if(tabPosition>=0 && tabPosition<4) listTabs->setCurrentItem(tabPosition);
+
 
     FXVerticalFrame *lookpane = new FXVerticalFrame(switcher, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     new FXLabel(lookpane, _("FOX toolkit look for dxirc"), NULL, LAYOUT_LEFT);
@@ -472,6 +483,12 @@ long ConfigDialog::OnColor(FXObject*, FXSelector, void*)
     textStyle[4].normalForeColor = colors.hilight;
     textStyle[5].normalForeColor = colors.link;
     text->update();
+    return 1;
+}
+
+long ConfigDialog::OnTabPosition(FX::FXObject *, FX::FXSelector, void *ptr)
+{
+    tabPosition = (FXint)(FXival)ptr;
     return 1;
 }
 

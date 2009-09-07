@@ -1,0 +1,29 @@
+#include <windows.h> // include for version info constants
+
+A ICON MOVEABLE PURE LOADONCALL DISCARDABLE "dxirc.ico"
+
+1 VERSIONINFO
+FILEVERSION 0,40,0,0
+PRODUCTVERSION 0,40,0,0
+FILETYPE VFT_APP
+{
+  BLOCK "StringFileInfo"
+	 {
+		 BLOCK "040504E4"
+		 {
+			 VALUE "CompanyName", "David Vachulka"
+			 VALUE "FileVersion", "0.40.svn"
+			 VALUE "FileDescription", "dxirc - simple IRC client"
+			 VALUE "InternalName", "dxirc"
+			 VALUE "LegalCopyright", "Copyright (C) 2008~ David Vachulka"
+			 VALUE "LegalTrademarks", "GPL"
+			 VALUE "OriginalFilename", "dxirc.exe"
+			 VALUE "ProductName", "dxirc - simple IRC client"
+			 VALUE "ProductVersion", "0.40.svn"
+		 }
+	 }
+  BLOCK "VarFileInfo"
+	 {
+		 VALUE "Translation", 0x0405, 1252
+	 }
+}

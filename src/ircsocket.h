@@ -129,6 +129,7 @@ class IrcSocket: public FXObject
         FXbool SendVersion(const FXString &to);
         FXbool SendWallops(const FXString &msg);
         FXbool SendWho(const FXString &mask);
+        FXbool SendWhoami();
         FXbool SendWhois(const FXString &params);
         FXbool SendWhowas(const FXString &params);
 
@@ -139,7 +140,7 @@ class IrcSocket: public FXObject
         IrcSocket(){}
 
         FXApp *application;
-        FXbool connected, useSsl, connecting, reconnect;
+        FXbool connected, useSsl, connecting, reconnect, endmotd;
         FXint serverPort, numberAttempt, delayAttempt, attempts;
         FXint nickLen, topicLen, kickLen, awayLen;
         FXString serverName, realServerName, serverPassword, nickName, realName, userName, startChannels, startCommands;

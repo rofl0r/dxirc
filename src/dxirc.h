@@ -92,7 +92,7 @@ class dxirc: public FXMainWindow
         FXbool sameList, useTray, coloredNick, closeToTray, reconnect;
         IrcColor colors;
         FXString commandsList, themesList, themePath, logPath;
-        FXint maxAway, numberAttempt, delayAttempt;
+        FXint maxAway, numberAttempt, delayAttempt, tabPosition;
         FXString nickCompletionChar, fontSpec;
         FXFont *ircFont;
         ColorTheme appTheme;
@@ -110,6 +110,7 @@ class dxirc: public FXMainWindow
         void UpdateMenus();
         void UpdateTheme();
         void UpdateTabs();
+        void UpdateTabPosition();
         void UpdateFont(FXString);
         void SortTabs();
         FXString Encrypt(const FXString&);

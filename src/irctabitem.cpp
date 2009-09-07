@@ -1490,6 +1490,8 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 }
                 else return server->SendWho(params);
             }
+            if(command == "whoami")
+                return server->SendWhoami();
             if(command == "whois")
             {
                 FXString params = commandtext.after(' ');
@@ -1768,6 +1770,11 @@ FXbool IrcTabItem::ShowHelp(FXString command)
     if(command == "who")
     {
         AppendIrcText(_("WHO <mask> [o], searchs for mask on network, if o is supplied, only search for opers."));
+        return true;
+    }
+    if(command == "whoami")
+    {
+        AppendIrcText(_("WHOAMI, whois about you."));
         return true;
     }
     if(command == "whois")

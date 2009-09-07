@@ -68,6 +68,7 @@ namespace utils
         commands.append("VOICE");
         commands.append("WALLOPS");
         commands.append("WHO");
+        commands.append("WHOAMI");
         commands.append("WHOIS");
         commands.append("WHOWAS");
         StringIt it;
