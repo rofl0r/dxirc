@@ -62,6 +62,7 @@ class IrcTabItem: public FXTabItem
             ID_KICKBAN,
             ID_TOPIC,
             ID_CSERVER,
+            ID_NEXTTAB,
             ID_TEXT,
             ID_NEWMSG,
             ID_LAST
@@ -86,6 +87,7 @@ class IrcTabItem: public FXTabItem
         void SetSameCmd(FXbool);
         void SetSameList(FXbool);
         void SetColoredNick(FXbool);
+        void SetCommandFocus();
 
         long OnCommandline(FXObject *, FXSelector, void*);
         long OnKeyPress(FXObject *, FXSelector, void*);

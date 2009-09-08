@@ -51,6 +51,7 @@ FXDEFMAP(dxirc) dxircMap[] = {
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_OPTIONS,          dxirc::OnCommandOptions),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_SELECTTAB,        dxirc::OnCommandSelectTab),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_NEXTTAB,          dxirc::OnCommandNextTab),
+    FXMAPFUNC(SEL_COMMAND,  IrcTabItem::ID_NEXTTAB,     dxirc::OnCommandNextTab),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_NEXTUNREAD,       dxirc::OnCommandNextUnread),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_ALIAS,            dxirc::OnCommandAlias),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_LOG,              dxirc::OnCommandLog),
@@ -1204,9 +1205,12 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
             UpdateTabPosition();
         }        
         SortTabs();
-        for(FXint i = 0; i < tabbook->numChildren(); i=i+2)
+        if(ev->param2 == server->GetNickName())
         {
-            if(server->FindTarget((IrcTabItem *)tabbook->childAtIndex(i)) && comparecase(((IrcTabItem *)tabbook->childAtIndex(i))->getText(), ev->param1) == 0) tabbook->setCurrent(i/2, TRUE);
+            for(FXint i = 0; i < tabbook->numChildren(); i=i+2)
+            {
+                if(server->FindTarget((IrcTabItem *)tabbook->childAtIndex(i)) && comparecase(((IrcTabItem *)tabbook->childAtIndex(i))->getText(), ev->param1) == 0) tabbook->setCurrent(i/2, TRUE);
+            }
         }
         UpdateMenus();
         return 1;
@@ -1334,6 +1338,7 @@ long dxirc::OnTabBook(FXObject *, FXSelector, void *ptr)
 #endif
     }
     currenttab->setFocus();
+    currenttab->SetCommandFocus();
     return 1;
 }
 

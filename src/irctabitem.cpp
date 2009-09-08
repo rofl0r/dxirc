@@ -1329,6 +1329,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     IrcEvent ev;
                     ev.eventType = IRC_QUERY;
                     ev.param1 = commandtext.after(' ').before(' ');
+                    ev.param2 = server->GetNickName();
                     parent->getParent()->getParent()->handle(server, FXSEL(SEL_COMMAND, IrcSocket::ID_SERVER), &ev);
                     return true;
                 }
@@ -1803,6 +1804,11 @@ long IrcTabItem::OnKeyPress(FXObject *, FXSelector, void *ptr)
         FXEvent* event = (FXEvent*)ptr;
         switch(event->code){
             case KEY_Tab:
+                if(event->state&CONTROLMASK)
+                {
+                    parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_NEXTTAB), NULL);
+                    return 1;
+                }
                 if(commandline->getText()[0] == '/' && commandline->getText().after(' ').empty())
                 {
                     for (FXint i = 0; i < utils::CommandsNo(); i++)
@@ -2825,6 +2831,7 @@ long IrcTabItem::OnNewQuery(FXObject *, FXSelector, void *)
     IrcEvent ev;
     ev.eventType = IRC_QUERY;
     ev.param1 = nickOnRight.nick;
+    ev.param2 = server->GetNickName();
     parent->getParent()->getParent()->handle(server, FXSEL(SEL_COMMAND, IrcSocket::ID_SERVER), &ev);
     return 1;
 }
@@ -3069,4 +3076,9 @@ dxStringArray IrcTabItem::CutText(FXString text, FXint len)
     }
     texts.append(text.mid(previous, len));
     return texts;    
+}
+
+void IrcTabItem::SetCommandFocus()
+{
+    commandline->setFocus();
 }
