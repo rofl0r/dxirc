@@ -104,6 +104,7 @@ class IrcSocket: public FXObject
         NickInfo GetNickInfo(const FXString &nick);
         FXString GetBannedNick(const FXString &banmask);
         const char* GetLocalIP();
+        const char* GetRemoteIP();
         FXbool SendAdmin(const FXString &params);
         FXbool SendAway(const FXString &params);
         FXbool SendBanlist(const FXString &channel);

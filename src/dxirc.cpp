@@ -110,6 +110,7 @@ dxirc::dxirc(FXApp *app)
     new FXMenuTitle(menubar, _("&Help"), NULL, helpmenu);
 
     statusbar = new FXStatusBar(this, LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X);
+    statusbar->getStatusLine()->setNormalText("");
 
     mainframe = new FXVerticalFrame(this, LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 1,1,1,1);
 
@@ -940,6 +941,33 @@ void dxirc::UpdateTabPosition()
     }   
 }
 
+void dxirc::UpdateStatus()
+{
+    if(tabbook->numChildren())
+    {
+        FXint index = tabbook->getCurrent()*2;
+        IrcTabItem *currenttab = (IrcTabItem *)tabbook->childAtIndex(index);
+        if(currenttab->GetType() == SERVER) this->setTitle(PACKAGE);
+        else this->setTitle(FXStringFormat("%s - %s", PACKAGE, currenttab->getText().text()));
+        IrcSocket *currentserver;
+        for(FXint i=0; i < servers.no(); i++)
+        {
+            if(servers[i]->FindTarget(currenttab))
+            {
+                currentserver = servers[i];
+                break;
+            }
+        }
+        if(currenttab->GetType() == SERVER) statusbar->getStatusLine()->setNormalText(FXStringFormat("%s-%s", currentserver->GetNickName().text(), currentserver->GetServerName().text()));
+        else statusbar->getStatusLine()->setNormalText(FXStringFormat("%s-%s-%s", currentserver->GetNickName().text(), currentserver->GetServerName().text(), currenttab->getText().text()));
+    }
+    else
+    {
+        this->setTitle(PACKAGE);
+        statusbar->getStatusLine()->setNormalText("");
+    }
+}
+
 long dxirc::OnCommandAbout(FXObject*, FXSelector, void*)
 {
     FXDialogBox about(this, FXStringFormat(_("About %s"), PACKAGE), DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0);
@@ -1187,6 +1215,7 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
         }
         SortTabs();
         UpdateMenus();
+        UpdateStatus();
         return 1;
     }
     if(ev->eventType == IRC_QUERY && !TabExist(server, ev->param1))
@@ -1213,6 +1242,7 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
             }
         }
         UpdateMenus();
+        UpdateStatus();
         return 1;
     }
     if(ev->eventType == IRC_PART)
@@ -1246,6 +1276,7 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
                 }
                 SortTabs();
                 UpdateMenus();
+                UpdateStatus();
             }
         }
         return 1;
@@ -1279,6 +1310,7 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
             }
             SortTabs();
             UpdateMenus();
+            UpdateStatus();
         }
         return 1;
     }
@@ -1303,11 +1335,18 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
         }
         SortTabs();
         UpdateMenus();
+        UpdateStatus();
         return 1;
     }
     if(ev->eventType == IRC_ENDMOTD)
     {
         UpdateMenus();
+        UpdateStatus();
+        return 1;
+    }
+    if(ev->eventType == IRC_NICK)
+    {
+        UpdateStatus();
         return 1;
     }
     return 1;
@@ -1339,6 +1378,7 @@ long dxirc::OnTabBook(FXObject *, FXSelector, void *ptr)
     }
     currenttab->setFocus();
     currenttab->SetCommandFocus();
+    UpdateStatus();
     return 1;
 }
 
@@ -1491,6 +1531,7 @@ long dxirc::OnCommandCloseTab(FXObject *, FXSelector, void *)
         SortTabs();
     }
     UpdateMenus();
+    UpdateStatus();
     return 1;
 }
 

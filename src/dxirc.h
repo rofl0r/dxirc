@@ -112,6 +112,7 @@ class dxirc: public FXMainWindow
         void UpdateTabs();
         void UpdateTabPosition();
         void UpdateFont(FXString);
+        void UpdateStatus();
         void SortTabs();
         FXString Encrypt(const FXString&);
         FXString Decrypt(const FXString&);

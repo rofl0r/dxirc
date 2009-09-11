@@ -301,7 +301,7 @@ FXint IrcSocket::ConnectSSL()
 #endif
 #else
     connected = false;
-#endif //HAVE_OPENSSL
+#endif //HAVE_OPENSSL    
     connecting = false;
     return 1;
 }
@@ -1754,6 +1754,11 @@ const char* IrcSocket::GetLocalIP()
     socklen_t len = sizeof(struct sockaddr_in);
     getsockname(socketid, reinterpret_cast<struct sockaddr *>(&local), &len);
     return inet_ntoa(local.sin_addr);
+}
+
+const char* IrcSocket::GetRemoteIP()
+{
+    return inet_ntoa(serverSock.sin_addr);
 }
 
 FXbool IrcSocket::IsUserIgnored(const FXString &nick, const FXString &on)
