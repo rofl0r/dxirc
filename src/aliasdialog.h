@@ -34,8 +34,7 @@ public:
         ID_ADD = FXTopWindow::ID_LAST,
         ID_MODIFY,
         ID_DELETE,
-        ID_KEYS,
-        ID_VALUES,
+        ID_TABLE,
         ID_SAVECLOSE,
         ID_CANCEL,
         ID_LAST
@@ -46,22 +45,22 @@ public:
     long OnDelete(FXObject*,FXSelector,void*);
     long OnCancel(FXObject*,FXSelector,void*);
     long OnSaveClose(FXObject*,FXSelector,void*);
-    long OnListSelected(FXObject*,FXSelector,void*);
-    long OnListDeselected(FXObject*,FXSelector,void*);
-    long OnListChanged(FXObject*,FXSelector,void*);
+    long OnTableSelected(FXObject*,FXSelector,void*);
+    long OnTableDeselected(FXObject*,FXSelector,void*);
+    long OnTableChanged(FXObject*,FXSelector,void*);
     long OnKeyPress(FXObject*,FXSelector,void*);
 
 private:
     AliasDialog() {}
     AliasDialog(const AliasDialog& orig);
 
-    FXVerticalFrame *content;
-    FXHorizontalFrame *buttonframe, *keyframe, *valueframe;
-    FXList *keys, *values;
+    FXVerticalFrame *content, *tableframe;
+    FXHorizontalFrame *buttonframe;
+    FXIconList *table;
     FXButton *buttonAdd, *buttonModify, *buttonDelete, *buttonCancel, *buttonSaveClose;
     dxStringMap aliases;
 
-    void UpdateList();
+    void UpdateTable();
 };
 
 #endif	/* ALIASDIALOG_H */
