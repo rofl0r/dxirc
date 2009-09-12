@@ -184,7 +184,7 @@ class IrcSocket: public FXObject
         void Error(const FXString&);
         void Unknown(const FXString&, const FXString&);
         void ParseRplIsupport(FXString);
-        FXbool IsUserIgnored(const FXString &nick, const FXString &on);
+        FXbool IsUserIgnored(const FXString &nick, const FXString &user, const FXString &host, const FXString &on);
         void CloseConnection(FXbool disableReconnect=FALSE);
         void MakeStartChannels();
         void ClearChannelsCommands();

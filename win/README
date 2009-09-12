@@ -1,0 +1,21 @@
+Compilation on Windows
+
+DevCpp
+======
+
+You use dxirc.dev for compilation.
+Check path for OpenSSL or delete HAVE_OPENSSL.
+You have to installed fox, libpng, libtiff, libjpeg and libintl (gettext) devpak.
+
+Visual C++
+==========
+
+You use dxirc.sln for compilation.
+Set path for OpenSSL or delete HAVE_OPENSSL.
+You have to compiled fox with png support and libintl (gettext).
+You have to add "friend class FXTrayIcon;" in FXIcon.h.
+
+Make setup
+==========
+
+You use dxirc.iss and InnoSetup for make setup.exe.

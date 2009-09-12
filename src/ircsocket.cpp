@@ -968,8 +968,8 @@ void IrcSocket::Privmsg(const FXString &from, const FXString &params)
     if(msg[0] == '\001') Ctcp(from, params);
     else
     {
-        if(nickName == to && !IsUserIgnored(nick, to)) SendEvent(IRC_QUERY, nick);
-        if(!IsUserIgnored(nick, to)) SendEvent(IRC_PRIVMSG, nick, to, msg);
+        if(nickName == to && !IsUserIgnored(nick, from.after('!').before('@'), from.after('@'), to)) SendEvent(IRC_QUERY, nick);
+        if(!IsUserIgnored(nick, from.after('!').before('@'), from.after('@'), to)) SendEvent(IRC_PRIVMSG, nick, to, msg);
     }
 }
 
@@ -987,8 +987,8 @@ void IrcSocket::Ctcp(const FXString &from, const FXString &params)
     }
     else if(ctcpCommand == "ACTION")
     {
-        if(nickName == to && !IsUserIgnored(nick, to)) SendEvent(IRC_QUERY, nick);
-        if(!IsUserIgnored(nick, to)) SendEvent(IRC_ACTION, nick, to, ctcpRest);
+        if(nickName == to && !IsUserIgnored(nick, from.after('!').before('@'), from.after('@'), to)) SendEvent(IRC_QUERY, nick);
+        if(!IsUserIgnored(nick, from.after('!').before('@'), from.after('@'), to)) SendEvent(IRC_ACTION, nick, to, ctcpRest);
     }
     else if(ctcpCommand == "PING")
     {
@@ -1083,7 +1083,7 @@ void IrcSocket::Notice(const FXString &from, const FXString &params)
         }
         else
         {
-            if(!IsUserIgnored(nick, to)) SendEvent(IRC_CHNOTICE, nick, to, msg);
+            if(!IsUserIgnored(nick, from.after('!').before('@'), from.after('@'), to)) SendEvent(IRC_CHNOTICE, nick, to, msg);
         }
     }
 }
@@ -1761,34 +1761,42 @@ const char* IrcSocket::GetRemoteIP()
     return inet_ntoa(serverSock.sin_addr);
 }
 
-FXbool IrcSocket::IsUserIgnored(const FXString &nick, const FXString &on)
+FXbool IrcSocket::IsUserIgnored(const FXString &nick, const FXString &user, const FXString &host, const FXString &on)
 {
-    FXbool user = false;
-    FXbool channel = false;
-    FXbool host = false;
+    FXbool bnick = FALSE;
+    FXbool buser = FALSE;
+    FXbool bhost = FALSE;
+    FXbool bchannel = FALSE;
+    FXbool bserver = FALSE;
     for(FXint i=0; i<usersList.no(); i++)
     {
-        if(FXRex(FXString("\\<"+usersList[i].nick+"\\>").substitute("*","\\w*")).match(nick)) user = true;
-        if(usersList[i].channel == "all") channel = true;
+        FXString inick, iuser, ihost;
+        inick = usersList[i].nick.before('!');
+        iuser = usersList[i].nick.after('!').before('@');
+        ihost = usersList[i].nick.after('@');
+        if(FXRex(FXString("\\<"+inick+"\\>").substitute("*","\\w*")).match(nick)) bnick = TRUE;
+        if(FXRex(FXString("\\<"+iuser+"\\>").substitute("*","\\w*")).match(user) || iuser.empty()) buser = TRUE;
+        if(FXRex(FXString("\\<"+ihost+"\\>").substitute("*","\\w*")).match(host) || ihost.empty()) bhost = TRUE;
+        if(usersList[i].channel == "all") bchannel = TRUE;
         if(usersList[i].channel.contains(','))
         {
             for(FXint j=1; j<usersList[i].channel.contains(',')+2; j++)
             {
                 if(FXRex(FXString(utils::GetParam(usersList[i].channel, j, false, ',')+"\\>").substitute("*","\\w*")).match(on))
                 {
-                    channel = true;
+                    bchannel = TRUE;
                     break;
                 }
             }
         }
         else
         {
-            if(FXRex(FXString(usersList[i].channel+"\\>").substitute("*","\\w*")).match(on)) channel = true;
+            if(FXRex(FXString(usersList[i].channel+"\\>").substitute("*","\\w*")).match(on)) bchannel = TRUE;
         }
-        if(usersList[i].server == "all") host = true;
-        if(FXRex(FXString("\\<"+usersList[i].server+"\\>").substitute("*","\\w*")).match(serverName)) host = true;
+        if(usersList[i].server == "all") bserver = TRUE;
+        if(FXRex(FXString("\\<"+usersList[i].server+"\\>").substitute("*","\\w*")).match(serverName)) bserver = TRUE;
     }
-    return user && channel && host;
+    return bnick && buser && bhost && bchannel && bserver;
 }
 
 ConnectThread::ConnectThread(IrcSocket *sct) : socket(sct)
