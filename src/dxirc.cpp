@@ -943,7 +943,7 @@ void dxirc::UpdateTabPosition()
 
 void dxirc::UpdateStatus()
 {
-    if(tabbook->numChildren())
+    if(tabbook->numChildren() && tabbook->getCurrent()>=0)
     {
         FXint index = tabbook->getCurrent()*2;
         IrcTabItem *currenttab = (IrcTabItem *)tabbook->childAtIndex(index);
@@ -1100,6 +1100,7 @@ void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString
         }
         ((IrcTabItem *)tabbook->childAtIndex(0))->SetType(SERVER, hostname);
         SortTabs();
+        UpdateStatus();
         servers[0]->ClearAttempts();
         servers[0]->StartConnection();
     }
@@ -1127,10 +1128,11 @@ void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString
         tabitem->CreateGeom();
         UpdateTabPosition();
         SortTabs();
+        UpdateStatus();
         servers[0]->ClearAttempts();
         servers[0]->StartConnection();
     }
-    UpdateMenus();
+    UpdateMenus();    
 }
 
 long dxirc::OnCommandDisconnect(FXObject*, FXSelector, void*)
@@ -1185,6 +1187,7 @@ long dxirc::OnCommandDisconnect(FXObject*, FXSelector, void*)
             }
         }
         SortTabs();
+        UpdateStatus();
     }
     UpdateMenus();
     return 1;
