@@ -42,7 +42,7 @@ FXDEFMAP(AliasDialog) AliasDialogMap[] = {
 FXIMPLEMENT(AliasDialog, FXDialogBox, AliasDialogMap, ARRAYNUMBER(AliasDialogMap))
 
 AliasDialog::AliasDialog(FXMainWindow *owner)
-        : FXDialogBox(owner, _("Aliases list"), DECOR_TITLE|DECOR_BORDER|DECOR_STRETCHABLE, 0,0,0,0, 0,0,0,0, 0,0)
+        : FXDialogBox(owner, _("Aliases list"), DECOR_TITLE|DECOR_BORDER|DECOR_RESIZE, 0,0,0,0, 0,0,0,0, 0,0)
 {
     aliases = utils::GetAliases();
 
@@ -204,6 +204,4 @@ void AliasDialog::UpdateTable()
     {
         table->appendItem((*it).first+"\t"+(*it).second);
     }
-    table->setHeaderSize(0, tableframe->getWidth()/2);
-    table->setHeaderSize(1, tableframe->getWidth()-tableframe->getWidth()/2);
 }
