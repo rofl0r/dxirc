@@ -62,7 +62,7 @@ FXDEFMAP(ConfigDialog) ConfigDialogMap[] = {
 FXIMPLEMENT(ConfigDialog, FXDialogBox, ConfigDialogMap, ARRAYNUMBER(ConfigDialogMap))
 
 ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, dxIgnoreUserArray ulist, FXString tpth, FXString thm, FXint maxa, FXbool log, FXString lpth, FXbool srvw, FXString nichar, FXString fnt, FXbool scmd, FXbool slst, ColorTheme atheme, FXbool utray, FXbool cnick, FXbool ctt, FXbool rcn, FXint na, FXint da, FXint tb)
-    : FXDialogBox(owner, _("Preferences"), DECOR_RESIZE|DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0),
+    : FXDialogBox(owner, _("Preferences"), DECOR_STRETCHABLE|DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0),
         commandsList(clist), themePath(tpth), themesList(thm), logPath(lpth), logging(log), serverWindow(srvw), sameCmd(scmd), sameList(slst), useTray(utray), coloredNick(cnick), closeToTray(ctt), reconnect(rcn), usersList(ulist), colors(clrs), maxAway(maxa), numberAttempt(na), delayAttempt(da), tabPosition(tb), nickChar(nichar), themeCurrent(atheme)
 {
     textTarget.connect(colors.text);

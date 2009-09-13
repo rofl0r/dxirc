@@ -37,8 +37,11 @@ public:
         ID_TABLE,
         ID_SAVECLOSE,
         ID_CANCEL,
+        ID_CHANGE,
         ID_LAST
     };
+
+    virtual void create();
 
     long OnAdd(FXObject*,FXSelector,void*);
     long OnModify(FXObject*,FXSelector,void*);
@@ -49,6 +52,7 @@ public:
     long OnTableDeselected(FXObject*,FXSelector,void*);
     long OnTableChanged(FXObject*,FXSelector,void*);
     long OnKeyPress(FXObject*,FXSelector,void*);
+    long OnChange(FXObject*,FXSelector,void*);
 
 private:
     AliasDialog() {}

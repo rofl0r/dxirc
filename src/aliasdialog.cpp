@@ -26,24 +26,27 @@
 #include "i18n.h"
 
 FXDEFMAP(AliasDialog) AliasDialogMap[] = {
-    FXMAPFUNC(SEL_COMMAND,  AliasDialog::ID_ADD,        AliasDialog::OnAdd),
-    FXMAPFUNC(SEL_COMMAND,  AliasDialog::ID_MODIFY,     AliasDialog::OnModify),
-    FXMAPFUNC(SEL_COMMAND,  AliasDialog::ID_DELETE,     AliasDialog::OnDelete),
-    FXMAPFUNC(SEL_COMMAND,  AliasDialog::ID_CANCEL,     AliasDialog::OnCancel),
-    FXMAPFUNC(SEL_CLOSE,    0,                          AliasDialog::OnCancel),
-    FXMAPFUNC(SEL_COMMAND,  AliasDialog::ID_SAVECLOSE,  AliasDialog::OnSaveClose),
-    FXMAPFUNC(SEL_KEYPRESS, 0,                          AliasDialog::OnKeyPress),
-    FXMAPFUNC(SEL_SELECTED,    AliasDialog::ID_TABLE,   AliasDialog::OnTableSelected),
-    FXMAPFUNC(SEL_DESELECTED,  AliasDialog::ID_TABLE,   AliasDialog::OnTableDeselected),
-    FXMAPFUNC(SEL_CHANGED,     AliasDialog::ID_TABLE,   AliasDialog::OnTableChanged)
+    FXMAPFUNC(SEL_COMMAND,      AliasDialog::ID_ADD,        AliasDialog::OnAdd),
+    FXMAPFUNC(SEL_COMMAND,      AliasDialog::ID_MODIFY,     AliasDialog::OnModify),
+    FXMAPFUNC(SEL_COMMAND,      AliasDialog::ID_DELETE,     AliasDialog::OnDelete),
+    FXMAPFUNC(SEL_COMMAND,      AliasDialog::ID_CANCEL,     AliasDialog::OnCancel),
+    FXMAPFUNC(SEL_CLOSE,        0,                          AliasDialog::OnCancel),
+    FXMAPFUNC(SEL_UPDATE,       0,                          AliasDialog::OnChange),
+    FXMAPFUNC(SEL_COMMAND,      AliasDialog::ID_SAVECLOSE,  AliasDialog::OnSaveClose),
+    FXMAPFUNC(SEL_KEYPRESS,     0,                          AliasDialog::OnKeyPress),
+    FXMAPFUNC(SEL_SELECTED,     AliasDialog::ID_TABLE,      AliasDialog::OnTableSelected),
+    FXMAPFUNC(SEL_DESELECTED,   AliasDialog::ID_TABLE,      AliasDialog::OnTableDeselected),
+    FXMAPFUNC(SEL_CHANGED,      AliasDialog::ID_TABLE,      AliasDialog::OnTableChanged)
 };
 
 FXIMPLEMENT(AliasDialog, FXDialogBox, AliasDialogMap, ARRAYNUMBER(AliasDialogMap))
 
 AliasDialog::AliasDialog(FXMainWindow *owner)
-        : FXDialogBox(owner, _("Aliases list"), DECOR_TITLE|DECOR_BORDER, 0,0,370,330, 0,0,0,0, 0,0)
+        : FXDialogBox(owner, _("Aliases list"), DECOR_TITLE|DECOR_BORDER|DECOR_STRETCHABLE, 0,0,0,0, 0,0,0,0, 0,0)
 {
-    aliases = utils::GetAliases();    
+    aliases = utils::GetAliases();
+
+    setSelector(ID_CHANGE);
 
     buttonframe = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X);
     buttonAdd = new FXButton(buttonframe, _("Add"), NULL, this, ID_ADD, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
@@ -56,15 +59,20 @@ AliasDialog::AliasDialog(FXMainWindow *owner)
 
     tableframe = new FXVerticalFrame(this, LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y|FRAME_THICK);
     table = new FXIconList(tableframe, this, ID_TABLE, ICONLIST_DETAILED|ICONLIST_SINGLESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    table->appendHeader(_("Alias"), NULL, 180);
-    table->appendHeader(_("Command"), NULL, 180);
+    table->appendHeader(_("Alias"));
+    table->appendHeader(_("Command"));
     table->setScrollStyle(HSCROLLING_OFF);
-
-    UpdateTable();
 }
 
 AliasDialog::~AliasDialog()
 {
+}
+
+void AliasDialog::create()
+{
+    FXDialogBox::create();
+    UpdateTable();
+    setHeight(350);
 }
 
 long AliasDialog::OnAdd(FXObject*, FXSelector, void*)
@@ -160,6 +168,13 @@ long AliasDialog::OnKeyPress(FXObject *sender, FXSelector sel, void *ptr)
     return 0;
 }
 
+long AliasDialog::OnChange(FXObject *, FXSelector, void*)
+{
+    table->setHeaderSize(0, tableframe->getWidth()/2);
+    table->setHeaderSize(1, tableframe->getWidth()-tableframe->getWidth()/2);
+    return 1;
+}
+
 long AliasDialog::OnTableSelected(FXObject*, FXSelector, void *)
 {
     buttonModify->enable();
@@ -189,6 +204,6 @@ void AliasDialog::UpdateTable()
     {
         table->appendItem((*it).first+"\t"+(*it).second);
     }
-    table->recalc();
-    recalc();
+    table->setHeaderSize(0, tableframe->getWidth()/2);
+    table->setHeaderSize(1, tableframe->getWidth()-tableframe->getWidth()/2);
 }
