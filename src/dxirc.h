@@ -46,6 +46,7 @@ class dxirc: public FXMainWindow
             ID_CLEAR,
             ID_CLEARALL,
             ID_USERS,
+            ID_STATUS,
             ID_OPTIONS,
             ID_HELP,
             ID_ABOUT,
@@ -74,6 +75,7 @@ class dxirc: public FXMainWindow
         long OnCommandNextTab(FXObject*, FXSelector, void*);
         long OnCommandNextUnread(FXObject*, FXSelector, void*);
         long OnCommandUsers(FXObject*, FXSelector, void*);
+        long OnCommandStatus(FXObject*, FXSelector, void*);
         long OnCommandOptions(FXObject*, FXSelector, void*);
         long OnCommandAlias(FXObject*, FXSelector, void*);
         long OnCommandLog(FXObject*, FXSelector, void*);
@@ -88,7 +90,7 @@ class dxirc: public FXMainWindow
         FXApp *app;
         dxServerInfoArray serverList;
         dxIgnoreUserArray usersList;
-        FXbool usersShown, logging, ownServerWindow, tempServerWindow, sameCmd;
+        FXbool usersShown, statusShown, logging, ownServerWindow, tempServerWindow, sameCmd;
         FXbool sameList, useTray, coloredNick, closeToTray, reconnect;
         IrcColor colors;
         FXString commandsList, themesList, themePath, logPath;
@@ -124,6 +126,7 @@ class dxirc: public FXMainWindow
         FXMenuPane *servermenu, *helpmenu, *editmenu;
         FXMenuCommand *disconnect, *closeTab, *clearTab, *clearTabs, *logviewer;
         FXMenuCheck *users;
+        FXMenuCheck *status;
         FXStatusBar *statusbar;
         FXVerticalFrame *mainframe;
         FXTabBook *tabbook;

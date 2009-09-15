@@ -47,6 +47,7 @@ FXDEFMAP(dxirc) dxircMap[] = {
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_CLEARALL,         dxirc::OnCommandClearAll),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_CLOSETAB,         dxirc::OnCommandCloseTab),    
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_USERS,            dxirc::OnCommandUsers),
+    FXMAPFUNC(SEL_COMMAND,  dxirc::ID_STATUS,           dxirc::OnCommandStatus),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_HELP,             dxirc::OnCommandHelp),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_OPTIONS,          dxirc::OnCommandOptions),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_SELECTTAB,        dxirc::OnCommandSelectTab),
@@ -100,6 +101,8 @@ dxirc::dxirc(FXApp *app)
     new FXMenuSeparator(editmenu);
     users = new FXMenuCheck(editmenu, _("Users list\tCtrl-U\tShow/Hide users list"), this, ID_USERS);
     users->setCheck(usersShown);
+    status = new FXMenuCheck(editmenu, _("Status bar"), this, ID_STATUS);
+    status->setCheck(statusShown);
     new FXMenuCommand(editmenu, _("&Aliases"), NULL, this, ID_ALIAS);
     new FXMenuCommand(editmenu, _("&Preferences"), optionicon, this, ID_OPTIONS);
     new FXMenuTitle(menubar, _("&Edit"), NULL, editmenu);
@@ -111,6 +114,7 @@ dxirc::dxirc(FXApp *app)
 
     statusbar = new FXStatusBar(this, LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X);
     statusbar->getStatusLine()->setNormalText("");
+    statusShown ? statusbar->show() : statusbar->hide();
 
     mainframe = new FXVerticalFrame(this, LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 1,1,1,1);
 
@@ -250,6 +254,7 @@ void dxirc::ReadConfig()
     appTheme.shadow = set.readColorEntry("SETTINGS", "shadowcolor", getApp()->getShadowColor());
     fontSpec = set.readStringEntry("SETTINGS", "normalfont", getApp()->getNormalFont()->getFont().text());
     usersShown = set.readBoolEntry("SETTINGS", "usersShown", TRUE);
+    statusShown = set.readBoolEntry("SETTINGS", "statusShown", TRUE);
     tabPosition = set.readIntEntry("SETTINGS", "tabPosition", 0);
     commandsList = set.readStringEntry("SETTINGS", "commandsList");
     themePath = CheckThemePath(set.readStringEntry("SETTINGS", "themePath", DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "default"));
@@ -387,6 +392,7 @@ void dxirc::SaveConfig()
         }
     }
     set.writeBoolEntry("SETTINGS", "usersShown", usersShown);
+    set.writeBoolEntry("SETTINGS", "statusShown", statusShown);
     set.writeStringEntry("SETTINGS", "commandsList", commandsList.text());
     set.writeStringEntry("SETTINGS", "themePath", themePath.text());
     set.writeStringEntry("SETTINGS", "themesList", themesList.text());
@@ -509,6 +515,17 @@ long dxirc::OnCommandUsers(FXObject*, FXSelector, void*)
         if(usersShown) ((IrcTabItem *)tabbook->childAtIndex(i))->ShowUsers();
         else ((IrcTabItem *)tabbook->childAtIndex(i))->HideUsers();
     }
+    return 1;
+}
+
+long dxirc::OnCommandStatus(FXObject*, FXSelector, void*)
+{
+    statusShown = !statusShown;
+    if (statusShown)
+      statusbar->show();
+    else
+      statusbar->hide();
+    recalc();
     return 1;
 }
 
