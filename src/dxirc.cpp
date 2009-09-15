@@ -958,8 +958,7 @@ void dxirc::UpdateStatus()
                 break;
             }
         }
-        if(currenttab->GetType() == SERVER) statusbar->getStatusLine()->setNormalText(FXStringFormat("%s-%s", currentserver->GetNickName().text(), currentserver->GetServerName().text()));
-        else statusbar->getStatusLine()->setNormalText(FXStringFormat("%s-%s-%s", currentserver->GetNickName().text(), currentserver->GetServerName().text(), currenttab->getText().text()));
+        statusbar->getStatusLine()->setNormalText(FXStringFormat("%s - %s", currentserver->GetNickName().text(), currentserver->GetServerName().text()));
     }
     else
     {

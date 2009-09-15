@@ -187,7 +187,7 @@ class IrcSocket: public FXObject
         FXbool IsUserIgnored(const FXString &nick, const FXString &user, const FXString &host, const FXString &on);
         void CloseConnection(FXbool disableReconnect=FALSE);
         void MakeStartChannels();
-        void ClearChannelsCommands();
+        void ClearChannelsCommands(FXbool);
 
 #ifdef HAVE_OPENSSL
         SSL_CTX *ctx;
