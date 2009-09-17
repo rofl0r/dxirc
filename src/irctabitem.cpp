@@ -2418,7 +2418,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
         }
         return 1;
     }
-    if(ev->eventType == IRC_DISCONNECT)
+    if(ev->eventType == IRC_DISCONNECT || ev->eventType == IRC_RECONNECT)
     {
         AppendIrcStyledText(ev->param1, 4);
     }

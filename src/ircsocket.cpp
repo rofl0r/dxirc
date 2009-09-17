@@ -349,12 +349,13 @@ void IrcSocket::CloseConnection(FXbool disableReconnect)
             ssl = NULL;
         }
     }
-#endif
-    SendEvent(IRC_DISCONNECT, FXStringFormat(_("Server %s was disconnected"), serverName.text()));
+#endif    
     if(reconnect && attempts < numberAttempt && !disableReconnect)
     {
+        SendEvent(IRC_RECONNECT, FXStringFormat(_("Server %s was disconnected"), serverName.text()));
         application->addTimeout(this, ID_RTIME, delayAttempt*1000);
     }
+    else SendEvent(IRC_DISCONNECT, FXStringFormat(_("Server %s was disconnected"), serverName.text()));
 }
 
 int IrcSocket::ReadData()

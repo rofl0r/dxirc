@@ -960,6 +960,9 @@ void dxirc::UpdateTabPosition()
 
 void dxirc::UpdateStatus()
 {
+#ifdef DEBUG
+    fxmessage("CurrentTab index:%d\n", tabbook->getCurrent());
+#endif
     if(tabbook->numChildren() && tabbook->getCurrent()>=0)
     {
         FXint index = tabbook->getCurrent()*2;
@@ -1116,7 +1119,6 @@ void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString
         }
         ((IrcTabItem *)tabbook->childAtIndex(0))->SetType(SERVER, hostname);
         SortTabs();
-        UpdateStatus();
         servers[0]->ClearAttempts();
         servers[0]->StartConnection();
     }
@@ -1144,7 +1146,6 @@ void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString
         tabitem->CreateGeom();
         UpdateTabPosition();
         SortTabs();
-        UpdateStatus();
         servers[0]->ClearAttempts();
         servers[0]->StartConnection();
     }
@@ -1202,8 +1203,12 @@ long dxirc::OnCommandDisconnect(FXObject*, FXSelector, void*)
                 }
             }
         }
-        SortTabs();
-        UpdateStatus();
+        if(tabbook->numChildren())
+        {
+            tabbook->setCurrent(tabbook->numChildren()/2-1, TRUE);
+            SortTabs();
+        }
+        else UpdateStatus();
     }
     UpdateMenus();
     return 1;
@@ -1234,7 +1239,6 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
         }
         SortTabs();
         UpdateMenus();
-        UpdateStatus();
         return 1;
     }
     if(ev->eventType == IRC_QUERY && !TabExist(server, ev->param1))
@@ -1261,7 +1265,6 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
             }
         }
         UpdateMenus();
-        UpdateStatus();
         return 1;
     }
     if(ev->eventType == IRC_PART)
@@ -1295,7 +1298,6 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
                 }
                 SortTabs();
                 UpdateMenus();
-                UpdateStatus();
             }
         }
         return 1;
@@ -1329,32 +1331,23 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
             }
             SortTabs();
             UpdateMenus();
-            UpdateStatus();
         }
         return 1;
     }
     if(ev->eventType == IRC_DISCONNECT)
     {
-        if(!reconnect)
+        for(FXint i = tabbook->numChildren()-2; i > -1; i=i-2)
         {
-            for(FXint i = tabbook->numChildren()-2; i > -1; i=i-2)
+            if(server->FindTarget((IrcTabItem *)tabbook->childAtIndex(i)))
             {
-                if(server->FindTarget((IrcTabItem *)tabbook->childAtIndex(i)))
-                {
-                    if(IsLastTab(server)) ((IrcTabItem *)tabbook->childAtIndex(i))->SetType(SERVER, server->GetServerName());
-                    else
-                    {
-                        server->RemoveTarget((IrcTabItem *)tabbook->childAtIndex(i));
-                        delete tabbook->childAtIndex(i);
-                        delete tabbook->childAtIndex(i);
-                        tabbook->recalc();
-                    }
-                }
+                server->RemoveTarget((IrcTabItem *)tabbook->childAtIndex(i));
+                delete tabbook->childAtIndex(i);
+                delete tabbook->childAtIndex(i);
+                tabbook->recalc();
             }
         }
         SortTabs();
         UpdateMenus();
-        UpdateStatus();
         return 1;
     }
     if(ev->eventType == IRC_ENDMOTD)
@@ -1550,7 +1543,6 @@ long dxirc::OnCommandCloseTab(FXObject *, FXSelector, void *)
         SortTabs();
     }
     UpdateMenus();
-    UpdateStatus();
     return 1;
 }
 
@@ -1691,6 +1683,7 @@ void dxirc::SortTabs()
         }
         tabbook->recalc();
         delete []tabpole;
+        UpdateStatus();
     }
 }
 

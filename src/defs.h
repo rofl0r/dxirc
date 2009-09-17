@@ -40,7 +40,8 @@ enum TYPE {
 
 enum IrcEventType {
     IRC_CONNECT,
-    IRC_DISCONNECT,
+    IRC_DISCONNECT, //send at closeconnection w/o reconnection
+    IRC_RECONNECT, //send at closeconnection with reconnection
     IRC_ERROR,
     IRC_NEWCHANNEL,
     IRC_QUERY,
