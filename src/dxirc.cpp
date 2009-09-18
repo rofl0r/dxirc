@@ -967,6 +967,7 @@ void dxirc::UpdateStatus()
     {
         FXint index = tabbook->getCurrent()*2;
         IrcTabItem *currenttab = (IrcTabItem *)tabbook->childAtIndex(index);
+        if(!currenttab) return;
         if(currenttab->GetType() == SERVER) this->setTitle(PACKAGE);
         else this->setTitle(FXStringFormat("%s - %s", PACKAGE, currenttab->getText().text()));
         IrcSocket *currentserver;
@@ -1118,6 +1119,7 @@ void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString
             UpdateTabPosition();
         }
         ((IrcTabItem *)tabbook->childAtIndex(0))->SetType(SERVER, hostname);
+        tabbook->setCurrent(0, TRUE);
         SortTabs();
         servers[0]->ClearAttempts();
         servers[0]->StartConnection();
@@ -1228,6 +1230,7 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
         if(serverTabIndex != -1 && !ownServerWindow)
         {
             ((IrcTabItem *)tabbook->childAtIndex(serverTabIndex))->SetType(CHANNEL, ev->param1);
+            tabbook->setCurrent(serverTabIndex/2-1, TRUE);
         }
         else
         {
@@ -1247,6 +1250,7 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
         if(serverTabIndex != -1 && !ownServerWindow)
         {
             ((IrcTabItem *)tabbook->childAtIndex(serverTabIndex))->SetType(QUERY, ev->param1);
+            tabbook->setCurrent(serverTabIndex/2-1, TRUE);
         }
         else
         {
@@ -1280,6 +1284,7 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
                         if(server->FindTarget((IrcTabItem *)tabbook->childAtIndex(j)))
                         {
                             ((IrcTabItem *)tabbook->childAtIndex(j))->SetType(SERVER, server->GetServerName());
+                            tabbook->setCurrent(j/2-1, TRUE);
                             break;
                         }
                     }
@@ -1313,6 +1318,7 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
                     if(server->FindTarget((IrcTabItem *)tabbook->childAtIndex(j)))
                     {
                         ((IrcTabItem *)tabbook->childAtIndex(j))->SetType(SERVER, server->GetServerName());
+                        tabbook->setCurrent(j/2-1, TRUE);
                         break;
                     }
                 }
@@ -1480,6 +1486,7 @@ long dxirc::OnCommandCloseTab(FXObject *, FXSelector, void *)
                     if(currentserver->FindTarget((IrcTabItem *)tabbook->childAtIndex(j)))
                     {
                         ((IrcTabItem *)tabbook->childAtIndex(j))->SetType(SERVER, currentserver->GetServerName());
+                        tabbook->setCurrent(j/2-1, TRUE);
                         break;
                     }
                 }
@@ -1506,6 +1513,7 @@ long dxirc::OnCommandCloseTab(FXObject *, FXSelector, void *)
                     if(currentserver->FindTarget((IrcTabItem *)tabbook->childAtIndex(j)))
                     {
                         ((IrcTabItem *)tabbook->childAtIndex(j))->SetType(SERVER, currentserver->GetServerName());
+                        tabbook->setCurrent(j/2-1, TRUE);
                         break;
                     }
                 }
