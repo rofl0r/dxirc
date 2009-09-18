@@ -283,48 +283,48 @@ FXString CheckThemePath(const FXString &path)
 
 FXbool MakeAllIcons(FXApp *app, const FXString &iniFile)
 {
-    FXbool success = true;
+    FXbool success = TRUE;
     FXString mainpath = DXIRC_DATADIR PATHSEPSTRING "icons";
     FXString flagpath = DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "flags";
     FXSettings set;
-    set.parseFile(iniFile, true);
+    set.parseFile(iniFile, TRUE);
     FXString themepath = CheckThemePath(set.readStringEntry("SETTINGS", "themePath", DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "default"));
     menuColor = set.readColorEntry("SETTINGS", "basecolor", app->getBaseColor());
     textBackColor = set.readColorEntry("SETTINGS", "textBackColor", FXRGB(255,255,255));
 
-    success = ((bigicon = MakeIcon(app, mainpath, "big_dxirc.png", true)) != NULL) &success;
-    success = ((smallicon = MakeIcon(app, mainpath, "small_dxirc.png", true)) != NULL) &success;
-    success = ((irc_owner_icon = MakeIcon(app, themepath, "irc_owner.png", false)) != NULL) &success;
-    success = ((irc_admin_icon = MakeIcon(app, themepath, "irc_admin.png", false)) != NULL) &success;
-    success = ((irc_op_icon = MakeIcon(app, themepath, "irc_op.png", false)) != NULL) &success;
-    success = ((irc_voice_icon = MakeIcon(app, themepath, "irc_voice.png", false)) != NULL) &success;
-    success = ((irc_halfop_icon = MakeIcon(app, themepath, "irc_halfop.png", false)) != NULL) &success;
-    success = ((irc_normal_icon = MakeIcon(app, themepath, "irc_normal.png", false)) != NULL) &success;
+    success = ((bigicon = MakeIcon(app, mainpath, "big_dxirc.png", TRUE)) != NULL) &success;
+    success = ((smallicon = MakeIcon(app, mainpath, "small_dxirc.png", TRUE)) != NULL) &success;
+    success = ((irc_owner_icon = MakeIcon(app, themepath, "irc_owner.png", FALSE)) != NULL) &success;
+    success = ((irc_admin_icon = MakeIcon(app, themepath, "irc_admin.png", FALSE)) != NULL) &success;
+    success = ((irc_op_icon = MakeIcon(app, themepath, "irc_op.png", FALSE)) != NULL) &success;
+    success = ((irc_voice_icon = MakeIcon(app, themepath, "irc_voice.png", FALSE)) != NULL) &success;
+    success = ((irc_halfop_icon = MakeIcon(app, themepath, "irc_halfop.png", FALSE)) != NULL) &success;
+    success = ((irc_normal_icon = MakeIcon(app, themepath, "irc_normal.png", FALSE)) != NULL) &success;
     success = ((irc_away_owner_icon = MakeAwayIcon(app, themepath, "irc_owner.png")) != NULL) &success;
     success = ((irc_away_admin_icon = MakeAwayIcon(app, themepath, "irc_admin.png")) != NULL) &success;
     success = ((irc_away_op_icon = MakeAwayIcon(app, themepath, "irc_op.png")) != NULL) &success;
     success = ((irc_away_voice_icon = MakeAwayIcon(app, themepath, "irc_voice.png")) != NULL) &success;
     success = ((irc_away_halfop_icon = MakeAwayIcon(app, themepath, "irc_halfop.png")) != NULL) &success;
     success = ((irc_away_normal_icon = MakeAwayIcon(app, themepath, "irc_normal.png")) != NULL) &success;
-    success = ((serverlisticon = MakeIcon(app, mainpath, "server.png", true)) != NULL) &success;
-    success = ((connecticon = MakeIcon(app, mainpath, "connect.png", true)) != NULL) &success;
-    success = ((disconnecticon = MakeIcon(app, mainpath, "disconnect.png", true)) != NULL) &success;
-    success = ((quiticon = MakeIcon(app, mainpath, "door_out.png", true)) != NULL) &success;
-    success = ((closeicon = MakeIcon(app, mainpath, "cross.png", true)) != NULL) &success;
-    success = ((optionicon = MakeIcon(app, mainpath, "wrench.png", true)) != NULL) &success;
-    success = ((helpicon = MakeIcon(app, mainpath, "help.png", true)) != NULL) &success;
-    success = ((servericon = MakeIcon(app, mainpath, "world.png", true)) != NULL) &success;
-    success = ((channelicon = MakeIcon(app, mainpath, "channel.png", true)) != NULL) &success;
-    success = ((queryicon = MakeIcon(app, mainpath, "user.png", true)) != NULL) &success;
-    success = ((clearicon = MakeIcon(app, mainpath, "clear.png", true)) != NULL) &success;
-    success = ((flagicon = MakeIcon(app, flagpath, "cz.png", true)) != NULL) &success;
+    success = ((serverlisticon = MakeIcon(app, mainpath, "server.png", TRUE)) != NULL) &success;
+    success = ((connecticon = MakeIcon(app, mainpath, "connect.png", TRUE)) != NULL) &success;
+    success = ((disconnecticon = MakeIcon(app, mainpath, "disconnect.png", TRUE)) != NULL) &success;
+    success = ((quiticon = MakeIcon(app, mainpath, "door_out.png", TRUE)) != NULL) &success;
+    success = ((closeicon = MakeIcon(app, mainpath, "cross.png", TRUE)) != NULL) &success;
+    success = ((optionicon = MakeIcon(app, mainpath, "wrench.png", TRUE)) != NULL) &success;
+    success = ((helpicon = MakeIcon(app, mainpath, "help.png", TRUE)) != NULL) &success;
+    success = ((servericon = MakeIcon(app, mainpath, "world.png", TRUE)) != NULL) &success;
+    success = ((channelicon = MakeIcon(app, mainpath, "channel.png", TRUE)) != NULL) &success;
+    success = ((queryicon = MakeIcon(app, mainpath, "user.png", TRUE)) != NULL) &success;
+    success = ((clearicon = MakeIcon(app, mainpath, "clear.png", TRUE)) != NULL) &success;
+    success = ((flagicon = MakeIcon(app, flagpath, "cz.png", TRUE)) != NULL) &success;
     success = ((trayicon = MakeIcon(app, mainpath, "small_dxirc.png")) != NULL) &success;
     success = ((newm = MakeIcon(app, mainpath, "newm.png")) != NULL) &success;
-    success = ((unewm = MakeIcon(app, mainpath, "unewm.png", true)) != NULL) &success;
-    success = ((chnewm = MakeIcon(app, mainpath, "chnewm.png", true)) != NULL) &success;
-    success = ((foldericon = MakeIcon(app, mainpath, "folder.png", true)) != NULL) &success;
-    success = ((ofoldericon = MakeIcon(app, mainpath, "folder_go.png", true)) != NULL) &success;
-    success = ((fileicon = MakeIcon(app, mainpath, "page.png", true)) != NULL) &success;
+    success = ((unewm = MakeIcon(app, mainpath, "unewm.png", TRUE)) != NULL) &success;
+    success = ((chnewm = MakeIcon(app, mainpath, "chnewm.png", TRUE)) != NULL) &success;
+    success = ((foldericon = MakeIcon(app, mainpath, "folder.png", TRUE)) != NULL) &success;
+    success = ((ofoldericon = MakeIcon(app, mainpath, "folder_go.png", TRUE)) != NULL) &success;
+    success = ((fileicon = MakeIcon(app, mainpath, "page.png", TRUE)) != NULL) &success;
 
 
     return success;

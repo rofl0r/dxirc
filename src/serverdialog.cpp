@@ -189,7 +189,7 @@ long ServerDialog::OnAdd(FXObject*,FXSelector,void*)
 #ifdef HAVE_OPENSSL
             server.useSsl = buttonSsl->getCheck();
 #else
-            server.useSsl = false;
+            server.useSsl = FALSE;
 #endif
             server.autoConnect = buttonAuto->getCheck();
             serverList.append(server);
@@ -274,7 +274,7 @@ long ServerDialog::OnModify(FXObject*,FXSelector,void*)
 #ifdef HAVE_OPENSSL
             server.useSsl = buttonSsl->getCheck();
 #else
-            server.useSsl = false;
+            server.useSsl = FALSE;
 #endif
             server.autoConnect = buttonAuto->getCheck();
             serverList[index] = server;
@@ -352,9 +352,9 @@ FXbool ServerDialog::HostnameExist(const FXString &hostname, const FXint &port, 
 {
     for(FXint i=0; i < serverList.no(); i++)
     {
-        if(serverList[i].hostname == hostname && serverList[i].port == port && serverList[i].nick == nick) return true;
+        if(serverList[i].hostname == hostname && serverList[i].port == port && serverList[i].nick == nick) return TRUE;
     }
-    return false;
+    return FALSE;
 }
 
 void ServerDialog::UpdateList()
@@ -405,7 +405,7 @@ void ServerDialog::UpdateDetails()
         realname->setText("");
         passwd->setText("");
         channels->setText("");
-        buttonAuto->setCheck(false);
+        buttonAuto->setCheck(FALSE);
         buttonJoin->disable();
         buttonModify->disable();
         buttonDelete->disable();

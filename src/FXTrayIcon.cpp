@@ -133,7 +133,7 @@ HICON FXTrayIcon::createMswIcon(FXIcon* icon)
     // Windows Icon erzeugen
     ICONINFO iconinfo;
     ZeroMemory(&iconinfo, sizeof(iconinfo));
-    iconinfo.fIcon=true;
+    iconinfo.fIcon=TRUE;
     iconinfo.hbmMask=(HBITMAP)icon->shape;
     iconinfo.hbmColor=(HBITMAP)icon->xid;
     return CreateIconIndirect(&iconinfo);
@@ -249,9 +249,9 @@ bool send_tray_message(
     XSendEvent(dpy, w, False, NoEventMask, &ev);
     XSync(dpy, False);
     if (untrap_errors()) {
-        return false;
+        return FALSE;
     }
-    return true;
+    return TRUE;
 }
 
 FXTrayIcon::FXTrayIcon(FXApp* app, const FXString& text, FXIcon* icon, 

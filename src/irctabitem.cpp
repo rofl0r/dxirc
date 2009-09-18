@@ -119,7 +119,7 @@ FXDEFMAP(IrcTabItem) IrcTabItemMap[] = {
 
 FXIMPLEMENT(IrcTabItem, FXTabItem, IrcTabItemMap, ARRAYNUMBER(IrcTabItemMap))
 
-IrcTabItem::IrcTabItem(FXTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FXuint opts=TAB_TOP_NORMAL, TYPE typ=CHANNEL, IrcSocket *sock=NULL, FXbool oswnd=false, FXbool uswn=true, FXbool logg=false, FXString cmdlst="", FXString lpth="", FXint maxa=200, IrcColor clrs=IrcColor(), FXString nichar=":", FXFont *fnt=NULL, FXbool scmd=false, FXbool slst=false, FXbool cnick=false)
+IrcTabItem::IrcTabItem(FXTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FXuint opts=TAB_TOP_NORMAL, TYPE typ=CHANNEL, IrcSocket *sock=NULL, FXbool oswnd=FALSE, FXbool uswn=TRUE, FXbool logg=FALSE, FXString cmdlst="", FXString lpth="", FXint maxa=200, IrcColor clrs=IrcColor(), FXString nichar=":", FXFont *fnt=NULL, FXbool scmd=FALSE, FXbool slst=FALSE, FXbool cnick=FALSE)
     : FXTabItem(tab, tabtext, ic, opts), parent(tab), server(sock), type(typ), usersShown(uswn), logging(logg), ownServerWindow(oswnd), sameCmd(scmd), sameList(slst), coloredNick(cnick), colors(clrs),
     commandsList(cmdlst), logPath(lpth), maxAway(maxa), nickCompletionChar(nichar), logstream(NULL)
 {
@@ -127,12 +127,12 @@ IrcTabItem::IrcTabItem(FXTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FX
     historyMax = 25;
     numberUsers = 0;
     maxLen = 460;
-    checkAway = false;
-    iamOp = false;
+    checkAway = FALSE;
+    iamOp = FALSE;
     topic = _("No topic is set");
-    editableTopic = true;
+    editableTopic = TRUE;
     pipe = NULL;
-    sendPipe = false;
+    sendPipe = FALSE;
 
     if(type == CHANNEL && server->GetConnected())
     {
@@ -477,9 +477,9 @@ void IrcTabItem::AppendIrcText(FXString msg)
             FXRex rx("(\\002|\\003|\\037)");
             if(rx.match(sec)) //contains mirc colors,styles
             {
-                sec = StripColors(sec, false);
-                FXbool bold = false;
-                FXbool under = false;
+                sec = StripColors(sec, FALSE);
+                FXbool bold = FALSE;
+                FXbool under = FALSE;
                 FXint i = 0;
                 while(sec[i] != '\0')
                 {
@@ -511,8 +511,8 @@ void IrcTabItem::AppendIrcText(FXString msg)
         }
     }
     text->appendText("\n");
-    MakeLastRowVisible(false);
-    this->LogLine(StripColors(msg, true));
+    MakeLastRowVisible(FALSE);
+    this->LogLine(StripColors(msg, TRUE));
 }
 
 void IrcTabItem::AppendIrcNickText(FXString nick, FXString msg, FXint color)
@@ -557,9 +557,9 @@ void IrcTabItem::AppendIrcNickText(FXString nick, FXString msg, FXint color)
             FXRex rx("(\\002|\\003|\\037)");
             if(rx.match(sec)) //contains mirc colors,styles
             {
-                sec = StripColors(sec, false);
-                FXbool bold = false;
-                FXbool under = false;
+                sec = StripColors(sec, FALSE);
+                FXbool bold = FALSE;
+                FXbool under = FALSE;
                 FXint i = 0;
                 while(sec[i] != '\0')
                 {
@@ -591,8 +591,8 @@ void IrcTabItem::AppendIrcNickText(FXString nick, FXString msg, FXint color)
         }
     }
     text->appendText("\n");
-    MakeLastRowVisible(false);
-    this->LogLine(StripColors("<"+nick+"> "+msg, true));
+    MakeLastRowVisible(FALSE);
+    this->LogLine(StripColors("<"+nick+"> "+msg, TRUE));
 }
 
 void IrcTabItem::AppendIrcStyledText(FXString styled, FXint stylenum)
@@ -601,7 +601,7 @@ void IrcTabItem::AppendIrcStyledText(FXString styled, FXint stylenum)
     if(styled.right(1) != " ") styled.append(" ");
     for(FXint i=0; i<styled.contains(' '); i++)
     {
-        FXString sec = StripColors(styled.section(' ',i), true);
+        FXString sec = StripColors(styled.section(' ',i), TRUE);
         FXRex rxl("\\L");
         if(rxl.match(sec.left(1)) && ((comparecase(sec.mid(1,7), "http://")==0 && sec.length()>7)
                 || (comparecase(sec.mid(1,8), "https://")==0 && sec.length()>8)
@@ -637,8 +637,8 @@ void IrcTabItem::AppendIrcStyledText(FXString styled, FXint stylenum)
         }
     }    
     text->appendText("\n");
-    MakeLastRowVisible(false);
-    this->LogLine(StripColors(styled, true));
+    MakeLastRowVisible(FALSE);
+    this->LogLine(StripColors(styled, TRUE));
 }
 
 void IrcTabItem::StartLogging()
@@ -675,7 +675,7 @@ void IrcTabItem::LogLine(const FXString &line)
 FXbool IrcTabItem::IsChannel(const FXString &text)
 {
     if(text.length()) return text[0] == '#' || text[0] == '&' || text[0] == '+' || text[0] == '!';
-    return false;
+    return FALSE;
 }
 
 void IrcTabItem::MakeLastRowVisible(FXbool force)
@@ -752,7 +752,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 if(commandtext.after(' ').length() > server->GetAwayLen())
                 {
                     AppendIrcStyledText(FXStringFormat(_("Away message is too long. Max. away message length is %d."), server->GetAwayLen()), 4);
-                    return false;
+                    return FALSE;
                 }
                 else
                     return server->SendAway(commandtext.after(' '));
@@ -764,7 +764,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 else if(!IsChannel(channel) && type != CHANNEL)
                 {
                     AppendIrcStyledText(_("/banlist <channel>, shows banlist for channel."), 4);
-                    return false;
+                    return FALSE;
                 }
                 else return server->SendBanlist(channel);
             }
@@ -773,7 +773,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 if(commandtext.after(' ').empty())
                 {
                     AppendIrcStyledText(_("/connect <server> [port] [nick] [password] [realname] [channels], connects for given server."), 4);
-                    return false;
+                    return FALSE;
                 }
                 else
                 {
@@ -785,7 +785,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     srv.realname = commandtext.after(' ').section(' ', 4).empty() ? FXSystem::currentUserName() : commandtext.after(' ').section(' ', 4);
                     srv.channels = commandtext.after(' ').section(' ', 5).empty() ? "" : commandtext.after(' ').section(' ', 5);
                     parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CSERVER), &srv);
-                    return true;
+                    return TRUE;
                 }
             }
             if(command == "commands")
@@ -796,7 +796,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     if(utils::CommandsAt(i) != "commands") commandstr += utils::CommandsAt(i).upper()+(i != utils::CommandsNo() - 1? ", " : "");
                 }
                 AppendIrcStyledText(commandstr, 3);
-                return true;
+                return TRUE;
             }
             if(command == "ctcp")
             {
@@ -805,12 +805,12 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 if(to.empty() || msg.empty())
                 {
                     AppendIrcStyledText(_("/ctcp <nick> <message>, sends a CTCP message to a user."), 4);
-                    return false;
+                    return FALSE;
                 }
                 else if(msg.length() > maxLen-12-to.length())
                 {
                     AppendIrcStyledText(FXStringFormat(_("Ctcp message is too long. Max. ctcp message length is %d."), maxLen-12-to.length()), 4);
-                    return false;
+                    return FALSE;
                 }
                 else return server->SendCtcp(to, msg);
             }
@@ -822,12 +822,12 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     if(params.empty())
                     {
                         AppendIrcStyledText(_("/deop <nicks>, removes operator status from one or more nicks."), 4);
-                        return false;
+                        return FALSE;
                     }
                     else if(IsChannel(params) && params.after(' ').empty())
                     {
                         AppendIrcStyledText(_("/deop <channel> <nicks>, removes operator status from one or more nicks."), 4);
-                        return false;
+                        return FALSE;
                     }
                     else if(IsChannel(params) && !params.after(' ').empty())
                     {
@@ -856,7 +856,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     else
                     {
                         AppendIrcStyledText(_("/deop <channel> <nicks>, removes operator status from one or more nicks."), 4);
-                        return false;
+                        return FALSE;
                     }
                 }
             }
@@ -868,12 +868,12 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     if(params.empty())
                     {
                         AppendIrcStyledText(_("/devoice <nicks>, removes voice from one or more nicks."), 4);
-                        return false;
+                        return FALSE;
                     }
                     else if(IsChannel(params) && params.after(' ').empty())
                     {
                         AppendIrcStyledText(_("/devoice <channel> <nicks>, removes voice from one or more nicks."), 4);
-                        return false;
+                        return FALSE;
                     }
                     else if(IsChannel(params) && !params.after(' ').empty())
                     {
@@ -902,7 +902,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     else
                     {
                         AppendIrcStyledText(_("/devoice <channel> <nicks>, removes voice from one or more nicks."), 4);
-                        return false;
+                        return FALSE;
                     }
                 }
             }
@@ -924,14 +924,14 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 {
                     AppendIrcText("");
                 }
-                return true;
+                return TRUE;
             }
             if(command == "egg")
             {
                 AppendIrcStyledText("ahoj sem pan Vajíčko,", 3);
                 AppendIrcStyledText("dneska vám přináším anketní otázku:", 3);
                 AppendIrcStyledText("Jaká značka piva je podle Vás nejlepší? Pište autorovi.", 3);
-                return true;
+                return TRUE;
             }
             if(command == "exec")
             {
@@ -939,7 +939,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 if(params.empty())
                 {
                     AppendIrcStyledText(_("/exec [-o|-c] <command>, executes command, -o sends output to channel/query, -c closes running command."), 4);
-                    return false;
+                    return FALSE;
                 }
                 else
                 {
@@ -947,21 +947,21 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     pipeStrings.clear();
                     if(params.before(' ').contains("-o"))
                     {
-                        sendPipe = true;
+                        sendPipe = TRUE;
                         pipe->ExecCmd(params.after(' '));
                     }
                     else if(params.before(' ').contains("-c"))
                     {
-                        sendPipe = false;
+                        sendPipe = FALSE;
                         pipeStrings.clear();
                         pipe->StopCmd();
                     }
                     else
                     {
-                        sendPipe = false;
+                        sendPipe = FALSE;
                         pipe->ExecCmd(params);                        
                     }
-                    return true;
+                    return TRUE;
                 }
             }
             if(command == "help")
@@ -974,12 +974,12 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 if(params.empty())
                 {
                     AppendIrcStyledText(_("/invite <nick> <channel>, invites someone to a channel."), 4);
-                    return false;
+                    return FALSE;
                 }
                 else if(IsChannel(params) && params.after(' ').empty())
                 {
                     AppendIrcStyledText(_("/invite <nick> <channel>, invites someone to a channel."), 4);
-                    return false;
+                    return FALSE;
                 }
                 else
                 {
@@ -994,7 +994,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 if(!IsChannel(channel))
                 {
                     AppendIrcStyledText(_("/join <channel>, joins a channel."), 4);
-                    return false;
+                    return FALSE;
                 }
                 else return server->SendJoin(channel);
             }
@@ -1006,12 +1006,12 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     if(params.empty())
                     {
                         AppendIrcStyledText(_("/kick <nick>, kicks a user from a channel."), 4);
-                        return false;
+                        return FALSE;
                     }
                     else if(IsChannel(params) && params.after(' ').empty())
                     {
                         AppendIrcStyledText(_("/kick <channel> <nick>, kicks a user from a channel."), 4);
-                        return false;
+                        return FALSE;
                     }
                     else if(IsChannel(params) && !params.after(' ').empty())
                     {
@@ -1021,7 +1021,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                         if(reason.length() > server->GetKickLen())
                         {
                             AppendIrcStyledText(FXStringFormat(_("Reason of kick is too long. Max. reason length is %d."), server->GetKickLen()), 4);
-                            return false;
+                            return FALSE;
                         }
                         else return server->SendKick(channel, nick, reason);
                     }
@@ -1033,7 +1033,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                         if(reason.length() > server->GetKickLen())
                         {
                             AppendIrcStyledText(FXStringFormat(_("Reason of kick is too long. Max. reason length is %d."), server->GetKickLen()), 4);
-                            return false;
+                            return FALSE;
                         }
                         else return server->SendKick(channel, nick, reason);
                     }
@@ -1048,14 +1048,14 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                         if(reason.length() > server->GetKickLen())
                         {
                             AppendIrcStyledText(FXStringFormat(_("Reason of kick is too long. Max. reason length is %d."), server->GetKickLen()), 4);
-                            return false;
+                            return FALSE;
                         }
                         else return server->SendKick(channel, nick, reason);
                     }
                     else
                     {
                         AppendIrcStyledText(_("/kick <channel> <nick>, kicks a user from a channel."), 4);
-                        return false;
+                        return FALSE;
                     }
                 }
             }
@@ -1067,12 +1067,12 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 if(params.empty())
                 {
                     AppendIrcStyledText(_("/kill <user> [reason], kills a user from the network."), 4);
-                    return false;
+                    return FALSE;
                 }
                 if(reason.length() > maxLen-7-nick.length())
                 {
                     AppendIrcStyledText(FXStringFormat(_("Reason of kill is too long. Max. reason length is %d."), maxLen-7-nick.length()), 4);
-                    return false;
+                    return FALSE;
                 }
                 else return server->SendKill(nick, reason);
             }
@@ -1088,7 +1088,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     if(params.empty())
                     {
                         AppendIrcStyledText(_("/me <message>, sends the action to the current channel."), 4);
-                        return false;
+                        return FALSE;
                     }
                     else if(IsChannel(params) && !params.after(' ').empty())
                     {
@@ -1098,7 +1098,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                         if(message.length() > maxLen-19-channel.length())
                         {
                             dxStringArray messages = CutText(message, maxLen-19-channel.length());
-                            FXbool result = true;
+                            FXbool result = TRUE;
                             for(FXint i=0; i<messages.no(); i++)
                             {
                                 result = server->SendMe(channel, messages[i]) &result;
@@ -1113,7 +1113,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                         if(params.length() > maxLen-19-getText().length())
                         {
                             dxStringArray messages = CutText(params, maxLen-19-getText().length());
-                            FXbool result = true;
+                            FXbool result = TRUE;
                             for(FXint i=0; i<messages.no(); i++)
                             {
                                 result = server->SendMe(getText(), messages[i]) &result;
@@ -1132,7 +1132,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                         if(message.length() > maxLen-19-to.length())
                         {
                             dxStringArray messages = CutText(message, maxLen-19-to.length());
-                            FXbool result = true;
+                            FXbool result = TRUE;
                             for(FXint i=0; i<messages.no(); i++)
                             {
                                 result = server->SendMe(to, messages[i]) &result;
@@ -1144,7 +1144,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     else
                     {
                         AppendIrcStyledText(_("/me <to> <message>, sends the action."), 4);
-                        return false;
+                        return FALSE;
                     }
                 }
             }
@@ -1154,7 +1154,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 if(params.empty())
                 {
                     AppendIrcStyledText(_("/mode <channel> <modes>, sets modes for a channel."), 4);
-                    return false;
+                    return FALSE;
                 }
                 else
                     return server->SendMode(params);
@@ -1174,7 +1174,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     if(message.length() > maxLen-10-to.length())
                     {
                         dxStringArray messages = CutText(message, maxLen-10-to.length());
-                        FXbool result = true;
+                        FXbool result = TRUE;
                         for(FXint i=0; i<messages.no(); i++)
                         {
                             result = server->SendMsg(to, messages[i]) &result;
@@ -1186,7 +1186,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 else
                 {
                     AppendIrcStyledText(_("/msg <nick/channel> <message>, sends a normal message."), 4);
-                    return false;
+                    return FALSE;
                 }
             }
             if(command == "names")
@@ -1202,7 +1202,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     if(params.empty())
                     {
                         AppendIrcStyledText(_("/names <channel>, for nicks on a channel."), 4);
-                        return false;
+                        return FALSE;
                     }
                     else return server->SendNames(params);
                 }
@@ -1213,12 +1213,12 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 if(nick.empty())
                 {
                     AppendIrcStyledText(_("/nick <nick>, changes nick."), 4);
-                    return false;
+                    return FALSE;
                 }
                 else if(nick.length() > server->GetNickLen())
                 {
                     AppendIrcStyledText(FXStringFormat(_("Nick is too long. Max. nick length is %d."), server->GetNickLen()), 4);
-                    return false;
+                    return FALSE;
                 }
                 else
                 {
@@ -1236,7 +1236,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     if(message.length() > maxLen-9-to.length())
                     {
                         dxStringArray messages = CutText(message, maxLen-9-to.length());
-                        FXbool result = true;
+                        FXbool result = TRUE;
                         for(FXint i=0; i<messages.no(); i++)
                         {
                             result = server->SendNotice(to, messages[i]) &result;
@@ -1248,7 +1248,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 else
                 {
                     AppendIrcStyledText(_("/notice <nick/channel> <message>, sends a notice."), 4);
-                    return false;
+                    return FALSE;
                 }
             }
             if(command == "op")
@@ -1259,12 +1259,12 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     if(params.empty())
                     {
                         AppendIrcStyledText(_("/op <nicks>, gives operator status for one or more nicks."), 4);
-                        return false;
+                        return FALSE;
                     }
                     else if(IsChannel(params) && params.after(' ').empty())
                     {
                         AppendIrcStyledText(_("/op <channel> <nicks>, gives operator status for one or more nicks."), 4);
-                        return false;
+                        return FALSE;
                     }
                     else if(IsChannel(params) && !params.after(' ').empty())
                     {
@@ -1293,7 +1293,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     else
                     {
                         AppendIrcStyledText(_("/op <channel> <nicks>, gives operator status for one or more nicks."), 4);
-                        return false;
+                        return FALSE;
                     }
                 }
             }
@@ -1306,7 +1306,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 else
                 {
                     AppendIrcStyledText(_("/oper <login> <password>, oper up."), 4);
-                    return false;
+                    return FALSE;
                 }
             }
             if(command == "part")
@@ -1322,7 +1322,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 if(commandtext.after(' ').empty())
                 {
                     AppendIrcStyledText(_("/query <nick>, opens query with nick."), 4);
-                    return false;
+                    return FALSE;
                 }
                 else
                 {
@@ -1331,7 +1331,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     ev.param1 = commandtext.after(' ').before(' ');
                     ev.param2 = server->GetNickName();
                     parent->getParent()->getParent()->handle(server, FXSEL(SEL_COMMAND, IrcSocket::ID_SERVER), &ev);
-                    return true;
+                    return TRUE;
                 }
             }
             if(command == "quit")
@@ -1339,7 +1339,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 //parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_TABQUIT), NULL);
                 if(commandtext.after(' ').empty()) server->Disconnect();
                 else server->Disconnect(commandtext.after(' '));
-                return true;
+                return TRUE;
             }
             if(command == "quote")
             {
@@ -1354,7 +1354,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     if(commandtext.after(' ').length() > maxLen-10-getText().length())
                     {
                         dxStringArray messages = CutText(commandtext.after(' '), maxLen-10-getText().length());
-                        FXbool result = true;
+                        FXbool result = TRUE;
                         for(FXint i=0; i<messages.no(); i++)
                         {
                             result = server->SendMe(getText(), messages[i]) &result;
@@ -1363,7 +1363,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     }
                     else return server->SendMsg(getText(), commandtext.after(' '));
                 }
-                return false;
+                return FALSE;
             }
             if(command == "topic")
             {
@@ -1378,7 +1378,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                         if(topic.length() > server->GetTopicLen())
                         {
                             AppendIrcStyledText(FXStringFormat(_("Topic is too long. Max. topic length is %d."), server->GetTopicLen()), 4);
-                            return false;
+                            return FALSE;
                         }
                         else return server->SendTopic(channel, topic);
                     }
@@ -1387,7 +1387,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                         if(params.length() > server->GetTopicLen())
                         {
                             AppendIrcStyledText(FXStringFormat(_("Topic is too long. Max. topic length is %d."), server->GetTopicLen()), 4);
-                            return false;
+                            return FALSE;
                         }
                         else return server->SendTopic(getText(), params);
                     }
@@ -1401,14 +1401,14 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                         if(topic.length() > server->GetTopicLen())
                         {
                             AppendIrcStyledText(FXStringFormat(_("Topic is too long. Max. topic length is %d."), server->GetTopicLen()), 4);
-                            return false;
+                            return FALSE;
                         }
                         else return server->SendTopic(channel, topic);
                     }
                     else
                     {
                         AppendIrcStyledText(_("/topic <channel> [topic], views or changes channel topic."), 4);
-                        return false;
+                        return FALSE;
                     }
                 }
             }
@@ -1420,12 +1420,12 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     if(params.empty())
                     {
                         AppendIrcStyledText(_("/voice <nicks>, gives voice for one or more nicks."), 4);
-                        return false;
+                        return FALSE;
                     }
                     else if(IsChannel(params) && params.after(' ').empty())
                     {
                         AppendIrcStyledText(_("/voice <channel> <nicks>, gives voice for one or more nicks."), 4);
-                        return false;
+                        return FALSE;
                     }
                     else if(IsChannel(params) && !params.after(' ').empty())
                     {
@@ -1454,7 +1454,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     else
                     {
                         AppendIrcStyledText(_("/voice <channel> <nicks>, gives voice for one or more nicks."), 4);
-                        return false;
+                        return FALSE;
                     }
                 }
             }
@@ -1464,14 +1464,14 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 if(params.empty())
                 {
                     AppendIrcStyledText(_("/wallops <message>, sends wallop message."), 4);
-                    return false;
+                    return FALSE;
                 }
                 else
                 {
                     if(params.length() > maxLen-9)
                     {
                         dxStringArray messages = CutText(params, maxLen-9);
-                        FXbool result = true;
+                        FXbool result = TRUE;
                         for(FXint i=0; i<messages.no(); i++)
                         {
                             result = server->SendWallops(messages[i]) &result;
@@ -1487,7 +1487,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 if(params.empty())
                 {
                     AppendIrcStyledText(_("/who <mask> [o], searchs for mask on network, if o is supplied, only search for opers."), 4);
-                    return false;
+                    return FALSE;
                 }
                 else return server->SendWho(params);
             }
@@ -1499,7 +1499,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 if(params.empty())
                 {
                     AppendIrcStyledText(_("/whois <nick>, whois nick."), 4);
-                    return false;
+                    return FALSE;
                 }
                 else return server->SendWhois(params);;
             }
@@ -1509,12 +1509,12 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 if(params.empty())
                 {
                     AppendIrcStyledText(_("/whowas <nick>, whowas nick."), 4);
-                    return false;
+                    return FALSE;
                 }
                 else return server->SendWhowas(params);
             }
             AppendIrcStyledText(FXStringFormat(_("Unknown command '%s', type /commands for available commands"), command.text()), 4);
-            return false;
+            return FALSE;
         }
         else
         {
@@ -1525,7 +1525,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 if(commandtext.length() > maxLen-10-getText().length())
                 {
                     dxStringArray messages = CutText(commandtext, maxLen-10-getText().length());
-                    FXbool result = true;
+                    FXbool result = TRUE;
                     for(FXint i=0; i<messages.no(); i++)
                     {
                         result = server->SendMsg(getText(), messages[i]) &result;
@@ -1534,7 +1534,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 }
                 else return server->SendMsg(getText(), commandtext);
             }
-            return false;
+            return FALSE;
         }
     }
     else
@@ -1544,7 +1544,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
             if(commandtext.after(' ').empty())
             {
                 AppendIrcStyledText(_("/connect <server> [port] [nick] [password] [realname] [channels], connect for given server."), 4);
-                return false;
+                return FALSE;
             }
             else
             {
@@ -1557,7 +1557,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 srv.channels = commandtext.after(' ').section(' ', 5).empty() ? "" : commandtext.after(' ').section(' ', 5);
                 parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CSERVER), &srv);
             }
-            return true;
+            return TRUE;
         }
         if(command == "commands")
         {
@@ -1567,7 +1567,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 if(utils::CommandsAt(i) != "commands") commandstr += utils::CommandsAt(i).upper()+(i != utils::CommandsNo() - 1? ", " : "");
             }
             AppendIrcStyledText(commandstr, 3);           
-            return true;
+            return TRUE;
         }
         if(command == "exec")
         {
@@ -1575,7 +1575,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
             if(params.empty())
             {
                 AppendIrcStyledText(_("/exec [-o|-c] <command>, execute command, -o send output to channel/query, -c close running command"), 4);
-                return false;
+                return FALSE;
             }
             else
             {
@@ -1584,20 +1584,20 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 pipeStrings.clear();
                 if(params.before(' ').contains("-o"))
                 {
-                    sendPipe = true;                    
+                    sendPipe = TRUE;                    
                     pipe->ExecCmd(params.after(' '));
                 }
                 else if(params.before(' ').contains("-c"))
                 {
-                    sendPipe = false;                    
+                    sendPipe = FALSE;                    
                     pipe->StopCmd();
                 }
                 else
                 {
-                    sendPipe = false;
+                    sendPipe = FALSE;
                     pipe->ExecCmd(params);
                 }
-                return true;
+                return TRUE;
             }
         }
         if(command == "help")
@@ -1608,10 +1608,10 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
         {
             AppendIrcStyledText(_("You aren't connected"), 4);
             parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);            
-            return true;
+            return TRUE;
         }
     }
-    return false;
+    return FALSE;
 }
 
 FXbool IrcTabItem::ShowHelp(FXString command)
@@ -1619,182 +1619,182 @@ FXbool IrcTabItem::ShowHelp(FXString command)
     if(command == "admin")
     {
         AppendIrcText(_("ADMIN [server], finds information about administrator for current server or [server]."));
-        return true;
+        return TRUE;
     }
     if(command == "away")
     {
         AppendIrcText(_("AWAY [message], sets away status."));
-        return true;
+        return TRUE;
     }
     if(command == "banlist")
     {
         AppendIrcText(_("BANLIST <channel>, shows banlist for channel."));
-        return true;
+        return TRUE;
     }
     if(command == "connect")
     {
         AppendIrcText(_("CONNECT <server> [port] [nick] [password] [realname] [channels], connects for given server."));
-        return true;
+        return TRUE;
     }
     if(command == "ctcp")
     {
         AppendIrcText(_("CTCP <nick> <message>, sends a CTCP message to a user."));
-        return true;
+        return TRUE;
     }
     if(command == "deop")
     {
         AppendIrcText(_("DEOP <channel> <nicks>, removes operator status from one or more nicks."));
-        return true;
+        return TRUE;
     }
     if(command == "devoice")
     {
         AppendIrcText(_("DEVOICE <channel> <nicks>, removes voice from one or more nicks."));
-        return true;
+        return TRUE;
     }
 #ifndef WIN32
     if(command == "exec")
     {
         AppendIrcText(_("EXEC [-o|-c] <command>, executes command, -o sends output to channel/query, -c closes running command."));
-        return true;
+        return TRUE;
     }
 #endif
     if(command == "help")
     {
         AppendIrcText(_("HELP <command>, shows help for command."));
-        return true;
+        return TRUE;
     }
     if(command == "invite")
     {
         AppendIrcText(_("INVITE <nick> <channel>, invites someone to a channel."));
-        return true;
+        return TRUE;
     }
     if(command == "join")
     {
         AppendIrcText(_("JOIN <channel>, joins a channel."));
-        return true;
+        return TRUE;
     }
     if(command == "kick")
     {
         AppendIrcText(_("KICK <channel> <nick>, kicks a user from a channel."));
-        return true;
+        return TRUE;
     }
     if(command == "kill")
     {
         AppendIrcText(_("KILL <user> [reason], kills a user from the network."));
-        return true;
+        return TRUE;
     }
     if(command == "list")
     {
         AppendIrcText(_("LIST [channel], lists channels and their topics."));
-        return true;
+        return TRUE;
     }
     if(command == "me")
     {
         AppendIrcText(_("ME <to> <message>, sends the action."));
-        return true;
+        return TRUE;
     }
     if(command == "mode")
     {
         AppendIrcText(_("MODE <channel> <modes>, sets modes for a channel."));
-        return true;
+        return TRUE;
     }
     if(command == "msg")
     {
         AppendIrcText(_("MSG <nick/channel> <message>, sends a normal message."));
-        return true;
+        return TRUE;
     }
     if(command == "names")
     {
         AppendIrcText(_("NAMES <channel>, for nicks on a channel."));
-        return true;
+        return TRUE;
     }
     if(command == "nick")
     {
         AppendIrcText(_("NICK <nick>, changes nick."));
-        return true;
+        return TRUE;
     }
     if(command == "notice")
     {
         AppendIrcText(_("NOTICE <nick/channel> <message>, sends a notice."));
-        return true;
+        return TRUE;
     }
     if(command == "op")
     {
         AppendIrcText(_("OP <channel> <nicks>, gives operator status for one or more nicks."));
-        return true;
+        return TRUE;
     }
     if(command == "oper")
     {
         AppendIrcText(_("OPER <login> <password>, oper up."));
-        return true;
+        return TRUE;
     }
     if(command == "part")
     {
         AppendIrcText(_("PART <channel> [reason], leaves channel."));
-        return true;
+        return TRUE;
     }
     if(command == "query")
     {
         AppendIrcText(_("QUERY <nick>, opens query with nick."));
-        return true;
+        return TRUE;
     }
     if(command == "quit")
     {
         AppendIrcText(_("QUIT [reason], leaves server."));
-        return true;
+        return TRUE;
     }
     if(command == "quote")
     {
         AppendIrcText(_("QUOTE [text], sends text to server."));
-        return true;
+        return TRUE;
     }
     if(command == "say")
     {
         AppendIrcText(_("SAY [text], sends text to current tab."));
-        return true;
+        return TRUE;
     }
     if(command == "topic")
     {
         AppendIrcText(_("TOPIC [topic], sets or shows topic."));
-        return true;
+        return TRUE;
     }
     if(command == "voice")
     {
         AppendIrcText(_("VOICE <channel> <nicks>, gives voice for one or more nicks."));
-        return true;
+        return TRUE;
     }
     if(command == "wallops")
     {
         AppendIrcText(_("WALLOPS <message>, sends wallop message."));
-        return true;
+        return TRUE;
     }
     if(command == "who")
     {
         AppendIrcText(_("WHO <mask> [o], searchs for mask on network, if o is supplied, only search for opers."));
-        return true;
+        return TRUE;
     }
     if(command == "whoami")
     {
         AppendIrcText(_("WHOAMI, whois about you."));
-        return true;
+        return TRUE;
     }
     if(command == "whois")
     {
         AppendIrcText(_("WHOIS <nick>, whois nick."));
-        return true;
+        return TRUE;
     }
     if(command == "whowas")
     {
         AppendIrcText(_("WHOWAS <nick>, whowas nick."));
-        return true;
+        return TRUE;
     }
     if(!utils::GetAlias(command[0] == '/' ? command:"/"+command).empty())
     {
         AppendIrcText(FXStringFormat("%s: %s", command.upper().text(), utils::GetAlias(command[0] == '/' ? command:"/"+command).text()));
-        return true;
+        return TRUE;
     }
     AppendIrcStyledText(FXStringFormat(_("Unknown command '%s', type /commands for available commands"), command.text()), 4);
-    return false;
+    return FALSE;
 }
 
 long IrcTabItem::OnKeyPress(FXObject *, FXSelector, void *ptr)
@@ -1845,19 +1845,32 @@ long IrcTabItem::OnKeyPress(FXObject *, FXSelector, void *ptr)
                 }
                 if(commandline->getText().find(' ') != -1)
                 {
-                    FXString line = commandline->getText().rbefore(' ')+" ";
-                    FXString toCompletion = commandline->getText().rafter(' ');
+                    FXint curpos;
+                    FXString line = commandline->getText();
+                    line[commandline->getCursorPos()] == ' ' ? curpos = commandline->getCursorPos()-1 : curpos = commandline->getCursorPos();
+                    FXint pos = line.rfind(' ', curpos)+1;
+                    FXint n = line.find(' ', curpos)>0 ? line.find(' ', curpos)-pos : line.length()-pos;
+                    FXString toCompletion = line.mid(pos, n);
                     for(FXint j = 0; j < users->getNumItems(); j++)
                     {
                         if(comparecase(toCompletion, GetNick(j)) == 0)
                         {
-                            if((j+1) < users->getNumItems()) commandline->setText(line+GetNick(++j));
-                            else commandline->setText(line+GetNick(0));
+                            if((j+1) < users->getNumItems())
+                            {
+                                commandline->setText(line.replace(pos, n, GetNick(j+1)));
+                                commandline->setCursorPos(pos+GetNick(j+1).length());
+                            }
+                            else
+                            {
+                                commandline->setText(line.replace(pos, n, GetNick(0)));
+                                commandline->setCursorPos(pos+GetNick(0).length());
+                            }
                             break;
                         }
                         else if(comparecase(toCompletion, GetNick(j).left(toCompletion.length())) == 0)
                         {
-                            commandline->setText(line+GetNick(j));
+                            commandline->setText(line.replace(pos, n, GetNick(j)));
+                            commandline->setCursorPos(pos+GetNick(j).length());
                             break;
                         }
                     }
@@ -1915,8 +1928,8 @@ FXbool IrcTabItem::IsFirst()
 
 FXbool IrcTabItem::IsCommandIgnored(const FXString &command)
 {
-    if(commandsList.contains(command)) return true;
-    return false;
+    if(commandsList.contains(command)) return TRUE;
+    return FALSE;
 }
 
 void IrcTabItem::AddUser(const FXString& user)
@@ -2058,7 +2071,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
         {
             if(!IsCommandIgnored("ctcp"))
             {
-                AppendIrcStyledText(FXStringFormat(_("CTCP %s reply from %s: %s"), utils::GetParam(ev->param2, 1, false).text(), ev->param1.text(), utils::GetParam(ev->param2, 2, true).text()), 2);
+                AppendIrcStyledText(FXStringFormat(_("CTCP %s reply from %s: %s"), utils::GetParam(ev->param2, 1, FALSE).text(), ev->param1.text(), utils::GetParam(ev->param2, 2, TRUE).text()), 2);
                 if(FXRGB(255,0,0) != this->getTextColor() && parent->getCurrent()*2 != parent->indexOfChild(this)) this->setTextColor(FXRGB(0,0,255));
             }
         }
@@ -2232,19 +2245,19 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
         FXString args = ev->param4;
         if(comparecase(channel, getText()) == 0)
         {
-            FXbool sign = false;
+            FXbool sign = FALSE;
             int argsiter = 1;
             for(int i =0; i < modes.count(); i++) {
                 switch(modes[i]) {
                     case '+':
-                        sign = true;
+                        sign = TRUE;
                         break;
                     case '-':
-                        sign = false;
+                        sign = FALSE;
                         break;
                     case 'a': //admin
                     {
-                        FXString nick = utils::GetParam(args, argsiter, false);
+                        FXString nick = utils::GetParam(args, argsiter, FALSE);
                         RemoveUser(nick);
                         if(sign)
                         {
@@ -2268,7 +2281,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
                     }break;
                     case 'o': //op
                     {
-                        FXString nick = utils::GetParam(args, argsiter, false);
+                        FXString nick = utils::GetParam(args, argsiter, FALSE);
                         RemoveUser(nick);
                         if(sign)
                         {
@@ -2288,12 +2301,12 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
                                 else AppendIrcStyledText(FXStringFormat(_("%s removed %s op"), moderator.text(), nick.text()), 1);
                             }
                         }
-                        if (server->GetNickName() == nick) sign ? iamOp = true : iamOp = false;
+                        if (server->GetNickName() == nick) sign ? iamOp = TRUE : iamOp = FALSE;
                         argsiter++;
                     }break;
                     case 'v': //voice
                     {
-                        FXString nick = utils::GetParam(args, argsiter, false);
+                        FXString nick = utils::GetParam(args, argsiter, FALSE);
                         RemoveUser(nick);
                         if(sign)
                         {
@@ -2317,7 +2330,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
                     }break;
                     case 'h': //halfop
                     {
-                        FXString nick = utils::GetParam(args, argsiter, false);
+                        FXString nick = utils::GetParam(args, argsiter, FALSE);
                         RemoveUser(nick);
                         if(sign)
                         {
@@ -2341,13 +2354,13 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
                     }break;
                     case 'b': //ban
                     {
-                        FXString banmask = utils::GetParam(args, argsiter, false);
+                        FXString banmask = utils::GetParam(args, argsiter, FALSE);
                         OnBan(banmask, sign, moderator);
                         argsiter++;
                     }break;
                     case 't': //topic settable by channel operator
                     {
-                        sign ? editableTopic = false : editableTopic = true;
+                        sign ? editableTopic = FALSE : editableTopic = TRUE;
                     }
                     default:
                     {
@@ -2364,7 +2377,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
         FXString modes = ev->param2;
         if(comparecase(channel, getText()) == 0)
         {
-            if(modes.contains('t')) editableTopic = false;
+            if(modes.contains('t')) editableTopic = FALSE;
         }
         return 1;
     }
@@ -2535,12 +2548,12 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
             AppendIrcText(ev->param2);
             if(ev->eventType == IRC_331)
             {
-                topic = StripColors(ev->param2, true);
+                topic = StripColors(ev->param2, TRUE);
                 topicline->setText(topic);
             }
             if(ev->eventType == IRC_332)
             {
-                topic = StripColors(utils::GetParam(ev->param2, 2, true, ':').after(' '), true);
+                topic = StripColors(utils::GetParam(ev->param2, 2, TRUE, ':').after(' '), TRUE);
                 topicline->setText(topic);
             }
         }
@@ -2557,18 +2570,18 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
             while (usersStr.contains(' '))
             {
                 AddUser(usersStr.before(' '));
-                if(usersStr[0] == '@' && usersStr.before(' ').after('@') == myNick) iamOp = true;
+                if(usersStr[0] == '@' && usersStr.before(' ').after('@') == myNick) iamOp = TRUE;
                 usersStr = usersStr.after(' ');
             }
         }
         else
         {
-            FXbool channelOn = false;
+            FXbool channelOn = FALSE;
             for (FXint i = 0; i<parent->numChildren(); i=i+2)
             {
                 if(server->FindTarget((IrcTabItem *)parent->childAtIndex(i)) && comparecase(((IrcTabItem *)parent->childAtIndex(i))->getText(), channel) == 0)
                 {
-                    channelOn = true;
+                    channelOn = TRUE;
                     break;
                 }
             }
@@ -2584,7 +2597,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
             server->AddIgnoreCommands("who "+getText());
             if(numberUsers < maxAway)
             {
-                checkAway = true;
+                checkAway = TRUE;
                 getApp()->addTimeout(this, ID_TIME, 180000);
             }
         }
@@ -2620,7 +2633,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
     }
     if(ev->eventType == IRC_ENDMOTD)
     {
-        MakeLastRowVisible(true);
+        MakeLastRowVisible(TRUE);
         return 1;
     }
     return 1;
@@ -2653,7 +2666,7 @@ long IrcTabItem::OnTimeout(FXObject *, FXSelector, void*)
     {
         if(numberUsers < maxAway)
         {
-            checkAway = true;
+            checkAway = TRUE;
             if(type == CHANNEL && server->GetConnected())
             {
                 server->SendWho(getText());
@@ -2796,8 +2809,8 @@ long IrcTabItem::OnRightMouse(FXObject *, FXSelector, void *ptr)
         NickInfo nick = server->GetNickInfo(users->getItemText(index));
         nickOnRight = nick;
         FXString flagpath = DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "flags";
-        if(FXStat::exists(flagpath+PATHSEPSTRING+nick.host.rafter('.')+".png")) flagicon = MakeIcon(getApp(), flagpath, nick.host.rafter('.')+".png", true);
-        else flagicon = MakeIcon(getApp(), flagpath, "unknown.png", true);
+        if(FXStat::exists(flagpath+PATHSEPSTRING+nick.host.rafter('.')+".png")) flagicon = MakeIcon(getApp(), flagpath, nick.host.rafter('.')+".png", TRUE);
+        else flagicon = MakeIcon(getApp(), flagpath, "unknown.png", TRUE);
         FXMenuPane opmenu(this);
         new FXMenuCommand(&opmenu, _("Give op"), NULL, this, ID_OP);
         new FXMenuCommand(&opmenu, _("Remove op"), NULL, this, ID_DEOP);
@@ -2973,13 +2986,13 @@ void IrcTabItem::OnBan(const FXString &banmask, const FXbool &sign, const FXStri
 FXString IrcTabItem::StripColors(const FXString &text, const FXbool stripOther)
 {
     FXString newstr;
-    FXbool color = false;
+    FXbool color = FALSE;
     FXint numbers;
     FXint i = 0;
     while(text[i] != '\0') {
         if(text[i] == '\017') //reset
         {
-            color = false;
+            color = FALSE;
         }
         else if(stripOther && text[i] == '\002')
         {
@@ -2991,7 +3004,7 @@ FXString IrcTabItem::StripColors(const FXString &text, const FXbool stripOther)
         }
         else if(text[i] == '\003') //color
         {
-            color = true;
+            color = TRUE;
         }
         else if(color && isdigit(text[i]) && numbers < 2)
         {
@@ -3004,7 +3017,7 @@ FXString IrcTabItem::StripColors(const FXString &text, const FXbool stripOther)
         else
         {
             numbers = 0;
-            color = false;
+            color = FALSE;
             newstr += text[i];
         }
         i++;

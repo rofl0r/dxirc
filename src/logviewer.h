@@ -65,56 +65,56 @@ public:
         state = HASITEMS;
     }
 
-    /// Return true if this is a file item
+    /// Return TRUE if this is a file item
 
     FXbool isFile() const
     {
         return (state & (FOLDER | BLOCKDEV | CHARDEV | FIFO | SOCK)) == 0;
     }
 
-    /// Return true if this is a directory item
+    /// Return TRUE if this is a directory item
 
     FXbool isDirectory() const
     {
         return (state & FOLDER) != 0;
     }
 
-    /// Return true if this is an executable item
+    /// Return TRUE if this is an executable item
 
     FXbool isExecutable() const
     {
         return (state & EXECUTABLE) != 0;
     }
 
-    /// Return true if this is a symbolic link item
+    /// Return TRUE if this is a symbolic link item
 
     FXbool isSymlink() const
     {
         return (state & SYMLINK) != 0;
     }
 
-    /// Return true if this is a character device item
+    /// Return TRUE if this is a character device item
 
     FXbool isChardev() const
     {
         return (state & CHARDEV) != 0;
     }
 
-    /// Return true if this is a block device item
+    /// Return TRUE if this is a block device item
 
     FXbool isBlockdev() const
     {
         return (state & BLOCKDEV) != 0;
     }
 
-    /// Return true if this is an FIFO item
+    /// Return TRUE if this is an FIFO item
 
     FXbool isFifo() const
     {
         return (state & FIFO) != 0;
     }
 
-    /// Return true if this is a socket
+    /// Return TRUE if this is a socket
 
     FXbool isSocket() const
     {

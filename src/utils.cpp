@@ -806,7 +806,7 @@ namespace utils
     void SetAlias()
     {
         FXSettings set;
-        set.parseFile(GetIniFile(), true);
+        set.parseFile(GetIniFile(), TRUE);
         FXint no = set.readIntEntry("ALIASES", "number", 0);
         for(FXint i=0; i<no; i++)
         {
@@ -852,9 +852,9 @@ namespace utils
     {
         for(FXint i=0; i<commands.no(); i++)
         {
-            if(comparecase(command, commands.at(i)) == 0) return true;
+            if(comparecase(command, commands.at(i)) == 0) return TRUE;
         }
-        return false;
+        return FALSE;
     }
 
     //This's from Xfe, thanks

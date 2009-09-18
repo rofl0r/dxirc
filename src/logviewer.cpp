@@ -189,12 +189,12 @@ long LogViewer::OnSearch(FXObject*, FXSelector, void*)
                 {
                     std::ifstream stream(GetItemPathname(item).text());
                     std::string temp;
-                    bool contain = false;
+                    bool contain = FALSE;
                     while(std::getline(stream, temp))
                     {
                         if(rex.match(temp.c_str()))
                         {
-                            contain = true;
+                            contain = TRUE;
                             count++;
                             break;
                         }
@@ -246,12 +246,12 @@ long LogViewer::OnSearch(FXObject*, FXSelector, void*)
                             {
                                 std::ifstream stream(GetItemPathname(fitem).text());
                                 std::string temp;
-                                bool contain = false;
+                                bool contain = FALSE;
                                 while(std::getline(stream, temp))
                                 {
                                     if(rex.match(temp.c_str()))
                                     {
-                                        contain = true;
+                                        contain = TRUE;
                                         count++;
                                         break;
                                     }

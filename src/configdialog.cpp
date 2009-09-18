@@ -250,7 +250,7 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, d
     {
         if(icons->getItemText(i) == themePath)
         {
-            icons->selectItem(i, true);
+            icons->selectItem(i, TRUE);
             icons->setCurrentItem(i);
             break;
         }
@@ -458,12 +458,12 @@ long ConfigDialog::OnIconsChanged(FXObject*, FXSelector, void *ptr)
     FXint i = (FXint)(FXival)ptr;
     icons->selectItem(i);
     themePath = icons->getItemText(i);
-    icon1->setIcon(MakeIcon(getApp(), themePath, "irc_admin.png", true));
-    icon2->setIcon(MakeIcon(getApp(), themePath, "irc_owner.png", true));
-    icon3->setIcon(MakeIcon(getApp(), themePath, "irc_op.png", true));
-    icon4->setIcon(MakeIcon(getApp(), themePath, "irc_halfop.png", true));
-    icon5->setIcon(MakeIcon(getApp(), themePath, "irc_voice.png", true));
-    icon6->setIcon(MakeIcon(getApp(), themePath, "irc_normal.png", true));
+    icon1->setIcon(MakeIcon(getApp(), themePath, "irc_admin.png", TRUE));
+    icon2->setIcon(MakeIcon(getApp(), themePath, "irc_owner.png", TRUE));
+    icon3->setIcon(MakeIcon(getApp(), themePath, "irc_op.png", TRUE));
+    icon4->setIcon(MakeIcon(getApp(), themePath, "irc_halfop.png", TRUE));
+    icon5->setIcon(MakeIcon(getApp(), themePath, "irc_voice.png", TRUE));
+    icon6->setIcon(MakeIcon(getApp(), themePath, "irc_normal.png", TRUE));
     icon7->setIcon(MakeAwayIcon(getApp(), themePath, "irc_normal.png"));
     return 1;
 }
@@ -663,7 +663,7 @@ long ConfigDialog::OnDeleteIcons(FXObject*, FXSelector, void*)
 {
     FXint i = icons->getCurrentItem();
     icons->removeItem(i);
-    icons->selectItem(icons->getNumItems()-1, true);
+    icons->selectItem(icons->getNumItems()-1, TRUE);
     icons->getNumItems()>1 ? deleteTheme->enable() : deleteTheme->disable();
     UpdateIcons();
     return 1;
@@ -1046,12 +1046,12 @@ FXString ConfigDialog::FillCommandsCombo()
     FXString available[10] = { "away", "ban", "ctcp", "join", "me", "nick", "notice", "mode", "part", "quit"};
     for(FXint i=0; i<10; i++)
     {
-        FXbool exist = false;
+        FXbool exist = FALSE;
         for(FXint j=0; j<commands->getNumItems(); j++)
         {
             if(commands->getItemText(j) == available[i])
             {
-                exist = true;
+                exist = TRUE;
                 break;
             }
         }
@@ -1102,17 +1102,17 @@ FXbool ConfigDialog::ThemeExist(const FXString &ckdTheme)
     {
         if(icons->getItemText(i) == ckdTheme)
         {
-            return true;
+            return TRUE;
         }
     }
-    return false;
+    return FALSE;
 }
 
 FXbool ConfigDialog::NickExist(const FXString &ckdNick)
 {
     for(FXint i=0; i<users->getNumItems(); i++)
     {
-        if(users->getItemText(i) == ckdNick) return true;
+        if(users->getItemText(i) == ckdNick) return TRUE;
     }
-    return false;
+    return FALSE;
 }

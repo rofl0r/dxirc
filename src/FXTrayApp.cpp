@@ -71,7 +71,7 @@ void FXTrayApp::create()
 #ifdef WIN32
 long FXTrayApp::dispatchEvent(FXID hwnd,unsigned int iMsg,unsigned int wParam,long lParam)
 {
-    // return true; // event dispached successful
+    // return TRUE; // event dispached successful
     if (iMsg == mTaskbarRestartId)
     {
         FXWindow* wnd = findWindowWithId(hwnd);
@@ -79,7 +79,7 @@ long FXTrayApp::dispatchEvent(FXID hwnd,unsigned int iMsg,unsigned int wParam,lo
             static_cast<FXTrayIcon*>(wnd)->mapToManager();
         }
 
-        return true;
+        return TRUE;
     }
 
     return FXApp::dispatchEvent(hwnd, iMsg, wParam, lParam);
@@ -118,7 +118,7 @@ bool FXTrayApp::dispatchEvent(FXRawEvent& ev)
     int screen = DefaultScreen(dpy);
     Window root = RootWindow(dpy, screen);
 
-    // return true; // event dispached successful
+    // return TRUE; // event dispached successful
     if (ev.xany.type == ClientMessage &&
         ev.xclient.message_type == mManagerAtom &&
         static_cast<Atom>(ev.xclient.data.l[1]) == mTrayAtom)
@@ -134,7 +134,7 @@ bool FXTrayApp::dispatchEvent(FXRawEvent& ev)
             mIcons[i]->mapToManager();
         }
 
-        return true;
+        return TRUE;
     }
 
     // warning: fluxbox just maps the window instead of sending this msg
@@ -150,7 +150,7 @@ bool FXTrayApp::dispatchEvent(FXRawEvent& ev)
             wnd->show();
         }
 
-        return true;
+        return TRUE;
     }
 
     if (ev.type == ReparentNotify)
@@ -165,7 +165,7 @@ bool FXTrayApp::dispatchEvent(FXRawEvent& ev)
                 wnd->hide(); // doesn't work with fluxbox
                 XUnmapWindow(dpy, ev.xreparent.window);
 
-                return true;
+                return TRUE;
             } else {
                 // tolerate non standard tray managers
                 wnd->show();

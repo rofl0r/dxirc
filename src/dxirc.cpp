@@ -235,7 +235,7 @@ void dxirc::ReadConfig()
 {
     FXString ircfontspec;
     FXSettings set;
-    set.parseFile(utils::GetIniFile(), true);
+    set.parseFile(utils::GetIniFile(), TRUE);
     FXint xx=set.readIntEntry("SETTINGS","x",50);
     FXint yy=set.readIntEntry("SETTINGS","y",50);
     FXint ww=set.readIntEntry("SETTINGS","w",400);
@@ -344,7 +344,7 @@ FXString dxirc::CheckThemesList(const FXString &list)
 void dxirc::ReadServersConfig()
 {
     FXSettings set;
-    set.parseFile(utils::GetIniFile(), true);
+    set.parseFile(utils::GetIniFile(), TRUE);
     FXint serversNum = set.readIntEntry("SERVERS", "number", 0);
     if(serversNum)
     {
@@ -358,8 +358,8 @@ void dxirc::ReadServersConfig()
             server.passwd = Decrypt(set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "hes", ""));
             server.channels = set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "channels", "");
             server.commands = set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "commands", "");
-            server.autoConnect = set.readBoolEntry(FXStringFormat("SERVER%d", i).text(), "autoconnect", false);
-            server.useSsl = set.readBoolEntry(FXStringFormat("SERVER%d", i).text(), "ssl", false);
+            server.autoConnect = set.readBoolEntry(FXStringFormat("SERVER%d", i).text(), "autoconnect", FALSE);
+            server.useSsl = set.readBoolEntry(FXStringFormat("SERVER%d", i).text(), "ssl", FALSE);
             if(server.autoConnect)
             {
                 ConnectServer(server.hostname, server.port, server.passwd, server.nick, server.realname, server.channels, server.commands, server.useSsl);
@@ -372,7 +372,7 @@ void dxirc::ReadServersConfig()
 
 void dxirc::SaveConfig()
 {
-    getApp()->reg().setModified(false);
+    getApp()->reg().setModified(FALSE);
     FXSettings set;
     //set.clear();
     set.writeIntEntry("SERVERS", "number", serverList.no());
@@ -1075,7 +1075,7 @@ long dxirc::OnCommandConnect(FXObject*, FXSelector, void*)
 #ifdef HAVE_OPENSSL
         ConnectServer(hostname->getText(), port->getValue(), passwd->getText(), nick->getText(), realname->getText(), channel->getText(), command->getText(), ussl->getCheck());
 #else
-        ConnectServer(hostname->getText(), port->getValue(), passwd->getText(), nick->getText(), realname->getText(), channel->getText(), command->getText(), false);
+        ConnectServer(hostname->getText(), port->getValue(), passwd->getText(), nick->getText(), realname->getText(), channel->getText(), command->getText(), FALSE);
 #endif
     }
     return 1;
@@ -1084,7 +1084,7 @@ long dxirc::OnCommandConnect(FXObject*, FXSelector, void*)
 long dxirc::OnTabConnect(FXObject*, FXSelector, void *data)
 {
     ServerInfo *srv = (ServerInfo*)data;
-    ConnectServer(srv->hostname, srv->port, srv->passwd, srv->nick, srv->realname, srv->channels, "", false);
+    ConnectServer(srv->hostname, srv->port, srv->passwd, srv->nick, srv->realname, srv->channels, "", FALSE);
     return 1;
 }
 
@@ -1104,7 +1104,7 @@ void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString
         if(channels.length()>1) servers[0]->SetStartChannels(channels);
         if(commands.length()) servers[0]->SetStartCommands(commands);
 #ifndef HAVE_OPENSSL
-        ssl = false;
+        ssl = FALSE;
 #endif
         servers[0]->SetUseSsl(ssl);
         servers[0]->SetReconnect(reconnect);
@@ -1138,7 +1138,7 @@ void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString
         IrcTabItem *tabitem = new IrcTabItem(tabbook, hostname, servericon, TAB_BOTTOM, SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList, coloredNick);
         servers[0]->AppendTarget(tabitem);
 #ifndef HAVE_OPENSSL
-        ssl = false;
+        ssl = FALSE;
 #endif
         servers[0]->SetUseSsl(ssl);
         servers[0]->SetReconnect(reconnect);
@@ -1405,8 +1405,8 @@ long dxirc::OnCommandNextTab(FXObject *, FXSelector, void *)
     FXint index = tabbook->getCurrent();
     if(tabbook->numChildren())
     {
-        if((index+1)*2 < tabbook->numChildren()) tabbook->setCurrent(index+1, tabbook->numChildren() > index*2 ? true : false);
-        else tabbook->setCurrent(0, true);
+        if((index+1)*2 < tabbook->numChildren()) tabbook->setCurrent(index+1, tabbook->numChildren() > index*2 ? TRUE : FALSE);
+        else tabbook->setCurrent(0, TRUE);
     }
     return 1;
 }
@@ -1419,7 +1419,7 @@ long dxirc::OnCommandNextUnread(FXObject *, FXSelector, void*)
         {
             if (appTheme.fore != ((IrcTabItem *)tabbook->childAtIndex(i))->getTextColor())
             {
-                tabbook->setCurrent(i/2, true);
+                tabbook->setCurrent(i/2, TRUE);
                 return 1;
             }
         }
@@ -1427,7 +1427,7 @@ long dxirc::OnCommandNextUnread(FXObject *, FXSelector, void*)
         {
             if (appTheme.fore != ((IrcTabItem *)tabbook->childAtIndex(i))->getTextColor())
             {
-                tabbook->setCurrent(i/2, true);
+                tabbook->setCurrent(i/2, TRUE);
                 return 1;
             }
         }
@@ -1499,7 +1499,7 @@ long dxirc::OnCommandCloseTab(FXObject *, FXSelector, void *)
                 tabbook->recalc();
                 if(tabbook->numChildren())
                 {
-                    tabbook->setCurrent(index/2-1, true);
+                    tabbook->setCurrent(index/2-1, TRUE);
                 }
             }
         }
@@ -1526,7 +1526,7 @@ long dxirc::OnCommandCloseTab(FXObject *, FXSelector, void *)
                 tabbook->recalc();
                 if(tabbook->numChildren())
                 {
-                    tabbook->setCurrent(index/2-1, true);
+                    tabbook->setCurrent(index/2-1, TRUE);
                 }
             }
         }
@@ -1543,7 +1543,7 @@ long dxirc::OnCommandCloseTab(FXObject *, FXSelector, void *)
                     tabbook->recalc();
                     if(tabbook->numChildren())
                     {
-                        tabbook->setCurrent(index/2-1, true);
+                        tabbook->setCurrent(index/2-1, TRUE);
                     }
                 }
             }
@@ -1560,47 +1560,47 @@ long dxirc::OnCommandSelectTab(FXObject*, FXSelector, void *ptr)
     switch(event->code){
         case KEY_1:
         {
-            tabbook->setCurrent(0, tabbook->numChildren() ? true : false);
+            tabbook->setCurrent(0, tabbook->numChildren() ? TRUE : FALSE);
             break;
         }
         case KEY_2:
         {
-            tabbook->setCurrent(1, tabbook->numChildren() > 2 ? true : false);
+            tabbook->setCurrent(1, tabbook->numChildren() > 2 ? TRUE : FALSE);
             break;
         }
         case KEY_3:
         {
-            tabbook->setCurrent(2, tabbook->numChildren() > 4 ? true : false);
+            tabbook->setCurrent(2, tabbook->numChildren() > 4 ? TRUE : FALSE);
             break;
         }
         case KEY_4:
         {
-            tabbook->setCurrent(3, tabbook->numChildren() > 6 ? true : false);
+            tabbook->setCurrent(3, tabbook->numChildren() > 6 ? TRUE : FALSE);
             break;
         }
         case KEY_5:
         {
-            tabbook->setCurrent(4, tabbook->numChildren() > 8 ? true : false);
+            tabbook->setCurrent(4, tabbook->numChildren() > 8 ? TRUE : FALSE);
             break;
         }
         case KEY_6:
         {
-            tabbook->setCurrent(5, tabbook->numChildren() > 10 ? true : false);
+            tabbook->setCurrent(5, tabbook->numChildren() > 10 ? TRUE : FALSE);
             break;
         }
         case KEY_7:
         {
-            tabbook->setCurrent(6, tabbook->numChildren() > 12 ? true : false);
+            tabbook->setCurrent(6, tabbook->numChildren() > 12 ? TRUE : FALSE);
             break;
         }
         case KEY_8:
         {
-            tabbook->setCurrent(7, tabbook->numChildren() > 14 ? true : false);
+            tabbook->setCurrent(7, tabbook->numChildren() > 14 ? TRUE : FALSE);
             break;
         }
         case KEY_9:
         {
-            tabbook->setCurrent(8, tabbook->numChildren() > 16 ? true : false);
+            tabbook->setCurrent(8, tabbook->numChildren() > 16 ? TRUE : FALSE);
             break;
         }
     }
@@ -1641,18 +1641,18 @@ FXbool dxirc::TabExist(IrcSocket *server, FXString name)
 {
     for(FXint i = 0; i < tabbook->numChildren(); i=i+2)
     {
-        if(server->FindTarget((IrcTabItem *)tabbook->childAtIndex(i)) && comparecase(((IrcTabItem *)tabbook->childAtIndex(i))->getText(), name) == 0) return true;
+        if(server->FindTarget((IrcTabItem *)tabbook->childAtIndex(i)) && comparecase(((IrcTabItem *)tabbook->childAtIndex(i))->getText(), name) == 0) return TRUE;
     }
-    return false;
+    return FALSE;
 }
 
 FXbool dxirc::ServerExist(const FXString &server, const FXint &port, const FXString &nick)
 {
     for(FXint i = 0; i < servers.no(); i++)
     {
-        if(servers[i]->GetServerName() == server && servers[i]->GetServerPort() == port && servers[i]->GetNickName() == nick && servers[i]->GetConnected()) return true;
+        if(servers[i]->GetServerName() == server && servers[i]->GetServerPort() == port && servers[i]->GetNickName() == nick && servers[i]->GetConnected()) return TRUE;
     }
-    return false;
+    return FALSE;
 }
 
 FXint dxirc::GetServerTab(IrcSocket *server)
@@ -1671,8 +1671,8 @@ FXbool dxirc::IsLastTab(IrcSocket *server)
     {
         if(server->FindTarget((IrcTabItem *)tabbook->childAtIndex(i))) numTabs++;
     }
-    if(numTabs > 1) return false;
-    else return true;
+    if(numTabs > 1) return FALSE;
+    else return TRUE;
 }
 
 void dxirc::SortTabs()
@@ -1709,10 +1709,10 @@ void dxirc::UpdateMenus()
         clearTab->disable();
         clearTabs->disable();
     }
-    FXbool someConnected = false;
+    FXbool someConnected = FALSE;
     for(FXint i = 0; i < servers.no(); i++)
     {
-        if(servers[i]->GetConnected()) someConnected = true;
+        if(servers[i]->GetConnected()) someConnected = TRUE;
     }
     if(someConnected) disconnect->enable();
     else disconnect->disable();
@@ -1783,7 +1783,7 @@ int main(int argc,char *argv[])
 #else
     FXApp app(PACKAGE, FXString::null);
 #endif
-    app.reg().setAsciiMode(true);
+    app.reg().setAsciiMode(TRUE);
     app.init(argc,argv);
     loadIcon = MakeAllIcons(&app, utils::GetIniFile());    
     new dxirc(&app);

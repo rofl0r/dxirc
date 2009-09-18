@@ -33,7 +33,7 @@ FXIMPLEMENT(dxPipe, FXObject, dxPipeMap, ARRAYNUMBER(dxPipeMap))
 dxPipe::dxPipe(FXApp *app, FXObject *tgt)
         : application(app), target(tgt)
 {
-    running = false;
+    running = FALSE;
 }
 
 dxPipe::~dxPipe()
@@ -58,7 +58,7 @@ FXint dxPipe::ExecCmd(FXString cmd)
     if (pid == -1)
         return -1;
 
-    running = true;
+    running = TRUE;
     application->addInput(out[0], INPUT_READ, this, ID_READ);
 
     if (pid == 0)
@@ -94,7 +94,7 @@ void dxPipe::StopCmd()
         FXString send = FXStringFormat(_("Command %s stopped"), command.text());
         target->handle(this, FXSEL(SEL_COMMAND, ID_PIPE), &send);
     }
-    running = false;
+    running = FALSE;
 #endif
 }
 
@@ -130,12 +130,12 @@ int dxPipe::ReadData()
     else if(size == 0)
     {
         waitpid(pid, &status, 0);
-        running = false;
+        running = FALSE;
         application->removeInput(out[0], INPUT_READ);
     }
     else
     {
-        running = false;
+        running = FALSE;
         application->removeInput(out[0], INPUT_READ);
         _exit(-1);
     }
