@@ -631,7 +631,9 @@ void IrcSocket::Numeric(const FXint &command, const FXString &params)
         }break;
         case 353: //RPL_NAMREPLY
         {
-            SendEvent(IRC_353, utils::GetParam(params, 3, FALSE), utils::GetParam(params, 4, TRUE).after(':'));
+            FXString nicks = utils::GetParam(params, 4, TRUE);
+            //checking ':' is for servers, which don't use RFC right :)
+            SendEvent(IRC_353, utils::GetParam(params, 3, FALSE), nicks[0]==':' ? nicks.after(':') : nicks);
         }break;
         case 366: //RPL_ENDOFNAMES
         {
