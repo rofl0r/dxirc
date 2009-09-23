@@ -1232,7 +1232,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 FXString message = params.after(' ');
                 if(!to.empty() && !message.empty())
                 {
-                    if(to == getText()) AppendIrcStyledText(FXStringFormat(_("%s's NOTICE: "), server->GetNickName().text())+message, 2);
+                    AppendIrcStyledText(FXStringFormat(_("NOTICE to %s: %s"), to.text(), message.text()), 2);
                     if(message.length() > maxLen-9-to.length())
                     {
                         dxStringArray messages = CutText(message, maxLen-9-to.length());
