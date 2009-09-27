@@ -1079,7 +1079,31 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
             if(command == "list")
             {
                 return server->SendList(commandtext.after(' '));
-            }
+            }           
+            if(command == "lua")
+            {
+                FXString luacommand = commandtext.after(' ').before(' ');
+                FXString text = commandtext.after(' ').after(' ');
+                LuaRequest lua;
+                if(luacommand.empty())
+                {
+                    AppendIrcStyledText(_("/lua <help|load|unload|list|command> [script] [command]"), 4);
+                    return FALSE;
+                }
+                if(comparecase(luacommand, "help")==0) lua.type = LUA_HELP;
+                else if(comparecase(luacommand, "load")==0) lua.type = LUA_LOAD;
+                else if(comparecase(luacommand, "unload")==0) lua.type = LUA_UNLOAD;
+                else if(comparecase(luacommand, "list")==0) lua.type = LUA_LIST;
+                else if(comparecase(luacommand, "command")==0) lua.type = LUA_COMMAND;
+                else
+                {
+                    AppendIrcStyledText(FXStringFormat(_("%s isn't <help|load|unload|list|command>"), luacommand.text()), 4);
+                    return FALSE;
+                }
+                lua.text = text;
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_LUA), &lua);
+                return TRUE;
+            }            
             if(command == "me")
             {
                 FXString params = commandtext.after(' ');
@@ -1603,6 +1627,30 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
         if(command == "help")
         {
             return ShowHelp(commandtext.after(' ').lower());
+        }
+        if(command == "lua")
+        {
+            FXString luacommand = commandtext.after(' ').before(' ');
+            FXString text = commandtext.after(' ').after(' ');
+            LuaRequest lua;
+            if(luacommand.empty())
+            {
+                AppendIrcStyledText(_("/lua <help|load|unload|list|command> [script] [command]"), 4);
+                return FALSE;
+            }
+            if(comparecase(luacommand, "help")==0) lua.type = LUA_HELP;
+            else if(comparecase(luacommand, "load")==0) lua.type = LUA_LOAD;
+            else if(comparecase(luacommand, "unload")==0) lua.type = LUA_UNLOAD;
+            else if(comparecase(luacommand, "list")==0) lua.type = LUA_LIST;
+            else if(comparecase(luacommand, "command")==0) lua.type = LUA_COMMAND;
+            else
+            {
+                AppendIrcStyledText(FXStringFormat(_("%s isn't <help|load|unload|list|command>"), luacommand.text()), 4);
+                return FALSE;
+            }
+            lua.text = text;
+            parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_LUA), &lua);
+            return TRUE;
         }
         else
         {

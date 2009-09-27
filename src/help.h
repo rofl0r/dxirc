@@ -76,5 +76,36 @@ translations, tests, advices and also all users.]\n \
 ")
 ;
 
+#define LUA_TEXT _("\
+Those irc event are sent to Lua script:\n\
+- PRIVMSG, which you can handle by OnMessage(msg)\n\
+  msg is table with fields:\n\
+  from ... sender of message\n\
+  target ... target of message\n\
+  text ... text of message\n\
+  nick ... your nick, for identify server\n\
+  server ... server name, for identify server\n\
+- JOIN, which you can handle by OnJoin(msg)\n\
+  msg is table with fields:\n\
+  jnick ... who is joined\n\
+  target ... where is joined\n\
+  nick ... your nick, for identify server\n\
+  server ... server name, for identify server\n\
+Those functions dxirc hadle:\n\
+- ProcessCommand(command, text, target, nick, server)\n\
+  command can be empty or one from /commands\n\
+  target ... target of command (channel or query), if target is EMPTY, command is processed by all tabs\n\
+  nick ... for identify server\n\
+  server ... for identify server\n\
+- GetInfo(request)\n\
+  request:\n\
+  - server ... return info about current server\n\
+  answer can handle by OnInfo(info)\n\
+  info is table with fields:\n\
+  - for server: name, port, nick\
+")
+;
+
+
 
 #endif

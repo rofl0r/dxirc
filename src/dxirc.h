@@ -27,6 +27,15 @@
 #include "FXTrayApp.h"
 #include "FXTrayIcon.h"
 #include "logviewer.h"
+#include "config.h"
+
+#ifdef HAVE_LUA
+extern "C" {
+#include <lua.h>
+#include <lualib.h>
+#include <lauxlib.h>
+}
+#endif
 
 class dxirc: public FXMainWindow
 {
@@ -84,6 +93,7 @@ class dxirc: public FXMainWindow
         long OnTrayClicked(FXObject*, FXSelector, void*);
         long OnNewMsg(FXObject*, FXSelector, void*);
         long OnTrayCancel(FXObject*, FXSelector, void*);
+        long OnLua(FXObject*, FXSelector, void*);
 
     private:
         dxirc(){}
@@ -100,6 +110,7 @@ class dxirc: public FXMainWindow
         ColorTheme appTheme;
         FXPopup *traymenu;
         FXTrayIcon *trayIcon;
+        static void *pObject;
         
         FXbool TabExist(IrcSocket*, FXString);
         FXbool ServerExist(const FXString&, const FXint&, const FXString&);
@@ -120,6 +131,13 @@ class dxirc: public FXMainWindow
         FXString Decrypt(const FXString&);
         FXString CheckThemePath(const FXString&);
         FXString CheckThemesList(const FXString&);
+        void AppendIrcText(FXString);
+        void AppendIrcStyledText(FXString, FXint);
+
+#ifdef HAVE_LUA
+        static int LuaCommand(lua_State *);
+        static int LuaInfo(lua_State *);
+#endif
 
     protected:
         FXMenuBar *menubar;
@@ -132,6 +150,7 @@ class dxirc: public FXMainWindow
         FXTabBook *tabbook;
         LogViewer *viewer;
         dxServersArray servers;
+        dxScriptsArray scripts;
 };
 
 #endif // DXIRC_H

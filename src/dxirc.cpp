@@ -26,7 +26,6 @@
 
 #include "dxirc.h"
 #include "icons.h"
-#include "config.h"
 #include "i18n.h"
 #include "help.h"
 #include "irctabitem.h"
@@ -62,10 +61,13 @@ FXDEFMAP(dxirc) dxircMap[] = {
     FXMAPFUNC(SEL_COMMAND,  IrcTabItem::ID_CDIALOG,     dxirc::OnCommandConnect),
     FXMAPFUNC(SEL_COMMAND,  IrcTabItem::ID_CSERVER,     dxirc::OnTabConnect),
     FXMAPFUNC(SEL_COMMAND,  IrcTabItem::ID_TABQUIT,     dxirc::OnCommandDisconnect),
-    FXMAPFUNC(SEL_COMMAND,  IrcTabItem::ID_NEWMSG,      dxirc::OnNewMsg)
+    FXMAPFUNC(SEL_COMMAND,  IrcTabItem::ID_NEWMSG,      dxirc::OnNewMsg),
+    FXMAPFUNC(SEL_COMMAND,  IrcTabItem::ID_LUA,         dxirc::OnLua)
 };
 
 FXIMPLEMENT(dxirc, FXMainWindow, dxircMap, ARRAYNUMBER(dxircMap))
+
+void *dxirc::pObject;
 
 dxirc::dxirc(FXApp *app)
     : FXMainWindow(app, PACKAGE, 0, 0, DECOR_ALL, 0, 0, 800, 600), app(app), trayIcon(NULL)
@@ -221,6 +223,7 @@ void dxirc::create()
         setHeight(maxHeight);
     }
     ReadServersConfig();
+    pObject = this;
     show();
 }
 
@@ -472,6 +475,13 @@ long dxirc::OnCommandQuit(FXObject*, FXSelector, void*)
         if(servers[0]->GetConnected()) servers[0]->Disconnect();
         servers.erase(0);
     }
+#ifdef HAVE_LUA
+    while(scripts.no())
+    {
+        lua_close((lua_State*)scripts[0].L);
+        scripts.erase(0);
+    }
+#endif
     SaveConfig();
     getApp()->exit(0);
     return 1;
@@ -1367,6 +1377,60 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
         UpdateStatus();
         return 1;
     }
+    if(ev->eventType == IRC_PRIVMSG)
+    {
+#ifdef HAVE_LUA
+        if(!scripts.no()) return 0;
+        for(FXint i=0; i<scripts.no(); i++)
+        {
+            lua_State *L = (lua_State*)scripts[i].L;
+            lua_getglobal(L, "OnMessage");
+            if(lua_isfunction(L, -1))
+            {
+                lua_newtable(L);
+                lua_pushstring(L, ev->param1.text());
+                lua_setfield(L, -2, "from");
+                lua_pushstring(L, ev->param2.text());
+                lua_setfield(L, -2, "target");
+                lua_pushstring(L, ev->param3.text());
+                lua_setfield(L, -2, "text");
+                lua_pushstring(L, server->GetNickName().text());
+                lua_setfield(L, -2, "nick");
+                lua_pushstring(L, server->GetServerName().text());
+                lua_setfield(L, -2, "server");
+                if(lua_pcall(L, 1, 1, 0) != 0)
+                    AppendIrcStyledText(FXStringFormat(_("Error running function `OnMessage': %s"), lua_tostring(L, -1)), 4);
+            }
+        }
+#endif
+        return 1;
+    }
+    if(ev->eventType == IRC_JOIN)
+    {
+#ifdef HAVE_LUA
+        if(!scripts.no()) return 0;
+        for(FXint i=0; i<scripts.no(); i++)
+        {
+            lua_State *L = (lua_State*)scripts[i].L;
+            lua_getglobal(L, "OnJoin");
+            if(lua_isfunction(L, -1))
+            {
+                lua_newtable(L);
+                lua_pushstring(L, ev->param1.text());
+                lua_setfield(L, -2, "jnick");
+                lua_pushstring(L, ev->param2.text());
+                lua_setfield(L, -2, "target");
+                lua_pushstring(L, server->GetNickName().text());
+                lua_setfield(L, -2, "nick");
+                lua_pushstring(L, server->GetServerName().text());
+                lua_setfield(L, -2, "server");
+                if(lua_pcall(L, 1, 1, 0) != 0)
+                    AppendIrcStyledText(FXStringFormat(_("Error running function `OnJoin': %s"), lua_tostring(L, -1)), 4);
+            }
+        }
+#endif
+        return 1;
+    }
     return 1;
 }
 
@@ -1637,6 +1701,130 @@ long dxirc::OnNewMsg(FXObject *obj, FXSelector, void*)
     return 1;
 }
 
+long dxirc::OnLua(FXObject*, FXSelector, void *data)
+{
+#ifdef HAVE_LUA
+    LuaRequest *lua = (LuaRequest*)data;
+    if(lua->type == LUA_HELP)
+    {
+        AppendIrcStyledText(_("Lua scripting help"), 7);
+        AppendIrcText(LUA_TEXT);
+        return 1;
+    }
+    if(lua->type == LUA_LOAD)
+    {
+        if(!scripts.no())
+        {
+            lua_State *L = lua_open();
+            if(L == NULL)
+            {
+                AppendIrcStyledText(_("Unable to initialize Lua."), 4);
+                return 0;
+            }
+            if(L)
+            {
+                luaL_openlibs(L);
+                lua_register(L, "ProcessCommand", dxirc::LuaCommand);
+                lua_register(L, "GetInfo", dxirc::LuaInfo);
+            }
+
+            if(luaL_dofile(L, lua->text.text()))
+            {
+                AppendIrcStyledText(FXStringFormat(_("Unable to load/run the file %s"), lua_tostring(L, -1)), 4);
+                return 0;
+            }
+            LuaScript script;
+            script.L = L;
+            script.name = lua->text;
+            scripts.append(script);
+            AppendIrcStyledText(FXStringFormat(_("Script %s was loaded"), lua->text.lower().text()), 3);
+        }
+        else
+        {
+            for(FXint i=0; i<scripts.no(); i++)
+            {
+                if(comparecase(lua->text, scripts[i].name)==0)
+                {
+                    AppendIrcStyledText(FXStringFormat(_("Script %s is already loaded"), lua->text.lower().text()), 4);
+                    return 1;
+                }
+            }
+            lua_State *L = lua_open();
+            if(L == NULL)
+            {
+                AppendIrcStyledText(_("Unable to initialize Lua."), 4);
+                return 0;
+            }
+            if(L)
+            {
+                luaL_openlibs(L);
+                lua_register(L, "ProcessCommand", dxirc::LuaCommand);
+                lua_register(L, "GetInfo", dxirc::LuaInfo);
+            }
+
+            if(luaL_dofile(L, lua->text.text()))
+            {
+                AppendIrcStyledText(FXStringFormat(_("Unable to load/run the file %s"), lua_tostring(L, -1)), 4);
+                return 0;
+            }
+            LuaScript script;
+            script.L = L;
+            script.name = lua->text;
+            scripts.append(script);
+            AppendIrcStyledText(FXStringFormat(_("Script %s was loaded"), lua->text.lower().text()), 3);
+        }
+        return 1;
+    }
+    if(lua->type == LUA_UNLOAD)
+    {
+        if(!scripts.no())
+        {
+            AppendIrcStyledText(FXStringFormat(_("Script %s isn't loaded"), lua->text.lower().text()), 4);
+            return 0;
+        }
+        else
+        {
+            for(FXint i=0; i<scripts.no(); i++)
+            {
+                if(comparecase(lua->text, scripts[i].name)==0)
+                {
+                    lua_close((lua_State*)scripts[i].L);
+                    scripts.erase(i);
+                    AppendIrcStyledText(FXStringFormat(_("Script %s was unloaded"), lua->text.lower().text()), 4);
+                    return 1;
+                }
+            }
+        }
+        return 1;
+    }
+    if(lua->type == LUA_LIST)
+    {
+        if(!scripts.no())
+        {
+            AppendIrcStyledText(_("Scripts aren't loaded"), 4);
+            return 0;
+        }
+        else
+        {
+            AppendIrcStyledText(_("Loaded scrips:"), 7);
+            for(FXint i=0; i<scripts.no(); i++)
+            {
+                AppendIrcText(scripts[i].name);
+            }
+        }
+        return 1;
+    }
+    if(lua->type == LUA_COMMAND)
+    {
+        AppendIrcStyledText("Command for Lua doesn't implemented now.", 3);
+        return 1;
+    }
+#else
+    AppendIrcStyledText(_("dxirc is compiled without support for Lua scripting"), 4);
+#endif
+    return 1;
+}
+
 FXbool dxirc::TabExist(IrcSocket *server, FXString name)
 {
     for(FXint i = 0; i < tabbook->numChildren(); i=i+2)
@@ -1739,6 +1927,114 @@ FXString dxirc::Decrypt(const FXString &text)
     }
     return result;
 }
+
+void dxirc::AppendIrcText(FXString text)
+{
+    if(tabbook->numChildren())
+    {
+        FXint index = tabbook->getCurrent()*2;
+        IrcTabItem *currenttab = (IrcTabItem *)tabbook->childAtIndex(index);
+        currenttab->AppendIrcText(text);
+    }
+}
+
+void dxirc::AppendIrcStyledText(FXString text, FXint style)
+{
+    if(tabbook->numChildren())
+    {
+        FXint index = tabbook->getCurrent()*2;
+        IrcTabItem *currenttab = (IrcTabItem *)tabbook->childAtIndex(index);
+        currenttab->AppendIrcStyledText(text, style);
+    }
+}
+
+#ifdef HAVE_LUA
+int dxirc::LuaCommand(lua_State* lua)
+{
+    FXString command = lua_tostring(lua, 1);
+    FXString text = lua_tostring(lua, 2);
+    FXString target = lua_tostring(lua, 3);
+    FXString nick = lua_tostring(lua, 4);
+    FXString server = lua_tostring(lua, 5);
+    dxirc *irc = (dxirc*)pObject;
+    FXString commandtext;
+    if(command.empty()) commandtext = text;
+    else commandtext = "/"+command+" "+text;
+    if(irc->tabbook->numChildren())
+    {
+        for (FXint i = 0; i<irc->tabbook->numChildren(); i=i+2)
+        {
+            FXbool btarget = FALSE;
+            FXbool bnick = FALSE;
+            FXbool bserver = FALSE;
+            if(target.empty()) btarget = TRUE;
+            if(!btarget && ((IrcTabItem *)irc->tabbook->childAtIndex(i))->getText()==target) btarget = TRUE;
+            if(nick.empty()) bnick = TRUE;
+            if(!bnick && ((IrcTabItem *)irc->tabbook->childAtIndex(i))->GetNickName()==nick) bnick = TRUE;
+            if(server.empty()) bserver = TRUE;
+            if(!bserver && ((IrcTabItem *)irc->tabbook->childAtIndex(i))->GetServerName()==server) bserver = TRUE;
+            if(btarget && bnick && bserver) ((IrcTabItem *)irc->tabbook->childAtIndex(i))->ProcessLine(commandtext);
+        }
+    }
+    return 0;
+}
+
+int dxirc::LuaInfo(lua_State* lua)
+{
+    dxirc *irc = (dxirc*)pObject;
+    FXString info = lua_tostring(lua, 1);
+    if(comparecase(info, "server") == 0)
+    {
+        if(irc->tabbook->numChildren())
+        {
+            FXint index = irc->tabbook->getCurrent()*2;
+            IrcTabItem *currenttab = (IrcTabItem *)irc->tabbook->childAtIndex(index);
+            IrcSocket *currentserver;
+            for(FXint i=0; i < irc->servers.no(); i++)
+            {
+                if(irc->servers[i]->FindTarget(currenttab))
+                {
+                    currentserver = irc->servers[i];
+                    break;
+                }
+            }
+            lua_getglobal(lua, "OnInfo");
+            if(lua_isfunction(lua, -1))
+            {
+                lua_newtable(lua);
+                lua_pushstring(lua, "server");
+                lua_setfield(lua, -2, "type");
+                lua_pushstring(lua, currentserver->GetServerName().text());
+                lua_setfield(lua, -2, "name");
+                lua_pushinteger(lua, currentserver->GetServerPort());
+                lua_setfield(lua, -2, "port");
+                lua_pushstring(lua, currentserver->GetNickName().text());
+                lua_setfield(lua, -2, "nick");
+                if(lua_pcall(lua, 1, 1, 0) != 0)
+                    irc->AppendIrcStyledText(FXStringFormat(_("Error running function `OnInfo': %s"), lua_tostring(lua, -1)), 4);
+            }
+            return 1;
+        }
+        lua_getglobal(lua, "OnInfo");
+        if(lua_isfunction(lua, -1))
+        {
+            lua_newtable(lua);
+            lua_pushstring(lua, "server");
+            lua_setfield(lua, -2, "type");
+            lua_pushstring(lua, "No current server");
+            lua_setfield(lua, -2, "name");
+            lua_pushinteger(lua, 0);
+            lua_setfield(lua, -2, "port");
+            lua_pushstring(lua, "No current server");
+            lua_setfield(lua, -2, "nick");
+            if(lua_pcall(lua, 1, 1, 0) != 0)
+                irc->AppendIrcStyledText(FXStringFormat(_("Error running function `OnInfo': %s"), lua_tostring(lua, -1)), 4);
+        }
+
+    }
+    return 0;
+}
+#endif
 
 #define USAGE_MSG _("\
 \nUsage: dxirc [options] \n\

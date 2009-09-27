@@ -20,6 +20,7 @@
  */
 
 #include "utils.h"
+#include "config.h"
 
 FXTextCodec *lcodec = NULL;
 FXString iniFile = FXString::null;
@@ -51,6 +52,9 @@ namespace utils
         commands.append("KICK");
         commands.append("KILL");
         commands.append("LIST");
+#ifdef HAVE_LUA
+        commands.append("LUA");
+#endif
         commands.append("ME");
         commands.append("MODE");
         commands.append("MSG");

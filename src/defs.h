@@ -74,7 +74,15 @@ enum IrcEventType {
     IRC_CHNOTICE,
     IRC_INVITE,
     IRC_AWAY,
-    IRC_ENDMOTD,
+    IRC_ENDMOTD
+};
+
+enum LuaCommands {
+    LUA_HELP,
+    LUA_LOAD,
+    LUA_UNLOAD,
+    LUA_COMMAND,
+    LUA_LIST
 };
 
 struct IrcEvent {
@@ -135,12 +143,23 @@ struct ColorTheme {
     FXColor hilite;
 };
 
+struct LuaRequest {
+    LuaCommands type;
+    FXString text;
+};
+
+struct LuaScript {
+    FXString name;
+    void *L;
+};
+
 typedef FXArray<IrcSocket*> dxServersArray;
 typedef FXArray<FXObject*> dxTargetsArray;
 typedef FXArray<FXString> dxStringArray;
 typedef FXArray<NickInfo> dxNicksArray;
 typedef FXArray<ServerInfo> dxServerInfoArray;
 typedef FXArray<IgnoreUser> dxIgnoreUserArray;
+typedef FXArray<LuaScript> dxScriptsArray;
 typedef std::map<FXString,FXString> dxStringMap;
 typedef std::pair<FXString,FXString> StringPair;
 typedef std::map<FXString, FXString>::iterator StringIt;

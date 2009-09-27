@@ -28,6 +28,8 @@
 #include "dxpipe.h"
 #include "defs.h"
 
+class dxirc;
+
 class dxText: public FXText
 {
     FXDECLARE(dxText)
@@ -41,11 +43,12 @@ private:
 class IrcTabItem: public FXTabItem
 {
     FXDECLARE(IrcTabItem)
+    friend class dxirc;
     public:
         IrcTabItem(FXTabBook*, const FXString&, FXIcon*, FXuint, TYPE, IrcSocket*, FXbool, FXbool, FXbool, FXString, FXString, FXint, IrcColor, FXString, FXFont*, FXbool, FXbool, FXbool);
         virtual ~IrcTabItem();
         enum {
-            ID_COMMANDLINE = FXMainWindow::ID_LAST+20,
+            ID_COMMANDLINE = FXMainWindow::ID_LAST+25,
             ID_CDIALOG,
             ID_TABQUIT,
             ID_TIME,
@@ -65,6 +68,7 @@ class IrcTabItem: public FXTabItem
             ID_NEXTTAB,
             ID_TEXT,
             ID_NEWMSG,
+            ID_LUA,
             ID_LAST
         };
 
@@ -73,6 +77,7 @@ class IrcTabItem: public FXTabItem
         void HideUsers();
         void ShowUsers();
         FXString GetServerName() { return server->GetServerName(); }
+        FXString GetNickName() { return server->GetNickName(); }
         void SetType(const TYPE &typ, const FXString &tabtext);
         TYPE GetType() { return type; }
         void ReparentTab();
@@ -87,7 +92,7 @@ class IrcTabItem: public FXTabItem
         void SetSameCmd(FXbool);
         void SetSameList(FXbool);
         void SetColoredNick(FXbool);
-        void SetCommandFocus();
+        void SetCommandFocus();        
 
         long OnCommandline(FXObject *, FXSelector, void*);
         long OnKeyPress(FXObject *, FXSelector, void*);
@@ -107,6 +112,11 @@ class IrcTabItem: public FXTabItem
         long OnKickban(FXObject *, FXSelector, void*);
         long OnTopic(FXObject *, FXSelector, void*);
         long OnPipe(FXObject *, FXSelector, void*);
+
+    protected:
+        void AppendIrcText(FXString);
+        void AppendIrcStyledText(FXString, FXint);
+        FXbool ProcessLine(const FXString &);
 
     private:
         IrcTabItem(){}
@@ -129,11 +139,10 @@ class IrcTabItem: public FXTabItem
         FXString commandsList, logPath, topic;
         FXint maxAway, maxLen;
         FXString nickCompletionChar;
-        std::ofstream *logstream;
+        std::ofstream *logstream;        
+        
 
         FXString StripColors(const FXString &text, const FXbool stripOther);
-        void AppendIrcText(FXString);
-        void AppendIrcStyledText(FXString, FXint);
         void AppendIrcNickText(FXString, FXString, FXint);
         FXString GetNick(int);
         FXbool IsFirst();
@@ -154,8 +163,7 @@ class IrcTabItem: public FXTabItem
         void SetNoticeColor(FXColor);
         void SetErrorColor(FXColor);
         void SetHilightColor(FXColor);
-        void SetLinkColor(FXColor);
-        FXbool ProcessLine(const FXString &);
+        void SetLinkColor(FXColor);        
         FXbool ProcessCommand(const FXString &);
         FXbool ShowHelp(FXString);
         FXint LaunchLink(const FXString &);
