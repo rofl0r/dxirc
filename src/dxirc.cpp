@@ -1735,7 +1735,8 @@ long dxirc::OnLua(FXObject*, FXSelector, void *data)
             }
             LuaScript script;
             script.L = L;
-            script.name = lua->text;
+            script.path = lua->text;
+            script.name = FXPath::stripExtension(FXPath::name(lua->text));
             scripts.append(script);
             AppendIrcStyledText(FXStringFormat(_("Script %s was loaded"), lua->text.lower().text()), 3);
         }
@@ -1769,7 +1770,8 @@ long dxirc::OnLua(FXObject*, FXSelector, void *data)
             }
             LuaScript script;
             script.L = L;
-            script.name = lua->text;
+            script.path = lua->text;
+            script.name = FXPath::stripExtension(FXPath::name(lua->text));
             scripts.append(script);
             AppendIrcStyledText(FXStringFormat(_("Script %s was loaded"), lua->text.lower().text()), 3);
         }
@@ -1807,16 +1809,42 @@ long dxirc::OnLua(FXObject*, FXSelector, void *data)
         else
         {
             AppendIrcStyledText(_("Loaded scrips:"), 7);
+            AppendIrcText(_("Name\tPath"));
             for(FXint i=0; i<scripts.no(); i++)
             {
-                AppendIrcText(scripts[i].name);
+                AppendIrcText(scripts[i].name+"\t"+scripts[i].path);
             }
         }
         return 1;
     }
     if(lua->type == LUA_COMMAND)
     {
-        AppendIrcStyledText("Command for Lua doesn't implemented now.", 3);
+        if(!scripts.no())
+        {
+            AppendIrcStyledText(_("Scripts aren't loaded"), 4);
+            return 0;
+        }
+        else
+        {
+            FXString name = lua->text.before(' ');
+            FXString command = lua->text.after(' ');
+            for(FXint i=0; i<scripts.no(); i++)
+            {
+                if(comparecase(name, scripts[i].name)==0)
+                {
+                    lua_State *L = (lua_State*)scripts[i].L;
+                    lua_getglobal(L, "OnCommand");
+                    if(lua_isfunction(L, -1))
+                    {
+                        lua_pushstring(L, command.text());
+                        if(lua_pcall(L, 1, 1, 0) != 0)
+                            AppendIrcStyledText(FXStringFormat(_("Error running function `OnCommand': %s"), lua_tostring(L, -1)), 4);
+                    }
+                    return 1;
+                }
+            }
+            AppendIrcStyledText(FXStringFormat(_("Script %s isn't loaded"), name.text()), 4);
+        }
         return 1;
     }
 #else

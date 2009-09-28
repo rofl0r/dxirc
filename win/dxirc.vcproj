@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="."
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;DXIRC_DATADIR=\&quot;.\&quot;;FOXDLL;HAVE_TRAY;HAVE_OPENSSL"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;DXIRC_DATADIR=\&quot;.\&quot;;FOXDLL;HAVE_TRAY;HAVE_OPENSSL;HAVE_LUA"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="FOXDLLD-1.6.lib libintl.lib libpng.lib ws2_32.lib libeay32.lib ssleay32.lib"
+				AdditionalDependencies="FOXDLLD-1.6.lib libintl.lib libpng.lib ws2_32.lib libeay32.lib ssleay32.lib lua5.1.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -118,7 +118,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="."
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;DXIRC_DATADIR=\&quot;.\&quot;;FOXDLL;HAVE_TRAY;HAVE_OPENSSL"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;DXIRC_DATADIR=\&quot;.\&quot;;FOXDLL;HAVE_TRAY;HAVE_OPENSSL;HAVE_LUA"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
@@ -136,7 +136,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="FOXDLL-1.6.lib libintl.lib libpng.lib ws2_32.lib libeay32.lib ssleay32.lib"
+				AdditionalDependencies="FOXDLL-1.6.lib libintl.lib libpng.lib ws2_32.lib libeay32.lib lua5.1.lib ssleay32.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"

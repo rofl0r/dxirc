@@ -77,7 +77,7 @@ translations, tests, advices and also all users.]\n \
 ;
 
 #define LUA_TEXT _("\
-Those irc event are sent to Lua script:\n\
+Those irc/custom event are sent to Lua script:\n\
 - PRIVMSG, which you can handle by OnMessage(msg)\n\
   msg is table with fields:\n\
   from ... sender of message\n\
@@ -91,6 +91,8 @@ Those irc event are sent to Lua script:\n\
   target ... where is joined\n\
   nick ... your nick, for identify server\n\
   server ... server name, for identify server\n\
+- /lua command scriptname commandtext, which you can handle by OnCommand(command)\n\
+  command .. commandtext sent by dxirc\n\
 Those functions dxirc hadle:\n\
 - ProcessCommand(command, text, target, nick, server)\n\
   command can be empty or one from /commands\n\

@@ -47,6 +47,8 @@
   ./configure
   make
   make install
+  On Debian based distros and Lua try:
+  LUA_CFLAGS="-I/usr/include/lua5.1" LUA_LIBS="-L/usr/lib -llua51" ./configure --enable-lua
 
  Bugs
  ~~~~

@@ -1087,7 +1087,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 LuaRequest lua;
                 if(luacommand.empty())
                 {
-                    AppendIrcStyledText(_("/lua <help|load|unload|list|command> [script] [command]"), 4);
+                    AppendIrcStyledText(_("/lua <help|load|unload|list|command> [scriptpath|scriptname] [commandtext]"), 4);
                     return FALSE;
                 }
                 if(comparecase(luacommand, "help")==0) lua.type = LUA_HELP;
@@ -1635,7 +1635,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
             LuaRequest lua;
             if(luacommand.empty())
             {
-                AppendIrcStyledText(_("/lua <help|load|unload|list|command> [script] [command]"), 4);
+                AppendIrcStyledText(_("/lua <help|load|unload|list|command> [scriptpath|scriptname] [commandtext]"), 4);
                 return FALSE;
             }
             if(comparecase(luacommand, "help")==0) lua.type = LUA_HELP;
@@ -1736,6 +1736,26 @@ FXbool IrcTabItem::ShowHelp(FXString command)
         AppendIrcText(_("LIST [channel], lists channels and their topics."));
         return TRUE;
     }
+#ifdef HAVE_LUA
+    if(command == "lua")
+    {
+        AppendIrcText(_("LUA <help>, shows help for lua scripting."));
+        AppendIrcText(_("LUA <load> <path>, loads script."));
+        AppendIrcText(_("Example: /lua load /home/dvx/test.lua"));
+        AppendIrcText(_("LUA <unload> <name>, unloads script."));
+        AppendIrcText(_("Example: /lua unload test"));
+        AppendIrcText(_("LUA <list>, shows list of loaded scripts"));
+        AppendIrcText(_("LUA <command> <name> <commandtext>, sends commandetext to script."));
+        AppendIrcText(_("Example: /lua command test play"));
+        return TRUE;
+    }
+#else
+    if(command == "lua")
+    {
+        AppendIrcStyledText(_("dxirc is compiled without support for Lua scripting"), 4);
+        return TRUE;
+    }
+#endif
     if(command == "me")
     {
         AppendIrcText(_("ME <to> <message>, sends the action."));

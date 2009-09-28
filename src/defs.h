@@ -149,6 +149,7 @@ struct LuaRequest {
 };
 
 struct LuaScript {
+    FXString path;
     FXString name;
     void *L;
 };
