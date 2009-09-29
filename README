@@ -29,17 +29,17 @@
 
  Key bindings
  ~~~~~~~~~~~~
-  * Help								- F1\n \
-  * Server list							- F2\n \
-  * Quick connect						- Ctrl-k\n \
-  * Disconnect							- Ctrl-d\n \
-  * Close current tab					- Ctrl-w\n \
-  * Clear window						- Ctrl-l\n \
-  * Clear all windows					- Ctrl-shift-l\n \
-  * Show/Hide users list				- Ctrl-u\n \
-  * Switch between tabs					- Alt-0~9 or Ctrl-tab\n \
-  * Switch between unreaded tabs		- Ctrl-n\n\
-  * Quit								- Alt-F4\n \
+  * Help					- F1
+  * Server list					- F2
+  * Quick connect				- Ctrl-k
+  * Disconnect					- Ctrl-d
+  * Close current tab				- Ctrl-w
+  * Clear window				- Ctrl-l
+  * Clear all windows				- Ctrl-shift-l
+  * Show/Hide users list			- Ctrl-u
+  * Switch between tabs				- Alt-0~9 or Ctrl-tab
+  * Switch between unreaded tabs		- Ctrl-n
+  * Quit					- Alt-F4
 
  Install from sources
  ~~~~~~~~~~~~~~~~~~~~
@@ -67,10 +67,10 @@
 
  Enjoy!
  
-  Many thanks to Jeroen van der Zijp for his excellent FOX-tookit and to all people that have provided useful patches, \
+  Many thanks to Jeroen van der Zijp for his excellent FOX-tookit and to all people that have provided useful patches,
   translations, tests, advices and also all users.
  
- [Last revision: 10.12.2008]
+ [Last revision: 28.09.2009]
 
 
 

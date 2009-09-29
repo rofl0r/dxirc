@@ -64,6 +64,7 @@ class dxirc: public FXMainWindow
             ID_TRAY,
             ID_TCANCEL,
             ID_LOG,
+            ID_LOAD,
             ID_LAST
         };
 
@@ -94,6 +95,7 @@ class dxirc: public FXMainWindow
         long OnNewMsg(FXObject*, FXSelector, void*);
         long OnTrayCancel(FXObject*, FXSelector, void*);
         long OnLua(FXObject*, FXSelector, void*);
+        long OnCommandLoad(FXObject*, FXSelector, void*);
 
     private:
         dxirc(){}

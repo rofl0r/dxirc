@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-28 15:45+0200\n"
+"POT-Creation-Date: 2009-09-29 17:34+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,7 +25,7 @@ msgid "&Close"
 msgstr ""
 
 #: src/configdialog.cpp:158 src/configdialog.cpp:533 src/configdialog.cpp:571
-#: src/configdialog.cpp:613 src/dxirc.cpp:1082 src/dxirc.cpp:1189
+#: src/configdialog.cpp:613 src/dxirc.cpp:1090 src/dxirc.cpp:1197
 #: src/irctabitem.cpp:2963 src/irctabitem.cpp:2984 src/irctabitem.cpp:3009
 #: src/serverdialog.cpp:104 src/serverdialog.cpp:175 src/serverdialog.cpp:260
 #: src/aliasdialog.cpp:58 src/aliasdialog.cpp:90 src/aliasdialog.cpp:119
@@ -283,7 +283,7 @@ msgstr ""
 msgid "Selected Menu Entry"
 msgstr ""
 
-#: src/configdialog.cpp:352 src/dxirc.cpp:142
+#: src/configdialog.cpp:352 src/dxirc.cpp:147
 msgid "&Quit"
 msgstr ""
 
@@ -312,7 +312,7 @@ msgid "Command:"
 msgstr ""
 
 #: src/configdialog.cpp:532 src/configdialog.cpp:570 src/configdialog.cpp:612
-#: src/dxirc.cpp:1012 src/dxirc.cpp:1188 src/irctabitem.cpp:2962
+#: src/dxirc.cpp:1020 src/dxirc.cpp:1196 src/irctabitem.cpp:2962
 #: src/irctabitem.cpp:2983 src/irctabitem.cpp:3008 src/serverdialog.cpp:174
 #: src/serverdialog.cpp:259 src/aliasdialog.cpp:89 src/aliasdialog.cpp:118
 msgid "OK"
@@ -326,7 +326,7 @@ msgstr ""
 msgid "Nick:"
 msgstr ""
 
-#: src/configdialog.cpp:561 src/configdialog.cpp:604 src/dxirc.cpp:1065
+#: src/configdialog.cpp:561 src/configdialog.cpp:604 src/dxirc.cpp:1073
 #: src/serverdialog.cpp:155 src/serverdialog.cpp:237
 msgid "Channel(s):\tChannels need to be comma separated"
 msgstr ""
@@ -372,159 +372,163 @@ msgstr ""
 msgid "Some changes need restart application"
 msgstr ""
 
-#: src/dxirc.cpp:86
+#: src/dxirc.cpp:87
 msgid "&Server list\tF2"
 msgstr ""
 
-#: src/dxirc.cpp:87
+#: src/dxirc.cpp:88
 msgid "Quick &connect\tCtrl-K"
 msgstr ""
 
-#: src/dxirc.cpp:88
+#: src/dxirc.cpp:89
 msgid "&Disconnect\tCtrl-D"
 msgstr ""
 
-#: src/dxirc.cpp:91
+#: src/dxirc.cpp:93
+msgid "L&oad script\tCtrl-O"
+msgstr ""
+
+#: src/dxirc.cpp:96
 msgid "&Log viewer\tCtrl-G"
 msgstr ""
 
-#: src/dxirc.cpp:94
+#: src/dxirc.cpp:99
 msgid "&Quit\tAlt-F4"
 msgstr ""
 
-#: src/dxirc.cpp:95
+#: src/dxirc.cpp:100
 msgid "&Server"
 msgstr ""
 
-#: src/dxirc.cpp:98
+#: src/dxirc.cpp:103
 msgid "Close current tab\tCtrl-W"
 msgstr ""
 
-#: src/dxirc.cpp:101
+#: src/dxirc.cpp:106
 msgid "Clear window\tCtrl-L"
 msgstr ""
 
-#: src/dxirc.cpp:102
+#: src/dxirc.cpp:107
 msgid "Clear all windows\tCtrl-Shift-L"
 msgstr ""
 
-#: src/dxirc.cpp:104
+#: src/dxirc.cpp:109
 msgid "Users list\tCtrl-U\tShow/Hide users list"
 msgstr ""
 
-#: src/dxirc.cpp:106
+#: src/dxirc.cpp:111
 msgid "Status bar"
 msgstr ""
 
-#: src/dxirc.cpp:108
+#: src/dxirc.cpp:113
 msgid "&Aliases"
 msgstr ""
 
-#: src/dxirc.cpp:109
+#: src/dxirc.cpp:114
 msgid "&Preferences"
 msgstr ""
 
-#: src/dxirc.cpp:110
+#: src/dxirc.cpp:115
 msgid "&Edit"
 msgstr ""
 
-#: src/dxirc.cpp:113
+#: src/dxirc.cpp:118
 msgid "&Help\tF1"
 msgstr ""
 
-#: src/dxirc.cpp:114
+#: src/dxirc.cpp:119
 msgid "&About..."
 msgstr ""
 
-#: src/dxirc.cpp:115
+#: src/dxirc.cpp:120
 msgid "&Help"
 msgstr ""
 
-#: src/dxirc.cpp:140
+#: src/dxirc.cpp:145
 msgid "&Cancel"
 msgstr ""
 
-#: src/dxirc.cpp:505
+#: src/dxirc.cpp:510
 msgid "Help"
 msgstr ""
 
-#: src/dxirc.cpp:514
+#: src/dxirc.cpp:519
 msgid "Close"
 msgstr ""
 
-#: src/dxirc.cpp:1003
+#: src/dxirc.cpp:1008
 #, c-format
 msgid "About %s"
 msgstr ""
 
-#: src/dxirc.cpp:1006
+#: src/dxirc.cpp:1011
 msgid "Copyright (C) 2008~ David Vachulka (david@konstrukce-cad.com)\n"
 msgstr ""
 
-#: src/dxirc.cpp:1007
+#: src/dxirc.cpp:1012
 #, c-format
 msgid ""
 "This software was built with the FOX Toolkit Library version %d.%d.%d "
 "(http://www.fox-toolkit.org)."
 msgstr ""
 
-#: src/dxirc.cpp:1008
+#: src/dxirc.cpp:1013
 msgid "This sofware uses http://www.famfamfam.com/lab/icons/"
 msgstr ""
 
-#: src/dxirc.cpp:1010
+#: src/dxirc.cpp:1015 src/dxirc.cpp:1018
 #, c-format
 msgid "This software was built with %s"
 msgstr ""
 
-#: src/dxirc.cpp:1041
+#: src/dxirc.cpp:1049
 msgid "Quick connect"
 msgstr ""
 
-#: src/dxirc.cpp:1046 src/serverdialog.cpp:56 src/serverdialog.cpp:136
+#: src/dxirc.cpp:1054 src/serverdialog.cpp:56 src/serverdialog.cpp:136
 #: src/serverdialog.cpp:216
 msgid "Hostname:"
 msgstr ""
 
-#: src/dxirc.cpp:1050 src/serverdialog.cpp:59 src/serverdialog.cpp:140
+#: src/dxirc.cpp:1058 src/serverdialog.cpp:59 src/serverdialog.cpp:140
 #: src/serverdialog.cpp:220
 msgid "Port:"
 msgstr ""
 
-#: src/dxirc.cpp:1055 src/serverdialog.cpp:62 src/serverdialog.cpp:145
+#: src/dxirc.cpp:1063 src/serverdialog.cpp:62 src/serverdialog.cpp:145
 #: src/serverdialog.cpp:225
 msgid "Password:"
 msgstr ""
 
-#: src/dxirc.cpp:1058 src/serverdialog.cpp:65 src/serverdialog.cpp:148
+#: src/dxirc.cpp:1066 src/serverdialog.cpp:65 src/serverdialog.cpp:148
 #: src/serverdialog.cpp:229
 msgid "Nickname:"
 msgstr ""
 
-#: src/dxirc.cpp:1062 src/serverdialog.cpp:68 src/serverdialog.cpp:152
+#: src/dxirc.cpp:1070 src/serverdialog.cpp:68 src/serverdialog.cpp:152
 #: src/serverdialog.cpp:233
 msgid "Realname:"
 msgstr ""
 
-#: src/dxirc.cpp:1070 src/serverdialog.cpp:81 src/serverdialog.cpp:166
+#: src/dxirc.cpp:1078 src/serverdialog.cpp:81 src/serverdialog.cpp:166
 #: src/serverdialog.cpp:249
 msgid "Use SSL:"
 msgstr ""
 
-#: src/dxirc.cpp:1074 src/serverdialog.cpp:74 src/serverdialog.cpp:159
+#: src/dxirc.cpp:1082 src/serverdialog.cpp:74 src/serverdialog.cpp:159
 #: src/serverdialog.cpp:241
 msgid "Commands on connection:"
 msgstr ""
 
-#: src/dxirc.cpp:1081
+#: src/dxirc.cpp:1089
 msgid "&OK"
 msgstr ""
 
-#: src/dxirc.cpp:1184
+#: src/dxirc.cpp:1192
 msgid "Confirm disconnect"
 msgstr ""
 
-#: src/dxirc.cpp:1186
+#: src/dxirc.cpp:1194
 #, c-format
 msgid ""
 "Disconnect server: %s\n"
@@ -532,76 +536,84 @@ msgid ""
 "Nick: %s?"
 msgstr ""
 
-#: src/dxirc.cpp:1402
+#: src/dxirc.cpp:1410
 #, c-format
 msgid "Error running function `OnMessage': %s"
 msgstr ""
 
-#: src/dxirc.cpp:1428
+#: src/dxirc.cpp:1436
 #, c-format
 msgid "Error running function `OnJoin': %s"
 msgstr ""
 
-#: src/dxirc.cpp:1710
-msgid "Lua scripting help"
+#: src/dxirc.cpp:1715
+msgid "Load lua script"
 msgstr ""
 
-#: src/dxirc.cpp:1721 src/dxirc.cpp:1756
+#: src/dxirc.cpp:1716
+msgid "Lua scripts (*.lua)"
+msgstr ""
+
+#: src/dxirc.cpp:1724 src/dxirc.cpp:1759 src/dxirc.cpp:1803 src/dxirc.cpp:1838
 msgid "Unable to initialize Lua."
 msgstr ""
 
-#: src/dxirc.cpp:1733 src/dxirc.cpp:1768
+#: src/dxirc.cpp:1736 src/dxirc.cpp:1771 src/dxirc.cpp:1815 src/dxirc.cpp:1850
 #, c-format
 msgid "Unable to load/run the file %s"
 msgstr ""
 
-#: src/dxirc.cpp:1741 src/dxirc.cpp:1776
+#: src/dxirc.cpp:1744 src/dxirc.cpp:1779 src/dxirc.cpp:1823 src/dxirc.cpp:1858
 #, c-format
 msgid "Script %s was loaded"
 msgstr ""
 
-#: src/dxirc.cpp:1749
+#: src/dxirc.cpp:1752 src/dxirc.cpp:1831
 #, c-format
 msgid "Script %s is already loaded"
 msgstr ""
 
-#: src/dxirc.cpp:1784 src/dxirc.cpp:1846
+#: src/dxirc.cpp:1792
+msgid "Lua scripting help"
+msgstr ""
+
+#: src/dxirc.cpp:1866 src/dxirc.cpp:1928
 #, c-format
 msgid "Script %s isn't loaded"
 msgstr ""
 
-#: src/dxirc.cpp:1795
+#: src/dxirc.cpp:1877
 #, c-format
 msgid "Script %s was unloaded"
 msgstr ""
 
-#: src/dxirc.cpp:1806 src/dxirc.cpp:1824
+#: src/dxirc.cpp:1888 src/dxirc.cpp:1906
 msgid "Scripts aren't loaded"
 msgstr ""
 
-#: src/dxirc.cpp:1811
+#: src/dxirc.cpp:1893
 msgid "Loaded scrips:"
 msgstr ""
 
-#: src/dxirc.cpp:1812
+#: src/dxirc.cpp:1894
 msgid "Name\tPath"
 msgstr ""
 
-#: src/dxirc.cpp:1841
+#: src/dxirc.cpp:1923
 #, c-format
 msgid "Error running function `OnCommand': %s"
 msgstr ""
 
-#: src/dxirc.cpp:1851 src/irctabitem.cpp:1755
+#: src/dxirc.cpp:1933 src/irctabitem.cpp:1755
 msgid "dxirc is compiled without support for Lua scripting"
 msgstr ""
 
-#: src/dxirc.cpp:2042 src/dxirc.cpp:2059
+#: src/dxirc.cpp:2124 src/dxirc.cpp:2141
 #, c-format
 msgid "Error running function `OnInfo': %s"
 msgstr ""
 
-#: src/dxirc.cpp:2067
+#: src/dxirc.cpp:2149
 msgid ""
 "\n"
 "Usage: dxirc [options] \n"

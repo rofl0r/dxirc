@@ -57,6 +57,7 @@ FXDEFMAP(dxirc) dxircMap[] = {
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_LOG,              dxirc::OnCommandLog),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_TRAY,             dxirc::OnTrayClicked),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_TCANCEL,          dxirc::OnTrayCancel),
+    FXMAPFUNC(SEL_COMMAND,  dxirc::ID_LOAD,             dxirc::OnCommandLoad),
     FXMAPFUNC(SEL_COMMAND,  IrcSocket::ID_SERVER,       dxirc::OnIrcEvent),
     FXMAPFUNC(SEL_COMMAND,  IrcTabItem::ID_CDIALOG,     dxirc::OnCommandConnect),
     FXMAPFUNC(SEL_COMMAND,  IrcTabItem::ID_CSERVER,     dxirc::OnTabConnect),
@@ -87,6 +88,10 @@ dxirc::dxirc(FXApp *app)
     new FXMenuCommand(servermenu, _("Quick &connect\tCtrl-K"), connecticon, this, ID_CONNECT);
     disconnect = new FXMenuCommand(servermenu, _("&Disconnect\tCtrl-D"), disconnecticon, this, ID_DISCONNECT);
     disconnect->disable();
+#ifdef HAVE_LUA
+    new FXMenuSeparator(servermenu);
+    new FXMenuCommand(servermenu, _("L&oad script\tCtrl-O"), NULL, this, ID_LOAD);
+#endif
     new FXMenuSeparator(servermenu);
     logviewer = new FXMenuCommand(servermenu, _("&Log viewer\tCtrl-G"), NULL, this, ID_LOG);
     if(!logging) logviewer->disable();
@@ -1009,6 +1014,9 @@ long dxirc::OnCommandAbout(FXObject*, FXSelector, void*)
 #ifdef HAVE_OPENSSL
     new FXLabel(content, FXStringFormat(_("This software was built with %s"), OPENSSL_VERSION_TEXT), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
 #endif
+#ifdef HAVE_LUA
+    new FXLabel(content, FXStringFormat(_("This software was built with %s"), LUA_RELEASE), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+#endif
     FXButton *button = new FXButton(content, _("OK"), 0, &about, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
     button->setFocus();
     about.execute(PLACEMENT_OWNER);
@@ -1701,6 +1709,80 @@ long dxirc::OnNewMsg(FXObject *obj, FXSelector, void*)
     return 1;
 }
 
+long dxirc::OnCommandLoad(FXObject*, FXSelector, void*)
+{
+#ifdef HAVE_LUA
+    FXFileDialog file(this, _("Load lua script"));
+    file.setPatternList(_("Lua scripts (*.lua)"));
+    if(file.execute(PLACEMENT_CURSOR))
+    {
+        if(!scripts.no())
+        {
+            lua_State *L = lua_open();
+            if(L == NULL)
+            {
+                AppendIrcStyledText(_("Unable to initialize Lua."), 4);
+                return 0;
+            }
+            if(L)
+            {
+                luaL_openlibs(L);
+                lua_register(L, "ProcessCommand", dxirc::LuaCommand);
+                lua_register(L, "GetInfo", dxirc::LuaInfo);
+            }
+
+            if(luaL_dofile(L, file.getFilename().text()))
+            {
+                AppendIrcStyledText(FXStringFormat(_("Unable to load/run the file %s"), lua_tostring(L, -1)), 4);
+                return 0;
+            }
+            LuaScript script;
+            script.L = L;
+            script.path = file.getFilename();
+            script.name = FXPath::stripExtension(FXPath::name(file.getFilename()));
+            scripts.append(script);
+            AppendIrcStyledText(FXStringFormat(_("Script %s was loaded"), file.getFilename().lower().text()), 3);
+        }
+        else
+        {
+            for(FXint i=0; i<scripts.no(); i++)
+            {
+                if(comparecase(file.getFilename(), scripts[i].path)==0 && comparecase(FXPath::stripExtension(FXPath::name(file.getFilename())), scripts[i].name)==0)
+                {
+                    AppendIrcStyledText(FXStringFormat(_("Script %s is already loaded"), file.getFilename().lower().text()), 4);
+                    return 1;
+                }
+            }
+            lua_State *L = lua_open();
+            if(L == NULL)
+            {
+                AppendIrcStyledText(_("Unable to initialize Lua."), 4);
+                return 0;
+            }
+            if(L)
+            {
+                luaL_openlibs(L);
+                lua_register(L, "ProcessCommand", dxirc::LuaCommand);
+                lua_register(L, "GetInfo", dxirc::LuaInfo);
+            }
+
+            if(luaL_dofile(L, file.getFilename().text()))
+            {
+                AppendIrcStyledText(FXStringFormat(_("Unable to load/run the file %s"), lua_tostring(L, -1)), 4);
+                return 0;
+            }
+            LuaScript script;
+            script.L = L;
+            script.path = file.getFilename();
+            script.name = FXPath::stripExtension(FXPath::name(file.getFilename()));
+            scripts.append(script);
+            AppendIrcStyledText(FXStringFormat(_("Script %s was loaded"), file.getFilename().lower().text()), 3);
+        }
+    }
+#endif
+    return 1;
+}
+
 long dxirc::OnLua(FXObject*, FXSelector, void *data)
 {
 #ifdef HAVE_LUA
@@ -1744,7 +1826,7 @@ long dxirc::OnLua(FXObject*, FXSelector, void *data)
         {
             for(FXint i=0; i<scripts.no(); i++)
             {
-                if(comparecase(lua->text, scripts[i].name)==0)
+                if(comparecase(lua->text, scripts[i].path)==0 && comparecase(FXPath::stripExtension(FXPath::name(lua->text)), scripts[i].name)==0)
                 {
                     AppendIrcStyledText(FXStringFormat(_("Script %s is already loaded"), lua->text.lower().text()), 4);
                     return 1;
