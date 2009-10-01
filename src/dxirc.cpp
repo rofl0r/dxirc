@@ -1988,9 +1988,9 @@ void dxirc::SortTabs()
             tabpole[i]->ReparentTab();
         }
         tabbook->recalc();
-        delete []tabpole;
-        UpdateStatus();
+        delete []tabpole;        
     }
+    UpdateStatus();
 }
 
 void dxirc::UpdateMenus()
