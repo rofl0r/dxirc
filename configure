@@ -10798,12 +10798,12 @@ if test -n "$LUA_CFLAGS"; then
     pkg_cv_LUA_CFLAGS="$LUA_CFLAGS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"lua>=5.1\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "lua>=5.1") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"lua5.1\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "lua5.1") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_LUA_CFLAGS=`$PKG_CONFIG --cflags "lua>=5.1" 2>/dev/null`
+  pkg_cv_LUA_CFLAGS=`$PKG_CONFIG --cflags "lua5.1" 2>/dev/null`
 else
   pkg_failed=yes
 fi
@@ -10814,12 +10814,12 @@ if test -n "$LUA_LIBS"; then
     pkg_cv_LUA_LIBS="$LUA_LIBS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"lua>=5.1\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "lua>=5.1") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"lua5.1\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "lua5.1") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_LUA_LIBS=`$PKG_CONFIG --libs "lua>=5.1" 2>/dev/null`
+  pkg_cv_LUA_LIBS=`$PKG_CONFIG --libs "lua5.1" 2>/dev/null`
 else
   pkg_failed=yes
 fi
@@ -10837,30 +10837,78 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-	        LUA_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors "lua>=5.1" 2>&1`
+	        LUA_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors "lua5.1" 2>&1`
         else
-	        LUA_PKG_ERRORS=`$PKG_CONFIG --print-errors "lua>=5.1" 2>&1`
+	        LUA_PKG_ERRORS=`$PKG_CONFIG --print-errors "lua5.1" 2>&1`
         fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$LUA_PKG_ERRORS" >&5
 
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
-                :
-elif test $pkg_failed = untried; then
-	:
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: lua5.1 not found, trying lua >= 5.1 instead" >&5
+$as_echo "$as_me: WARNING: lua5.1 not found, trying lua >= 5.1 instead" >&2;}
+
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for LUA" >&5
+$as_echo_n "checking for LUA... " >&6; }
+
+if test -n "$LUA_CFLAGS"; then
+    pkg_cv_LUA_CFLAGS="$LUA_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"lua >= 5.1\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "lua >= 5.1") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_LUA_CFLAGS=`$PKG_CONFIG --cflags "lua >= 5.1" 2>/dev/null`
 else
-	LUA_CFLAGS=$pkg_cv_LUA_CFLAGS
-	LUA_LIBS=$pkg_cv_LUA_LIBS
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-	:
+  pkg_failed=yes
 fi
-  if test "$LUA_LIBS"; then
-    CXXFLAGS="${CXXFLAGS} $LUA_CFLAGS"
-    have_lua=yes
-  else
-    for ac_header in lua.h lauxlib.h
+ else
+    pkg_failed=untried
+fi
+if test -n "$LUA_LIBS"; then
+    pkg_cv_LUA_LIBS="$LUA_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"lua >= 5.1\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "lua >= 5.1") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_LUA_LIBS=`$PKG_CONFIG --libs "lua >= 5.1" 2>/dev/null`
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        LUA_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors "lua >= 5.1" 2>&1`
+        else
+	        LUA_PKG_ERRORS=`$PKG_CONFIG --print-errors "lua >= 5.1" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$LUA_PKG_ERRORS" >&5
+
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+        have_lua=yes
+        for ac_header in lua.h lauxlib.h lualib.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
@@ -10869,17 +10917,679 @@ eval as_val=\$$as_ac_Header
   cat >>confdefs.h <<_ACEOF
 #define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
 _ACEOF
- LUA_LIBS="-llua"  have_lua=yes
+
+else
+   have_lua=no
 fi
 
 done
 
-  fi
-  if test "$have_lua" = "yes"; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for luaL_newstate in -llua5.1 " >&5
+$as_echo_n "checking for luaL_newstate in -llua5.1 ... " >&6; }
+if test "${ac_cv_lib_lua5_1__luaL_newstate+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-llua5.1   $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char luaL_newstate ();
+int
+main ()
+{
+return luaL_newstate ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_lua5_1__luaL_newstate=yes
+else
+  ac_cv_lib_lua5_1__luaL_newstate=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_lua5_1__luaL_newstate" >&5
+$as_echo "$ac_cv_lib_lua5_1__luaL_newstate" >&6; }
+if test "x$ac_cv_lib_lua5_1__luaL_newstate" = x""yes; then :
+  LUA_LIBS="-llua5.1"
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for luaL_newstate in -llua51 " >&5
+$as_echo_n "checking for luaL_newstate in -llua51 ... " >&6; }
+if test "${ac_cv_lib_lua51__luaL_newstate+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-llua51   $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char luaL_newstate ();
+int
+main ()
+{
+return luaL_newstate ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_lua51__luaL_newstate=yes
+else
+  ac_cv_lib_lua51__luaL_newstate=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_lua51__luaL_newstate" >&5
+$as_echo "$ac_cv_lib_lua51__luaL_newstate" >&6; }
+if test "x$ac_cv_lib_lua51__luaL_newstate" = x""yes; then :
+  LUA_LIBS="-llua51"
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for luaL_newstate in -llua " >&5
+$as_echo_n "checking for luaL_newstate in -llua ... " >&6; }
+if test "${ac_cv_lib_lua__luaL_newstate+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-llua  -lm $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char luaL_newstate ();
+int
+main ()
+{
+return luaL_newstate ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_lua__luaL_newstate=yes
+else
+  ac_cv_lib_lua__luaL_newstate=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_lua__luaL_newstate" >&5
+$as_echo "$ac_cv_lib_lua__luaL_newstate" >&6; }
+if test "x$ac_cv_lib_lua__luaL_newstate" = x""yes; then :
+  LUA_LIBS="-llua"
+else
+   have_lua=no
+                { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: lua >= 5.1 not found!" >&5
+$as_echo "$as_me: WARNING: lua >= 5.1 not found!" >&2;}
+
+fi
+
+
+fi
+
+
+fi
+
+
+elif test $pkg_failed = untried; then
+
+        have_lua=yes
+        for ac_header in lua.h lauxlib.h lualib.h
+do :
+  as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
+ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
+eval as_val=\$$as_ac_Header
+   if test "x$as_val" = x""yes; then :
+  cat >>confdefs.h <<_ACEOF
+#define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
+_ACEOF
+
+else
+   have_lua=no
+fi
+
+done
+
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for luaL_newstate in -llua5.1 " >&5
+$as_echo_n "checking for luaL_newstate in -llua5.1 ... " >&6; }
+if test "${ac_cv_lib_lua5_1__luaL_newstate+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-llua5.1   $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char luaL_newstate ();
+int
+main ()
+{
+return luaL_newstate ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_lua5_1__luaL_newstate=yes
+else
+  ac_cv_lib_lua5_1__luaL_newstate=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_lua5_1__luaL_newstate" >&5
+$as_echo "$ac_cv_lib_lua5_1__luaL_newstate" >&6; }
+if test "x$ac_cv_lib_lua5_1__luaL_newstate" = x""yes; then :
+  LUA_LIBS="-llua5.1"
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for luaL_newstate in -llua51 " >&5
+$as_echo_n "checking for luaL_newstate in -llua51 ... " >&6; }
+if test "${ac_cv_lib_lua51__luaL_newstate+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-llua51   $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char luaL_newstate ();
+int
+main ()
+{
+return luaL_newstate ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_lua51__luaL_newstate=yes
+else
+  ac_cv_lib_lua51__luaL_newstate=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_lua51__luaL_newstate" >&5
+$as_echo "$ac_cv_lib_lua51__luaL_newstate" >&6; }
+if test "x$ac_cv_lib_lua51__luaL_newstate" = x""yes; then :
+  LUA_LIBS="-llua51"
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for luaL_newstate in -llua " >&5
+$as_echo_n "checking for luaL_newstate in -llua ... " >&6; }
+if test "${ac_cv_lib_lua__luaL_newstate+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-llua  -lm $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char luaL_newstate ();
+int
+main ()
+{
+return luaL_newstate ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_lua__luaL_newstate=yes
+else
+  ac_cv_lib_lua__luaL_newstate=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_lua__luaL_newstate" >&5
+$as_echo "$ac_cv_lib_lua__luaL_newstate" >&6; }
+if test "x$ac_cv_lib_lua__luaL_newstate" = x""yes; then :
+  LUA_LIBS="-llua"
+else
+   have_lua=no
+                { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: lua >= 5.1 not found!" >&5
+$as_echo "$as_me: WARNING: lua >= 5.1 not found!" >&2;}
+
+fi
+
+
+fi
+
+
+fi
+
+
+else
+	LUA_CFLAGS=$pkg_cv_LUA_CFLAGS
+	LUA_LIBS=$pkg_cv_LUA_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	 have_lua=yes
+fi
+
+elif test $pkg_failed = untried; then
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: lua5.1 not found, trying lua >= 5.1 instead" >&5
+$as_echo "$as_me: WARNING: lua5.1 not found, trying lua >= 5.1 instead" >&2;}
+
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for LUA" >&5
+$as_echo_n "checking for LUA... " >&6; }
+
+if test -n "$LUA_CFLAGS"; then
+    pkg_cv_LUA_CFLAGS="$LUA_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"lua >= 5.1\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "lua >= 5.1") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_LUA_CFLAGS=`$PKG_CONFIG --cflags "lua >= 5.1" 2>/dev/null`
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$LUA_LIBS"; then
+    pkg_cv_LUA_LIBS="$LUA_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"lua >= 5.1\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "lua >= 5.1") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_LUA_LIBS=`$PKG_CONFIG --libs "lua >= 5.1" 2>/dev/null`
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        LUA_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors "lua >= 5.1" 2>&1`
+        else
+	        LUA_PKG_ERRORS=`$PKG_CONFIG --print-errors "lua >= 5.1" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$LUA_PKG_ERRORS" >&5
+
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+        have_lua=yes
+        for ac_header in lua.h lauxlib.h lualib.h
+do :
+  as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
+ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
+eval as_val=\$$as_ac_Header
+   if test "x$as_val" = x""yes; then :
+  cat >>confdefs.h <<_ACEOF
+#define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
+_ACEOF
+
+else
+   have_lua=no
+fi
+
+done
+
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for luaL_newstate in -llua5.1 " >&5
+$as_echo_n "checking for luaL_newstate in -llua5.1 ... " >&6; }
+if test "${ac_cv_lib_lua5_1__luaL_newstate+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-llua5.1   $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char luaL_newstate ();
+int
+main ()
+{
+return luaL_newstate ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_lua5_1__luaL_newstate=yes
+else
+  ac_cv_lib_lua5_1__luaL_newstate=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_lua5_1__luaL_newstate" >&5
+$as_echo "$ac_cv_lib_lua5_1__luaL_newstate" >&6; }
+if test "x$ac_cv_lib_lua5_1__luaL_newstate" = x""yes; then :
+  LUA_LIBS="-llua5.1"
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for luaL_newstate in -llua51 " >&5
+$as_echo_n "checking for luaL_newstate in -llua51 ... " >&6; }
+if test "${ac_cv_lib_lua51__luaL_newstate+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-llua51   $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char luaL_newstate ();
+int
+main ()
+{
+return luaL_newstate ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_lua51__luaL_newstate=yes
+else
+  ac_cv_lib_lua51__luaL_newstate=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_lua51__luaL_newstate" >&5
+$as_echo "$ac_cv_lib_lua51__luaL_newstate" >&6; }
+if test "x$ac_cv_lib_lua51__luaL_newstate" = x""yes; then :
+  LUA_LIBS="-llua51"
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for luaL_newstate in -llua " >&5
+$as_echo_n "checking for luaL_newstate in -llua ... " >&6; }
+if test "${ac_cv_lib_lua__luaL_newstate+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-llua  -lm $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char luaL_newstate ();
+int
+main ()
+{
+return luaL_newstate ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_lua__luaL_newstate=yes
+else
+  ac_cv_lib_lua__luaL_newstate=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_lua__luaL_newstate" >&5
+$as_echo "$ac_cv_lib_lua__luaL_newstate" >&6; }
+if test "x$ac_cv_lib_lua__luaL_newstate" = x""yes; then :
+  LUA_LIBS="-llua"
+else
+   have_lua=no
+                { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: lua >= 5.1 not found!" >&5
+$as_echo "$as_me: WARNING: lua >= 5.1 not found!" >&2;}
+
+fi
+
+
+fi
+
+
+fi
+
+
+elif test $pkg_failed = untried; then
+
+        have_lua=yes
+        for ac_header in lua.h lauxlib.h lualib.h
+do :
+  as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
+ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
+eval as_val=\$$as_ac_Header
+   if test "x$as_val" = x""yes; then :
+  cat >>confdefs.h <<_ACEOF
+#define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
+_ACEOF
+
+else
+   have_lua=no
+fi
+
+done
+
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for luaL_newstate in -llua5.1 " >&5
+$as_echo_n "checking for luaL_newstate in -llua5.1 ... " >&6; }
+if test "${ac_cv_lib_lua5_1__luaL_newstate+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-llua5.1   $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char luaL_newstate ();
+int
+main ()
+{
+return luaL_newstate ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_lua5_1__luaL_newstate=yes
+else
+  ac_cv_lib_lua5_1__luaL_newstate=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_lua5_1__luaL_newstate" >&5
+$as_echo "$ac_cv_lib_lua5_1__luaL_newstate" >&6; }
+if test "x$ac_cv_lib_lua5_1__luaL_newstate" = x""yes; then :
+  LUA_LIBS="-llua5.1"
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for luaL_newstate in -llua51 " >&5
+$as_echo_n "checking for luaL_newstate in -llua51 ... " >&6; }
+if test "${ac_cv_lib_lua51__luaL_newstate+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-llua51   $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char luaL_newstate ();
+int
+main ()
+{
+return luaL_newstate ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_lua51__luaL_newstate=yes
+else
+  ac_cv_lib_lua51__luaL_newstate=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_lua51__luaL_newstate" >&5
+$as_echo "$ac_cv_lib_lua51__luaL_newstate" >&6; }
+if test "x$ac_cv_lib_lua51__luaL_newstate" = x""yes; then :
+  LUA_LIBS="-llua51"
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for luaL_newstate in -llua " >&5
+$as_echo_n "checking for luaL_newstate in -llua ... " >&6; }
+if test "${ac_cv_lib_lua__luaL_newstate+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-llua  -lm $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char luaL_newstate ();
+int
+main ()
+{
+return luaL_newstate ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_lua__luaL_newstate=yes
+else
+  ac_cv_lib_lua__luaL_newstate=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_lua__luaL_newstate" >&5
+$as_echo "$ac_cv_lib_lua__luaL_newstate" >&6; }
+if test "x$ac_cv_lib_lua__luaL_newstate" = x""yes; then :
+  LUA_LIBS="-llua"
+else
+   have_lua=no
+                { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: lua >= 5.1 not found!" >&5
+$as_echo "$as_me: WARNING: lua >= 5.1 not found!" >&2;}
+
+fi
+
+
+fi
+
+
+fi
+
+
+else
+	LUA_CFLAGS=$pkg_cv_LUA_CFLAGS
+	LUA_LIBS=$pkg_cv_LUA_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	 have_lua=yes
+fi
+
+else
+	LUA_CFLAGS=$pkg_cv_LUA_CFLAGS
+	LUA_LIBS=$pkg_cv_LUA_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	 have_lua=yes
+fi
+  if test "x${have_lua}" = "xyes" ;  then
 
 $as_echo "#define HAVE_LUA 1" >>confdefs.h
 
-    LIBS="$LIBS $LUA_LIBS"
+     LIBS="$LIBS $LUA_LIBS"
+     CXXFLAGS="${CXXFLAGS} $LUA_CFLAGS"
   fi
 fi
 

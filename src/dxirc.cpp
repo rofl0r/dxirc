@@ -483,7 +483,7 @@ long dxirc::OnCommandQuit(FXObject*, FXSelector, void*)
 #ifdef HAVE_LUA
     while(scripts.no())
     {
-        lua_close((lua_State*)scripts[0].L);
+        lua_close(scripts[0].L);
         scripts.erase(0);
     }
 #endif
@@ -975,9 +975,6 @@ void dxirc::UpdateTabPosition()
 
 void dxirc::UpdateStatus()
 {
-#ifdef DEBUG
-    fxmessage("CurrentTab index:%d\n", tabbook->getCurrent());
-#endif
     if(tabbook->numChildren() && tabbook->getCurrent()>=0)
     {
         FXint index = tabbook->getCurrent()*2;
@@ -1391,23 +1388,22 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
         if(!scripts.no()) return 0;
         for(FXint i=0; i<scripts.no(); i++)
         {
-            lua_State *L = (lua_State*)scripts[i].L;
-            lua_getglobal(L, "OnMessage");
-            if(lua_isfunction(L, -1))
+            lua_getglobal(scripts[i].L, "OnMessage");
+            if(lua_isfunction(scripts[i].L, -1))
             {
-                lua_newtable(L);
-                lua_pushstring(L, ev->param1.text());
-                lua_setfield(L, -2, "from");
-                lua_pushstring(L, ev->param2.text());
-                lua_setfield(L, -2, "target");
-                lua_pushstring(L, ev->param3.text());
-                lua_setfield(L, -2, "text");
-                lua_pushstring(L, server->GetNickName().text());
-                lua_setfield(L, -2, "nick");
-                lua_pushstring(L, server->GetServerName().text());
-                lua_setfield(L, -2, "server");
-                if(lua_pcall(L, 1, 1, 0) != 0)
-                    AppendIrcStyledText(FXStringFormat(_("Error running function `OnMessage': %s"), lua_tostring(L, -1)), 4);
+                lua_newtable(scripts[i].L);
+                lua_pushstring(scripts[i].L, ev->param1.text());
+                lua_setfield(scripts[i].L, -2, "from");
+                lua_pushstring(scripts[i].L, ev->param2.text());
+                lua_setfield(scripts[i].L, -2, "target");
+                lua_pushstring(scripts[i].L, ev->param3.text());
+                lua_setfield(scripts[i].L, -2, "text");
+                lua_pushstring(scripts[i].L, server->GetNickName().text());
+                lua_setfield(scripts[i].L, -2, "nick");
+                lua_pushstring(scripts[i].L, server->GetServerName().text());
+                lua_setfield(scripts[i].L, -2, "server");
+                if(lua_pcall(scripts[i].L, 1, 1, 0) != 0)
+                    AppendIrcStyledText(FXStringFormat(_("Error running function `OnMessage': %s"), lua_tostring(scripts[i].L, -1)), 4);
             }
         }
 #endif
@@ -1419,21 +1415,20 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
         if(!scripts.no()) return 0;
         for(FXint i=0; i<scripts.no(); i++)
         {
-            lua_State *L = (lua_State*)scripts[i].L;
-            lua_getglobal(L, "OnJoin");
-            if(lua_isfunction(L, -1))
+            lua_getglobal(scripts[i].L, "OnJoin");
+            if(lua_isfunction(scripts[i].L, -1))
             {
-                lua_newtable(L);
-                lua_pushstring(L, ev->param1.text());
-                lua_setfield(L, -2, "jnick");
-                lua_pushstring(L, ev->param2.text());
-                lua_setfield(L, -2, "target");
-                lua_pushstring(L, server->GetNickName().text());
-                lua_setfield(L, -2, "nick");
-                lua_pushstring(L, server->GetServerName().text());
-                lua_setfield(L, -2, "server");
-                if(lua_pcall(L, 1, 1, 0) != 0)
-                    AppendIrcStyledText(FXStringFormat(_("Error running function `OnJoin': %s"), lua_tostring(L, -1)), 4);
+                lua_newtable(scripts[i].L);
+                lua_pushstring(scripts[i].L, ev->param1.text());
+                lua_setfield(scripts[i].L, -2, "jnick");
+                lua_pushstring(scripts[i].L, ev->param2.text());
+                lua_setfield(scripts[i].L, -2, "target");
+                lua_pushstring(scripts[i].L, server->GetNickName().text());
+                lua_setfield(scripts[i].L, -2, "nick");
+                lua_pushstring(scripts[i].L, server->GetServerName().text());
+                lua_setfield(scripts[i].L, -2, "server");
+                if(lua_pcall(scripts[i].L, 1, 1, 0) != 0)
+                    AppendIrcStyledText(FXStringFormat(_("Error running function `OnJoin': %s"), lua_tostring(scripts[i].L, -1)), 4);
             }
         }
 #endif
@@ -1718,7 +1713,7 @@ long dxirc::OnCommandLoad(FXObject*, FXSelector, void*)
     {
         if(!scripts.no())
         {
-            lua_State *L = lua_open();
+            lua_State *L = luaL_newstate();
             if(L == NULL)
             {
                 AppendIrcStyledText(_("Unable to initialize Lua."), 4);
@@ -1797,7 +1792,7 @@ long dxirc::OnLua(FXObject*, FXSelector, void *data)
     {
         if(!scripts.no())
         {
-            lua_State *L = lua_open();
+            lua_State *L = luaL_newstate();
             if(L == NULL)
             {
                 AppendIrcStyledText(_("Unable to initialize Lua."), 4);
@@ -1832,7 +1827,7 @@ long dxirc::OnLua(FXObject*, FXSelector, void *data)
                     return 1;
                 }
             }
-            lua_State *L = lua_open();
+            lua_State *L = luaL_newstate();
             if(L == NULL)
             {
                 AppendIrcStyledText(_("Unable to initialize Lua."), 4);
@@ -1872,7 +1867,7 @@ long dxirc::OnLua(FXObject*, FXSelector, void *data)
             {
                 if(comparecase(lua->text, scripts[i].name)==0)
                 {
-                    lua_close((lua_State*)scripts[i].L);
+                    lua_close(scripts[i].L);
                     scripts.erase(i);
                     AppendIrcStyledText(FXStringFormat(_("Script %s was unloaded"), lua->text.lower().text()), 4);
                     return 1;
@@ -1914,13 +1909,12 @@ long dxirc::OnLua(FXObject*, FXSelector, void *data)
             {
                 if(comparecase(name, scripts[i].name)==0)
                 {
-                    lua_State *L = (lua_State*)scripts[i].L;
-                    lua_getglobal(L, "OnCommand");
-                    if(lua_isfunction(L, -1))
+                    lua_getglobal(scripts[i].L, "OnCommand");
+                    if(lua_isfunction(scripts[i].L, -1))
                     {
-                        lua_pushstring(L, command.text());
-                        if(lua_pcall(L, 1, 1, 0) != 0)
-                            AppendIrcStyledText(FXStringFormat(_("Error running function `OnCommand': %s"), lua_tostring(L, -1)), 4);
+                        lua_pushstring(scripts[i].L, command.text());
+                        if(lua_pcall(scripts[i].L, 1, 1, 0) != 0)
+                            AppendIrcStyledText(FXStringFormat(_("Error running function `OnCommand': %s"), lua_tostring(scripts[i].L, -1)), 4);
                     }
                     return 1;
                 }

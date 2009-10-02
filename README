@@ -34,6 +34,8 @@
   * Quick connect				- Ctrl-k
   * Disconnect					- Ctrl-d
   * Close current tab				- Ctrl-w
+  * Load script                                 - Ctrl-o
+  * Log viewer                                  - Ctrl-g
   * Clear window				- Ctrl-l
   * Clear all windows				- Ctrl-shift-l
   * Show/Hide users list			- Ctrl-u
@@ -47,8 +49,6 @@
   ./configure
   make
   make install
-  On Debian based distros and Lua try:
-  LUA_CFLAGS="-I/usr/include/lua5.1" LUA_LIBS="-L/usr/lib -llua5.1" ./configure --enable-lua
 
  Bugs
  ~~~~
@@ -70,7 +70,7 @@
   Many thanks to Jeroen van der Zijp for his excellent FOX-tookit and to all people that have provided useful patches,
   translations, tests, advices and also all users.
  
- [Last revision: 28.09.2009]
+ [Last revision: 02.10.2009]
 
 
 

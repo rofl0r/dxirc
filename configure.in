@@ -66,16 +66,34 @@ dnl Check for Lua
 AC_ARG_ENABLE(lua, [  --enable-lua            Enable Lua scripting], enable_lua=yes, enable_lua=no)
 have_lua=no
 if test "$enable_lua" = "yes"; then
-  PKG_CHECK_MODULES(LUA, lua>=5.1, :, :)
-  if test "$LUA_LIBS"; then
-    CXXFLAGS="${CXXFLAGS} $LUA_CFLAGS"
-    have_lua=yes
-  else
-    AC_CHECK_HEADERS([lua.h lauxlib.h], [LUA_LIBS="-llua" AC_SUBST(LUA_LIBS) have_lua=yes])
-  fi
-  if test "$have_lua" = "yes"; then
-    AC_DEFINE(HAVE_LUA, 1, Build with Lua scripting support)
-    LIBS="$LIBS $LUA_LIBS"
+  PKG_CHECK_MODULES(LUA, lua5.1,
+    [ have_lua=yes ],
+    [
+    AC_MSG_WARN([lua5.1 not found, trying lua >= 5.1 instead])
+    PKG_CHECK_MODULES(LUA, lua >= 5.1,
+      [ have_lua=yes ],
+      [
+        have_lua=yes
+        AC_CHECK_HEADERS([lua.h lauxlib.h lualib.h],
+          [],
+          [ have_lua=no ] )
+        AC_CHECK_LIB(  lua5.1 , luaL_newstate,
+          [LUA_LIBS="-llua5.1"],
+          AC_CHECK_LIB( lua51 , luaL_newstate,
+            [LUA_LIBS="-llua51"],
+            AC_CHECK_LIB( lua , luaL_newstate,
+              [LUA_LIBS="-llua"],
+              [ have_lua=no
+                AC_MSG_WARN([lua >= 5.1 not found!])
+              ],[-lm])
+          )
+        )
+      ])
+    ])
+  if test "x${have_lua}" = "xyes" ;  then
+     AC_DEFINE(HAVE_LUA, 1, Build with Lua scripting support)
+     LIBS="$LIBS $LUA_LIBS"
+     CXXFLAGS="${CXXFLAGS} $LUA_CFLAGS"
   fi
 fi
 

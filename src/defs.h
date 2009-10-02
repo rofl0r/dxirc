@@ -30,6 +30,7 @@
 #include <map>
 
 class IrcSocket;
+struct lua_State;
 
 enum TYPE {
     SERVER,
@@ -151,7 +152,7 @@ struct LuaRequest {
 struct LuaScript {
     FXString path;
     FXString name;
-    void *L;
+    lua_State *L;
 };
 
 typedef FXArray<IrcSocket*> dxServersArray;
