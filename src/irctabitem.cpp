@@ -1083,11 +1083,11 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
             if(command == "lua")
             {
                 FXString luacommand = commandtext.after(' ').before(' ');
-                FXString text = commandtext.after(' ').after(' ');
+                FXString luatext = commandtext.after(' ').after(' ');
                 LuaRequest lua;
                 if(luacommand.empty())
                 {
-                    AppendIrcStyledText(_("/lua <help|load|unload|list|command> [scriptpath|scriptname] [commandtext]"), 4);
+                    AppendIrcStyledText(_("/lua <help|load|unload|list|command|read> [scriptpath|scriptname] [commandtext]"), 4);
                     return FALSE;
                 }
                 if(comparecase(luacommand, "help")==0) lua.type = LUA_HELP;
@@ -1095,12 +1095,69 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 else if(comparecase(luacommand, "unload")==0) lua.type = LUA_UNLOAD;
                 else if(comparecase(luacommand, "list")==0) lua.type = LUA_LIST;
                 else if(comparecase(luacommand, "command")==0) lua.type = LUA_COMMAND;
+                else if(comparecase(luacommand, "read")==0)
+                {
+                    if(!FXStat::exists(luatext))
+                    {
+                        AppendIrcStyledText(FXStringFormat(_("Script %s doesn't exist"), luatext.text()), 4);
+                        return FALSE;
+                    }
+                    else
+                    {
+                        if(comparecase(FXPath::extension(luatext), "lua")) AppendIrcStyledText(FXStringFormat(_("File %s probably isn't lua script"), luatext.text()), 4);
+                        else AppendIrcStyledText(luatext, 7);
+                        FXFile textfile(luatext,FXFile::Reading);
+                        FXint size, n, c, i, j;
+                        FXchar *txt;
+                        // Opened file?
+                        if(!textfile.isOpen())
+                        {
+                            FXMessageBox::error(this,MBOX_OK,_("Error Loading File"),_("Unable to open file: %s"), luatext.text());
+                            return FALSE;
+                        }
+                        // Get file size
+                        size=textfile.size();
+                        // Make buffer to load file
+                        if(!FXMALLOC(&txt,FXchar,size))
+                        {
+                            FXMessageBox::error(this,MBOX_OK,_("Error Loading File"),_("File is too big: %s (%d bytes)"), luatext.text(),size);
+                            return FALSE;
+                        }
+                        // Set wait cursor
+                        getApp()->beginWaitCursor();
+                        // Read the file
+                        n=textfile.readBlock(txt,size);
+                        if(n<0)
+                        {
+                            FXFREE(&txt);
+                            FXMessageBox::error(this,MBOX_OK,_("Error Loading File"),_("Unable to read file: %s"), luatext.text());
+                            getApp()->endWaitCursor();
+                            return FALSE;
+                        }
+                        // Strip carriage returns
+                        for(i=j=0; j<n; j++)
+                        {
+                            c=txt[j];
+                            if(c!='\r')
+                                txt[i++]=c;
+                        }
+                        n=i;
+                        // Set text
+                        text->appendText(txt,n);
+                        text->appendText("\n");
+                        MakeLastRowVisible(TRUE);
+                        FXFREE(&txt);
+                        // Kill wait cursor
+                        getApp()->endWaitCursor();
+                        return TRUE;
+                    }
+                }
                 else
                 {
-                    AppendIrcStyledText(FXStringFormat(_("%s isn't <help|load|unload|list|command>"), luacommand.text()), 4);
+                    AppendIrcStyledText(FXStringFormat(_("%s isn't <help|load|unload|list|command|read>"), luacommand.text()), 4);
                     return FALSE;
                 }
-                lua.text = text;
+                lua.text = luatext;
                 parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_LUA), &lua);
                 return TRUE;
             }            
@@ -1631,11 +1688,11 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
         if(command == "lua")
         {
             FXString luacommand = commandtext.after(' ').before(' ');
-            FXString text = commandtext.after(' ').after(' ');
+            FXString luatext = commandtext.after(' ').after(' ');
             LuaRequest lua;
             if(luacommand.empty())
             {
-                AppendIrcStyledText(_("/lua <help|load|unload|list|command> [scriptpath|scriptname] [commandtext]"), 4);
+                AppendIrcStyledText(_("/lua <help|load|unload|list|command|read> [scriptpath|scriptname] [commandtext]"), 4);
                 return FALSE;
             }
             if(comparecase(luacommand, "help")==0) lua.type = LUA_HELP;
@@ -1643,12 +1700,69 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
             else if(comparecase(luacommand, "unload")==0) lua.type = LUA_UNLOAD;
             else if(comparecase(luacommand, "list")==0) lua.type = LUA_LIST;
             else if(comparecase(luacommand, "command")==0) lua.type = LUA_COMMAND;
+            else if(comparecase(luacommand, "read")==0)
+            {
+                if(!FXStat::exists(luatext))
+                {
+                    AppendIrcStyledText(FXStringFormat(_("Script %s doesn't exist"), luatext.text()), 4);
+                    return FALSE;
+                }
+                else
+                {
+                    if(comparecase(FXPath::extension(luatext), "lua")) AppendIrcStyledText(FXStringFormat(_("File %s probably isn't lua script"), luatext.text()), 4);
+                    else AppendIrcStyledText(luatext, 7);
+                    FXFile textfile(luatext,FXFile::Reading);
+                    FXint size, n, c, i, j;
+                    FXchar *txt;
+                    // Opened file?
+                    if(!textfile.isOpen())
+                    {
+                        FXMessageBox::error(this,MBOX_OK,_("Error Loading File"),_("Unable to open file: %s"), luatext.text());
+                        return FALSE;
+                    }
+                    // Get file size
+                    size=textfile.size();
+                    // Make buffer to load file
+                    if(!FXMALLOC(&txt,FXchar,size))
+                    {
+                        FXMessageBox::error(this,MBOX_OK,_("Error Loading File"),_("File is too big: %s (%d bytes)"), luatext.text(),size);
+                        return FALSE;
+                    }
+                    // Set wait cursor
+                    getApp()->beginWaitCursor();
+                    // Read the file
+                    n=textfile.readBlock(txt,size);
+                    if(n<0)
+                    {
+                        FXFREE(&txt);
+                        FXMessageBox::error(this,MBOX_OK,_("Error Loading File"),_("Unable to read file: %s"), luatext.text());
+                        getApp()->endWaitCursor();
+                        return FALSE;
+                    }
+                    // Strip carriage returns
+                    for(i=j=0; j<n; j++)
+                    {
+                        c=txt[j];
+                        if(c!='\r')
+                            txt[i++]=c;
+                    }
+                    n=i;
+                    // Set text
+                    text->appendText(txt,n);
+                    text->appendText("\n");
+                    MakeLastRowVisible(TRUE);
+                    FXFREE(&txt);
+                    // Kill wait cursor
+                    getApp()->endWaitCursor();
+                    return TRUE;
+                }
+            }
             else
             {
-                AppendIrcStyledText(FXStringFormat(_("%s isn't <help|load|unload|list|command>"), luacommand.text()), 4);
+                AppendIrcStyledText(FXStringFormat(_("%s isn't <help|load|unload|list|command|read>"), luacommand.text()), 4);
                 return FALSE;
             }
-            lua.text = text;
+            lua.text = luatext;
             parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_LUA), &lua);
             return TRUE;
         }
@@ -1747,6 +1861,8 @@ FXbool IrcTabItem::ShowHelp(FXString command)
         AppendIrcText(_("LUA <list>, shows list of loaded scripts"));
         AppendIrcText(_("LUA <command> <name> <commandtext>, sends commandetext to script."));
         AppendIrcText(_("Example: /lua command test play"));
+        AppendIrcText(_("LUA <read> <path>, shows script in current window"));
+        AppendIrcText(_("Example: /lua read /home/dvx/test.lua"));
         return TRUE;
     }
 #else

@@ -1924,6 +1924,7 @@ long dxirc::OnLua(FXObject*, FXSelector, void *data)
                 }
             }
             AppendIrcStyledText(FXStringFormat(_("Script %s isn't loaded"), name.text()), 4);
+            return 0;
         }
         return 1;
     }
@@ -2043,6 +2044,7 @@ void dxirc::AppendIrcText(FXString text)
         FXint index = tabbook->getCurrent()*2;
         IrcTabItem *currenttab = (IrcTabItem *)tabbook->childAtIndex(index);
         currenttab->AppendIrcText(text);
+        currenttab->MakeLastRowVisible(TRUE);
     }
 }
 
@@ -2053,6 +2055,7 @@ void dxirc::AppendIrcStyledText(FXString text, FXint style)
         FXint index = tabbook->getCurrent()*2;
         IrcTabItem *currenttab = (IrcTabItem *)tabbook->childAtIndex(index);
         currenttab->AppendIrcStyledText(text, style);
+        currenttab->MakeLastRowVisible(TRUE);
     }
 }
 

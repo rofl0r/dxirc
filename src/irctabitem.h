@@ -80,8 +80,7 @@ class IrcTabItem: public FXTabItem
         FXString GetNickName() { return server->GetNickName(); }
         void SetType(const TYPE &typ, const FXString &tabtext);
         TYPE GetType() { return type; }
-        void ReparentTab();
-        void MakeLastRowVisible(FXbool);
+        void ReparentTab();        
         void SetColor(IrcColor);
         void SetCommandsList(FXString clst);
         void SetMaxAway(FXint maxa);
@@ -117,6 +116,7 @@ class IrcTabItem: public FXTabItem
         void AppendIrcText(FXString);
         void AppendIrcStyledText(FXString, FXint);
         FXbool ProcessLine(const FXString &);
+        void MakeLastRowVisible(FXbool);
 
     private:
         IrcTabItem(){}
