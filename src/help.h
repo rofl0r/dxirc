@@ -83,22 +83,19 @@ Those irc/custom event are sent to Lua script:\n\
   from ... sender of message\n\
   target ... target of message\n\
   text ... text of message\n\
-  nick ... your nick, for identify server\n\
-  server ... server name, for identify server\n\
+  server ... table for identify server\n\
 - JOIN, which you can handle by OnJoin(msg)\n\
   msg is table with fields:\n\
-  jnick ... who is joined\n\
+  nick ... who is joined\n\
   target ... where is joined\n\
-  nick ... your nick, for identify server\n\
-  server ... server name, for identify server\n\
+  server ... table for identify server\n\
 - /lua command scriptname commandtext, which you can handle by OnCommand(command)\n\
   command .. commandtext sent by dxirc\n\
 Those functions dxirc hadle:\n\
-- ProcessCommand(command, text, target, nick, server)\n\
+- ProcessCommand(command, text, target, server)\n\
   command can be empty or one from /commands\n\
   target ... target of command (channel or query), if target is EMPTY, command is processed by all tabs\n\
-  nick ... for identify server\n\
-  server ... for identify server\n\
+  server ... table for identify server, example {nick=\"_xxx_\",name=\"localhost\"}\n\
 - GetInfo(request)\n\
   request:\n\
   - server ... return info about current server\n\

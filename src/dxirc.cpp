@@ -1398,9 +1398,11 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
                 lua_setfield(scripts[i].L, -2, "target");
                 lua_pushstring(scripts[i].L, ev->param3.text());
                 lua_setfield(scripts[i].L, -2, "text");
+                lua_newtable(scripts[i].L);
                 lua_pushstring(scripts[i].L, server->GetNickName().text());
                 lua_setfield(scripts[i].L, -2, "nick");
                 lua_pushstring(scripts[i].L, server->GetServerName().text());
+                lua_setfield(scripts[i].L, -2, "name");
                 lua_setfield(scripts[i].L, -2, "server");
                 if(lua_pcall(scripts[i].L, 1, 1, 0) != 0)
                     AppendIrcStyledText(FXStringFormat(_("Error running function `OnMessage': %s"), lua_tostring(scripts[i].L, -1)), 4);
@@ -1420,12 +1422,14 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
             {
                 lua_newtable(scripts[i].L);
                 lua_pushstring(scripts[i].L, ev->param1.text());
-                lua_setfield(scripts[i].L, -2, "jnick");
+                lua_setfield(scripts[i].L, -2, "nick");
                 lua_pushstring(scripts[i].L, ev->param2.text());
                 lua_setfield(scripts[i].L, -2, "target");
+                lua_newtable(scripts[i].L);
                 lua_pushstring(scripts[i].L, server->GetNickName().text());
                 lua_setfield(scripts[i].L, -2, "nick");
                 lua_pushstring(scripts[i].L, server->GetServerName().text());
+                lua_setfield(scripts[i].L, -2, "name");
                 lua_setfield(scripts[i].L, -2, "server");
                 if(lua_pcall(scripts[i].L, 1, 1, 0) != 0)
                     AppendIrcStyledText(FXStringFormat(_("Error running function `OnJoin': %s"), lua_tostring(scripts[i].L, -1)), 4);
@@ -2058,8 +2062,23 @@ int dxirc::LuaCommand(lua_State* lua)
     FXString command = lua_tostring(lua, 1);
     FXString text = lua_tostring(lua, 2);
     FXString target = lua_tostring(lua, 3);
-    FXString nick = lua_tostring(lua, 4);
-    FXString server = lua_tostring(lua, 5);
+    FXString nick, server;
+    if(lua_istable(lua, -1))
+    {
+        lua_pushstring(lua, "nick");
+        lua_gettable(lua, -2);
+        nick = lua_tostring(lua, -1);
+        lua_pop(lua, 1);
+        lua_pushstring(lua, "name");
+        lua_gettable(lua, -2);
+        server = lua_tostring(lua, -1);
+        lua_pop(lua, 1);
+    }
+    else
+    {
+        nick = "";
+        server = "";
+    }
     dxirc *irc = (dxirc*)pObject;
     FXString commandtext;
     if(command.empty()) commandtext = text;
