@@ -21,17 +21,18 @@
 
 #include "utils.h"
 #include "config.h"
+#include "i18n.h"
 
 FXTextCodec *lcodec = NULL;
 FXString iniFile = FXString::null;
 dxStringMap aliases;
 dxStringArray commands;
+dxScriptCommandsArray scriptCommands;
 
 
 
 namespace utils
 {
-
     void FillCommands()
     {
         commands.clear();        
@@ -79,6 +80,10 @@ namespace utils
         for(it=aliases.begin(); it!=aliases.end(); it++)
         {
             commands.append((*it).first.after('/'));
+        }
+        for(FXint i=0; i<scriptCommands.no(); i++)
+        {
+            commands.append(scriptCommands[i].name);
         }
         register FXString v;
         register FXint i,j,h;
@@ -911,5 +916,78 @@ namespace utils
                     return FALSE;
             }
         }
+    }
+
+    void AddScriptCommand(LuaScriptCommand command)
+    {
+        scriptCommands.append(command);
+        FillCommands();
+    }
+
+    //Remove one command for lua script
+    FXbool RemoveScriptCommand(const FXString &command)
+    {
+        for(FXint i=scriptCommands.no()-1; i>-1; i--)
+        {
+            if(comparecase(command, scriptCommands[i].name) == 0)
+            {
+                scriptCommands.erase(i);
+                FillCommands();
+                return TRUE;
+            }
+        }
+        return FALSE;
+    }
+
+    //Remove all commands for lua script
+    FXbool RemoveScriptCommands(const FXString& script)
+    {
+        FXbool result = FALSE;
+        for(FXint i=scriptCommands.no()-1; i>-1; i--)
+        {
+            if(comparecase(script, scriptCommands[i].script) == 0)
+            {
+                scriptCommands.erase(i);
+                result = TRUE;
+            }
+        }
+        FillCommands();
+        return result;
+    }
+
+    FXbool IsScriptCommand(const FXString &command)
+    {
+        for(FXint i=0; i<scriptCommands.no(); i++)
+        {
+            if(comparecase(command, scriptCommands[i].name) == 0) return TRUE;
+        }
+        return FALSE;
+    }
+
+    FXString GetHelpText(const FXString &command)
+    {
+        for(FXint i=0; i<scriptCommands.no(); i++)
+        {
+            if(comparecase(command, scriptCommands[i].name) == 0) return scriptCommands[i].helptext;
+        }
+        return FXStringFormat(_("Command %s doesn't exists"), command.text());
+    }
+
+    FXString GetFuncname(const FXString &command)
+    {
+        for(FXint i=0; i<scriptCommands.no(); i++)
+        {
+            if(comparecase(command, scriptCommands[i].name) == 0) return scriptCommands[i].funcname;
+        }
+        return FXStringFormat(_("Command %s doesn't exists"), command.text());
+    }
+
+    FXString GetScriptName(const FXString &command)
+    {
+        for(FXint i=0; i<scriptCommands.no(); i++)
+        {
+            if(comparecase(command, scriptCommands[i].name) == 0) return scriptCommands[i].script;
+        }
+        return FXStringFormat(_("Command %s doesn't exists"), command.text());
     }
 }

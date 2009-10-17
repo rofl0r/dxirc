@@ -24,6 +24,8 @@
 #include "config.h"
 #include "i18n.h"
 
+#define LUA_HELP_PATH "http://files.dxirc.org/dxirclua.html"
+
 FXDEFMAP(dxText) dxTextMap[] = {
     FXMAPFUNC(SEL_MOTION, 0, dxText::onMotion)
 };
@@ -436,6 +438,22 @@ void IrcTabItem::SetColoredNick(FXbool cnick)
     coloredNick = cnick;
 }
 
+//if hl==TRUE, highlight tab
+void IrcTabItem::AppendIrcText(FXString msg, FXbool highlight)
+{
+    AppendIrcText(msg);
+    if(highlight && FXRGB(255,0,0) != this->getTextColor() && parent->getCurrent()*2 != parent->indexOfChild(this))
+    {
+        if(msg.contains(server->GetNickName()))
+        {
+            this->setTextColor(FXRGB(255,0,0));
+            if(type == CHANNEL) this->setIcon(chnewm);
+        }
+        else this->setTextColor(FXRGB(0,0,255));
+        if(type == QUERY) this->setIcon(unewm);
+    }
+}
+
 void IrcTabItem::AppendIrcText(FXString msg)
 {
     text->appendText("["+FXSystem::time("%H:%M:%S", FXSystem::now()) +"] ");
@@ -739,15 +757,29 @@ FXbool IrcTabItem::ProcessLine(const FXString& commandtext)
 FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
 {
     FXString command = (commandtext[0] == '/' ? commandtext.after('/').before(' ').lower() : "");
-    if(server->GetConnected())
+    if(commandtext[0] == '/')
     {
-        if(commandtext[0] == '/')
+        if(utils::IsScriptCommand(command))
         {
-            if(command == "admin")
+            LuaRequest lua;
+            lua.type = LUA_COMMAND;
+            lua.text = commandtext.after('/');
+            parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_LUA), &lua);
+            return TRUE;
+        }
+        if(command == "admin")
+        {
+            if(server->GetConnected()) return server->SendAdmin(commandtext.after(' '));
+            else
             {
-                return server->SendAdmin(commandtext.after(' '));
+                AppendIrcStyledText(_("You aren't connected"), 4);
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                return TRUE;
             }
-            if(command == "away")
+        }
+        if(command == "away")
+        {
+            if(server->GetConnected())
             {
                 if(commandtext.after(' ').length() > server->GetAwayLen())
                 {
@@ -757,7 +789,16 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 else
                     return server->SendAway(commandtext.after(' '));
             }
-            if(command == "banlist")
+            else
+            {
+                AppendIrcStyledText(_("You aren't connected"), 4);
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                return TRUE;
+            }
+        }
+        if(command == "banlist")
+        {
+            if(server->GetConnected())
             {
                 FXString channel = commandtext.after(' ');
                 if(channel.empty() && type == CHANNEL) return server->SendBanlist(getText());
@@ -768,37 +809,46 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 }
                 else return server->SendBanlist(channel);
             }
-            if(command == "connect")
+            else
             {
-                if(commandtext.after(' ').empty())
-                {
-                    AppendIrcStyledText(_("/connect <server> [port] [nick] [password] [realname] [channels], connects for given server."), 4);
-                    return FALSE;
-                }
-                else
-                {
-                    ServerInfo srv;
-                    srv.hostname = commandtext.after(' ').section(' ', 0);
-                    srv.port = commandtext.after(' ').section(' ', 1).empty() ? 6667 : FXIntVal(commandtext.after(' ').section(' ', 1));
-                    srv.nick = commandtext.after(' ').section(' ', 2).empty() ? FXSystem::currentUserName() : commandtext.after(' ').section(' ', 2);
-                    srv.passwd = commandtext.after(' ').section(' ', 3).empty() ? "" : commandtext.after(' ').section(' ', 3);
-                    srv.realname = commandtext.after(' ').section(' ', 4).empty() ? FXSystem::currentUserName() : commandtext.after(' ').section(' ', 4);
-                    srv.channels = commandtext.after(' ').section(' ', 5).empty() ? "" : commandtext.after(' ').section(' ', 5);
-                    parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CSERVER), &srv);
-                    return TRUE;
-                }
-            }
-            if(command == "commands")
-            {
-                FXString commandstr = _("Available commnads: ");
-                for(FXint i=0; i < utils::CommandsNo(); i++)
-                {
-                    if(utils::CommandsAt(i) != "commands") commandstr += utils::CommandsAt(i).upper()+(i != utils::CommandsNo() - 1? ", " : "");
-                }
-                AppendIrcStyledText(commandstr, 3);
+                AppendIrcStyledText(_("You aren't connected"), 4);
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
                 return TRUE;
             }
-            if(command == "ctcp")
+        }
+        if(command == "connect")
+        {
+            if(commandtext.after(' ').empty())
+            {
+                AppendIrcStyledText(_("/connect <server> [port] [nick] [password] [realname] [channels], connects for given server."), 4);
+                return FALSE;
+            }
+            else
+            {
+                ServerInfo srv;
+                srv.hostname = commandtext.after(' ').section(' ', 0);
+                srv.port = commandtext.after(' ').section(' ', 1).empty() ? 6667 : FXIntVal(commandtext.after(' ').section(' ', 1));
+                srv.nick = commandtext.after(' ').section(' ', 2).empty() ? FXSystem::currentUserName() : commandtext.after(' ').section(' ', 2);
+                srv.passwd = commandtext.after(' ').section(' ', 3).empty() ? "" : commandtext.after(' ').section(' ', 3);
+                srv.realname = commandtext.after(' ').section(' ', 4).empty() ? FXSystem::currentUserName() : commandtext.after(' ').section(' ', 4);
+                srv.channels = commandtext.after(' ').section(' ', 5).empty() ? "" : commandtext.after(' ').section(' ', 5);
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CSERVER), &srv);
+                return TRUE;
+            }
+        }
+        if(command == "commands")
+        {
+            FXString commandstr = _("Available commnads: ");
+            for(FXint i=0; i < utils::CommandsNo(); i++)
+            {
+                if(utils::CommandsAt(i) != "commands") commandstr += utils::CommandsAt(i).upper()+(i != utils::CommandsNo() - 1? ", " : "");
+            }
+            AppendIrcStyledText(commandstr, 3);
+            return TRUE;
+        }
+        if(command == "ctcp")
+        {
+            if(server->GetConnected())
             {
                 FXString to = commandtext.after(' ').before(' ');
                 FXString msg = commandtext.after(' ', 2);
@@ -814,7 +864,16 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 }
                 else return server->SendCtcp(to, msg);
             }
-            if(command == "deop")
+            else
+            {
+                AppendIrcStyledText(_("You aren't connected"), 4);
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                return TRUE;
+            }
+        }
+        if(command == "deop")
+        {
+            if(server->GetConnected())
             {
                 FXString params = commandtext.after(' ');
                 if(type == CHANNEL)
@@ -860,7 +919,16 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     }
                 }
             }
-            if(command == "devoice")
+            else
+            {
+                AppendIrcStyledText(_("You aren't connected"), 4);
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                return TRUE;
+            }
+        }
+        if(command == "devoice")
+        {
+            if(server->GetConnected())
             {
                 FXString params = commandtext.after(' ');
                 if(type == CHANNEL)
@@ -906,69 +974,78 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     }
                 }
             }
-            if(command == "dxirc")
+            else
             {
-                for(FXint i=0; i<5+rand()%5; i++)
-                {
-                    AppendIrcText("");
-                }
-                AppendIrcText("     __  __         _");
-                AppendIrcText("  _/__//__/|_      | |       _");
-                AppendIrcText(" /_| |_| |/_/|   __| |__  __|_| _ _  ___");
-                AppendIrcText(" |_   _   _|/   / _  |\\ \\/ /| || '_)/ __)");
-                AppendIrcText(" /_| |_| |/_/| | (_| | |  | | || | | (__");
-                AppendIrcText(" |_   _   _|/   \\____|/_/\\_\\|_||_|  \\___)");
-                AppendIrcText("   |_|/|_|/     (c) 2008~ David Vachulka");
-                AppendIrcText("   http://dxirc.org");
-                for(FXint i=0; i<5+rand()%5; i++)
-                {
-                    AppendIrcText("");
-                }
+                AppendIrcStyledText(_("You aren't connected"), 4);
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
                 return TRUE;
             }
-            if(command == "egg")
+        }
+        if(command == "dxirc")
+        {
+            for(FXint i=0; i<5+rand()%5; i++)
             {
-                AppendIrcStyledText("ahoj sem pan Vajíčko,", 3);
-                AppendIrcStyledText("dneska vám přináším anketní otázku:", 3);
-                AppendIrcStyledText("Jaká značka piva je podle Vás nejlepší? Pište autorovi.", 3);
-                return TRUE;
+                AppendIrcText("");
             }
-            if(command == "exec")
+            AppendIrcText("     __  __         _");
+            AppendIrcText("  _/__//__/|_      | |       _");
+            AppendIrcText(" /_| |_| |/_/|   __| |__  __|_| _ _  ___");
+            AppendIrcText(" |_   _   _|/   / _  |\\ \\/ /| || '_)/ __)");
+            AppendIrcText(" /_| |_| |/_/| | (_| | |  | | || | | (__");
+            AppendIrcText(" |_   _   _|/   \\____|/_/\\_\\|_||_|  \\___)");
+            AppendIrcText("   |_|/|_|/     (c) 2008~ David Vachulka");
+            AppendIrcText("   http://dxirc.org");
+            for(FXint i=0; i<5+rand()%5; i++)
             {
-                FXString params = commandtext.after(' ');
-                if(params.empty())
+                AppendIrcText("");
+            }
+            return TRUE;
+        }
+        if(command == "egg")
+        {
+            AppendIrcStyledText("ahoj sem pan Vajíčko,", 3);
+            AppendIrcStyledText("dneska vám přináším anketní otázku:", 3);
+            AppendIrcStyledText("Jaká značka piva je podle Vás nejlepší? Pište autorovi.", 3);
+            return TRUE;
+        }
+        if(command == "exec")
+        {
+            FXString params = commandtext.after(' ');
+            if(params.empty())
+            {
+                AppendIrcStyledText(_("/exec [-o|-c] <command>, executes command, -o sends output to channel/query, -c closes running command."), 4);
+                return FALSE;
+            }
+            else
+            {
+                if(!pipe) pipe = new dxPipe(getApp(), this);
+                pipeStrings.clear();
+                if(params.before(' ').contains("-o"))
                 {
-                    AppendIrcStyledText(_("/exec [-o|-c] <command>, executes command, -o sends output to channel/query, -c closes running command."), 4);
-                    return FALSE;
+                    sendPipe = TRUE;
+                    pipe->ExecCmd(params.after(' '));
+                }
+                else if(params.before(' ').contains("-c"))
+                {
+                    sendPipe = FALSE;
+                    pipeStrings.clear();
+                    pipe->StopCmd();
                 }
                 else
                 {
-                    if(!pipe) pipe = new dxPipe(getApp(), this);
-                    pipeStrings.clear();
-                    if(params.before(' ').contains("-o"))
-                    {
-                        sendPipe = TRUE;
-                        pipe->ExecCmd(params.after(' '));
-                    }
-                    else if(params.before(' ').contains("-c"))
-                    {
-                        sendPipe = FALSE;
-                        pipeStrings.clear();
-                        pipe->StopCmd();
-                    }
-                    else
-                    {
-                        sendPipe = FALSE;
-                        pipe->ExecCmd(params);                        
-                    }
-                    return TRUE;
+                    sendPipe = FALSE;
+                    pipe->ExecCmd(params);
                 }
+                return TRUE;
             }
-            if(command == "help")
-            {
-                return ShowHelp(commandtext.after(' ').lower());
-            }
-            if(command == "invite")
+        }
+        if(command == "help")
+        {
+            return ShowHelp(commandtext.after(' ').lower());
+        }
+        if(command == "invite")
+        {
+            if(server->GetConnected())
             {
                 FXString params = commandtext.after(' ');
                 if(params.empty())
@@ -988,7 +1065,16 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     return server->SendInvite(nick, channel);
                 }
             }
-            if(command == "join")
+            else
+            {
+                AppendIrcStyledText(_("You aren't connected"), 4);
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                return TRUE;
+            }
+        }
+        if(command == "join")
+        {
+            if(server->GetConnected())
             {
                 FXString channel = commandtext.after(' ');
                 if(!IsChannel(channel))
@@ -998,7 +1084,16 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 }
                 else return server->SendJoin(channel);
             }
-            if(command == "kick")
+            else
+            {
+                AppendIrcStyledText(_("You aren't connected"), 4);
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                return TRUE;
+            }
+        }
+        if(command == "kick")
+        {
+            if(server->GetConnected())
             {
                 FXString params = commandtext.after(' ');
                 if(type == CHANNEL)
@@ -1059,7 +1154,16 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     }
                 }
             }
-            if(command == "kill")
+            else
+            {
+                AppendIrcStyledText(_("You aren't connected"), 4);
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                return TRUE;
+            }
+        }
+        if(command == "kill")
+        {
+            if(server->GetConnected())
             {
                 FXString params = commandtext.after(' ');
                 FXString nick = params.before(' ');
@@ -1076,92 +1180,58 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 }
                 else return server->SendKill(nick, reason);
             }
-            if(command == "list")
+            else
             {
-                return server->SendList(commandtext.after(' '));
-            }           
-            if(command == "lua")
-            {
-                FXString luacommand = commandtext.after(' ').before(' ');
-                FXString luatext = commandtext.after(' ').after(' ');
-                LuaRequest lua;
-                if(luacommand.empty())
-                {
-                    AppendIrcStyledText(_("/lua <help|load|unload|list|command|read> [scriptpath|scriptname] [commandtext]"), 4);
-                    return FALSE;
-                }
-                if(comparecase(luacommand, "help")==0) lua.type = LUA_HELP;
-                else if(comparecase(luacommand, "load")==0) lua.type = LUA_LOAD;
-                else if(comparecase(luacommand, "unload")==0) lua.type = LUA_UNLOAD;
-                else if(comparecase(luacommand, "list")==0) lua.type = LUA_LIST;
-                else if(comparecase(luacommand, "command")==0) lua.type = LUA_COMMAND;
-                else if(comparecase(luacommand, "read")==0)
-                {
-                    if(!FXStat::exists(luatext))
-                    {
-                        AppendIrcStyledText(FXStringFormat(_("Script %s doesn't exist"), luatext.text()), 4);
-                        return FALSE;
-                    }
-                    else
-                    {
-                        if(comparecase(FXPath::extension(luatext), "lua")) AppendIrcStyledText(FXStringFormat(_("File %s probably isn't lua script"), luatext.text()), 4);
-                        else AppendIrcStyledText(luatext, 7);
-                        FXFile textfile(luatext,FXFile::Reading);
-                        FXint size, n, c, i, j;
-                        FXchar *txt;
-                        // Opened file?
-                        if(!textfile.isOpen())
-                        {
-                            FXMessageBox::error(this,MBOX_OK,_("Error Loading File"),_("Unable to open file: %s"), luatext.text());
-                            return FALSE;
-                        }
-                        // Get file size
-                        size=textfile.size();
-                        // Make buffer to load file
-                        if(!FXMALLOC(&txt,FXchar,size))
-                        {
-                            FXMessageBox::error(this,MBOX_OK,_("Error Loading File"),_("File is too big: %s (%d bytes)"), luatext.text(),size);
-                            return FALSE;
-                        }
-                        // Set wait cursor
-                        getApp()->beginWaitCursor();
-                        // Read the file
-                        n=textfile.readBlock(txt,size);
-                        if(n<0)
-                        {
-                            FXFREE(&txt);
-                            FXMessageBox::error(this,MBOX_OK,_("Error Loading File"),_("Unable to read file: %s"), luatext.text());
-                            getApp()->endWaitCursor();
-                            return FALSE;
-                        }
-                        // Strip carriage returns
-                        for(i=j=0; j<n; j++)
-                        {
-                            c=txt[j];
-                            if(c!='\r')
-                                txt[i++]=c;
-                        }
-                        n=i;
-                        // Set text
-                        text->appendText(txt,n);
-                        text->appendText("\n");
-                        MakeLastRowVisible(TRUE);
-                        FXFREE(&txt);
-                        // Kill wait cursor
-                        getApp()->endWaitCursor();
-                        return TRUE;
-                    }
-                }
-                else
-                {
-                    AppendIrcStyledText(FXStringFormat(_("%s isn't <help|load|unload|list|command|read>"), luacommand.text()), 4);
-                    return FALSE;
-                }
-                lua.text = luatext;
-                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_LUA), &lua);
+                AppendIrcStyledText(_("You aren't connected"), 4);
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
                 return TRUE;
-            }            
-            if(command == "me")
+            }
+        }
+        if(command == "list")
+        {
+            if(server->GetConnected()) return server->SendList(commandtext.after(' '));
+            else
+            {
+                AppendIrcStyledText(_("You aren't connected"), 4);
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                return TRUE;
+            }
+        }
+        if(command == "lua")
+        {
+#ifdef HAVE_LUA
+            FXString luacommand = commandtext.after(' ').before(' ');
+            FXString luatext = commandtext.after(' ').after(' ');
+            LuaRequest lua;
+            if(luacommand.empty())
+            {
+                AppendIrcStyledText(_("/lua <help|load|unload|list> [scriptpath|scriptname]"), 4);
+                return FALSE;
+            }
+            if(comparecase(luacommand, "help")==0)
+            {
+                AppendIrcText(FXStringFormat(_("For help about Lua scripting visit: %s"), LUA_HELP_PATH));
+                return TRUE;
+            }
+            else if(comparecase(luacommand, "load")==0) lua.type = LUA_LOAD;
+            else if(comparecase(luacommand, "unload")==0) lua.type = LUA_UNLOAD;
+            else if(comparecase(luacommand, "list")==0) lua.type = LUA_LIST;            
+            else
+            {
+                AppendIrcStyledText(FXStringFormat(_("%s isn't <help|load|unload|list>"), luacommand.text()), 4);
+                return FALSE;
+            }
+            lua.text = luatext;
+            parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_LUA), &lua);
+            return TRUE;
+#else
+            AppendIrcStyledText(_("dxirc is compiled without support for Lua scripting"), 4);
+            return FALSE;
+#endif
+        }
+        if(command == "me")
+        {
+            if(server->GetConnected())
             {
                 FXString params = commandtext.after(' ');
                 if(type == CHANNEL)
@@ -1189,7 +1259,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                         else return server->SendMe(channel, message);
                     }
                     else
-                    {                        
+                    {
                         AppendIrcStyledText(server->GetNickName()+" "+params, 2);
                         if(params.length() > maxLen-19-getText().length())
                         {
@@ -1229,7 +1299,16 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     }
                 }
             }
-            if(command == "mode")
+            else
+            {
+                AppendIrcStyledText(_("You aren't connected"), 4);
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                return TRUE;
+            }
+        }
+        if(command == "mode")
+        {
+            if(server->GetConnected())
             {
                 FXString params = commandtext.after(' ');
                 if(params.empty())
@@ -1240,7 +1319,16 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 else
                     return server->SendMode(params);
             }
-            if(command == "msg")
+            else
+            {
+                AppendIrcStyledText(_("You aren't connected"), 4);
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                return TRUE;
+            }
+        }
+        if(command == "msg")
+        {
+            if(server->GetConnected())
             {
                 FXString params = commandtext.after(' ');
                 FXString to = params.before(' ');
@@ -1270,7 +1358,16 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     return FALSE;
                 }
             }
-            if(command == "names")
+            else
+            {
+                AppendIrcStyledText(_("You aren't connected"), 4);
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                return TRUE;
+            }
+        }
+        if(command == "names")
+        {
+            if(server->GetConnected())
             {
                 FXString params = commandtext.after(' ');
                 if(type == CHANNEL)
@@ -1288,7 +1385,16 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     else return server->SendNames(params);
                 }
             }
-            if(command == "nick")
+            else
+            {
+                AppendIrcStyledText(_("You aren't connected"), 4);
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                return TRUE;
+            }
+        }
+        if(command == "nick")
+        {
+            if(server->GetConnected())
             {
                 FXString nick = commandtext.after(' ');
                 if(nick.empty())
@@ -1306,7 +1412,16 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     return server->SendNick(nick);
                 }
             }
-            if(command == "notice")
+            else
+            {
+                AppendIrcStyledText(_("You aren't connected"), 4);
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                return TRUE;
+            }
+        }
+        if(command == "notice")
+        {
+            if(server->GetConnected())
             {
                 FXString params = commandtext.after(' ');
                 FXString to = params.before(' ');
@@ -1332,7 +1447,16 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     return FALSE;
                 }
             }
-            if(command == "op")
+            else
+            {
+                AppendIrcStyledText(_("You aren't connected"), 4);
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                return TRUE;
+            }
+        }
+        if(command == "op")
+        {
+            if(server->GetConnected())
             {
                 FXString params = commandtext.after(' ');
                 if(type == CHANNEL)
@@ -1378,7 +1502,16 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     }
                 }
             }
-            if(command == "oper")
+            else
+            {
+                AppendIrcStyledText(_("You aren't connected"), 4);
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                return TRUE;
+            }
+        }
+        if(command == "oper")
+        {
+            if(server->GetConnected())
             {
                 FXString params = commandtext.after(' ');
                 FXString login = params.before(' ');
@@ -1390,7 +1523,16 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     return FALSE;
                 }
             }
-            if(command == "part")
+            else
+            {
+                AppendIrcStyledText(_("You aren't connected"), 4);
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                return TRUE;
+            }
+        }
+        if(command == "part")
+        {
+            if(server->GetConnected())
             {
                 if(type == CHANNEL)
                 {
@@ -1398,7 +1540,16 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     else return server->SendPart(getText(), commandtext.after(' '));
                 }
             }
-            if(command == "query")
+            else
+            {
+                AppendIrcStyledText(_("You aren't connected"), 4);
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                return TRUE;
+            }
+        }
+        if(command == "query")
+        {
+            if(server->GetConnected())
             {
                 if(commandtext.after(' ').empty())
                 {
@@ -1415,18 +1566,42 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     return TRUE;
                 }
             }
-            if(command == "quit")
-            {                
+            else
+            {
+                AppendIrcStyledText(_("You aren't connected"), 4);
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                return TRUE;
+            }
+        }
+        if(command == "quit")
+        {
+            if(server->GetConnected())
+            {
                 //parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_TABQUIT), NULL);
                 if(commandtext.after(' ').empty()) server->Disconnect();
                 else server->Disconnect(commandtext.after(' '));
                 return TRUE;
             }
-            if(command == "quote")
+            else
             {
-                return server->SendQuote(commandtext.after(' '));
+                AppendIrcStyledText(_("You aren't connected"), 4);
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                return TRUE;
             }
-            if(command == "say")
+        }
+        if(command == "quote")
+        {
+            if(server->GetConnected()) return server->SendQuote(commandtext.after(' '));
+            else
+            {
+                AppendIrcStyledText(_("You aren't connected"), 4);
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                return TRUE;
+            }
+        }
+        if(command == "say")
+        {
+            if(server->GetConnected())
             {
                 if (type != SERVER && !commandtext.after(' ').empty())
                 {
@@ -1446,7 +1621,16 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 }
                 return FALSE;
             }
-            if(command == "topic")
+            else
+            {
+                AppendIrcStyledText(_("You aren't connected"), 4);
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                return TRUE;
+            }
+        }
+        if(command == "topic")
+        {
+            if(server->GetConnected())
             {
                 FXString params = commandtext.after(' ');
                 if(type == CHANNEL)
@@ -1493,7 +1677,16 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     }
                 }
             }
-            if(command == "voice")
+            else
+            {
+                AppendIrcStyledText(_("You aren't connected"), 4);
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                return TRUE;
+            }
+        }
+        if(command == "voice")
+        {
+            if(server->GetConnected())
             {
                 FXString params = commandtext.after(' ');
                 if(type == CHANNEL)
@@ -1539,7 +1732,16 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     }
                 }
             }
-            if(command == "wallops")
+            else
+            {
+                AppendIrcStyledText(_("You aren't connected"), 4);
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                return TRUE;
+            }
+        }
+        if(command == "wallops")
+        {
+            if(server->GetConnected())
             {
                 FXString params = commandtext.after(' ');
                 if(params.empty())
@@ -1562,7 +1764,16 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     else return server->SendWallops(params);
                 }
             }
-            if(command == "who")
+            else
+            {
+                AppendIrcStyledText(_("You aren't connected"), 4);
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                return TRUE;
+            }
+        }
+        if(command == "who")
+        {
+            if(server->GetConnected())
             {
                 FXString params = commandtext.after(' ');
                 if(params.empty())
@@ -1572,9 +1783,26 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 }
                 else return server->SendWho(params);
             }
-            if(command == "whoami")
-                return server->SendWhoami();
-            if(command == "whois")
+            else
+            {
+                AppendIrcStyledText(_("You aren't connected"), 4);
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                return TRUE;
+            }
+        }
+        if(command == "whoami")
+        {
+            if(server->GetConnected()) return server->SendWhoami();
+            else
+            {
+                AppendIrcStyledText(_("You aren't connected"), 4);
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                return TRUE;
+            }
+        }
+        if(command == "whois")
+        {
+            if(server->GetConnected())
             {
                 FXString params = commandtext.after(' ');
                 if(params.empty())
@@ -1582,9 +1810,18 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     AppendIrcStyledText(_("/whois <nick>, whois nick."), 4);
                     return FALSE;
                 }
-                else return server->SendWhois(params);;
+                else return server->SendWhois(params);
             }
-            if(command == "whowas")
+            else
+            {
+                AppendIrcStyledText(_("You aren't connected"), 4);
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                return TRUE;
+            }
+        }
+        if(command == "whowas")
+        {
+            if(server->GetConnected())
             {
                 FXString params = commandtext.after(' ');
                 if(params.empty())
@@ -1594,190 +1831,46 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 }
                 else return server->SendWhowas(params);
             }
-            AppendIrcStyledText(FXStringFormat(_("Unknown command '%s', type /commands for available commands"), command.text()), 4);
-            return FALSE;
-        }
-        else
-        {
-            if (command.empty() && type != SERVER && !commandtext.empty())
-            {
-                if(coloredNick) AppendIrcNickText(server->GetNickName(), commandtext, GetNickColor(server->GetNickName()));
-                else AppendIrcText("<"+server->GetNickName()+"> "+commandtext);
-                if(commandtext.length() > maxLen-10-getText().length())
-                {
-                    dxStringArray messages = CutText(commandtext, maxLen-10-getText().length());
-                    FXbool result = TRUE;
-                    for(FXint i=0; i<messages.no(); i++)
-                    {
-                        result = server->SendMsg(getText(), messages[i]) &result;
-                    }
-                    return result;
-                }
-                else return server->SendMsg(getText(), commandtext);
-            }
-            return FALSE;
-        }
-    }
-    else
-    {
-        if(command == "connect")
-        {            
-            if(commandtext.after(' ').empty())
-            {
-                AppendIrcStyledText(_("/connect <server> [port] [nick] [password] [realname] [channels], connect for given server."), 4);
-                return FALSE;
-            }
             else
             {
-                ServerInfo srv;
-                srv.hostname = commandtext.after(' ').section(' ', 0);
-                srv.port = commandtext.after(' ').section(' ', 1).empty() ? 6667 : FXIntVal(commandtext.after(' ').section(' ', 1));
-                srv.nick = commandtext.after(' ').section(' ', 2).empty() ? FXSystem::currentUserName() : commandtext.after(' ').section(' ', 2);
-                srv.passwd = commandtext.after(' ').section(' ', 3).empty() ? "" : commandtext.after(' ').section(' ', 3);
-                srv.realname = commandtext.after(' ').section(' ', 4).empty() ? FXSystem::currentUserName() : commandtext.after(' ').section(' ', 4);
-                srv.channels = commandtext.after(' ').section(' ', 5).empty() ? "" : commandtext.after(' ').section(' ', 5);
-                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CSERVER), &srv);
-            }
-            return TRUE;
-        }
-        if(command == "commands")
-        {
-            FXString commandstr = _("Available commnads: ");
-            for(FXint i=0; i < utils::CommandsNo(); i++)
-            {
-                if(utils::CommandsAt(i) != "commands") commandstr += utils::CommandsAt(i).upper()+(i != utils::CommandsNo() - 1? ", " : "");
-            }
-            AppendIrcStyledText(commandstr, 3);           
-            return TRUE;
-        }
-        if(command == "exec")
-        {
-            FXString params = commandtext.after(' ');
-            if(params.empty())
-            {
-                AppendIrcStyledText(_("/exec [-o|-c] <command>, execute command, -o send output to channel/query, -c close running command"), 4);
-                return FALSE;
-            }
-            else
-            {
-                if(!pipe)
-                    pipe = new dxPipe(getApp(), this);
-                pipeStrings.clear();
-                if(params.before(' ').contains("-o"))
-                {
-                    sendPipe = TRUE;                    
-                    pipe->ExecCmd(params.after(' '));
-                }
-                else if(params.before(' ').contains("-c"))
-                {
-                    sendPipe = FALSE;                    
-                    pipe->StopCmd();
-                }
-                else
-                {
-                    sendPipe = FALSE;
-                    pipe->ExecCmd(params);
-                }
+                AppendIrcStyledText(_("You aren't connected"), 4);
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
                 return TRUE;
             }
         }
-        if(command == "help")
+        AppendIrcStyledText(FXStringFormat(_("Unknown command '%s', type /commands for available commands"), command.text()), 4);
+        return FALSE;
+    }
+    else
+    {
+        if (command.empty() && type != SERVER && !commandtext.empty() && server->GetConnected())
         {
-            return ShowHelp(commandtext.after(' ').lower());
-        }
-        if(command == "lua")
-        {
-            FXString luacommand = commandtext.after(' ').before(' ');
-            FXString luatext = commandtext.after(' ').after(' ');
-            LuaRequest lua;
-            if(luacommand.empty())
+            if(coloredNick) AppendIrcNickText(server->GetNickName(), commandtext, GetNickColor(server->GetNickName()));
+            else AppendIrcText("<"+server->GetNickName()+"> "+commandtext);
+            if(commandtext.length() > maxLen-10-getText().length())
             {
-                AppendIrcStyledText(_("/lua <help|load|unload|list|command|read> [scriptpath|scriptname] [commandtext]"), 4);
-                return FALSE;
-            }
-            if(comparecase(luacommand, "help")==0) lua.type = LUA_HELP;
-            else if(comparecase(luacommand, "load")==0) lua.type = LUA_LOAD;
-            else if(comparecase(luacommand, "unload")==0) lua.type = LUA_UNLOAD;
-            else if(comparecase(luacommand, "list")==0) lua.type = LUA_LIST;
-            else if(comparecase(luacommand, "command")==0) lua.type = LUA_COMMAND;
-            else if(comparecase(luacommand, "read")==0)
-            {
-                if(!FXStat::exists(luatext))
+                dxStringArray messages = CutText(commandtext, maxLen-10-getText().length());
+                FXbool result = TRUE;
+                for(FXint i=0; i<messages.no(); i++)
                 {
-                    AppendIrcStyledText(FXStringFormat(_("Script %s doesn't exist"), luatext.text()), 4);
-                    return FALSE;
+                    result = server->SendMsg(getText(), messages[i]) &result;
                 }
-                else
-                {
-                    if(comparecase(FXPath::extension(luatext), "lua")) AppendIrcStyledText(FXStringFormat(_("File %s probably isn't lua script"), luatext.text()), 4);
-                    else AppendIrcStyledText(luatext, 7);
-                    FXFile textfile(luatext,FXFile::Reading);
-                    FXint size, n, c, i, j;
-                    FXchar *txt;
-                    // Opened file?
-                    if(!textfile.isOpen())
-                    {
-                        FXMessageBox::error(this,MBOX_OK,_("Error Loading File"),_("Unable to open file: %s"), luatext.text());
-                        return FALSE;
-                    }
-                    // Get file size
-                    size=textfile.size();
-                    // Make buffer to load file
-                    if(!FXMALLOC(&txt,FXchar,size))
-                    {
-                        FXMessageBox::error(this,MBOX_OK,_("Error Loading File"),_("File is too big: %s (%d bytes)"), luatext.text(),size);
-                        return FALSE;
-                    }
-                    // Set wait cursor
-                    getApp()->beginWaitCursor();
-                    // Read the file
-                    n=textfile.readBlock(txt,size);
-                    if(n<0)
-                    {
-                        FXFREE(&txt);
-                        FXMessageBox::error(this,MBOX_OK,_("Error Loading File"),_("Unable to read file: %s"), luatext.text());
-                        getApp()->endWaitCursor();
-                        return FALSE;
-                    }
-                    // Strip carriage returns
-                    for(i=j=0; j<n; j++)
-                    {
-                        c=txt[j];
-                        if(c!='\r')
-                            txt[i++]=c;
-                    }
-                    n=i;
-                    // Set text
-                    text->appendText(txt,n);
-                    text->appendText("\n");
-                    MakeLastRowVisible(TRUE);
-                    FXFREE(&txt);
-                    // Kill wait cursor
-                    getApp()->endWaitCursor();
-                    return TRUE;
-                }
+                return result;
             }
-            else
-            {
-                AppendIrcStyledText(FXStringFormat(_("%s isn't <help|load|unload|list|command|read>"), luacommand.text()), 4);
-                return FALSE;
-            }
-            lua.text = luatext;
-            parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_LUA), &lua);
-            return TRUE;
+            else return server->SendMsg(getText(), commandtext);
         }
-        else
-        {
-            AppendIrcStyledText(_("You aren't connected"), 4);
-            parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);            
-            return TRUE;
-        }
+        return FALSE;
     }
     return FALSE;
 }
 
 FXbool IrcTabItem::ShowHelp(FXString command)
 {
+    if(utils::IsScriptCommand(command))
+    {
+        AppendIrcText(utils::GetHelpText(command));
+        return TRUE;
+    }
     if(command == "admin")
     {
         AppendIrcText(_("ADMIN [server], finds information about administrator for current server or [server]."));
@@ -1859,10 +1952,6 @@ FXbool IrcTabItem::ShowHelp(FXString command)
         AppendIrcText(_("LUA <unload> <name>, unloads script."));
         AppendIrcText(_("Example: /lua unload test"));
         AppendIrcText(_("LUA <list>, shows list of loaded scripts"));
-        AppendIrcText(_("LUA <command> <name> <commandtext>, sends commandetext to script."));
-        AppendIrcText(_("Example: /lua command test play"));
-        AppendIrcText(_("LUA <read> <path>, shows script in current window"));
-        AppendIrcText(_("Example: /lua read /home/dvx/test.lua"));
         return TRUE;
     }
 #else

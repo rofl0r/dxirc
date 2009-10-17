@@ -87,6 +87,13 @@ namespace utils
     FXString CommandsAt(FXint);
     FXbool IsCommand(const FXString&);
     FXbool IsUtf8(const FXchar* string, FXuint length);
+    void AddScriptCommand(LuaScriptCommand command);
+    FXbool RemoveScriptCommand(const FXString &command);
+    FXbool RemoveScriptCommands(const FXString &script);
+    FXbool IsScriptCommand(const FXString &command);
+    FXString GetHelpText(const FXString &command);
+    FXString GetFuncname(const FXString &command);
+    FXString GetScriptName(const FXString &command);
 }
 
 

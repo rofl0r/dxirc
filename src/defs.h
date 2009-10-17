@@ -79,7 +79,6 @@ enum IrcEventType {
 };
 
 enum LuaCommands {
-    LUA_HELP,
     LUA_LOAD,
     LUA_UNLOAD,
     LUA_COMMAND,
@@ -152,7 +151,22 @@ struct LuaRequest {
 struct LuaScript {
     FXString path;
     FXString name;
+    FXString version;
+    FXString description;
     lua_State *L;
+};
+
+struct LuaScriptCommand {
+    FXString name; //command name
+    FXString funcname;
+    FXString helptext;
+    FXString script; //script name
+};
+
+struct LuaScriptEvent {
+    FXString name; //eventname, e.g. PRIVMSG, JOIN etc.
+    FXString funcname;
+    FXString script; //script name
 };
 
 typedef FXArray<IrcSocket*> dxServersArray;
@@ -162,6 +176,8 @@ typedef FXArray<NickInfo> dxNicksArray;
 typedef FXArray<ServerInfo> dxServerInfoArray;
 typedef FXArray<IgnoreUser> dxIgnoreUserArray;
 typedef FXArray<LuaScript> dxScriptsArray;
+typedef FXArray<LuaScriptCommand> dxScriptCommandsArray;
+typedef FXArray<LuaScriptEvent> dxScriptEventsArray;
 typedef std::map<FXString,FXString> dxStringMap;
 typedef std::pair<FXString,FXString> StringPair;
 typedef std::map<FXString, FXString>::iterator StringIt;

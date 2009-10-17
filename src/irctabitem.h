@@ -77,6 +77,7 @@ class IrcTabItem: public FXTabItem
         void HideUsers();
         void ShowUsers();
         FXString GetServerName() { return server->GetServerName(); }
+        FXint GetServerPort() { return server->GetServerPort(); }
         FXString GetNickName() { return server->GetNickName(); }
         void SetType(const TYPE &typ, const FXString &tabtext);
         TYPE GetType() { return type; }
@@ -114,6 +115,7 @@ class IrcTabItem: public FXTabItem
 
     protected:
         void AppendIrcText(FXString);
+        void AppendIrcText(FXString, FXbool);
         void AppendIrcStyledText(FXString, FXint);
         FXbool ProcessLine(const FXString &);
         void MakeLastRowVisible(FXbool);

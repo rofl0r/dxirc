@@ -37,6 +37,9 @@ extern "C" {
 }
 #endif
 
+class dxirc;
+typedef void (dxirc::* func_ptr) (const FXString&);
+
 class dxirc: public FXMainWindow
 {
     FXDECLARE(dxirc)
@@ -96,6 +99,15 @@ class dxirc: public FXMainWindow
         long OnTrayCancel(FXObject*, FXSelector, void*);
         long OnLua(FXObject*, FXSelector, void*);
         long OnCommandLoad(FXObject*, FXSelector, void*);
+        static int OnLuaAddCommand(lua_State*);
+        static int OnLuaAddEvent(lua_State*);
+        static int OnLuaRemoveName(lua_State*);
+        static int OnLuaCommand(lua_State*);
+        static int OnLuaPrint(lua_State*);
+        static int OnLuaGetServers(lua_State*);
+        static int OnLuaGetTab(lua_State*);
+        static int OnLuaGetTabInfo(lua_State*);
+        static int OnLuaSetTab(lua_State*);
 
     private:
         dxirc(){}
@@ -112,11 +124,12 @@ class dxirc: public FXMainWindow
         ColorTheme appTheme;
         FXPopup *traymenu;
         FXTrayIcon *trayIcon;
-        static void *pObject;
+        dxScriptEventsArray scriptEvents;
         
         FXbool TabExist(IrcSocket*, FXString);
         FXbool ServerExist(const FXString&, const FXint&, const FXString&);
         FXint GetServerTab(IrcSocket*);
+        FXint GetTabId(IrcSocket*, FXString);
         FXbool IsLastTab(IrcSocket*);
         void ConnectServer(FXString, FXint, FXString, FXString, FXString, FXString, FXString, FXbool);
         void ReadServersConfig();
@@ -127,7 +140,6 @@ class dxirc: public FXMainWindow
         void UpdateTabs();
         void UpdateTabPosition();
         void UpdateFont(FXString);
-        void UpdateStatus();
         void SortTabs();
         FXString Encrypt(const FXString&);
         FXString Decrypt(const FXString&);
@@ -135,11 +147,7 @@ class dxirc: public FXMainWindow
         FXString CheckThemesList(const FXString&);
         void AppendIrcText(FXString);
         void AppendIrcStyledText(FXString, FXint);
-
-#ifdef HAVE_LUA
-        static int LuaCommand(lua_State *);
-        static int LuaInfo(lua_State *);
-#endif
+        FXint LoadLuaScript(const FXString&);
 
     protected:
         FXMenuBar *menubar;
@@ -153,6 +161,7 @@ class dxirc: public FXMainWindow
         LogViewer *viewer;
         dxServersArray servers;
         dxScriptsArray scripts;
+        static dxirc *pThis;
 };
 
 #endif // DXIRC_H
