@@ -5,7 +5,8 @@ rcdir = $(prefix)/share/dxirc
 
 EXTRA_DIST = config.h\
              ABOUT-NLS TODO BUGS dxirc.spec.in dxirc.desktop *.png\
-             $(top_srcdir)/win/* $(top_srcdir)/icons/*.png $(top_srcdir)/icons/default/*.png $(top_srcdir)/icons/flags/*.png
+             $(top_srcdir)/win/* $(top_srcdir)/icons/*.png $(top_srcdir)/icons/default/*.png $(top_srcdir)/icons/flags/*.png\
+             $(top_srcdir)/debian/*
 
 icondir = $(prefix)/share/pixmaps
 icon_DATA = dxirc.png

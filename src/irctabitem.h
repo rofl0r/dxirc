@@ -50,7 +50,7 @@ class IrcTabItem: public FXTabItem
         enum {
             ID_COMMANDLINE = FXMainWindow::ID_LAST+25,
             ID_CDIALOG,
-            ID_TABQUIT,
+            ID_CQUIT,
             ID_TIME,
             ID_PTIME,
             ID_USERS,

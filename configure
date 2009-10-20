@@ -1403,7 +1403,7 @@ Optional Features:
   --disable-rpath         do not hardcode runtime library paths
   --disable-tray          Disable trayicon
   --disable-ssl           Disable Secure Sockets Layer support
-  --enable-lua            Enable Lua scripting
+  --disable-lua           Disable Lua scripting
   --enable-debug          compile for debugging
   --enable-release        compile for release (advanced optimizations)
 
@@ -10782,9 +10782,9 @@ fi
 
 # Check whether --enable-lua was given.
 if test "${enable_lua+set}" = set; then :
-  enableval=$enable_lua; enable_lua=yes
+  enableval=$enable_lua; enable_lua=no
 else
-  enable_lua=no
+  enable_lua=yes
 fi
 
 have_lua=no

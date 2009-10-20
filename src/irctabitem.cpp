@@ -981,6 +981,21 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 return TRUE;
             }
         }
+        if(command == "disconnect")
+        {
+            if(server->GetConnected())
+            {
+                if(commandtext.after(' ').empty()) server->Disconnect();
+                else server->Disconnect(commandtext.after(' '));
+                return TRUE;
+            }
+            else
+            {
+                AppendIrcStyledText(_("You aren't connected"), 4);
+                //parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                return TRUE;
+            }
+        }
         if(command == "dxirc")
         {
             for(FXint i=0; i<5+rand()%5; i++)
@@ -1575,19 +1590,8 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
         }
         if(command == "quit")
         {
-            if(server->GetConnected())
-            {
-                //parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_TABQUIT), NULL);
-                if(commandtext.after(' ').empty()) server->Disconnect();
-                else server->Disconnect(commandtext.after(' '));
-                return TRUE;
-            }
-            else
-            {
-                AppendIrcStyledText(_("You aren't connected"), 4);
-                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
-                return TRUE;
-            }
+            parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CQUIT), NULL);
+            return TRUE;
         }
         if(command == "quote")
         {
@@ -1906,6 +1910,11 @@ FXbool IrcTabItem::ShowHelp(FXString command)
         AppendIrcText(_("DEVOICE <channel> <nicks>, removes voice from one or more nicks."));
         return TRUE;
     }
+    if(command == "disconnect")
+    {
+        AppendIrcText(_("DISCONNECT [reason], leaves server."));
+        return TRUE;
+    }
 #ifndef WIN32
     if(command == "exec")
     {
@@ -2013,7 +2022,7 @@ FXbool IrcTabItem::ShowHelp(FXString command)
     }
     if(command == "quit")
     {
-        AppendIrcText(_("QUIT [reason], leaves server."));
+        AppendIrcText(_("QUIT, closes application."));
         return TRUE;
     }
     if(command == "quote")

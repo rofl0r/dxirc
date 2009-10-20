@@ -44,6 +44,7 @@ namespace utils
         commands.append("CTCP");
         commands.append("DEOP");
         commands.append("DEVOICE");
+        commands.append("DISCONNECT");
 #ifndef WIN32
         commands.append("EXEC");
 #endif

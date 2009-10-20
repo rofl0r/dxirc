@@ -1,0 +1,11 @@
+dxirc (0.40.svn-1) unstable; urgency=low
+
+  * Support for build svn deb.
+
+ -- David Vachulka <david@konstrukce-cad.com>  Tue, 20 Oct 2009 20:26:29 +0200
+
+dxirc (0.30.1-1) unstable; urgency=low
+
+  * Initial release
+
+ -- David Vachulka <david@konstrukce-cad.com>  Mon, 19 Oct 2009 19:43:41 +0200

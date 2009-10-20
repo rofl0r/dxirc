@@ -61,7 +61,7 @@ FXDEFMAP(dxirc) dxircMap[] = {
     FXMAPFUNC(SEL_COMMAND,  IrcSocket::ID_SERVER,       dxirc::OnIrcEvent),
     FXMAPFUNC(SEL_COMMAND,  IrcTabItem::ID_CDIALOG,     dxirc::OnCommandConnect),
     FXMAPFUNC(SEL_COMMAND,  IrcTabItem::ID_CSERVER,     dxirc::OnTabConnect),
-    FXMAPFUNC(SEL_COMMAND,  IrcTabItem::ID_TABQUIT,     dxirc::OnCommandDisconnect),
+    FXMAPFUNC(SEL_COMMAND,  IrcTabItem::ID_CQUIT,       dxirc::OnCommandQuit),
     FXMAPFUNC(SEL_COMMAND,  IrcTabItem::ID_NEWMSG,      dxirc::OnNewMsg),
     FXMAPFUNC(SEL_COMMAND,  IrcTabItem::ID_LUA,         dxirc::OnLua)
 };

@@ -1,0 +1,13 @@
+Source: dxirc
+Section: net
+Priority: optional
+Maintainer: David Vachulka <david@konstrukce-cad.com>
+Build-Depends: debhelper (>= 7), autotools-dev, libfox-1.6-dev, libssl-dev, libpng12-dev, liblua5.1-0-dev
+Standards-Version: 3.8.3
+Homepage: http://dxirc.org
+
+Package: dxirc
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: A simple IRC client
+ It is desktop independent and is written using the C++ Fox Toolkit.
