@@ -100,6 +100,7 @@ class IrcTabItem: public FXTabItem
         long OnTimeout(FXObject *, FXSelector, void*);
         long OnPipeTimeout(FXObject *, FXSelector, void*);
         long OnRightMouse(FXObject *, FXSelector, void*);
+        long OnDoubleclick(FXObject *, FXSelector, void*);
         long OnLeftMouse(FXObject *, FXSelector, void *);
         long OnNewQuery(FXObject *, FXSelector, void*);
         long OnWhois(FXObject *, FXSelector, void*);

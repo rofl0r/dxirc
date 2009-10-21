@@ -106,6 +106,7 @@ FXDEFMAP(IrcTabItem) IrcTabItemMap[] = {
     FXMAPFUNC(SEL_TIMEOUT,              IrcTabItem::ID_PTIME,           IrcTabItem::OnPipeTimeout),
     FXMAPFUNC(SEL_LEFTBUTTONRELEASE,    IrcTabItem::ID_TEXT,            IrcTabItem::OnLeftMouse),
     FXMAPFUNC(SEL_RIGHTBUTTONRELEASE,   IrcTabItem::ID_USERS,           IrcTabItem::OnRightMouse),
+    FXMAPFUNC(SEL_DOUBLECLICKED,        IrcTabItem::ID_USERS,           IrcTabItem::OnDoubleclick),
     FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_NEWQUERY,        IrcTabItem::OnNewQuery),
     FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_WHOIS,           IrcTabItem::OnWhois),
     FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_OP,              IrcTabItem::OnOp),
@@ -2692,6 +2693,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
     if(ev->eventType == IRC_ERROR)
     {
         AppendIrcStyledText(ev->param1, 4);
+        return 1;
     }
     if(ev->eventType == IRC_SERVERERROR)
     {
@@ -2716,6 +2718,21 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
     if(ev->eventType == IRC_DISCONNECT || ev->eventType == IRC_RECONNECT)
     {
         AppendIrcStyledText(ev->param1, 4);
+        if(ownServerWindow)
+        {
+            if(type == SERVER)
+            {
+                if(parent->getCurrent()*2 != parent->indexOfChild(this)) this->setTextColor(FXRGB(255,0,0));
+            }
+        }
+        else
+        {
+            if(IsFirst())
+            {
+                if(parent->getCurrent()*2 != parent->indexOfChild(this)) this->setTextColor(FXRGB(255,0,0));
+            }
+        }
+        return 1;
     }
     if(ev->eventType == IRC_UNKNOWN)
     {
@@ -3117,6 +3134,21 @@ long IrcTabItem::OnRightMouse(FXObject *, FXSelector, void *ptr)
         popup.create();
         popup.popup(NULL,event->root_x,event->root_y);
         getApp()->runModalWhileShown(&popup);
+    }
+    return 1;
+}
+
+long IrcTabItem::OnDoubleclick(FXObject*, FXSelector, void*)
+{
+    FXint index = users->getCursorItem();
+    if(index >= 0)
+    {
+        if(users->getItemText(index) == server->GetNickName()) return 1;
+        IrcEvent ev;
+        ev.eventType = IRC_QUERY;
+        ev.param1 = users->getItemText(index);
+        ev.param2 = server->GetNickName();
+        parent->getParent()->getParent()->handle(server, FXSEL(SEL_COMMAND, IrcSocket::ID_SERVER), &ev);
     }
     return 1;
 }
