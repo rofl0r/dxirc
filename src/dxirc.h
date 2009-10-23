@@ -68,6 +68,7 @@ class dxirc: public FXMainWindow
             ID_TCANCEL,
             ID_LOG,
             ID_LOAD,
+            ID_STIMEOUT,
             ID_LAST
         };
 
@@ -99,6 +100,7 @@ class dxirc: public FXMainWindow
         long OnTrayCancel(FXObject*, FXSelector, void*);
         long OnLua(FXObject*, FXSelector, void*);
         long OnCommandLoad(FXObject*, FXSelector, void*);
+        long OnStatusTimeout(FXObject*, FXSelector, void*);
         static int OnLuaAddCommand(lua_State*);
         static int OnLuaAddEvent(lua_State*);
         static int OnLuaRemoveName(lua_State*);
@@ -140,6 +142,7 @@ class dxirc: public FXMainWindow
         void UpdateTabs();
         void UpdateTabPosition();
         void UpdateFont(FXString);
+        void UpdateStatus(FXString);
         void SortTabs();
         FXString Encrypt(const FXString&);
         FXString Decrypt(const FXString&);
@@ -155,7 +158,8 @@ class dxirc: public FXMainWindow
         FXMenuCommand *disconnect, *closeTab, *clearTab, *clearTabs, *logviewer;
         FXMenuCheck *users;
         FXMenuCheck *status;
-        FXStatusBar *statusbar;
+        FXHorizontalFrame *statusbar;
+        FXLabel *statuslabel;
         FXVerticalFrame *mainframe;
         FXTabBook *tabbook;
         LogViewer *viewer;

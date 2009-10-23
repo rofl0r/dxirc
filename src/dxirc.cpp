@@ -58,6 +58,7 @@ FXDEFMAP(dxirc) dxircMap[] = {
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_TRAY,             dxirc::OnTrayClicked),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_TCANCEL,          dxirc::OnTrayCancel),
     FXMAPFUNC(SEL_COMMAND,  dxirc::ID_LOAD,             dxirc::OnCommandLoad),
+    FXMAPFUNC(SEL_TIMEOUT,  dxirc::ID_STIMEOUT,         dxirc::OnStatusTimeout),
     FXMAPFUNC(SEL_COMMAND,  IrcSocket::ID_SERVER,       dxirc::OnIrcEvent),
     FXMAPFUNC(SEL_COMMAND,  IrcTabItem::ID_CDIALOG,     dxirc::OnCommandConnect),
     FXMAPFUNC(SEL_COMMAND,  IrcTabItem::ID_CSERVER,     dxirc::OnTabConnect),
@@ -133,10 +134,6 @@ dxirc::dxirc(FXApp *app)
     new FXMenuCommand(helpmenu, _("&About..."), NULL, this, ID_ABOUT);
     new FXMenuTitle(menubar, _("&Help"), NULL, helpmenu);
 
-    statusbar = new FXStatusBar(this, LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X);
-    statusbar->getStatusLine()->setNormalText("");
-    statusShown ? statusbar->show() : statusbar->hide();
-
     mainframe = new FXVerticalFrame(this, LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 1,1,1,1);
 
     tabbook = new FXTabBook(mainframe, this, ID_TABS, PACK_UNIFORM_WIDTH|PACK_UNIFORM_HEIGHT|LAYOUT_FILL_X|LAYOUT_FILL_Y);    
@@ -150,6 +147,14 @@ dxirc::dxirc(FXApp *app)
 
     IrcTabItem *tabitem = new IrcTabItem(tabbook, "(server)", servericon, TAB_BOTTOM, SERVER, server, ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList, coloredNick);
     server->AppendTarget(tabitem);
+
+    statusbar = new FXHorizontalFrame(mainframe, LAYOUT_LEFT|JUSTIFY_LEFT|LAYOUT_FILL_X|FRAME_NONE, 0,0,0,0, 1,1,1,1);
+    FXHorizontalFrame *hframe=new FXHorizontalFrame(statusbar, LAYOUT_LEFT|JUSTIFY_LEFT|LAYOUT_FILL_X|FRAME_SUNKEN, 0,0,0,0, 0,0,0,0);
+    statuslabel = new FXLabel(hframe, "dxirc", NULL, LAYOUT_LEFT|JUSTIFY_LEFT);
+    if (statusShown)
+        statusbar->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_SHOW), NULL);
+    else
+        statusbar->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_HIDE), NULL);
 
 #ifdef HAVE_TRAY
     if(useTray)
@@ -186,6 +191,7 @@ dxirc::dxirc(FXApp *app)
 
 dxirc::~dxirc()
 {
+    app->removeTimeout(this, ID_STIMEOUT);
     delete bigicon;
     delete smallicon;
     delete irc_admin_icon;
@@ -556,10 +562,9 @@ long dxirc::OnCommandStatus(FXObject*, FXSelector, void*)
 {
     statusShown = !statusShown;
     if (statusShown)
-      statusbar->show();
+        statusbar->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_SHOW), NULL);
     else
-      statusbar->hide();
-    recalc();
+        statusbar->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_HIDE), NULL);
     return 1;
 }
 
@@ -1336,6 +1341,7 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
                 {
                     if((comparecase(((IrcTabItem *)tabbook->childAtIndex(j))->getText(), ev->param3) == 0) && server->FindTarget((IrcTabItem *)tabbook->childAtIndex(j))) index = j;
                 }
+                tabbook->setCurrent(index/2, TRUE);
                 server->RemoveTarget((IrcTabItem *)tabbook->childAtIndex(index));
                 delete tabbook->childAtIndex(index);
                 delete tabbook->childAtIndex(index);
@@ -1352,6 +1358,7 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
         {
             if(server->FindTarget((IrcTabItem *)tabbook->childAtIndex(i)))
             {
+                tabbook->setCurrent(i/2, TRUE);
                 server->RemoveTarget((IrcTabItem *)tabbook->childAtIndex(i));
                 delete tabbook->childAtIndex(i);
                 delete tabbook->childAtIndex(i);
@@ -1360,6 +1367,12 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
         }
         SortTabs();
         UpdateMenus();
+        UpdateStatus(ev->param1);
+        return 1;
+    }
+    if(ev->eventType == IRC_RECONNECT || ev->eventType == IRC_CONNECT)
+    {
+        UpdateStatus(ev->param1);
         return 1;
     }
     if(ev->eventType == IRC_ENDMOTD)
@@ -1369,6 +1382,7 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
     }
     if(ev->eventType == IRC_PRIVMSG || ev->eventType == IRC_ACTION)
     {
+        if(ev->param3.contains(server->GetNickName())) UpdateStatus(FXStringFormat(_("New highlighted message on %s"), ev->param2.text()));
 #ifdef HAVE_LUA
         if(!scripts.no() || !scriptEvents.no()) return 0;
         for(FXint i=0; i<scriptEvents.no(); i++)
@@ -1397,7 +1411,7 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
                 }
             }
         }
-#endif
+#endif        
         return 1;
     }
     if(ev->eventType == IRC_JOIN)
@@ -1918,6 +1932,30 @@ FXString dxirc::Decrypt(const FXString &text)
         if((i+1)%2) result += text[i];
     }
     return result;
+}
+
+void dxirc::UpdateStatus(FXString text)
+{
+    statuslabel->setText(text);
+#ifdef HAVE_TRAY
+    if(useTray)
+    {
+        trayIcon->setText("dxirc\n"+text);
+    }
+#endif
+    app->addTimeout(this, ID_STIMEOUT, 2000);
+}
+
+long dxirc::OnStatusTimeout(FXObject*, FXSelector, void*)
+{
+    statuslabel->setText(" ");
+#ifdef HAVE_TRAY
+    if(useTray)
+    {
+        trayIcon->setText("dxirc");
+    }
+#endif
+    return 1;
 }
 
 void dxirc::AppendIrcText(FXString text)

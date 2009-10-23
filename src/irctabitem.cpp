@@ -2076,7 +2076,8 @@ FXbool IrcTabItem::ShowHelp(FXString command)
         AppendIrcText(FXStringFormat("%s: %s", command.upper().text(), utils::GetAlias(command[0] == '/' ? command:"/"+command).text()));
         return TRUE;
     }
-    AppendIrcStyledText(FXStringFormat(_("Unknown command '%s', type /commands for available commands"), command.text()), 4);
+    if(command.empty()) AppendIrcStyledText(_("Command is empty, type /commands for available commands"), 4);
+    else AppendIrcStyledText(FXStringFormat(_("Unknown command '%s', type /commands for available commands"), command.text()), 4);
     return FALSE;
 }
 
