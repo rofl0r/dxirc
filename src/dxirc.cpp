@@ -1382,7 +1382,7 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
     }
     if(ev->eventType == IRC_PRIVMSG || ev->eventType == IRC_ACTION)
     {
-        if(ev->param3.contains(server->GetNickName())) UpdateStatus(FXStringFormat(_("New highlighted message on %s"), ev->param2.text()));
+        if(ev->param3.contains(server->GetNickName())) UpdateStatus(FXStringFormat(_("New highlighted message on %s"), ev->param2 == server->GetNickName() ? ev->param1.text() : ev->param2.text()));
 #ifdef HAVE_LUA
         if(!scripts.no() || !scriptEvents.no()) return 0;
         for(FXint i=0; i<scriptEvents.no(); i++)
@@ -1400,7 +1400,7 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
                         {
                             lua_pushstring(scripts[j].L, ev->param1.text());
                             lua_pushstring(scripts[j].L, ev->param3.text());
-                            lua_pushinteger(scripts[j].L, GetTabId(server, ev->param2));
+                            lua_pushinteger(scripts[j].L, GetTabId(server, ev->param2 == server->GetNickName() ? ev->param1 : ev->param2));
                             if (lua_pcall(scripts[j].L, 3, 0, 0))
                             {
                                 AppendIrcStyledText(FXStringFormat(_("Lua plugin: error calling %s %s"), scriptEvents[i].funcname.text(), lua_tostring(scripts[j].L, -1)), 4);
