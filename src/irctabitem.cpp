@@ -3302,7 +3302,7 @@ FXString IrcTabItem::StripColors(const FXString &text, const FXbool stripOther)
 {
     FXString newstr;
     FXbool color = FALSE;
-    FXint numbers;
+    FXint numbers = 0;
     FXint i = 0;
     while(text[i] != '\0') {
         if(text[i] == '\017') //reset

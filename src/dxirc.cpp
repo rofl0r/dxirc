@@ -1172,7 +1172,7 @@ long dxirc::OnCommandDisconnect(FXObject*, FXSelector, void*)
     {
         FXint index = tabbook->getCurrent()*2;
         IrcTabItem *currenttab = (IrcTabItem *)tabbook->childAtIndex(index);
-        IrcSocket *currentserver;
+        IrcSocket *currentserver = NULL;
         for(FXint i=0; i < servers.no(); i++)
         {
             if(servers[i]->FindTarget(currenttab))
@@ -1181,6 +1181,7 @@ long dxirc::OnCommandDisconnect(FXObject*, FXSelector, void*)
                 break;
             }
         }
+        if(currentserver == NULL) return 0;
         if(currentserver->GetConnected())
         {
             FXDialogBox confirmDialog(this, _("Confirm disconnect"), DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0);
@@ -1302,11 +1303,12 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
                 }
                 else
                 {
-                    FXint index;
+                    FXint index = -1;
                     for(FXint j = 0; j < tabbook->numChildren(); j=j+2)
                     {
                         if((comparecase(((IrcTabItem *)tabbook->childAtIndex(j))->getText(), ev->param2) == 0) && server->FindTarget((IrcTabItem *)tabbook->childAtIndex(j))) index = j;
                     }
+                    if(index == -1) return 0;
                     server->RemoveTarget((IrcTabItem *)tabbook->childAtIndex(index));
                     delete tabbook->childAtIndex(index);
                     delete tabbook->childAtIndex(index);
@@ -1336,11 +1338,12 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
             }
             else
             {
-                FXint index;
+                FXint index = -1;
                 for(FXint j = 0; j < tabbook->numChildren(); j=j+2)
                 {
                     if((comparecase(((IrcTabItem *)tabbook->childAtIndex(j))->getText(), ev->param3) == 0) && server->FindTarget((IrcTabItem *)tabbook->childAtIndex(j))) index = j;
                 }
+                if(index == -1) return 0;
                 tabbook->setCurrent(index/2, TRUE);
                 server->RemoveTarget((IrcTabItem *)tabbook->childAtIndex(index));
                 delete tabbook->childAtIndex(index);
@@ -1547,7 +1550,7 @@ long dxirc::OnCommandCloseTab(FXObject *, FXSelector, void *)
     {
         FXint index = tabbook->getCurrent()*2;
         IrcTabItem *currenttab = (IrcTabItem *)tabbook->childAtIndex(index);
-        IrcSocket *currentserver;
+        IrcSocket *currentserver = NULL;
         for(FXint i=0; i < servers.no(); i++)
         {
             if(servers[i]->FindTarget(currenttab))
@@ -1556,6 +1559,7 @@ long dxirc::OnCommandCloseTab(FXObject *, FXSelector, void *)
                 break;
             }
         }
+        if(currentserver == NULL) return 0;
         if(currenttab->GetType() == QUERY)
         {
             if(currentserver->GetConnected() && IsLastTab(currentserver))
@@ -1943,7 +1947,7 @@ void dxirc::UpdateStatus(FXString text)
         trayIcon->setText("dxirc\n"+text);
     }
 #endif
-    app->addTimeout(this, ID_STIMEOUT, 2000);
+    app->addTimeout(this, ID_STIMEOUT, 5000);
 }
 
 long dxirc::OnStatusTimeout(FXObject*, FXSelector, void*)
@@ -2363,8 +2367,9 @@ int dxirc::OnLuaGetTabInfo(lua_State *lua)
 int dxirc::OnLuaSetTab(lua_State *lua)
 {
 #ifdef HAVE_LUA
-    FXint number;
+    FXint number = 0;
     if(lua_isnumber(lua, 1))  number = lua_tointeger(lua, 1);
+    else return 0;
     if(pThis->tabbook->numChildren() && number < pThis->tabbook->numChildren()/2)
     {
         pThis->tabbook->setCurrent(number, pThis->tabbook->numChildren() > number*2 ? TRUE : FALSE);
