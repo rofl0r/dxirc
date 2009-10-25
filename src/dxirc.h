@@ -94,6 +94,7 @@ class dxirc: public FXMainWindow
         long OnCommandAlias(FXObject*, FXSelector, void*);
         long OnCommandLog(FXObject*, FXSelector, void*);
         long OnCommandClose(FXObject*, FXSelector, void*);
+        long OnMouseWheel(FXObject*, FXSelector, void*);
         long OnTabConnect(FXObject*, FXSelector, void*);
         long OnTrayClicked(FXObject*, FXSelector, void*);
         long OnNewMsg(FXObject*, FXSelector, void*);

@@ -35,36 +35,37 @@
 #include "utils.h"
 
 FXDEFMAP(dxirc) dxircMap[] = {
-    FXMAPFUNC(SEL_CLOSE,    0,                          dxirc::OnCommandClose),
-    FXMAPFUNC(SEL_COMMAND,  dxirc::ID_QUIT,             dxirc::OnCommandQuit),
-    FXMAPFUNC(SEL_COMMAND,  dxirc::ID_ABOUT,            dxirc::OnCommandAbout),
-    FXMAPFUNC(SEL_COMMAND,  dxirc::ID_CONNECT,          dxirc::OnCommandConnect),    
-    FXMAPFUNC(SEL_COMMAND,  dxirc::ID_DISCONNECT,       dxirc::OnCommandDisconnect),
-    FXMAPFUNC(SEL_COMMAND,  dxirc::ID_SERVERS,          dxirc::OnCommandServers),    
-    FXMAPFUNC(SEL_COMMAND,  dxirc::ID_TABS,             dxirc::OnTabBook),
-    FXMAPFUNC(SEL_COMMAND,  dxirc::ID_CLEAR,            dxirc::OnCommandClear),
-    FXMAPFUNC(SEL_COMMAND,  dxirc::ID_CLEARALL,         dxirc::OnCommandClearAll),
-    FXMAPFUNC(SEL_COMMAND,  dxirc::ID_CLOSETAB,         dxirc::OnCommandCloseTab),    
-    FXMAPFUNC(SEL_COMMAND,  dxirc::ID_USERS,            dxirc::OnCommandUsers),
-    FXMAPFUNC(SEL_COMMAND,  dxirc::ID_STATUS,           dxirc::OnCommandStatus),
-    FXMAPFUNC(SEL_COMMAND,  dxirc::ID_HELP,             dxirc::OnCommandHelp),
-    FXMAPFUNC(SEL_COMMAND,  dxirc::ID_OPTIONS,          dxirc::OnCommandOptions),
-    FXMAPFUNC(SEL_COMMAND,  dxirc::ID_SELECTTAB,        dxirc::OnCommandSelectTab),
-    FXMAPFUNC(SEL_COMMAND,  dxirc::ID_NEXTTAB,          dxirc::OnCommandNextTab),
-    FXMAPFUNC(SEL_COMMAND,  IrcTabItem::ID_NEXTTAB,     dxirc::OnCommandNextTab),
-    FXMAPFUNC(SEL_COMMAND,  dxirc::ID_NEXTUNREAD,       dxirc::OnCommandNextUnread),
-    FXMAPFUNC(SEL_COMMAND,  dxirc::ID_ALIAS,            dxirc::OnCommandAlias),
-    FXMAPFUNC(SEL_COMMAND,  dxirc::ID_LOG,              dxirc::OnCommandLog),
-    FXMAPFUNC(SEL_COMMAND,  dxirc::ID_TRAY,             dxirc::OnTrayClicked),
-    FXMAPFUNC(SEL_COMMAND,  dxirc::ID_TCANCEL,          dxirc::OnTrayCancel),
-    FXMAPFUNC(SEL_COMMAND,  dxirc::ID_LOAD,             dxirc::OnCommandLoad),
-    FXMAPFUNC(SEL_TIMEOUT,  dxirc::ID_STIMEOUT,         dxirc::OnStatusTimeout),
-    FXMAPFUNC(SEL_COMMAND,  IrcSocket::ID_SERVER,       dxirc::OnIrcEvent),
-    FXMAPFUNC(SEL_COMMAND,  IrcTabItem::ID_CDIALOG,     dxirc::OnCommandConnect),
-    FXMAPFUNC(SEL_COMMAND,  IrcTabItem::ID_CSERVER,     dxirc::OnTabConnect),
-    FXMAPFUNC(SEL_COMMAND,  IrcTabItem::ID_CQUIT,       dxirc::OnCommandQuit),
-    FXMAPFUNC(SEL_COMMAND,  IrcTabItem::ID_NEWMSG,      dxirc::OnNewMsg),
-    FXMAPFUNC(SEL_COMMAND,  IrcTabItem::ID_LUA,         dxirc::OnLua)
+    FXMAPFUNC(SEL_CLOSE,        0,                          dxirc::OnCommandClose),
+    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_QUIT,             dxirc::OnCommandQuit),
+    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_ABOUT,            dxirc::OnCommandAbout),
+    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_CONNECT,          dxirc::OnCommandConnect),
+    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_DISCONNECT,       dxirc::OnCommandDisconnect),
+    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_SERVERS,          dxirc::OnCommandServers),
+    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_TABS,             dxirc::OnTabBook),
+    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_CLEAR,            dxirc::OnCommandClear),
+    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_CLEARALL,         dxirc::OnCommandClearAll),
+    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_CLOSETAB,         dxirc::OnCommandCloseTab),
+    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_USERS,            dxirc::OnCommandUsers),
+    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_STATUS,           dxirc::OnCommandStatus),
+    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_HELP,             dxirc::OnCommandHelp),
+    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_OPTIONS,          dxirc::OnCommandOptions),
+    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_SELECTTAB,        dxirc::OnCommandSelectTab),
+    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_NEXTTAB,          dxirc::OnCommandNextTab),
+    FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_NEXTTAB,     dxirc::OnCommandNextTab),
+    FXMAPFUNC(SEL_MOUSEWHEEL,   dxirc::ID_TABS,             dxirc::OnMouseWheel),
+    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_NEXTUNREAD,       dxirc::OnCommandNextUnread),
+    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_ALIAS,            dxirc::OnCommandAlias),
+    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_LOG,              dxirc::OnCommandLog),
+    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_TRAY,             dxirc::OnTrayClicked),
+    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_TCANCEL,          dxirc::OnTrayCancel),
+    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_LOAD,             dxirc::OnCommandLoad),
+    FXMAPFUNC(SEL_TIMEOUT,      dxirc::ID_STIMEOUT,         dxirc::OnStatusTimeout),
+    FXMAPFUNC(SEL_COMMAND,      IrcSocket::ID_SERVER,       dxirc::OnIrcEvent),
+    FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_CDIALOG,     dxirc::OnCommandConnect),
+    FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_CSERVER,     dxirc::OnTabConnect),
+    FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_CQUIT,       dxirc::OnCommandQuit),
+    FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_NEWMSG,      dxirc::OnNewMsg),
+    FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_LUA,         dxirc::OnLua)
 };
 
 FXIMPLEMENT(dxirc, FXMainWindow, dxircMap, ARRAYNUMBER(dxircMap))
@@ -1489,6 +1490,30 @@ long dxirc::OnCommandNextTab(FXObject *, FXSelector, void *)
     {
         if((index+1)*2 < tabbook->numChildren()) tabbook->setCurrent(index+1, tabbook->numChildren() > index*2 ? TRUE : FALSE);
         else tabbook->setCurrent(0, TRUE);
+    }
+    return 1;
+}
+
+//Handle mousewheel for change currenttab
+long dxirc::OnMouseWheel(FXObject *, FXSelector, void *ptr)
+{
+    FXEvent *event = (FXEvent*)ptr;
+    FXint index = tabbook->getCurrent();
+    if(event->code > 0) //positive movement
+    {
+        if(tabbook->numChildren())
+        {
+            if((index+1)*2 < tabbook->numChildren()) tabbook->setCurrent(index+1, tabbook->numChildren() > index*2 ? TRUE : FALSE);
+            else tabbook->setCurrent(0, TRUE);
+        }
+    }
+    else
+    {
+        if(tabbook->numChildren())
+        {
+            if((index-1) >= 0) tabbook->setCurrent(index-1, TRUE);
+            else tabbook->setCurrent(tabbook->numChildren()/2-1, TRUE);
+        }
     }
     return 1;
 }
