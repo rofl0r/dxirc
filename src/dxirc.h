@@ -65,7 +65,6 @@ class dxirc: public FXMainWindow
             ID_TABS,
             ID_ALIAS,
             ID_TRAY,
-            ID_TCANCEL,
             ID_LOG,
             ID_LOAD,
             ID_STIMEOUT,
@@ -98,7 +97,6 @@ class dxirc: public FXMainWindow
         long OnTabConnect(FXObject*, FXSelector, void*);
         long OnTrayClicked(FXObject*, FXSelector, void*);
         long OnNewMsg(FXObject*, FXSelector, void*);
-        long OnTrayCancel(FXObject*, FXSelector, void*);
         long OnLua(FXObject*, FXSelector, void*);
         long OnCommandLoad(FXObject*, FXSelector, void*);
         long OnStatusTimeout(FXObject*, FXSelector, void*);

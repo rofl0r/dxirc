@@ -51,6 +51,10 @@ class FXTrayIcon : public FXTopWindow
 {
     FXDECLARE(FXTrayIcon)
 public:
+    enum {
+        ID_POPTIMEOUT = FXTopWindow::ID_LAST,
+        ID_LAST
+    };
     FXTrayIcon(FXApp* app, const FXString& text, FXIcon* icon, 
         FXPopup* pup = NULL, FXObject* target = 0, FXSelector sel = 0,
         FXuint opts = TRAY_MENU_ON_LEFT);
@@ -61,6 +65,7 @@ public:
     void mapToManager();
 
     long onEvent(FXObject*, FXSelector, void* ptr);
+    long onTimeout(FXObject*, FXSelector, void*);
 
     void setMenu(FXPopup* pup) { mPup = pup; }
     FXPopup* getMenu() const { return mPup; }
@@ -96,6 +101,7 @@ public:
     /** @cond DEV */
     enum {
         ID_BUTTON = FXTopWindow::ID_LAST,
+        ID_POPTIMEOUT,
         ID_LAST
     };
     /** @endcond */
@@ -124,6 +130,7 @@ public:
     long onLeft(FXObject*, FXSelector, void*);
     long onRight(FXObject* obj, FXSelector, void* ptr);
     long onClose(FXObject*, FXSelector, void*);
+    long onTimeout(FXObject*, FXSelector, void*);
     /** @endcond */
 
     /** Set the popup menu. */

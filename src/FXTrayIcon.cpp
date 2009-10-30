@@ -39,12 +39,14 @@ namespace FX {
 
 #ifdef WIN32
 FXDEFMAP(FXTrayIcon) FXTrayIconMap[] = {
+    FXMAPFUNC(SEL_TIMEOUT, FXTrayIcon::ID_POPTIMEOUT, FXTrayIcon::onTimeout),
     FXMAPFUNC(SEL_MOTION, 0, FXTrayIcon::onEvent)
 };
 #else
 FXDEFMAP(FXTrayIcon) FXTrayIconMap[] = {
     FXMAPFUNC(SEL_LEFTBUTTONRELEASE, FXTrayIcon::ID_BUTTON, FXTrayIcon::onLeft),
     FXMAPFUNC(SEL_RIGHTBUTTONRELEASE, FXTrayIcon::ID_BUTTON, FXTrayIcon::onRight),
+    FXMAPFUNC(SEL_TIMEOUT, FXTrayIcon::ID_POPTIMEOUT, FXTrayIcon::onTimeout),
     FXMAPFUNC(SEL_CLOSE, 0, FXTrayIcon::onClose)
 };
 #endif
@@ -153,6 +155,7 @@ long FXTrayIcon::onEvent(FXObject* obj, FXSelector, void* ptr)
         POINT p;
         GetCursorPos(&p);
         mPup->popup(0, p.x, p.y);
+        getApp()->addTimeout(this, ID_POPTIMEOUT, 2000);
 
         return 1;
     }
@@ -387,7 +390,19 @@ void FXTrayIcon::popup(FXint x, FXint y)
     }
 
     mPup->popup(0, x, y);
+    getApp()->addTimeout(this, ID_POPTIMEOUT, 2000);
 
 }
 #endif
+
+long FXTrayIcon::onTimeout(FXObject*, FXSelector, void*)
+{
+    if(!mPup->shown()) return 1;
+    FXint x,y, px, py;
+    FXuint button;
+    getCursorPosition(x,y,button);
+    translateCoordinatesTo(px,py,getParent(),x,y);
+    mPup->contains(px,py) ? getApp()->addTimeout(this, ID_POPTIMEOUT, 1000) : mPup->popdown();
+    return 1;
+}
 }
