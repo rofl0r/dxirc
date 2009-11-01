@@ -136,6 +136,7 @@ IrcTabItem::IrcTabItem(FXTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FX
     editableTopic = TRUE;
     pipe = NULL;
     sendPipe = FALSE;
+    scriptHasAll = FALSE;
 
     if(type == CHANNEL && server->GetConnected())
     {
@@ -439,7 +440,7 @@ void IrcTabItem::SetColoredNick(FXbool cnick)
     coloredNick = cnick;
 }
 
-//if hl==TRUE, highlight tab
+//if highlight==TRUE, highlight tab
 void IrcTabItem::AppendIrcText(FXString msg, FXbool highlight)
 {
     AppendIrcText(msg);
@@ -614,6 +615,22 @@ void IrcTabItem::AppendIrcNickText(FXString nick, FXString msg, FXint color)
     this->LogLine(StripColors("<"+nick+"> "+msg, TRUE));
 }
 
+//if highlight==TRUE, highlight tab
+void IrcTabItem::AppendIrcStyledText(FXString text, FXint style, FXbool highlight)
+{
+    AppendIrcStyledText(text, style);
+    if(highlight && FXRGB(255,0,0) != this->getTextColor() && parent->getCurrent()*2 != parent->indexOfChild(this))
+    {
+        if(text.contains(server->GetNickName()))
+        {
+            this->setTextColor(FXRGB(255,0,0));
+            if(type == CHANNEL) this->setIcon(chnewm);
+        }
+        else this->setTextColor(FXRGB(0,0,255));
+        if(type == QUERY) this->setIcon(unewm);
+    }
+}
+
 void IrcTabItem::AppendIrcStyledText(FXString styled, FXint stylenum)
 {
     text->appendText("["+FXSystem::time("%H:%M:%S", FXSystem::now()) +"] ");
@@ -727,7 +744,14 @@ long IrcTabItem::OnCommandline(FXObject *, FXSelector, void *)
     commandline->setText("");
     for(FXint i=0; i<=commandtext.contains('\n'); i++)
     {
-        ProcessLine(commandtext.section('\n', i).before('\r'));
+        FXString text = commandtext.section('\n', i).before('\r');
+        if(comparecase(text.after('/').before(' '), "quit") == 0)
+        {
+            ProcessLine(text);
+            return 1;
+        }
+        parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_COMMAND), &text);
+        if(!scriptHasAll) ProcessLine(text);
     }
     return 1;
 }
@@ -992,8 +1016,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
             }
             else
             {
-                AppendIrcStyledText(_("You aren't connected"), 4);
-                //parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                server->CloseConnection(TRUE);
                 return TRUE;
             }
         }
@@ -3409,4 +3432,10 @@ dxStringArray IrcTabItem::CutText(FXString text, FXint len)
 void IrcTabItem::SetCommandFocus()
 {
     commandline->setFocus();
+}
+
+//for "handle" checking, if script contains "all". Send from dxirc.
+void IrcTabItem::HasAllCommand(FXbool result)
+{
+    scriptHasAll = result;
 }

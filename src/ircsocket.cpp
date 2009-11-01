@@ -355,7 +355,11 @@ void IrcSocket::CloseConnection(FXbool disableReconnect)
         SendEvent(IRC_RECONNECT, FXStringFormat(_("Server %s was disconnected"), serverName.text()));
         application->addTimeout(this, ID_RTIME, delayAttempt*1000);
     }
-    else SendEvent(IRC_DISCONNECT, FXStringFormat(_("Server %s was disconnected"), serverName.text()));
+    else
+    {
+        application->removeTimeout(this, ID_RTIME);
+        SendEvent(IRC_DISCONNECT, FXStringFormat(_("Server %s was disconnected"), serverName.text()));
+    }
 }
 
 int IrcSocket::ReadData()

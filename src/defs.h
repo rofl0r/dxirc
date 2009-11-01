@@ -164,7 +164,7 @@ struct LuaScriptCommand {
 };
 
 struct LuaScriptEvent {
-    FXString name; //eventname, e.g. PRIVMSG, JOIN etc.
+    FXString name; //eventname, e.g. PRIVMSG, JOIN or ALL etc.
     FXString funcname;
     FXString script; //script name
 };

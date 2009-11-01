@@ -64,7 +64,8 @@ FXDEFMAP(dxirc) dxircMap[] = {
     FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_CSERVER,     dxirc::OnTabConnect),
     FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_CQUIT,       dxirc::OnCommandQuit),
     FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_NEWMSG,      dxirc::OnNewMsg),
-    FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_LUA,         dxirc::OnLua)
+    FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_LUA,         dxirc::OnLua),
+    FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_COMMAND,     dxirc::OnIrcCommand)
 };
 
 FXIMPLEMENT(dxirc, FXMainWindow, dxircMap, ARRAYNUMBER(dxircMap))
@@ -74,6 +75,7 @@ dxirc *dxirc::pThis = NULL;
 static luaL_reg dxircFunctions[] = {
     {"AddCommand",  dxirc::OnLuaAddCommand},
     {"AddEvent",    dxirc::OnLuaAddEvent},
+    {"AddAll",      dxirc::OnLuaAddAll},
     {"RemoveName",  dxirc::OnLuaRemoveName},
     {"Command",     dxirc::OnLuaCommand},
     {"Print",       dxirc::OnLuaPrint},
@@ -226,6 +228,7 @@ dxirc::~dxirc()
     delete servermenu;
     delete editmenu;
     delete helpmenu;
+    delete traymenu;
     delete ircFont;
     pThis = NULL;
 }
@@ -1838,6 +1841,60 @@ long dxirc::OnLua(FXObject *obj, FXSelector, void *data)
     return 1;
 }
 
+//Handle for entered command in IrcTab for all in lua scripting
+long dxirc::OnIrcCommand(FXObject *sender, FXSelector, void *data)
+{
+#ifdef HAVE_LUA
+    IrcTabItem *tab = dynamic_cast<IrcTabItem*>(sender);
+    if(tab == NULL) return 0;
+    FXString *commandtext = static_cast<FXString*>(data);
+    FXbool hasAll = FALSE;
+    if(!scripts.no() || !scriptEvents.no())
+    {
+        return 0;
+    }
+    for(FXint i=0; i<scriptEvents.no(); i++)
+    {
+        if(comparecase("all", scriptEvents[i].name) == 0)
+        {
+            hasAll = TRUE;
+            for(FXint j=0; j<scripts.no(); j++)
+            {
+                if(comparecase(scriptEvents[i].script, scripts[j].name) == 0)
+                {
+                    lua_pushstring(scripts[j].L, scriptEvents[i].funcname.text());
+                    lua_gettable(scripts[j].L, LUA_GLOBALSINDEX);
+                    if (lua_type(scripts[j].L, -1) != LUA_TFUNCTION) lua_pop(scripts[j].L, 1);
+                    else
+                    {
+                        if(commandtext->at(0) == '/')
+                        {
+                            lua_pushstring(scripts[j].L, commandtext->before(' ').after('/').text());
+                            lua_pushstring(scripts[j].L, commandtext->after(' ').text());
+                        }
+                        else
+                        {
+                            lua_pushnil(scripts[j].L);
+                            lua_pushstring(scripts[j].L, commandtext->text());
+                        }
+                        lua_pushinteger(scripts[j].L, tabbook->indexOfChild(tab)/2);
+                        if (lua_pcall(scripts[j].L, 3, 0, 0))
+                        {
+                            AppendIrcStyledText(FXStringFormat(_("Lua plugin: error calling %s %s"), scriptEvents[i].funcname.text(), lua_tostring(scripts[j].L, -1)), 4);
+                            lua_pop(scripts[j].L, 1);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    tab->HasAllCommand(hasAll);
+#else
+    AppendIrcStyledText(_("dxirc is compiled without support for Lua scripting"), 4);
+#endif
+    return 1;
+}
+
 FXbool dxirc::TabExist(IrcSocket *server, FXString name)
 {
     for(FXint i = 0; i < tabbook->numChildren(); i=i+2)
@@ -2009,6 +2066,10 @@ FXint dxirc::LoadLuaScript(const FXString &path)
             }
         }
     }
+    if(HasLuaAll(path))
+    {
+        if(FXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("Script %s contains dxirc.AddAll\nThis can BREAK dxirc funcionality.\nLoad it anyway?"), path.text()) == 2) return 0;
+    }
     lua_State *L = luaL_newstate();
     if(L == NULL)
     {
@@ -2071,6 +2132,18 @@ FXint dxirc::LoadLuaScript(const FXString &path)
 #else
     return 0;
 #endif
+}
+
+FXbool dxirc::HasLuaAll(const FXString &file)
+{
+    std::ifstream fin(file.text());
+    std::string line;
+    while(!fin.eof())
+    {
+        std::getline(fin, line);
+        if(line.find("dxirc.AddAll") != std::string::npos) return TRUE;
+    }
+    return FALSE;
 }
 
 int dxirc::OnLuaAddCommand(lua_State *lua)
@@ -2149,6 +2222,31 @@ int dxirc::OnLuaAddEvent(lua_State *lua)
 #endif    
 }
 
+int dxirc::OnLuaAddAll(lua_State *lua)
+{
+#ifdef HAVE_LUA
+    FXString funcname, script;
+    if(lua_isstring(lua, 1)) funcname = lua_tostring(lua,1);
+    if(funcname.empty()) return 0;
+    if(pThis->scripts.no())
+    {
+        for(FXint i=0; i<pThis->scripts.no(); i++)
+        {
+            if(lua == pThis->scripts[i].L) script = pThis->scripts[i].name;
+        }
+    }
+    if(script.empty()) return 0;
+    LuaScriptEvent event;
+    event.name = "all";
+    event.funcname = funcname;
+    event.script = script;
+    pThis->scriptEvents.append(event);
+    return  1;
+#else
+    return 0;
+#endif
+}
+
 int dxirc::OnLuaRemoveName(lua_State *lua)
 {
 #ifdef HAVE_LUA
@@ -2195,7 +2293,9 @@ int dxirc::OnLuaCommand(lua_State *lua)
         {
             if(id*2 == i)
             {
-                ((IrcTabItem *)pThis->tabbook->childAtIndex(i))->ProcessCommand(command);
+                IrcTabItem *tab = dynamic_cast<IrcTabItem*>(pThis->tabbook->childAtIndex(i));
+                if(tab == NULL) return 0;
+                else tab->ProcessLine(command);
                 return 1;
             }
         }
@@ -2212,17 +2312,24 @@ int dxirc::OnLuaPrint(lua_State *lua)
     FXString text;
     if(lua_isstring(lua, 1)) text = lua_tostring(lua, 1);
     if(text.empty()) return 0;
-    FXint id;
+    FXint id, style;
     if(lua_isnumber(lua, 2)) id = lua_tointeger(lua, 2);
     else id = pThis->tabbook->getCurrent();
+    if(lua_isnumber(lua, 3)) style = lua_tointeger(lua, 3);
+    else style = 0;
     if(pThis->tabbook->numChildren())
     {
         for (FXint i = 0; i<pThis->tabbook->numChildren(); i=i+2)
         {
             if(id*2 == i)
             {
-                ((IrcTabItem *)pThis->tabbook->childAtIndex(i))->AppendIrcText(text, TRUE);
-                ((IrcTabItem *)pThis->tabbook->childAtIndex(i))->MakeLastRowVisible(TRUE);
+                IrcTabItem *tab = dynamic_cast<IrcTabItem*>(pThis->tabbook->childAtIndex(i));
+                if(tab == NULL) return 0;
+                else
+                {
+                    tab->AppendIrcStyledText(text, style, TRUE);
+                    tab->MakeLastRowVisible(TRUE);
+                }
                 return 1;
             }
         }

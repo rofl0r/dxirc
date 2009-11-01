@@ -69,6 +69,7 @@ class IrcTabItem: public FXTabItem
             ID_TEXT,
             ID_NEWMSG,
             ID_LUA,
+            ID_COMMAND,
             ID_LAST
         };
 
@@ -114,12 +115,12 @@ class IrcTabItem: public FXTabItem
         long OnTopic(FXObject *, FXSelector, void*);
         long OnPipe(FXObject *, FXSelector, void*);
 
-    protected:
-        void AppendIrcText(FXString);
+    protected:        
         void AppendIrcText(FXString, FXbool);
-        void AppendIrcStyledText(FXString, FXint);
+        void AppendIrcStyledText(FXString, FXint, FXbool);
         FXbool ProcessLine(const FXString &);
         void MakeLastRowVisible(FXbool);
+        void HasAllCommand(FXbool);
 
     private:
         IrcTabItem(){}
@@ -134,7 +135,8 @@ class IrcTabItem: public FXTabItem
         FXList *users;
         FXTextField *commandline, *topicline;
         FXint currentPosition, historyMax, numberUsers;
-        FXbool checkAway, iamOp, usersShown, logging, ownServerWindow, sameCmd, sameList, coloredNick, editableTopic, sendPipe;
+        FXbool checkAway, iamOp, usersShown, logging, ownServerWindow;
+        FXbool sameCmd, sameList, coloredNick, editableTopic, sendPipe, scriptHasAll;
         dxStringArray commandsHistory, pipeStrings;
         FXHiliteStyle textStyleList[17];
         IrcColor colors;
@@ -146,6 +148,8 @@ class IrcTabItem: public FXTabItem
         
 
         FXString StripColors(const FXString &text, const FXbool stripOther);
+        void AppendIrcText(FXString);
+        void AppendIrcStyledText(FXString, FXint);
         void AppendIrcNickText(FXString, FXString, FXint);
         FXString GetNick(int);
         FXbool IsFirst();

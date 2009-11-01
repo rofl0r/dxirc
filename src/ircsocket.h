@@ -67,6 +67,7 @@ class IrcSocket: public FXObject
         FXint ConnectSSL();
         void Disconnect();
         void Disconnect(const FXString &reason);
+        void CloseConnection(FXbool disableReconnect=FALSE);
         void AppendTarget(FXObject*);
         void RemoveTarget(FXObject*);
         FXbool FindTarget(FXObject*);
@@ -184,8 +185,7 @@ class IrcSocket: public FXObject
         void Error(const FXString&);
         void Unknown(const FXString&, const FXString&);
         void ParseRplIsupport(FXString);
-        FXbool IsUserIgnored(const FXString &nick, const FXString &user, const FXString &host, const FXString &on);
-        void CloseConnection(FXbool disableReconnect=FALSE);
+        FXbool IsUserIgnored(const FXString &nick, const FXString &user, const FXString &host, const FXString &on);        
         void MakeStartChannels();
         void ClearChannelsCommands(FXbool);
 
