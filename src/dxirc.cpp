@@ -24,6 +24,7 @@
  #include <windows.h>
 #endif
 
+#include <string>
 #include "dxirc.h"
 #include "icons.h"
 #include "i18n.h"
