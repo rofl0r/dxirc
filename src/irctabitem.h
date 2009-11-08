@@ -70,6 +70,7 @@ class IrcTabItem: public FXTabItem
             ID_NEWMSG,
             ID_LUA,
             ID_COMMAND,
+            ID_NEWTETRIS,
             ID_LAST
         };
 

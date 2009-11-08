@@ -34,6 +34,7 @@
 #include "serverdialog.h"
 #include "aliasdialog.h"
 #include "utils.h"
+#include "tetristabitem.h"
 
 FXDEFMAP(dxirc) dxircMap[] = {
     FXMAPFUNC(SEL_CLOSE,        0,                          dxirc::OnCommandClose),
@@ -60,13 +61,15 @@ FXDEFMAP(dxirc) dxircMap[] = {
     FXMAPFUNC(SEL_COMMAND,      dxirc::ID_TRAY,             dxirc::OnTrayClicked),
     FXMAPFUNC(SEL_COMMAND,      dxirc::ID_LOAD,             dxirc::OnCommandLoad),
     FXMAPFUNC(SEL_TIMEOUT,      dxirc::ID_STIMEOUT,         dxirc::OnStatusTimeout),
+    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_TETRIS,           dxirc::OnTetrisKey),
     FXMAPFUNC(SEL_COMMAND,      IrcSocket::ID_SERVER,       dxirc::OnIrcEvent),
     FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_CDIALOG,     dxirc::OnCommandConnect),
     FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_CSERVER,     dxirc::OnTabConnect),
     FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_CQUIT,       dxirc::OnCommandQuit),
     FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_NEWMSG,      dxirc::OnNewMsg),
     FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_LUA,         dxirc::OnLua),
-    FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_COMMAND,     dxirc::OnIrcCommand)
+    FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_COMMAND,     dxirc::OnIrcCommand),
+    FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_NEWTETRIS,   dxirc::OnNewTetris)
 };
 
 FXIMPLEMENT(dxirc, FXMainWindow, dxircMap, ARRAYNUMBER(dxircMap))
@@ -188,6 +191,14 @@ dxirc::dxirc(FXApp *app)
     getAccelTable()->addAccel(MKUINT(KEY_Tab, CONTROLMASK), this, FXSEL(SEL_COMMAND, ID_NEXTTAB));
     getAccelTable()->addAccel(MKUINT(KEY_n, CONTROLMASK), this, FXSEL(SEL_COMMAND, ID_NEXTUNREAD));
     getAccelTable()->addAccel(MKUINT(KEY_N, CONTROLMASK), this, FXSEL(SEL_COMMAND, ID_NEXTUNREAD));
+    getAccelTable()->addAccel(KEY_n, this, FXSEL(SEL_COMMAND, ID_TETRIS));
+    getAccelTable()->addAccel(KEY_N, this, FXSEL(SEL_COMMAND, ID_TETRIS));
+    getAccelTable()->addAccel(KEY_p, this, FXSEL(SEL_COMMAND, ID_TETRIS));
+    getAccelTable()->addAccel(KEY_P, this, FXSEL(SEL_COMMAND, ID_TETRIS));
+    getAccelTable()->addAccel(KEY_KP_5, this, FXSEL(SEL_COMMAND, ID_TETRIS));
+    getAccelTable()->addAccel(KEY_KP_3, this, FXSEL(SEL_COMMAND, ID_TETRIS));
+    getAccelTable()->addAccel(KEY_KP_2, this, FXSEL(SEL_COMMAND, ID_TETRIS));
+    getAccelTable()->addAccel(KEY_KP_1, this, FXSEL(SEL_COMMAND, ID_TETRIS));
 }
 
 dxirc::~dxirc()
@@ -553,9 +564,13 @@ long dxirc::OnCommandUsers(FXObject*, FXSelector, void*)
 {
     usersShown = !usersShown;
     for (FXint i = 0; i<tabbook->numChildren(); i=i+2)
-    {
-        if(usersShown) ((IrcTabItem *)tabbook->childAtIndex(i))->ShowUsers();
-        else ((IrcTabItem *)tabbook->childAtIndex(i))->HideUsers();
+    {        
+        if(compare(tabbook->childAtIndex(i)->getClassName(), "IrcTabItem") == 0)
+        {
+            IrcTabItem *tab = static_cast<IrcTabItem*>(tabbook->childAtIndex(i));
+            if(usersShown) tab->ShowUsers();
+            else tab->HideUsers();
+        }
     }
     return 1;
 }
@@ -919,17 +934,26 @@ void dxirc::UpdateFont(FXString fnt)
 void dxirc::UpdateTabs()
 {
     for (FXint i = 0; i<tabbook->numChildren(); i=i+2)
-    {
-        ((IrcTabItem *)tabbook->childAtIndex(i))->SetColor(colors);
-        ((IrcTabItem *)tabbook->childAtIndex(i))->SetCommandsList(commandsList);
-        ((IrcTabItem *)tabbook->childAtIndex(i))->SetMaxAway(maxAway);
-        ((IrcTabItem *)tabbook->childAtIndex(i))->SetLogging(logging);
-        ((IrcTabItem *)tabbook->childAtIndex(i))->SetLogPath(logPath);
-        ((IrcTabItem *)tabbook->childAtIndex(i))->SetNickCompletionChar(nickCompletionChar);
-        ((IrcTabItem *)tabbook->childAtIndex(i))->SetSameCmd(sameCmd);
-        ((IrcTabItem *)tabbook->childAtIndex(i))->SetSameList(sameList);
-        ((IrcTabItem *)tabbook->childAtIndex(i))->SetIrcFont(ircFont);
-        ((IrcTabItem *)tabbook->childAtIndex(i))->SetColoredNick(coloredNick);
+    {        
+        if(compare(tabbook->childAtIndex(i)->getClassName(), "IrcTabItem") == 0)
+        {
+            IrcTabItem *irctab = static_cast<IrcTabItem*>(tabbook->childAtIndex(i));
+            irctab->SetColor(colors);
+            irctab->SetCommandsList(commandsList);
+            irctab->SetMaxAway(maxAway);
+            irctab->SetLogging(logging);
+            irctab->SetLogPath(logPath);
+            irctab->SetNickCompletionChar(nickCompletionChar);
+            irctab->SetSameCmd(sameCmd);
+            irctab->SetSameList(sameList);
+            irctab->SetIrcFont(ircFont);
+            irctab->SetColoredNick(coloredNick);
+        }        
+        if(compare(tabbook->childAtIndex(i)->getClassName(), "TetrisTabItem") == 0)
+        {
+            TetrisTabItem *tetristab = static_cast<TetrisTabItem*>(tabbook->childAtIndex(i));
+            tetristab->SetColor(colors);
+        }
     }
     //update font in LogViewer too. Both must be same
     if(viewer) viewer->SetFont(ircFont);
@@ -943,7 +967,7 @@ void dxirc::UpdateTabPosition()
                 tabbook->setTabStyle(TABBOOK_BOTTOMTABS);
                 for(FXint i = 0; i<tabbook->numChildren(); i=i+2)
                 {
-                    ((IrcTabItem *)tabbook->childAtIndex(i))->setTabOrientation(TAB_BOTTOM);
+                    static_cast<FXTabItem*>(tabbook->childAtIndex(i))->setTabOrientation(TAB_BOTTOM);
                 }
                 FXuint packing = tabbook->getPackingHints();
                 packing &= ~PACK_UNIFORM_WIDTH;
@@ -954,7 +978,7 @@ void dxirc::UpdateTabPosition()
                 tabbook->setTabStyle(TABBOOK_LEFTTABS);
                 for(FXint i = 0; i<tabbook->numChildren(); i=i+2)
                 {
-                    ((IrcTabItem *)tabbook->childAtIndex(i))->setTabOrientation(TAB_LEFT);
+                    static_cast<FXTabItem*>(tabbook->childAtIndex(i))->setTabOrientation(TAB_LEFT);
                 }
                 FXuint packing = tabbook->getPackingHints();
                 packing |= PACK_UNIFORM_WIDTH;
@@ -965,7 +989,7 @@ void dxirc::UpdateTabPosition()
                 tabbook->setTabStyle(TABBOOK_TOPTABS);
                 for(FXint i = 0; i<tabbook->numChildren(); i=i+2)
                 {
-                    ((IrcTabItem *)tabbook->childAtIndex(i))->setTabOrientation(TAB_TOP);
+                    static_cast<FXTabItem*>(tabbook->childAtIndex(i))->setTabOrientation(TAB_TOP);
                 }
                 FXuint packing = tabbook->getPackingHints();
                 packing &= ~PACK_UNIFORM_WIDTH;
@@ -976,7 +1000,7 @@ void dxirc::UpdateTabPosition()
                 tabbook->setTabStyle(TABBOOK_RIGHTTABS);
                 for(FXint i = 0; i<tabbook->numChildren(); i=i+2)
                 {
-                    ((IrcTabItem *)tabbook->childAtIndex(i))->setTabOrientation(TAB_RIGHT);
+                    static_cast<FXTabItem*>(tabbook->childAtIndex(i))->setTabOrientation(TAB_RIGHT);
                 }
                 FXuint packing = tabbook->getPackingHints();
                 packing |= PACK_UNIFORM_WIDTH;
@@ -987,7 +1011,7 @@ void dxirc::UpdateTabPosition()
                 tabbook->setTabStyle(TABBOOK_BOTTOMTABS);
                 for(FXint i = 0; i<tabbook->numChildren(); i=i+2)
                 {
-                    ((IrcTabItem *)tabbook->childAtIndex(i))->setTabOrientation(TAB_BOTTOM);
+                    static_cast<FXTabItem*>(tabbook->childAtIndex(i))->setTabOrientation(TAB_BOTTOM);
                 }
                 FXuint packing = tabbook->getPackingHints();
                 packing &= ~PACK_UNIFORM_WIDTH;
@@ -1129,8 +1153,11 @@ void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString
             tabitem->CreateGeom();
             UpdateTabPosition();
         }
-        ((IrcTabItem *)tabbook->childAtIndex(0))->SetType(SERVER, hostname);
-        tabbook->setCurrent(0, TRUE);
+        if(compare(tabbook->childAtIndex(0)->getClassName(), "IrcTabItem") == 0)
+        {
+            static_cast<IrcTabItem*>(tabbook->childAtIndex(0))->SetType(SERVER, hostname);
+            tabbook->setCurrent(0, TRUE);
+        }
         SortTabs();
         servers[0]->ClearAttempts();
         servers[0]->StartConnection();
@@ -1169,8 +1196,9 @@ long dxirc::OnCommandDisconnect(FXObject*, FXSelector, void*)
 {
     if(tabbook->numChildren())
     {
-        FXint index = tabbook->getCurrent()*2;
-        IrcTabItem *currenttab = (IrcTabItem *)tabbook->childAtIndex(index);
+        FXint index = tabbook->getCurrent()*2;        
+        if(compare(tabbook->childAtIndex(index)->getClassName(), "IrcTabItem") != 0) return 0;
+        IrcTabItem *currenttab = static_cast<IrcTabItem*>(tabbook->childAtIndex(index));
         IrcSocket *currentserver = NULL;
         for(FXint i=0; i < servers.no(); i++)
         {
@@ -1194,9 +1222,9 @@ long dxirc::OnCommandDisconnect(FXObject*, FXSelector, void*)
                 currentserver->Disconnect();
                 for(FXint i = tabbook->numChildren()-2; i > -1; i=i-2)
                 {
-                    if(currentserver->FindTarget((IrcTabItem *)tabbook->childAtIndex(i)))
+                    if(currentserver->FindTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(i))))
                     {
-                        currentserver->RemoveTarget((IrcTabItem *)tabbook->childAtIndex(i));
+                        currentserver->RemoveTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(i)));
                         delete tabbook->childAtIndex(i);
                         delete tabbook->childAtIndex(i);
                         tabbook->recalc();
@@ -1208,9 +1236,9 @@ long dxirc::OnCommandDisconnect(FXObject*, FXSelector, void*)
         {
             for(FXint i = tabbook->numChildren()-2; i > -1; i=i-2)
             {
-                if(currentserver->FindTarget((IrcTabItem *)tabbook->childAtIndex(i)))
+                if(currentserver->FindTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(i))))
                 {
-                    currentserver->RemoveTarget((IrcTabItem *)tabbook->childAtIndex(i));
+                    currentserver->RemoveTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(i)));
                     delete tabbook->childAtIndex(i);
                     delete tabbook->childAtIndex(i);
                     tabbook->recalc();
@@ -1240,7 +1268,7 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
         }
         if(serverTabIndex != -1 && !ownServerWindow)
         {
-            ((IrcTabItem *)tabbook->childAtIndex(serverTabIndex))->SetType(CHANNEL, ev->param1);
+            static_cast<IrcTabItem*>(tabbook->childAtIndex(serverTabIndex))->SetType(CHANNEL, ev->param1);
             tabbook->setCurrent(serverTabIndex/2-1, TRUE);
         }
         else
@@ -1260,7 +1288,7 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
         FXint serverTabIndex = GetServerTab(server);
         if(serverTabIndex != -1 && !ownServerWindow)
         {
-            ((IrcTabItem *)tabbook->childAtIndex(serverTabIndex))->SetType(QUERY, ev->param1);
+            static_cast<IrcTabItem*>(tabbook->childAtIndex(serverTabIndex))->SetType(QUERY, ev->param1);
             tabbook->setCurrent(serverTabIndex/2-1, TRUE);
         }
         else
@@ -1276,7 +1304,7 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
         {
             for(FXint i = 0; i < tabbook->numChildren(); i=i+2)
             {
-                if(server->FindTarget((IrcTabItem *)tabbook->childAtIndex(i)) && comparecase(((IrcTabItem *)tabbook->childAtIndex(i))->getText(), ev->param1) == 0) tabbook->setCurrent(i/2, TRUE);
+                if(server->FindTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(i))) && comparecase(static_cast<FXTabItem*>(tabbook->childAtIndex(i))->getText(), ev->param1) == 0) tabbook->setCurrent(i/2, TRUE);
             }
         }
         UpdateMenus();
@@ -1292,9 +1320,9 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
                 {
                     for(FXint j = 0; j < tabbook->numChildren(); j=j+2)
                     {
-                        if(server->FindTarget((IrcTabItem *)tabbook->childAtIndex(j)))
+                        if(server->FindTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(j))))
                         {
-                            ((IrcTabItem *)tabbook->childAtIndex(j))->SetType(SERVER, server->GetServerName());
+                            static_cast<IrcTabItem*>(tabbook->childAtIndex(j))->SetType(SERVER, server->GetServerName());
                             tabbook->setCurrent(j/2-1, TRUE);
                             break;
                         }
@@ -1305,10 +1333,10 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
                     FXint index = -1;
                     for(FXint j = 0; j < tabbook->numChildren(); j=j+2)
                     {
-                        if((comparecase(((IrcTabItem *)tabbook->childAtIndex(j))->getText(), ev->param2) == 0) && server->FindTarget((IrcTabItem *)tabbook->childAtIndex(j))) index = j;
+                        if((comparecase(static_cast<FXTabItem*>(tabbook->childAtIndex(j))->getText(), ev->param2) == 0) && server->FindTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(j)))) index = j;
                     }
                     if(index == -1) return 0;
-                    server->RemoveTarget((IrcTabItem *)tabbook->childAtIndex(index));
+                    server->RemoveTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(index)));
                     delete tabbook->childAtIndex(index);
                     delete tabbook->childAtIndex(index);
                     tabbook->recalc();
@@ -1327,9 +1355,9 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
             {
                 for(FXint j = 0; j < tabbook->numChildren(); j=j+2)
                 {
-                    if(server->FindTarget((IrcTabItem *)tabbook->childAtIndex(j)))
+                    if(server->FindTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(j))))
                     {
-                        ((IrcTabItem *)tabbook->childAtIndex(j))->SetType(SERVER, server->GetServerName());
+                        static_cast<IrcTabItem*>(tabbook->childAtIndex(j))->SetType(SERVER, server->GetServerName());
                         tabbook->setCurrent(j/2-1, TRUE);
                         break;
                     }
@@ -1340,11 +1368,11 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
                 FXint index = -1;
                 for(FXint j = 0; j < tabbook->numChildren(); j=j+2)
                 {
-                    if((comparecase(((IrcTabItem *)tabbook->childAtIndex(j))->getText(), ev->param3) == 0) && server->FindTarget((IrcTabItem *)tabbook->childAtIndex(j))) index = j;
+                    if((comparecase(static_cast<FXTabItem*>(tabbook->childAtIndex(j))->getText(), ev->param3) == 0) && server->FindTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(j)))) index = j;
                 }
                 if(index == -1) return 0;
                 tabbook->setCurrent(index/2, TRUE);
-                server->RemoveTarget((IrcTabItem *)tabbook->childAtIndex(index));
+                server->RemoveTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(index)));
                 delete tabbook->childAtIndex(index);
                 delete tabbook->childAtIndex(index);
                 tabbook->recalc();
@@ -1358,10 +1386,10 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
     {
         for(FXint i = tabbook->numChildren()-2; i > -1; i=i-2)
         {
-            if(server->FindTarget((IrcTabItem *)tabbook->childAtIndex(i)))
+            if(server->FindTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(i))))
             {
                 tabbook->setCurrent(i/2, TRUE);
-                server->RemoveTarget((IrcTabItem *)tabbook->childAtIndex(i));
+                server->RemoveTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(i)));
                 delete tabbook->childAtIndex(i);
                 delete tabbook->childAtIndex(i);
                 tabbook->recalc();
@@ -1456,28 +1484,42 @@ long dxirc::OnTabBook(FXObject *, FXSelector, void *ptr)
 {
     FXint index = (FXint)(FXival)ptr*2;
 #ifdef DEBUG
-    fxmessage("OnTabBook(%d)\n", index);
-#endif
-    IrcTabItem *currenttab = (IrcTabItem *)tabbook->childAtIndex(index);
-    if (appTheme.fore != currenttab->getTextColor()) currenttab->setTextColor(appTheme.fore);
-    if(currenttab->GetType() == CHANNEL && currenttab->getIcon() == chnewm)
+    fxmessage("OnTabBook(%d), Class: %s\n", index, tabbook->childAtIndex(index)->getClassName());
+#endif    
+    if(compare(tabbook->childAtIndex(index)->getClassName(), "IrcTabItem") == 0)
     {
-        currenttab->setIcon(channelicon);
+        IrcTabItem *currenttab = static_cast<IrcTabItem*>(tabbook->childAtIndex(index));
+        if (appTheme.fore != currenttab->getTextColor()) currenttab->setTextColor(appTheme.fore);
+        if(currenttab->GetType() == CHANNEL && currenttab->getIcon() == chnewm)
+        {
+            currenttab->setIcon(channelicon);
 #ifdef HAVE_TRAY
-        if(trayIcon && trayIcon->getIcon() == newm)
-            trayIcon->setIcon(trayicon);
+            if(trayIcon && trayIcon->getIcon() == newm)
+                trayIcon->setIcon(trayicon);
 #endif
-    }
-    if(currenttab->GetType() == QUERY && currenttab->getIcon() == unewm)
+        }
+        if(currenttab->GetType() == QUERY && currenttab->getIcon() == unewm)
+        {
+            currenttab->setIcon(queryicon);
+#ifdef HAVE_TRAY
+            if(trayIcon && trayIcon->getIcon() == newm)
+                trayIcon->setIcon(trayicon);
+#endif
+        }
+        currenttab->setFocus();
+        currenttab->SetCommandFocus();
+        if(HasTetrisTab())
+        {
+            TetrisTabItem *tetristab = static_cast<TetrisTabItem*>(tabbook->childAtIndex(GetTabId("tetris")*2));
+            if(tetristab->IsPauseEnable() && !tetristab->IsPaused()) tetristab->PauseResumeGame();
+        }
+    }    
+    if(compare(tabbook->childAtIndex(index)->getClassName(), "TetrisTabItem") == 0)
     {
-        currenttab->setIcon(queryicon);
-#ifdef HAVE_TRAY
-        if(trayIcon && trayIcon->getIcon() == newm)
-            trayIcon->setIcon(trayicon);
-#endif
+        TetrisTabItem *tetristab = static_cast<TetrisTabItem*>(tabbook->childAtIndex(index));
+        tetristab->setFocus();
+        tetristab->SetGameFocus();
     }
-    currenttab->setFocus();
-    currenttab->SetCommandFocus();
     return 1;
 }
 
@@ -1522,7 +1564,7 @@ long dxirc::OnCommandNextUnread(FXObject *, FXSelector, void*)
     {
         for (FXint i = tabbook->getCurrent()*2; i<tabbook->numChildren(); i=i+2)
         {
-            if (appTheme.fore != ((IrcTabItem *)tabbook->childAtIndex(i))->getTextColor())
+            if (appTheme.fore != static_cast<FXTabItem*>(tabbook->childAtIndex(i))->getTextColor())
             {
                 tabbook->setCurrent(i/2, TRUE);
                 return 1;
@@ -1530,7 +1572,7 @@ long dxirc::OnCommandNextUnread(FXObject *, FXSelector, void*)
         }
         for (FXint i = tabbook->getCurrent()*2; i>-1; i=i-2)
         {
-            if (appTheme.fore != ((IrcTabItem *)tabbook->childAtIndex(i))->getTextColor())
+            if (appTheme.fore != static_cast<FXTabItem*>(tabbook->childAtIndex(i))->getTextColor())
             {
                 tabbook->setCurrent(i/2, TRUE);
                 return 1;
@@ -1544,9 +1586,12 @@ long dxirc::OnCommandClear(FXObject *, FXSelector, void *)
 {
     if(tabbook->numChildren())
     {
-        FXint index = tabbook->getCurrent()*2;
-        IrcTabItem *currenttab = (IrcTabItem *)tabbook->childAtIndex(index);
-        currenttab->ClearChat();
+        FXint index = tabbook->getCurrent()*2;        
+        if(compare(tabbook->childAtIndex(index)->getClassName(), "IrcTabItem") == 0)
+        {
+            IrcTabItem *currenttab = static_cast<IrcTabItem*>(tabbook->childAtIndex(index));
+            currenttab->ClearChat();
+        }
     }
     return 1;
 }
@@ -1555,10 +1600,13 @@ long dxirc::OnCommandClearAll(FXObject *, FXSelector, void *)
 {
     for (FXint i = 0; i<tabbook->numChildren(); i=i+2)
     {
-        ((IrcTabItem *)tabbook->childAtIndex(i))->ClearChat();
-        if (appTheme.fore != ((IrcTabItem *)tabbook->childAtIndex(i))->getTextColor()) ((IrcTabItem *)tabbook->childAtIndex(i))->setTextColor(appTheme.fore);
-        if(((IrcTabItem *)tabbook->childAtIndex(i))->GetType() == CHANNEL) ((IrcTabItem *)tabbook->childAtIndex(i))->setIcon(channelicon);
-        if(((IrcTabItem *)tabbook->childAtIndex(i))->GetType() == QUERY) ((IrcTabItem *)tabbook->childAtIndex(i))->setIcon(queryicon);
+        if(compare(tabbook->childAtIndex(i)->getClassName(), "IrcTabItem") == 0)
+        {
+        static_cast<IrcTabItem*>(tabbook->childAtIndex(i))->ClearChat();
+        if (appTheme.fore != static_cast<IrcTabItem*>(tabbook->childAtIndex(i))->getTextColor()) static_cast<IrcTabItem*>(tabbook->childAtIndex(i))->setTextColor(appTheme.fore);
+        if(static_cast<IrcTabItem*>(tabbook->childAtIndex(i))->GetType() == CHANNEL) static_cast<IrcTabItem*>(tabbook->childAtIndex(i))->setIcon(channelicon);
+        if(static_cast<IrcTabItem*>(tabbook->childAtIndex(i))->GetType() == QUERY) static_cast<IrcTabItem*>(tabbook->childAtIndex(i))->setIcon(queryicon);
+        }
     }
 #ifdef HAVE_TRAY
     if(trayIcon && trayIcon->getIcon() == newm)
@@ -1571,81 +1619,39 @@ long dxirc::OnCommandCloseTab(FXObject *, FXSelector, void *)
 {
     if(tabbook->numChildren())
     {
-        FXint index = tabbook->getCurrent()*2;
-        IrcTabItem *currenttab = (IrcTabItem *)tabbook->childAtIndex(index);
-        IrcSocket *currentserver = NULL;
-        for(FXint i=0; i < servers.no(); i++)
+        FXint index = tabbook->getCurrent()*2;        
+        if(compare(tabbook->childAtIndex(index)->getClassName(), "IrcTabItem") == 0)
         {
-            if(servers[i]->FindTarget(currenttab))
+            IrcTabItem *currenttab = static_cast<IrcTabItem*>(tabbook->childAtIndex(index));
+            IrcSocket *currentserver = NULL;
+            for(FXint i=0; i < servers.no(); i++)
             {
-                currentserver = servers[i];
-                break;
-            }
-        }
-        if(currentserver == NULL) return 0;
-        if(currenttab->GetType() == QUERY)
-        {
-            if(currentserver->GetConnected() && IsLastTab(currentserver))
-            {
-                for(FXint j = 0; j < tabbook->numChildren(); j=j+2)
+                if(servers[i]->FindTarget(currenttab))
                 {
-                    if(currentserver->FindTarget((IrcTabItem *)tabbook->childAtIndex(j)))
+                    currentserver = servers[i];
+                    break;
+                }
+            }
+            if(currentserver == NULL) return 0;
+            if(currenttab->GetType() == QUERY)
+            {
+                if(currentserver->GetConnected() && IsLastTab(currentserver))
+                {
+                    for(FXint j = 0; j < tabbook->numChildren(); j=j+2)
                     {
-                        ((IrcTabItem *)tabbook->childAtIndex(j))->SetType(SERVER, currentserver->GetServerName());
-                        tabbook->setCurrent(j/2-1, TRUE);
-                        break;
+                        if(currentserver->FindTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(j))))
+                        {
+                            static_cast<IrcTabItem*>(tabbook->childAtIndex(j))->SetType(SERVER, currentserver->GetServerName());
+                            tabbook->setCurrent(j/2-1, TRUE);
+                            break;
+                        }
                     }
                 }
-            }
-            else
-            {
-                currentserver->RemoveTarget(currenttab);
-                delete tabbook->childAtIndex(index);
-                delete tabbook->childAtIndex(index);                
-                tabbook->recalc();
-                if(tabbook->numChildren())
+                else
                 {
-                    tabbook->setCurrent(index/2-1, TRUE);
-                }
-            }
-        }
-        else if(currenttab->GetType() == CHANNEL)
-        {
-            if(currentserver->GetConnected()) currentserver->SendPart(currenttab->getText());
-            if(currentserver->GetConnected() && IsLastTab(currentserver))
-            {
-                for(FXint j = 0; j < tabbook->numChildren(); j=j+2)
-                {
-                    if(currentserver->FindTarget((IrcTabItem *)tabbook->childAtIndex(j)))
-                    {
-                        ((IrcTabItem *)tabbook->childAtIndex(j))->SetType(SERVER, currentserver->GetServerName());
-                        tabbook->setCurrent(j/2-1, TRUE);
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                currentserver->RemoveTarget(currenttab);
-                delete tabbook->childAtIndex(index);
-                delete tabbook->childAtIndex(index);
-                tabbook->recalc();
-                if(tabbook->numChildren())
-                {
-                    tabbook->setCurrent(index/2-1, TRUE);
-                }
-            }
-        }
-        else if(currenttab->GetType() == SERVER)
-        {
-            if(currentserver->GetConnected()) currentserver->Disconnect();
-            for(FXint i = tabbook->numChildren()-2; i > -1; i=i-2)
-            {
-                if(currentserver->FindTarget((IrcTabItem *)tabbook->childAtIndex(i)))
-                {
-                    currentserver->RemoveTarget((IrcTabItem *)tabbook->childAtIndex(i));
-                    delete tabbook->childAtIndex(i);
-                    delete tabbook->childAtIndex(i);
+                    currentserver->RemoveTarget(currenttab);
+                    delete tabbook->childAtIndex(index);
+                    delete tabbook->childAtIndex(index);
                     tabbook->recalc();
                     if(tabbook->numChildren())
                     {
@@ -1653,8 +1659,67 @@ long dxirc::OnCommandCloseTab(FXObject *, FXSelector, void *)
                     }
                 }
             }
+            else if(currenttab->GetType() == CHANNEL)
+            {
+                if(currentserver->GetConnected()) currentserver->SendPart(currenttab->getText());
+                if(currentserver->GetConnected() && IsLastTab(currentserver))
+                {
+                    for(FXint j = 0; j < tabbook->numChildren(); j=j+2)
+                    {
+                        if(currentserver->FindTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(j))))
+                        {
+                            static_cast<IrcTabItem*>(tabbook->childAtIndex(j))->SetType(SERVER, currentserver->GetServerName());
+                            tabbook->setCurrent(j/2-1, TRUE);
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    currentserver->RemoveTarget(currenttab);
+                    delete tabbook->childAtIndex(index);
+                    delete tabbook->childAtIndex(index);
+                    tabbook->recalc();
+                    if(tabbook->numChildren())
+                    {
+                        tabbook->setCurrent(index/2-1, TRUE);
+                    }
+                }
+            }
+            else if(currenttab->GetType() == SERVER)
+            {
+                if(currentserver->GetConnected()) currentserver->Disconnect();
+                for(FXint i = tabbook->numChildren()-2; i > -1; i=i-2)
+                {
+                    if(currentserver->FindTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(i))))
+                    {
+                        currentserver->RemoveTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(i)));
+                        delete tabbook->childAtIndex(i);
+                        delete tabbook->childAtIndex(i);
+                        tabbook->recalc();
+                        if(tabbook->numChildren())
+                        {
+                            tabbook->setCurrent(index/2-1, TRUE);
+                        }
+                    }
+                }
+            }
+            SortTabs();
         }
-        SortTabs();
+        if(!tabbook->numChildren()) return 1;
+        if(compare(tabbook->childAtIndex(index)->getClassName(), "TetrisTabItem") == 0)
+        {
+            TetrisTabItem *tetristab = static_cast<TetrisTabItem*>(tabbook->childAtIndex(index));
+            tetristab->StopGame();
+            delete tabbook->childAtIndex(index);
+            delete tabbook->childAtIndex(index);
+            tabbook->recalc();
+            if(tabbook->numChildren())
+            {
+                tabbook->setCurrent(index/2-1, TRUE);
+            }
+            SortTabs();
+        }
     }
     UpdateMenus();
     return 1;
@@ -1729,9 +1794,64 @@ long dxirc::OnTrayClicked(FXObject*, FXSelector, void*)
 long dxirc::OnNewMsg(FXObject *obj, FXSelector, void*)
 {
 #ifdef HAVE_TRAY
-    if(trayIcon && trayIcon->getIcon() == trayicon && (!shown() || (IrcTabItem *)tabbook->childAtIndex(tabbook->getCurrent()*2) != (IrcTabItem *)obj))
+    if(trayIcon && trayIcon->getIcon() == trayicon && (!shown() || static_cast<IrcTabItem*>(tabbook->childAtIndex(tabbook->getCurrent()*2)) != static_cast<IrcTabItem*>(obj)))
         trayIcon->setIcon(newm);
 #endif
+    return 1;
+}
+
+long dxirc::OnNewTetris(FXObject*, FXSelector, void*)
+{
+    if(HasTetrisTab()) return 1;
+    TetrisTabItem *tab = new TetrisTabItem(tabbook, "tetris", 0, TAB_TOP);
+    tab->create();
+    tab->CreateGeom();
+    tab->SetColor(colors);   
+    UpdateTabPosition();
+    SortTabs();
+    UpdateMenus();
+    tabbook->setCurrent(tabbook->numChildren()/2-1, TRUE);
+    return 1;
+}
+
+long dxirc::OnTetrisKey(FXObject*, FXSelector, void *ptr)
+{
+    if(compare(tabbook->childAtIndex(tabbook->getCurrent()*2)->getClassName(), "TetrisTabItem") != 0) return 1;
+    FXEvent* event = (FXEvent*)ptr;
+    switch(event->code){
+        case KEY_N:
+        case KEY_n:
+        {
+            static_cast<TetrisTabItem*>(tabbook->childAtIndex(tabbook->getCurrent()*2))->NewGame();
+            break;
+        }
+        case KEY_P:
+        case KEY_p:
+        {
+            static_cast<TetrisTabItem*>(tabbook->childAtIndex(tabbook->getCurrent()*2))->PauseResumeGame();
+            break;
+        }
+        case KEY_KP_5:
+        {
+            static_cast<TetrisTabItem*>(tabbook->childAtIndex(tabbook->getCurrent()*2))->Rotate();
+            break;
+        }
+        case KEY_KP_3:
+        {
+            static_cast<TetrisTabItem*>(tabbook->childAtIndex(tabbook->getCurrent()*2))->MoveRight();
+            break;
+        }
+        case KEY_KP_2:
+        {
+            static_cast<TetrisTabItem*>(tabbook->childAtIndex(tabbook->getCurrent()*2))->Drop();
+            break;
+        }
+        case KEY_KP_1:
+        {
+            static_cast<TetrisTabItem*>(tabbook->childAtIndex(tabbook->getCurrent()*2))->MoveLeft();
+            break;
+        }
+    }
     return 1;
 }
 
@@ -1816,7 +1936,7 @@ long dxirc::OnLua(FXObject *obj, FXSelector, void *data)
     }
     if(lua->type == LUA_COMMAND)
     {
-        IrcTabItem *tab = (IrcTabItem*)obj;
+        IrcTabItem *tab = static_cast<IrcTabItem*>(obj);
         FXString command = lua->text.before(' ');
         FXString text = lua->text.after(' ');
         for(FXint i=0; i<scripts.no(); i++)
@@ -1845,20 +1965,19 @@ long dxirc::OnLua(FXObject *obj, FXSelector, void *data)
 //Handle for entered command in IrcTab for all in lua scripting
 long dxirc::OnIrcCommand(FXObject *sender, FXSelector, void *data)
 {
-#ifdef HAVE_LUA
-    IrcTabItem *tab = dynamic_cast<IrcTabItem*>(sender);
-    if(tab == NULL) return 0;
+#ifdef HAVE_LUA    
+    if(compare(sender->getClassName(), "IrcTabItem") != 0) return 0;
+    IrcTabItem *tab = static_cast<IrcTabItem*>(sender);
     FXString *commandtext = static_cast<FXString*>(data);
-    FXbool hasAll = FALSE;
     if(!scripts.no() || !scriptEvents.no())
     {
         return 0;
     }
+    tab->HasAllCommand(HasAllCommand());
     for(FXint i=0; i<scriptEvents.no(); i++)
     {
         if(comparecase("all", scriptEvents[i].name) == 0)
-        {
-            hasAll = TRUE;
+        {            
             for(FXint j=0; j<scripts.no(); j++)
             {
                 if(comparecase(scriptEvents[i].script, scripts[j].name) == 0)
@@ -1888,8 +2007,7 @@ long dxirc::OnIrcCommand(FXObject *sender, FXSelector, void *data)
                 }
             }
         }
-    }
-    tab->HasAllCommand(hasAll);
+    }    
 #else
     AppendIrcStyledText(_("dxirc is compiled without support for Lua scripting"), 4);
 #endif
@@ -1900,7 +2018,7 @@ FXbool dxirc::TabExist(IrcSocket *server, FXString name)
 {
     for(FXint i = 0; i < tabbook->numChildren(); i=i+2)
     {
-        if(server->FindTarget((IrcTabItem *)tabbook->childAtIndex(i)) && comparecase(((IrcTabItem *)tabbook->childAtIndex(i))->getText(), name) == 0) return TRUE;
+        if(server->FindTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(i))) && comparecase(static_cast<FXTabItem*>(tabbook->childAtIndex(i))->getText(), name) == 0) return TRUE;
     }
     return FALSE;
 }
@@ -1917,8 +2035,12 @@ FXbool dxirc::ServerExist(const FXString &server, const FXint &port, const FXStr
 FXint dxirc::GetServerTab(IrcSocket *server)
 {
     for(FXint i = 0; i < tabbook->numChildren(); i=i+2)
-    {
-        if(server->FindTarget((IrcTabItem *)tabbook->childAtIndex(i)) && ((IrcTabItem *)tabbook->childAtIndex(i))->GetType() == SERVER) return i;
+    {        
+        if(compare(tabbook->childAtIndex(i)->getClassName(), "IrcTabItem") == 0)
+        {
+            IrcTabItem *tab = static_cast<IrcTabItem*>(tabbook->childAtIndex(i));
+            if(server->FindTarget(tab) && tab->GetType() == SERVER) return i;
+        }
     }
     return -1;
 }
@@ -1927,7 +2049,17 @@ FXint dxirc::GetTabId(IrcSocket *server, FXString name)
 {
     for(FXint i = 0; i < tabbook->numChildren(); i=i+2)
     {
-        if(server->FindTarget((IrcTabItem *)tabbook->childAtIndex(i)) && comparecase(name, ((IrcTabItem *)tabbook->childAtIndex(i))->getText()) == 0) return i/2;
+        if(server->FindTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(i))) && comparecase(name, static_cast<FXTabItem*>(tabbook->childAtIndex(i))->getText()) == 0) return i/2;
+    }
+    return -1;
+}
+
+//usefull mainly for tetristab
+FXint dxirc::GetTabId(FXString name)
+{
+    for(FXint i = 0; i < tabbook->numChildren(); i=i+2)
+    {
+        if(comparecase(name, static_cast<FXTabItem*>(tabbook->childAtIndex(i))->getText()) == 0) return i/2;
     }
     return -1;
 }
@@ -1937,28 +2069,66 @@ FXbool dxirc::IsLastTab(IrcSocket *server)
     FXint numTabs = 0;
     for(FXint i = 0; i < tabbook->numChildren(); i=i+2)
     {
-        if(server->FindTarget((IrcTabItem *)tabbook->childAtIndex(i))) numTabs++;
+        if(server->FindTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(i)))) numTabs++;
     }
     if(numTabs > 1) return FALSE;
     else return TRUE;
+}
+
+FXbool dxirc::HasTetrisTab()
+{
+    if(tabbook->numChildren())
+    {
+        for(FXint i = 0; i < tabbook->numChildren()/2; i++)
+        {
+            if(compare(tabbook->childAtIndex(i*2)->getClassName(), "TetrisTabItem") == 0) return TRUE;
+        }
+    }
+    return FALSE;
 }
 
 void dxirc::SortTabs()
 {
     if(tabbook->numChildren()/2 > 1)
     {
-        IrcTabItem* *tabpole = new IrcTabItem*[tabbook->numChildren()/2];
-        for(FXint i = 0; i < tabbook->numChildren()/2; i++)
+        if(HasTetrisTab())
         {
-            tabpole[i] = (IrcTabItem*)tabbook->childAtIndex(i*2);
+            FXint index = 0;
+            TetrisTabItem *tetristab = NULL;
+            IrcTabItem* *tabpole = new IrcTabItem*[tabbook->numChildren()/2-1];
+            for(FXint i = 0; i < tabbook->numChildren()/2; i++)
+            {
+                if(compare(tabbook->childAtIndex(i*2)->getClassName(), "IrcTabItem") == 0)
+                {
+                    tabpole[index] = static_cast<IrcTabItem*>(tabbook->childAtIndex(i*2));
+                    index++;
+                }
+                else tetristab = static_cast<TetrisTabItem*>(tabbook->childAtIndex(i*2));
+            }
+            qsort(tabpole, tabbook->numChildren()/2-1, sizeof(tabpole[0]), (int(*)(const void*, const void*))&CompareTabs);
+            for(int i=0; i < tabbook->numChildren()/2-1; i++)
+            {
+                tabpole[i]->ReparentTab();
+            }
+            tetristab->ReparentTab();
+            tabbook->recalc();
+            delete []tabpole;
         }
-        qsort(tabpole, tabbook->numChildren()/2, sizeof(tabpole[0]), (int(*)(const void*, const void*))&CompareTabs);
-        for(int i=0; i < tabbook->numChildren()/2; i++)
+        else
         {
-            tabpole[i]->ReparentTab();
+            IrcTabItem* *tabpole = new IrcTabItem*[tabbook->numChildren()/2];
+            for(FXint i = 0; i < tabbook->numChildren()/2; i++)
+            {
+                tabpole[i] = (IrcTabItem*)tabbook->childAtIndex(i*2);
+            }
+            qsort(tabpole, tabbook->numChildren()/2, sizeof(tabpole[0]), (int(*)(const void*, const void*))&CompareTabs);
+            for(int i=0; i < tabbook->numChildren()/2; i++)
+            {
+                tabpole[i]->ReparentTab();
+            }
+            tabbook->recalc();
+            delete []tabpole;
         }
-        tabbook->recalc();
-        delete []tabpole;        
     }
 }
 
@@ -2035,8 +2205,10 @@ void dxirc::AppendIrcText(FXString text)
 {
     if(tabbook->numChildren())
     {
-        FXint index = tabbook->getCurrent()*2;
-        IrcTabItem *currenttab = (IrcTabItem *)tabbook->childAtIndex(index);
+        FXint index = tabbook->getCurrent()*2;        
+        if(compare(tabbook->childAtIndex(index)->getClassName(), "IrcTabItem") != 0) return;
+        IrcTabItem *currenttab = static_cast<IrcTabItem*>(tabbook->childAtIndex(index));
+        FXASSERT(currenttab != 0);
         currenttab->AppendIrcText(text);
         currenttab->MakeLastRowVisible(TRUE);
     }
@@ -2047,7 +2219,9 @@ void dxirc::AppendIrcStyledText(FXString text, FXint style)
     if(tabbook->numChildren())
     {
         FXint index = tabbook->getCurrent()*2;
-        IrcTabItem *currenttab = (IrcTabItem *)tabbook->childAtIndex(index);
+        if(compare(tabbook->childAtIndex(index)->getClassName(), "IrcTabItem") != 0) return;
+        IrcTabItem *currenttab = static_cast<IrcTabItem*>(tabbook->childAtIndex(index));
+        FXASSERT(currenttab != 0);
         currenttab->AppendIrcStyledText(text, style);
         currenttab->MakeLastRowVisible(TRUE);
     }
@@ -2143,6 +2317,23 @@ FXbool dxirc::HasLuaAll(const FXString &file)
     {
         std::getline(fin, line);
         if(line.find("dxirc.AddAll") != std::string::npos) return TRUE;
+    }
+    return FALSE;
+}
+
+//check for all in loaded script
+FXbool dxirc::HasAllCommand()
+{
+    if(!scripts.no() || !scriptEvents.no())
+    {
+        return FALSE;
+    }
+    for(FXint i=0; i<scriptEvents.no(); i++)
+    {
+        if(comparecase("all", scriptEvents[i].name) == 0)
+        {
+            return TRUE;
+        }
     }
     return FALSE;
 }
@@ -2294,9 +2485,9 @@ int dxirc::OnLuaCommand(lua_State *lua)
         {
             if(id*2 == i)
             {
-                IrcTabItem *tab = dynamic_cast<IrcTabItem*>(pThis->tabbook->childAtIndex(i));
-                if(tab == NULL) return 0;
-                else tab->ProcessLine(command);
+                if(compare(pThis->tabbook->childAtIndex(i)->getClassName(), "IrcTabItem") != 0) return 0;
+                IrcTabItem *tab = static_cast<IrcTabItem*>(pThis->tabbook->childAtIndex(i));
+                tab->ProcessLine(command);
                 return 1;
             }
         }
@@ -2324,13 +2515,10 @@ int dxirc::OnLuaPrint(lua_State *lua)
         {
             if(id*2 == i)
             {
-                IrcTabItem *tab = dynamic_cast<IrcTabItem*>(pThis->tabbook->childAtIndex(i));
-                if(tab == NULL) return 0;
-                else
-                {
-                    tab->AppendIrcStyledText(text, style, TRUE);
-                    tab->MakeLastRowVisible(TRUE);
-                }
+                if(compare(pThis->tabbook->childAtIndex(i)->getClassName(), "IrcTabItem") != 0) return 0;
+                IrcTabItem *tab = static_cast<IrcTabItem*>(pThis->tabbook->childAtIndex(i));
+                tab->AppendIrcStyledText(text, style, TRUE);
+                tab->MakeLastRowVisible(TRUE);
                 return 1;
             }
         }
@@ -2394,10 +2582,13 @@ int dxirc::OnLuaGetTab(lua_State *lua)
     {
         for (FXint i = 0; i<pThis->tabbook->numChildren(); i=i+2)
         {
-            if(comparecase(tab, ((IrcTabItem *)pThis->tabbook->childAtIndex(i))->getText()) == 0 && comparecase(server, ((IrcTabItem *)pThis->tabbook->childAtIndex(i))->GetServerName()) == 0)
+            if(compare(pThis->tabbook->childAtIndex(i)->getClassName(), "IrcTabItem") == 0)
             {
-                lua_pushnumber(lua, i/2);
-                return 1;
+                if(comparecase(tab, static_cast<FXTabItem*>(pThis->tabbook->childAtIndex(i))->getText()) == 0 && comparecase(server, static_cast<IrcTabItem*>(pThis->tabbook->childAtIndex(i))->GetServerName()) == 0)
+                {
+                    lua_pushnumber(lua, i/2);
+                    return 1;
+                }
             }
         }
         lua_pushnumber(lua, pThis->tabbook->getCurrent());
@@ -2416,13 +2607,13 @@ int dxirc::OnLuaGetTabInfo(lua_State *lua)
     FXint id;
     if(lua_isnumber(lua, 1))  id = lua_tointeger(lua, 1);
     else id = -1;
-    if(pThis->tabbook->numChildren() && id != -1 && id*2 < pThis->tabbook->numChildren())
+    if(pThis->tabbook->numChildren() && id != -1 && id*2 < pThis->tabbook->numChildren() && compare(pThis->tabbook->childAtIndex(id*2)->getClassName(), "IrcTabItem") == 0)
     {
         lua_newtable(lua);
         lua_pushstring(lua, "name");
-        lua_pushstring(lua, ((IrcTabItem *)pThis->tabbook->childAtIndex(id*2))->getText().text());
+        lua_pushstring(lua, static_cast<IrcTabItem*>(pThis->tabbook->childAtIndex(id*2))->getText().text());
         lua_settable(lua, -3);
-        switch(((IrcTabItem *)pThis->tabbook->childAtIndex(id*2))->GetType()) {
+        switch(static_cast<IrcTabItem*>(pThis->tabbook->childAtIndex(id*2))->GetType()) {
             case SERVER:
             {
                 lua_pushstring(lua, "type");
@@ -2449,13 +2640,13 @@ int dxirc::OnLuaGetTabInfo(lua_State *lua)
             }break;
         }
         lua_pushstring(lua, "servername");
-        lua_pushstring(lua, ((IrcTabItem *)pThis->tabbook->childAtIndex(id*2))->GetServerName().text());
+        lua_pushstring(lua, static_cast<IrcTabItem*>(pThis->tabbook->childAtIndex(id*2))->GetServerName().text());
         lua_settable(lua, -3);
         lua_pushstring(lua, "port");
-        lua_pushinteger(lua, ((IrcTabItem *)pThis->tabbook->childAtIndex(id*2))->GetServerPort());
+        lua_pushinteger(lua, static_cast<IrcTabItem*>(pThis->tabbook->childAtIndex(id*2))->GetServerPort());
         lua_settable(lua, -3);
         lua_pushstring(lua, "nick");
-        lua_pushstring(lua, ((IrcTabItem *)pThis->tabbook->childAtIndex(id*2))->GetNickName().text());
+        lua_pushstring(lua, static_cast<IrcTabItem*>(pThis->tabbook->childAtIndex(id*2))->GetNickName().text());
         lua_settable(lua, -3);
     }
     else

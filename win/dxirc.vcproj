@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1250"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="dxirc"
 	ProjectGUID="{82EE2F7E-9ADB-4BC5-A47E-6DEEA1C21EBA}"
 	RootNamespace="dxirc"
@@ -221,6 +221,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\tetristabitem.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\src\utils.cpp"
 				>
 			</File>
@@ -288,6 +292,10 @@
 			</File>
 			<File
 				RelativePath="..\src\serverdialog.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\tetristabitem.h"
 				>
 			</File>
 			<File

@@ -68,6 +68,7 @@ class dxirc: public FXMainWindow
             ID_LOG,
             ID_LOAD,
             ID_STIMEOUT,
+            ID_TETRIS,
             ID_LAST
         };
 
@@ -97,6 +98,8 @@ class dxirc: public FXMainWindow
         long OnTabConnect(FXObject*, FXSelector, void*);
         long OnTrayClicked(FXObject*, FXSelector, void*);
         long OnNewMsg(FXObject*, FXSelector, void*);
+        long OnNewTetris(FXObject*, FXSelector, void*);
+        long OnTetrisKey(FXObject*, FXSelector, void*);
         long OnLua(FXObject*, FXSelector, void*);
         long OnCommandLoad(FXObject*, FXSelector, void*);
         long OnIrcCommand(FXObject*, FXSelector, void*);
@@ -133,6 +136,7 @@ class dxirc: public FXMainWindow
         FXbool ServerExist(const FXString&, const FXint&, const FXString&);
         FXint GetServerTab(IrcSocket*);
         FXint GetTabId(IrcSocket*, FXString);
+        FXint GetTabId(FXString);
         FXbool IsLastTab(IrcSocket*);
         void ConnectServer(FXString, FXint, FXString, FXString, FXString, FXString, FXString, FXbool);
         void ReadServersConfig();
@@ -144,6 +148,7 @@ class dxirc: public FXMainWindow
         void UpdateTabPosition();
         void UpdateFont(FXString);
         void UpdateStatus(FXString);
+        FXbool HasTetrisTab();
         void SortTabs();
         FXString Encrypt(const FXString&);
         FXString Decrypt(const FXString&);
@@ -153,6 +158,7 @@ class dxirc: public FXMainWindow
         void AppendIrcStyledText(FXString, FXint);
         FXint LoadLuaScript(const FXString&);
         FXbool HasLuaAll(const FXString &);
+        FXbool HasAllCommand();
 
     protected:
         FXMenuBar *menubar;

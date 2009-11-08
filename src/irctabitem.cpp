@@ -20,6 +20,7 @@
  */
 
 #include "irctabitem.h"
+#include "tetristabitem.h"
 #include "icons.h"
 #include "config.h"
 #include "i18n.h"
@@ -745,7 +746,8 @@ long IrcTabItem::OnCommandline(FXObject *, FXSelector, void *)
     for(FXint i=0; i<=commandtext.contains('\n'); i++)
     {
         FXString text = commandtext.section('\n', i).before('\r');
-        if(comparecase(text.after('/').before(' '), "quit") == 0)
+        if(comparecase(text.after('/').before(' '), "quit") == 0 ||
+                comparecase(text.after('/').before(' '), "lua") == 0)
         {
             ProcessLine(text);
             return 1;
@@ -1656,6 +1658,11 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 return TRUE;
             }
         }
+        if(command == "tetris")
+        {
+            parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_NEWTETRIS), NULL);
+            return TRUE;
+        }
         if(command == "topic")
         {
             if(server->GetConnected())
@@ -2059,6 +2066,18 @@ FXbool IrcTabItem::ShowHelp(FXString command)
         AppendIrcText(_("SAY [text], sends text to current tab."));
         return TRUE;
     }
+    if(command == "tetris")
+    {
+        AppendIrcText(_("TETRIS, start small easteregg."));
+        AppendIrcText(_("Keys for playing:"));
+        AppendIrcText(_("\tN .. new game"));
+        AppendIrcText(_("\tP .. pause game"));
+        AppendIrcText(_("\tNum5 .. rotate piece"));
+        AppendIrcText(_("\tNum3 .. move piece right"));
+        AppendIrcText(_("\tNum2 .. drop piece"));
+        AppendIrcText(_("\tNum1 .. move piece left"));
+        return TRUE;
+    }
     if(command == "topic")
     {
         AppendIrcText(_("TOPIC [topic], sets or shows topic."));
@@ -2212,7 +2231,7 @@ long IrcTabItem::OnKeyPress(FXObject *, FXSelector, void *ptr)
 FXbool IrcTabItem::IsFirst()
 {
     FXint indexOfCurrent = parent->getCurrent()*2;
-    FXbool hasCurrent = server->FindTarget((IrcTabItem *)parent->childAtIndex(indexOfCurrent));
+    FXbool hasCurrent = server->FindTarget(static_cast<IrcTabItem*>(parent->childAtIndex(indexOfCurrent)));
     FXint indexOfThis = parent->indexOfChild(this);
     if(hasCurrent)
     {
@@ -2223,7 +2242,7 @@ FXbool IrcTabItem::IsFirst()
     {
         for (FXint i = 0; i<parent->numChildren(); i=i+2)
         {
-            if(server->FindTarget((IrcTabItem *)parent->childAtIndex(i)))
+            if(server->FindTarget(static_cast<IrcTabItem*>(parent->childAtIndex(i))))
             {
                 if(i == indexOfThis) return TRUE;
                 else return FALSE;
@@ -2902,7 +2921,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
             FXbool channelOn = FALSE;
             for (FXint i = 0; i<parent->numChildren(); i=i+2)
             {
-                if(server->FindTarget((IrcTabItem *)parent->childAtIndex(i)) && comparecase(((IrcTabItem *)parent->childAtIndex(i))->getText(), channel) == 0)
+                if(server->FindTarget(static_cast<IrcTabItem*>(parent->childAtIndex(i))) && comparecase(static_cast<FXTabItem*>(parent->childAtIndex(i))->getText(), channel) == 0)
                 {
                     channelOn = TRUE;
                     break;
@@ -3192,8 +3211,6 @@ long IrcTabItem::OnWhois(FXObject *, FXSelector, void *)
     server->SendWhois(nickOnRight.nick);
     return 1;
 }
-
-
 
 long IrcTabItem::OnOp(FXObject *, FXSelector, void *)
 {
