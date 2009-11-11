@@ -1619,7 +1619,7 @@ long dxirc::OnCommandCloseTab(FXObject *, FXSelector, void *)
 {
     if(tabbook->numChildren())
     {
-        FXint index = tabbook->getCurrent()*2;        
+        FXint index = tabbook->getCurrent()*2;
         if(compare(tabbook->childAtIndex(index)->getClassName(), "IrcTabItem") == 0)
         {
             IrcTabItem *currenttab = static_cast<IrcTabItem*>(tabbook->childAtIndex(index));
@@ -1706,8 +1706,7 @@ long dxirc::OnCommandCloseTab(FXObject *, FXSelector, void *)
             }
             SortTabs();
         }
-        if(!tabbook->numChildren()) return 1;
-        if(compare(tabbook->childAtIndex(index)->getClassName(), "TetrisTabItem") == 0)
+        else
         {
             TetrisTabItem *tetristab = static_cast<TetrisTabItem*>(tabbook->childAtIndex(index));
             tetristab->StopGame();

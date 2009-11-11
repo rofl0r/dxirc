@@ -460,78 +460,7 @@ void IrcTabItem::AppendIrcText(FXString msg, FXbool highlight)
 void IrcTabItem::AppendIrcText(FXString msg)
 {
     text->appendText("["+FXSystem::time("%H:%M:%S", FXSystem::now()) +"] ");
-    if(msg.right(1) != " ") msg.append(" ");
-    for(FXint i=0; i<msg.contains(' '); i++)
-    {
-        FXString sec = msg.section(' ',i);
-        FXRex rxl("\\L");
-        if(rxl.match(sec.left(1)) && ((comparecase(sec.mid(1,7), "http://")==0 && sec.length()>7)
-                || (comparecase(sec.mid(1,8), "https://")==0 && sec.length()>8)
-                || (comparecase(sec.mid(1,6), "ftp://")==0 && sec.length()>6)
-                || (comparecase(sec.mid(1,4), "www.")==0 && sec.length()>4)))
-        {
-            text->appendText(sec.left(1));
-            FXRex rxr("\\W");
-            if(rxr.match(sec.right(1)))
-            {
-                text->appendStyledText(sec.mid(1,sec.length()-2),9);
-                text->appendText(sec.right(1));
-            }
-            else
-            {
-                text->appendStyledText(sec.mid(1,sec.length()-1),9);
-            }
-            text->appendText(" ");
-            continue;
-        }
-        if((comparecase(sec.left(7), "http://")==0 && sec.length()>7)
-                || (comparecase(sec.left(8), "https://")==0 && sec.length()>8)
-                || (comparecase(sec.left(6), "ftp://")==0 && sec.length()>6)
-                || (comparecase(sec.left(4), "www.")==0 && sec.length()>4))
-        {
-            text->appendStyledText(sec,9);
-            text->appendText(" ");
-            continue;
-        }
-        else
-        {
-            FXRex rx("(\\002|\\003|\\037)");
-            if(rx.match(sec)) //contains mirc colors,styles
-            {
-                sec = StripColors(sec, FALSE);
-                FXbool bold = FALSE;
-                FXbool under = FALSE;
-                FXint i = 0;
-                while(sec[i] != '\0')
-                {
-                    if(sec[i] == '\002')
-                    {
-                        bold = !bold;
-                    }
-                    else if(sec[i] == '\037')
-                    {
-                        under = !under;
-                    }
-                    else
-                    {
-                        FXString txt;
-                        txt += sec[i];
-                        if(bold && under) text->appendStyledText(txt, 7);
-                        else if(bold && !under) text->appendStyledText(txt, 5);
-                        else if(!bold && under) text->appendStyledText(txt, 6);
-                        else text->appendText(txt);
-                    }
-                    i++;
-                }
-                text->appendText(" ");
-            }
-            else
-            {
-                text->appendText(sec+" ");
-            }
-        }
-    }
-    text->appendText("\n");
+    AppendLinkText(StripColors(msg, FALSE), 0);
     MakeLastRowVisible(FALSE);
     this->LogLine(StripColors(msg, TRUE));
 }
@@ -540,78 +469,7 @@ void IrcTabItem::AppendIrcNickText(FXString nick, FXString msg, FXint color)
 {
     text->appendText("["+FXSystem::time("%H:%M:%S", FXSystem::now()) +"] ");
     text->appendStyledText(nick+": ", color);
-    if(msg.right(1) != " ") msg.append(" ");
-    for(FXint i=0; i<msg.contains(' '); i++)
-    {
-        FXString sec = msg.section(' ',i);
-        FXRex rxl("\\L");
-        if(rxl.match(sec.left(1)) && ((comparecase(sec.mid(1,7), "http://")==0 && sec.length()>7)
-                || (comparecase(sec.mid(1,8), "https://")==0 && sec.length()>8)
-                || (comparecase(sec.mid(1,6), "ftp://")==0 && sec.length()>6)
-                || (comparecase(sec.mid(1,4), "www.")==0 && sec.length()>4)))
-        {
-            text->appendText(sec.left(1));
-            FXRex rxr("\\W");
-            if(rxr.match(sec.right(1)))
-            {
-                text->appendStyledText(sec.mid(1,sec.length()-2),9);
-                text->appendText(sec.right(1));
-            }
-            else
-            {
-                text->appendStyledText(sec.mid(1,sec.length()-1),9);
-            }
-            text->appendText(" ");
-            continue;
-        }
-        if((comparecase(sec.left(7), "http://")==0 && sec.length()>7)
-                || (comparecase(sec.left(8), "https://")==0 && sec.length()>8)
-                || (comparecase(sec.left(6), "ftp://")==0 && sec.length()>6)
-                || (comparecase(sec.left(4), "www.")==0 && sec.length()>4))
-        {
-            text->appendStyledText(sec,9);
-            text->appendText(" ");
-            continue;
-        }
-        else
-        {
-            FXRex rx("(\\002|\\003|\\037)");
-            if(rx.match(sec)) //contains mirc colors,styles
-            {
-                sec = StripColors(sec, FALSE);
-                FXbool bold = FALSE;
-                FXbool under = FALSE;
-                FXint i = 0;
-                while(sec[i] != '\0')
-                {
-                    if(sec[i] == '\002')
-                    {
-                        bold = !bold;
-                    }
-                    else if(sec[i] == '\037')
-                    {
-                        under = !under;
-                    }
-                    else
-                    {
-                        FXString txt;
-                        txt += sec[i];
-                        if(bold && under) text->appendStyledText(txt, 7);
-                        else if(bold && !under) text->appendStyledText(txt, 5);
-                        else if(!bold && under) text->appendStyledText(txt, 6);
-                        else text->appendText(txt);
-                    }
-                    i++;
-                }
-                text->appendText(" ");
-            }
-            else
-            {
-                text->appendText(sec+" ");
-            }
-        }
-    }
-    text->appendText("\n");
+    AppendLinkText(StripColors(msg, FALSE), 0);
     MakeLastRowVisible(FALSE);
     this->LogLine(StripColors("<"+nick+"> "+msg, TRUE));
 }
@@ -635,47 +493,115 @@ void IrcTabItem::AppendIrcStyledText(FXString text, FXint style, FXbool highligh
 void IrcTabItem::AppendIrcStyledText(FXString styled, FXint stylenum)
 {
     text->appendText("["+FXSystem::time("%H:%M:%S", FXSystem::now()) +"] ");
-    if(styled.right(1) != " ") styled.append(" ");
-    for(FXint i=0; i<styled.contains(' '); i++)
+    AppendLinkText(StripColors(styled, TRUE), stylenum);
+    MakeLastRowVisible(FALSE);
+    this->LogLine(StripColors(styled, TRUE));
+}
+
+static FXbool Badchar(FXchar c)
+{
+    switch(c) {
+        case ' ':
+        case ',':
+        case '\0':
+        case '\n':
+        case '\r':
+        case '<':
+        case '>':
+        case '"':
+        case '\'':
+            return TRUE;
+        default:
+            return FALSE;
+    }
+}
+
+void IrcTabItem::AppendLinkText(const FXString &txt, FXint style)
+{
+    FXint i=0;
+    FXint linkLength=0;
+    FXbool bold = FALSE;
+    FXbool under = FALSE;
+    FXint length = txt.length();
+    while(i<length)
     {
-        FXString sec = StripColors(styled.section(' ',i), TRUE);
-        FXRex rxl("\\L");
-        if(rxl.match(sec.left(1)) && ((comparecase(sec.mid(1,7), "http://")==0 && sec.length()>7)
-                || (comparecase(sec.mid(1,8), "https://")==0 && sec.length()>8)
-                || (comparecase(sec.mid(1,6), "ftp://")==0 && sec.length()>6)
-                || (comparecase(sec.mid(1,4), "www.")==0 && sec.length()>4)))
+        if(txt[i]=='h' && !comparecase(txt.mid(i,7),"http://"))
         {
-            text->appendStyledText(sec.left(1), stylenum);
-            FXRex rxr("\\W");
-            if(rxr.match(sec.right(1)))
+            for(FXint j=i; j<length; j++)
             {
-                text->appendStyledText(sec.mid(1,sec.length()-2),9);
-                text->appendStyledText(sec.right(1), stylenum);
+                if(Badchar(txt[j]))
+                {
+                    break;
+                }
+                linkLength++;
             }
-            else
-            {
-                text->appendStyledText(sec.mid(1,sec.length()-1),9);
-            }
-            text->appendText(" ");
-            continue;
+            text->appendStyledText(txt.mid(i, linkLength), linkLength>7 ? 9 : style);
+            i+=linkLength-1;
+            linkLength=0;
         }
-        if((comparecase(sec.left(7), "http://")==0 && sec.length()>7)
-                || (comparecase(sec.left(8), "https://")==0 && sec.length()>8)
-                || (comparecase(sec.left(6), "ftp://")==0 && sec.length()>6)
-                || (comparecase(sec.left(4), "www.")==0 && sec.length()>4))
+        else if(txt[i]=='h' && !comparecase(txt.mid(i,8),"https://"))
         {
-            text->appendStyledText(sec,9);
-            text->appendText(" ");
-            continue;
+            for(FXint j=i; j<length; j++)
+            {
+                if(Badchar(txt[j]))
+                {
+                    break;
+                }
+                linkLength++;
+            }
+            text->appendStyledText(txt.mid(i, linkLength), linkLength>8 ? 9 : style);
+            i+=linkLength-1;
+            linkLength=0;
+        }
+        else if(txt[i]=='f' && !comparecase(txt.mid(i,6),"ftp://"))
+        {
+            for(FXint j=i; j<length; j++)
+            {
+                if(Badchar(txt[j]))
+                {
+                    break;
+                }
+                linkLength++;
+            }
+            text->appendStyledText(txt.mid(i, linkLength), linkLength>6 ? 9 : style);
+            i+=linkLength-1;
+            linkLength=0;
+        }
+        else if(txt[i]=='w' && !comparecase(txt.mid(i,4),"www."))
+        {
+            for(FXint j=i; j<length; j++)
+            {
+                if(Badchar(txt[j]))
+                {
+                    break;
+                }
+                linkLength++;
+            }
+            text->appendStyledText(txt.mid(i, linkLength), linkLength>4 ? 9 : style);
+            i+=linkLength-1;
+            linkLength=0;
         }
         else
         {
-            text->appendStyledText(sec+" ", stylenum);
+            if(txt[i] == '\002')
+            {
+                bold = !bold;
+            }
+            else if(txt[i] == '\037')
+            {
+                under = !under;
+            }
+            else
+            {
+                if(bold && under) text->appendStyledText(txt.mid(i,1), 7);
+                else if(bold && !under) text->appendStyledText(txt.mid(i,1), 5);
+                else if(!bold && under) text->appendStyledText(txt.mid(i,1), 6);
+                else text->appendStyledText(txt.mid(i,1), style);
+            }
         }
-    }    
+        i++;
+    }
     text->appendText("\n");
-    MakeLastRowVisible(FALSE);
-    this->LogLine(StripColors(styled, TRUE));
 }
 
 void IrcTabItem::StartLogging()
