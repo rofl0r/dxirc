@@ -299,8 +299,8 @@ void dxirc::ReadConfig()
     statusShown = set.readBoolEntry("SETTINGS", "statusShown", TRUE);
     tabPosition = set.readIntEntry("SETTINGS", "tabPosition", 0);
     commandsList = set.readStringEntry("SETTINGS", "commandsList");
-    themePath = CheckThemePath(set.readStringEntry("SETTINGS", "themePath", DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "default"));
-    themesList = CheckThemesList(set.readStringEntry("SETTINGS", "themesList", FXString(themePath+";").text()));
+    themePath = utils::CheckThemePath(set.readStringEntry("SETTINGS", "themePath", DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "default"));
+    themesList = utils::CheckThemesList(set.readStringEntry("SETTINGS", "themesList", FXString(themePath+";").text()));
     colors.text = set.readColorEntry("SETTINGS", "textColor", FXRGB(0,0,0));
     colors.back = set.readColorEntry("SETTINGS", "textBackColor", FXRGB(255,255,255));
     colors.user = set.readColorEntry("SETTINGS", "userColor", FXRGB(191,191,191));
@@ -313,7 +313,11 @@ void dxirc::ReadConfig()
     sameCmd = set.readBoolEntry("SETTINGS", "sameCmd", FALSE);
     sameList = set.readBoolEntry("SETTINGS", "sameList", FALSE);
     coloredNick = set.readBoolEntry("SETTINGS", "coloredNick", FALSE);
-    if(!ircfontspec.empty()) ircFont = new FXFont(getApp(), ircfontspec);
+    if(!ircfontspec.empty())
+    {
+        ircFont = new FXFont(getApp(), ircfontspec);
+        ircFont->create();
+    }
     else
     {
         getApp()->getNormalFont()->create();
@@ -359,30 +363,6 @@ void dxirc::ReadConfig()
     setHeight(hh);
 }
 
-FXString dxirc::CheckThemePath(const FXString &path)
-{
-    if(path == "internal") return path;
-    else
-    {
-        const char *themeDefaultPath = DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "default";
-        if(FXStat::exists(path)) return path;
-        return FXString(themeDefaultPath);
-    }
-}
-
-FXString dxirc::CheckThemesList(const FXString &list)
-{
-    const char *themeDefaultPath = DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "default;";
-    FXString themes;
-    for(FXint i=0; i<list.contains(';'); i++)
-    {
-        if(list.before(';', i+1).rafter(';') == "internal") themes.append("internal;");
-        if(FXStat::exists(list.before(';', i+1).rafter(';'))) themes.append(list.before(';', i+1).rafter(';')+";");
-    }
-    if(!themes.empty()) return themes;
-    return FXString("internal;")+FXString(themeDefaultPath);
-}
-
 void dxirc::ReadServersConfig()
 {
     FXSettings set;
@@ -397,7 +377,7 @@ void dxirc::ReadServersConfig()
             server.port = set.readIntEntry(FXStringFormat("SERVER%d", i).text(), "port", 6667);
             server.nick = set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "nick", "xxx");
             server.realname = set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "realname", "xxx");
-            server.passwd = Decrypt(set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "hes", ""));
+            server.passwd = utils::Decrypt(set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "hes", ""));
             server.channels = set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "channels", "");
             server.commands = set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "commands", "");
             server.autoConnect = set.readBoolEntry(FXStringFormat("SERVER%d", i).text(), "autoconnect", FALSE);
@@ -426,7 +406,7 @@ void dxirc::SaveConfig()
             set.writeIntEntry(FXStringFormat("SERVER%d", i).text(), "port", serverList[i].port);
             set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "nick", serverList[i].nick.text());
             set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "realname", serverList[i].realname.text());
-            set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "hes", Encrypt(serverList[i].passwd).text());
+            set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "hes", utils::Encrypt(serverList[i].passwd).text());
             set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "channels", serverList[i].channels.text());
             set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "commands", serverList[i].commands.text());
             set.writeBoolEntry(FXStringFormat("SERVER%d", i).text(), "autoconnect", serverList[i].autoConnect);
@@ -584,35 +564,14 @@ long dxirc::OnCommandStatus(FXObject*, FXSelector, void*)
 
 long dxirc::OnCommandOptions(FXObject*, FXSelector, void*)
 {
-    ConfigDialog dialog(this, colors, commandsList, usersList, themePath, themesList, maxAway, logging, logPath, tempServerWindow, nickCompletionChar, ircFont->getFont(), sameCmd, sameList, appTheme, useTray, coloredNick, closeToTray, reconnect, numberAttempt, delayAttempt, tabPosition);
+    ConfigDialog dialog(this);
     if(dialog.execute(PLACEMENT_CURSOR))
     {
-        commandsList = dialog.GetCommandsList();
-        usersList = dialog.GetUsersList();
-        colors = dialog.GetColors();
-        themePath = dialog.GetThemePath();
-        themesList = dialog.GetThemesList();
-        maxAway = dialog.GetMaxAway();
-        logging = dialog.GetLogging();
+        ReadConfig();
         if(logging) logviewer->enable();
         else logviewer->disable();
-        tempServerWindow = dialog.GetServerWindow();
-        logPath = dialog.GetLogPath();
-        nickCompletionChar = dialog.GetNickCompletionChar();
-        sameCmd = dialog.GetSameCmd();
-        sameList = dialog.GetSameList();
-        appTheme = dialog.GetTheme();
-        useTray = dialog.GetUseTray();
-        closeToTray = dialog.GetCloseToTray();
-        coloredNick = dialog.GetColoredNick();
-        reconnect = dialog.GetReconnect();
-        numberAttempt = dialog.GetNumberAttempt();
-        delayAttempt = dialog.GetDelayAttempt();
-        tabPosition = dialog.GetTabPosition();
         UpdateTheme();
-        UpdateFont(dialog.GetFont());
-        ircFont = new FXFont(getApp(), dialog.GetIrcFont());
-        ircFont->create();
+        UpdateFont();
         UpdateTabs();
         UpdateTabPosition();
         for (FXint i = 0; i<servers.no(); i++)
@@ -622,7 +581,7 @@ long dxirc::OnCommandOptions(FXObject*, FXSelector, void*)
             servers[i]->SetNumberAttempt(numberAttempt);
             servers[i]->SetDelayAttempt(delayAttempt);
         }
-        SaveConfig();
+        recalc();
     }
     return 1;
 }
@@ -908,6 +867,11 @@ void dxirc::UpdateTheme()
     }
 }
 
+void dxirc::UpdateFont()
+{
+    UpdateFont(fontSpec);
+}
+
 void dxirc::UpdateFont(FXString fnt)
 {
     getApp()->getNormalFont()->destroy();
@@ -1024,8 +988,8 @@ long dxirc::OnCommandAbout(FXObject*, FXSelector, void*)
 {
     FXDialogBox about(this, FXStringFormat(_("About %s"), PACKAGE), DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0);
     FXVerticalFrame *content = new FXVerticalFrame(&about, LAYOUT_SIDE_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 10,10,10,10, 0,0);
-    new FXLabel(content, FXStringFormat("%s %s \n", PACKAGE, VERSION), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    new FXLabel(content, _("Copyright (C) 2008~ David Vachulka (david@konstrukce-cad.com)\n"), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    new FXLabel(content, FXStringFormat("%s %s \n", PACKAGE, VERSION), bigicon, ICON_BEFORE_TEXT|JUSTIFY_CENTER_Y|JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    new FXLabel(content, _("\nCopyright (C) 2008~ David Vachulka (david@konstrukce-cad.com)\n"), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     new FXLabel(content, FXStringFormat(_("This software was built with the FOX Toolkit Library version %d.%d.%d (http://www.fox-toolkit.org)."),FOX_MAJOR,FOX_MINOR,FOX_LEVEL), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);    
 #ifdef HAVE_OPENSSL
     new FXLabel(content, FXStringFormat(_("This software was built with %s"), OPENSSL_VERSION_TEXT), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
@@ -2152,28 +2116,6 @@ void dxirc::UpdateMenus()
     }
     if(someConnected) disconnect->enable();
     else disconnect->disable();
-}
-
-FXString dxirc::Encrypt(const FXString &text)
-{
-    FXString result = "";
-    for(FXint i=0; i<text.count(); i++)
-    {
-        result += text[i];
-        FXint r = rand()%127;
-        result += FXchar(r<33 ? r+33 : r);
-    }
-    return result;
-}
-
-FXString dxirc::Decrypt(const FXString &text)
-{
-    FXString result = "";
-    for(FXint i=0; i<text.count(); i++)
-    {
-        if((i+1)%2) result += text[i];
-    }
-    return result;
 }
 
 void dxirc::UpdateStatus(FXString text)

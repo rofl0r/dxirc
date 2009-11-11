@@ -23,6 +23,7 @@
 #include <FXPNGIcon.h>
 
 #include "icons.h"
+#include "utils.h"
 
 FXIcon *bigicon, *smallicon;
 FXIcon *irc_owner_icon, *irc_admin_icon, *irc_op_icon, *irc_voice_icon, *irc_halfop_icon, *irc_normal_icon;
@@ -270,17 +271,6 @@ FXIcon* MakeAwayIcon(FXApp *app, const FXString path, const FXString name)
     return NULL;
 }
 
-FXString CheckThemePath(const FXString &path)
-{
-    if(path == "internal") return path;
-    else
-    {
-        const char *themeDefaultPath = DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "default";
-        if(FXStat::exists(path)) return path;
-        return FXString(themeDefaultPath);
-    }
-}
-
 FXbool MakeAllIcons(FXApp *app, const FXString &iniFile)
 {
     FXbool success = TRUE;
@@ -288,7 +278,7 @@ FXbool MakeAllIcons(FXApp *app, const FXString &iniFile)
     FXString flagpath = DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "flags";
     FXSettings set;
     set.parseFile(iniFile, TRUE);
-    FXString themepath = CheckThemePath(set.readStringEntry("SETTINGS", "themePath", DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "default"));
+    FXString themepath = utils::CheckThemePath(set.readStringEntry("SETTINGS", "themePath", DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "default"));
     menuColor = set.readColorEntry("SETTINGS", "basecolor", app->getBaseColor());
     textBackColor = set.readColorEntry("SETTINGS", "textBackColor", FXRGB(255,255,255));
 

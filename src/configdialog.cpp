@@ -24,6 +24,7 @@
 #include "config.h"
 #include "i18n.h"
 #include "icons.h"
+#include "utils.h"
 
 FXDEFMAP(ConfigDialog) ConfigDialogMap[] = {
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_ACCEPT, ConfigDialog::OnAccept),
@@ -61,10 +62,11 @@ FXDEFMAP(ConfigDialog) ConfigDialogMap[] = {
 
 FXIMPLEMENT(ConfigDialog, FXDialogBox, ConfigDialogMap, ARRAYNUMBER(ConfigDialogMap))
 
-ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, dxIgnoreUserArray ulist, FXString tpth, FXString thm, FXint maxa, FXbool log, FXString lpth, FXbool srvw, FXString nichar, FXString fnt, FXbool scmd, FXbool slst, ColorTheme atheme, FXbool utray, FXbool cnick, FXbool ctt, FXbool rcn, FXint na, FXint da, FXint tb)
-    : FXDialogBox(owner, _("Preferences"), DECOR_RESIZE|DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0),
-        commandsList(clist), themePath(tpth), themesList(thm), logPath(lpth), logging(log), serverWindow(srvw), sameCmd(scmd), sameList(slst), useTray(utray), coloredNick(cnick), closeToTray(ctt), reconnect(rcn), usersList(ulist), colors(clrs), maxAway(maxa), numberAttempt(na), delayAttempt(da), tabPosition(tb), nickChar(nichar), themeCurrent(atheme)
+ConfigDialog::ConfigDialog(FXMainWindow *owner)
+    : FXDialogBox(owner, _("Preferences"), DECOR_RESIZE|DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0), owner(owner)
 {
+    ReadConfig();
+
     textTarget.connect(colors.text);
     textTarget.setTarget(this);
     textTarget.setSelector(ID_IRCCOLORS);
@@ -148,9 +150,6 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, d
     getApp()->getNormalFont()->getFontDesc(fontdescription);
     font = new FXFont(getApp(),fontdescription);
     font->create();
-
-    ircFont = new FXFont(getApp(), fnt);
-    ircFont->create();
 
     FXHorizontalFrame *closeframe = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X);    
     FXButton *ok = new FXButton(closeframe, _("&Close"), NULL, this, ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|LAYOUT_RIGHT|FRAME_RAISED|FRAME_THICK, 0,0,0,0, 20,20);
@@ -495,6 +494,7 @@ long ConfigDialog::OnTabPosition(FX::FXObject *, FX::FXSelector, void *ptr)
 long ConfigDialog::OnAccept(FXObject*, FXSelector, void*)
 {
     getApp()->stopModal(this,TRUE);
+    SaveConfig();
     hide();
     return 1;
 }
@@ -1115,4 +1115,196 @@ FXbool ConfigDialog::NickExist(const FXString &ckdNick)
         if(users->getItemText(i) == ckdNick) return TRUE;
     }
     return FALSE;
+}
+
+void ConfigDialog::ReadConfig()
+{
+    FXString ircfontspec;
+    FXSettings set;
+    set.parseFile(utils::GetIniFile(), TRUE);
+    themeCurrent.base = set.readColorEntry("SETTINGS", "basecolor", getApp()->getBaseColor());
+    themeCurrent.back = set.readColorEntry("SETTINGS", "backcolor", getApp()->getBackColor());
+    themeCurrent.border = set.readColorEntry("SETTINGS", "bordercolor", getApp()->getBorderColor());
+    themeCurrent.fore = set.readColorEntry("SETTINGS", "forecolor", getApp()->getForeColor());
+    themeCurrent.menuback = set.readColorEntry("SETTINGS", "selmenubackcolor", getApp()->getSelMenuBackColor());
+    themeCurrent.menufore = set.readColorEntry("SETTINGS", "selmenutextcolor", getApp()->getSelMenuTextColor());
+    themeCurrent.selback = set.readColorEntry("SETTINGS", "selbackcolor", getApp()->getSelbackColor());
+    themeCurrent.selfore = set.readColorEntry("SETTINGS", "selforecolor", getApp()->getSelforeColor());
+    themeCurrent.tipback = set.readColorEntry("SETTINGS", "tipbackcolor", getApp()->getTipbackColor());
+    themeCurrent.tipfore = set.readColorEntry("SETTINGS", "tipforecolor", getApp()->getTipforeColor());
+    themeCurrent.hilite = set.readColorEntry("SETTINGS", "hilitecolor", getApp()->getHiliteColor());
+    themeCurrent.shadow = set.readColorEntry("SETTINGS", "shadowcolor", getApp()->getShadowColor());
+    usersShown = set.readBoolEntry("SETTINGS", "usersShown", TRUE);
+    statusShown = set.readBoolEntry("SETTINGS", "statusShown", TRUE);
+    tabPosition = set.readIntEntry("SETTINGS", "tabPosition", 0);
+    commandsList = set.readStringEntry("SETTINGS", "commandsList");
+    themePath = utils::CheckThemePath(set.readStringEntry("SETTINGS", "themePath", DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "default"));
+    themesList = utils::CheckThemesList(set.readStringEntry("SETTINGS", "themesList", FXString(themePath+";").text()));
+    colors.text = set.readColorEntry("SETTINGS", "textColor", FXRGB(0,0,0));
+    colors.back = set.readColorEntry("SETTINGS", "textBackColor", FXRGB(255,255,255));
+    colors.user = set.readColorEntry("SETTINGS", "userColor", FXRGB(191,191,191));
+    colors.action = set.readColorEntry("SETTINGS", "actionsColor", FXRGB(255,165,0));
+    colors.notice = set.readColorEntry("SETTINGS", "noticeColor", FXRGB(0,0,255));
+    colors.error = set.readColorEntry("SETTINGS", "errorColor", FXRGB(255,0,0));
+    colors.hilight = set.readColorEntry("SETTINGS", "hilightColor", FXRGB(0,255,0));
+    colors.link = set.readColorEntry("SETTINGS", "linkColor", FXRGB(0,0,255));
+    ircfontspec = set.readStringEntry("SETTINGS", "ircFont", "");
+    sameCmd = set.readBoolEntry("SETTINGS", "sameCmd", FALSE);
+    sameList = set.readBoolEntry("SETTINGS", "sameList", FALSE);
+    coloredNick = set.readBoolEntry("SETTINGS", "coloredNick", FALSE);
+    if(!ircfontspec.empty())
+    {
+        ircFont = new FXFont(getApp(), ircfontspec);
+        ircFont->create();
+    }
+    else
+    {
+        getApp()->getNormalFont()->create();
+        FXFontDesc fontdescription;
+        getApp()->getNormalFont()->getFontDesc(fontdescription);
+        ircFont = new FXFont(getApp(),fontdescription);
+        ircFont->create();
+    }
+    maxAway = set.readIntEntry("SETTINGS", "maxAway", 200);
+    logging = set.readBoolEntry("SETTINGS", "logging", FALSE);
+    serverWindow = set.readBoolEntry("SETTINGS", "serverWindow", TRUE);
+#ifdef HAVE_TRAY
+    useTray = set.readBoolEntry("SETTINGS", "tray", FALSE);
+#else
+    useTray = FALSE;
+#endif
+    if(useTray)
+        closeToTray = set.readBoolEntry("SETTINGS", "closeToTray", FALSE);
+    else
+        closeToTray = FALSE;
+    reconnect = set.readBoolEntry("SETTINGS", "reconnect", FALSE);
+    numberAttempt = set.readIntEntry("SETTINGS", "numberAttempt", 1);
+    delayAttempt = set.readIntEntry("SETTINGS", "delayAttempt", 20);
+    nickChar = FXString(set.readStringEntry("SETTINGS", "nickCompletionChar", ":")).left(1);
+    logPath = set.readStringEntry("SETTINGS", "logPath");
+    if(logging && !FXStat::exists(logPath)) logging = FALSE;
+    FXint usersNum = set.readIntEntry("USERS", "number", 0);
+    if(usersNum)
+    {
+        for(FXint i=0; i<usersNum; i++)
+        {
+            IgnoreUser user;
+            user.nick = set.readStringEntry(FXStringFormat("USER%d", i).text(), "nick", FXStringFormat("xxx%d", i).text());
+            user.channel = set.readStringEntry(FXStringFormat("USER%d", i).text(), "channel", "all");
+            user.server = set.readStringEntry(FXStringFormat("USER%d", i).text(), "server", "all");
+            usersList.append(user);
+        }
+    }
+    FXint serversNum = set.readIntEntry("SERVERS", "number", 0);
+    if(serversNum)
+    {
+        for(FXint i=0; i<serversNum; i++)
+        {
+            ServerInfo server;
+            server.hostname = set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "hostname", FXStringFormat("localhost%d", i).text());
+            server.port = set.readIntEntry(FXStringFormat("SERVER%d", i).text(), "port", 6667);
+            server.nick = set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "nick", "xxx");
+            server.realname = set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "realname", "xxx");
+            server.passwd = utils::Decrypt(set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "hes", ""));
+            server.channels = set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "channels", "");
+            server.commands = set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "commands", "");
+            server.autoConnect = set.readBoolEntry(FXStringFormat("SERVER%d", i).text(), "autoconnect", FALSE);
+            server.useSsl = set.readBoolEntry(FXStringFormat("SERVER%d", i).text(), "ssl", FALSE);
+            serverList.append(server);
+        }
+    }
+}
+
+void ConfigDialog::SaveConfig()
+{
+    getApp()->reg().setModified(FALSE);
+    FXSettings set;
+    //set.clear();
+    set.writeIntEntry("SERVERS", "number", serverList.no());
+    if(serverList.no())
+    {
+        for(FXint i=0; i<serverList.no(); i++)
+        {
+            set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "hostname", serverList[i].hostname.text());
+            set.writeIntEntry(FXStringFormat("SERVER%d", i).text(), "port", serverList[i].port);
+            set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "nick", serverList[i].nick.text());
+            set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "realname", serverList[i].realname.text());
+            set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "hes", utils::Encrypt(serverList[i].passwd).text());
+            set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "channels", serverList[i].channels.text());
+            set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "commands", serverList[i].commands.text());
+            set.writeBoolEntry(FXStringFormat("SERVER%d", i).text(), "autoconnect", serverList[i].autoConnect);
+            set.writeBoolEntry(FXStringFormat("SERVER%d", i).text(), "ssl", serverList[i].useSsl);
+        }
+    }
+    set.writeBoolEntry("SETTINGS", "usersShown", usersShown);
+    set.writeBoolEntry("SETTINGS", "statusShown", statusShown);
+    set.writeStringEntry("SETTINGS", "commandsList", commandsList.text());
+    set.writeStringEntry("SETTINGS", "themePath", themePath.text());
+    set.writeStringEntry("SETTINGS", "themesList", themesList.text());
+    set.writeColorEntry("SETTINGS", "textColor", colors.text);
+    set.writeColorEntry("SETTINGS", "textBackColor", colors.back);
+    set.writeColorEntry("SETTINGS", "userColor", colors.user);
+    set.writeColorEntry("SETTINGS", "actionsColor", colors.action);
+    set.writeColorEntry("SETTINGS", "noticeColor", colors.notice);
+    set.writeColorEntry("SETTINGS", "errorColor", colors.error);
+    set.writeColorEntry("SETTINGS", "hilightColor", colors.hilight);
+    set.writeColorEntry("SETTINGS", "linkColor", colors.link);
+    set.writeStringEntry("SETTINGS", "ircFont", ircFont->getFont().text());
+    set.writeIntEntry("SETTINGS", "maxAway", maxAway);
+    set.writeBoolEntry("SETTINGS", "logging", logging);
+    set.writeBoolEntry("SETTINGS", "sameCmd", sameCmd);
+    set.writeBoolEntry("SETTINGS", "sameList", sameList);
+    set.writeBoolEntry("SETTINGS", "coloredNick", coloredNick);
+    set.writeBoolEntry("SETTINGS", "tray", useTray);
+    set.writeBoolEntry("SETTINGS", "closeToTray", closeToTray);
+    set.writeBoolEntry("SETTINGS", "reconnect", reconnect);
+    set.writeIntEntry("SETTINGS", "numberAttempt", numberAttempt);
+    set.writeIntEntry("SETTINGS", "delayAttempt", delayAttempt);
+    set.writeBoolEntry("SETTINGS", "serverWindow", serverWindow);
+    set.writeStringEntry("SETTINGS", "logPath", logPath.text());
+    set.writeStringEntry("SETTINGS", "nickCompletionChar", nickChar.text());
+    set.writeIntEntry("USERS", "number", usersList.no());
+    if(usersList.no())
+    {
+
+        for(FXint i=0; i<usersList.no(); i++)
+        {
+            set.writeStringEntry(FXStringFormat("USER%d", i).text(), "nick", usersList[i].nick.text());
+            set.writeStringEntry(FXStringFormat("USER%d", i).text(), "channel", usersList[i].channel.text());
+            set.writeStringEntry(FXStringFormat("USER%d", i).text(), "server", usersList[i].server.text());
+        }
+    }
+    set.writeIntEntry("SETTINGS","x", owner->getX());
+    set.writeIntEntry("SETTINGS","y", owner->getY());
+    set.writeIntEntry("SETTINGS","w", owner->getWidth());
+    set.writeIntEntry("SETTINGS","h", owner->getHeight());
+    set.writeIntEntry("SETTINGS", "tabPosition", tabPosition);
+    set.writeColorEntry("SETTINGS", "basecolor", themeCurrent.base);
+    set.writeColorEntry("SETTINGS", "bordercolor", themeCurrent.border);
+    set.writeColorEntry("SETTINGS", "backcolor", themeCurrent.back);
+    set.writeColorEntry("SETTINGS", "forecolor", themeCurrent.fore);
+    set.writeColorEntry("SETTINGS", "hilitecolor", themeCurrent.hilite);
+    set.writeColorEntry("SETTINGS", "shadowcolor", themeCurrent.shadow);
+    set.writeColorEntry("SETTINGS", "selforecolor", themeCurrent.selfore);
+    set.writeColorEntry("SETTINGS", "selbackcolor", themeCurrent.selback);
+    set.writeColorEntry("SETTINGS", "tipforecolor", themeCurrent.tipfore);
+    set.writeColorEntry("SETTINGS", "tipbackcolor", themeCurrent.tipback);
+    set.writeColorEntry("SETTINGS", "selmenutextcolor", themeCurrent.menufore);
+    set.writeColorEntry("SETTINGS", "selmenubackcolor", themeCurrent.menuback);
+    set.writeStringEntry("SETTINGS", "normalfont", font->getFont().text());
+    dxStringMap aliases = utils::GetAliases();
+    set.writeIntEntry("ALIASES", "number", (FXint)aliases.size());
+    if((FXint)aliases.size())
+    {
+        StringIt it;
+        FXint i=0;
+        for(it=aliases.begin(); it!=aliases.end(); it++)
+        {
+            set.writeStringEntry("ALIASES", FXStringFormat("key%d", i).text(), (*it).first.text());
+            set.writeStringEntry("ALIASES", FXStringFormat("value%d", i).text(), (*it).second.text());
+            i++;
+        }
+    }
+    set.setModified();
+    set.unparseFile(utils::GetIniFile());
 }

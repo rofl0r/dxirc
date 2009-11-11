@@ -146,14 +146,11 @@ class dxirc: public FXMainWindow
         void UpdateTheme();
         void UpdateTabs();
         void UpdateTabPosition();
+        void UpdateFont();
         void UpdateFont(FXString);
         void UpdateStatus(FXString);
         FXbool HasTetrisTab();
-        void SortTabs();
-        FXString Encrypt(const FXString&);
-        FXString Decrypt(const FXString&);
-        FXString CheckThemePath(const FXString&);
-        FXString CheckThemesList(const FXString&);
+        void SortTabs();                
         void AppendIrcText(FXString);
         void AppendIrcStyledText(FXString, FXint);
         FXint LoadLuaScript(const FXString&);

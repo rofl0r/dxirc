@@ -3050,15 +3050,12 @@ long IrcTabItem::OnLeftMouse(FXObject *, FXSelector, void *ptr)
     if(style == 9)
     {
         text->setDelimiters(" ");
-        FXString link;
-        text->extractText(link, text->wordStart(pos), text->wordEnd(pos)-text->wordStart(pos));
-        FXRex rxl("\\L");        
-        if(rxl.match(link.left(1)))
+        FXString word;
+        FXString link = "";
+        text->extractText(word, text->wordStart(pos), text->wordEnd(pos)-text->wordStart(pos));
+        for(FXint i=text->wordStart(pos); i<text->wordEnd(pos); i++)
         {
-            link = link.mid(1, link.length()-1);
-            FXRex rxr("\\W");
-            if(rxr.match(link.right(1)))
-                link = link.mid(0, link.length()-1);
+            if(text->getStyle(i) == 9) link.append(word[i-text->wordStart(pos)]);
         }
         LaunchLink(link);
         text->setDelimiters(FXText::textDelimiters);

@@ -94,6 +94,10 @@ namespace utils
     FXString GetHelpText(const FXString &command);
     FXString GetFuncname(const FXString &command);
     FXString GetScriptName(const FXString &command);
+    FXString CheckThemePath(const FXString&);
+    FXString CheckThemesList(const FXString&);
+    FXString Encrypt(const FXString&);
+    FXString Decrypt(const FXString&);
 }
 
 

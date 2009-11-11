@@ -991,4 +991,50 @@ namespace utils
         }
         return FXStringFormat(_("Command %s doesn't exists"), command.text());
     }
+
+    FXString CheckThemePath(const FXString &path)
+    {
+        if(path == "internal") return path;
+        else
+        {
+            const char *themeDefaultPath = DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "default";
+            if(FXStat::exists(path)) return path;
+            return FXString(themeDefaultPath);
+        }
+    }
+
+    FXString CheckThemesList(const FXString &list)
+    {
+        const char *themeDefaultPath = DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "default;";
+        FXString themes;
+        for(FXint i=0; i<list.contains(';'); i++)
+        {
+            if(list.before(';', i+1).rafter(';') == "internal") themes.append("internal;");
+            if(FXStat::exists(list.before(';', i+1).rafter(';'))) themes.append(list.before(';', i+1).rafter(';')+";");
+        }
+        if(!themes.empty()) return themes;
+        return FXString("internal;")+FXString(themeDefaultPath);
+    }
+
+    FXString Encrypt(const FXString &text)
+    {
+        FXString result = "";
+        for(FXint i=0; i<text.count(); i++)
+        {
+            result += text[i];
+            FXint r = rand()%127;
+            result += FXchar(r<33 ? r+33 : r);
+        }
+        return result;
+    }
+
+    FXString Decrypt(const FXString &text)
+    {
+        FXString result = "";
+        for(FXint i=0; i<text.count(); i++)
+        {
+            if((i+1)%2) result += text[i];
+        }
+        return result;
+    }
 }

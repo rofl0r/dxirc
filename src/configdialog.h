@@ -83,7 +83,7 @@ class ConfigDialog: public FXDialogBox
 {
     FXDECLARE(ConfigDialog)
     public:
-        ConfigDialog(FXMainWindow *owner, IrcColor clrs, FXString clist, dxIgnoreUserArray ulist, FXString tpth, FXString thm, FXint maxa, FXbool log, FXString lpth, FXbool srvw, FXString nichar, FXString fnt, FXbool scmd, FXbool slst, ColorTheme atheme, FXbool utray, FXbool cnick, FXbool ctt, FXbool rcn, FXint na, FXint da, FXint tp);
+        ConfigDialog(FXMainWindow *owner);
         virtual ~ConfigDialog();
         enum {
             ID_ADDCOMMAND = FXTopWindow::ID_LAST,
@@ -144,29 +144,6 @@ class ConfigDialog: public FXDialogBox
         long OnReconnect(FXObject*,FXSelector,void*);
         long OnTabPosition(FXObject*,FXSelector,void*);
 
-        FXString GetCommandsList() { return commandsList; }
-        dxIgnoreUserArray GetUsersList() { return usersList; }
-        IrcColor GetColors() { return colors; }
-        FXString GetThemePath() { return themePath; }
-        FXString GetThemesList() { return themesList; }
-        FXint GetMaxAway() { return maxAway; }
-        FXbool GetLogging() { return logging; }
-        FXbool GetServerWindow() { return serverWindow; }
-        FXString GetLogPath() { return logPath; }
-        FXString GetNickCompletionChar() { return nickChar; }
-        FXString GetIrcFont() { return ircFont->getFont(); }
-        FXbool GetSameCmd() { return sameCmd; }
-        FXbool GetSameList() { return sameList; }
-        ColorTheme GetTheme() { return themeCurrent; }
-        FXString GetFont() { return font->getFont(); }
-        FXbool GetUseTray() { return useTray; }
-        FXbool GetColoredNick() { return coloredNick; }
-        FXbool GetCloseToTray() { return closeToTray; }
-        FXbool GetReconnect() { return reconnect; }
-        FXint GetNumberAttempt() { return numberAttempt; }
-        FXint GetDelayAttempt() { return delayAttempt; }
-        FXint GetTabPosition() { return tabPosition; }
-
     private:
         ConfigDialog() {}
         ConfigDialog(const ConfigDialog&);
@@ -179,6 +156,8 @@ class ConfigDialog: public FXDialogBox
         FXTextField *folder, *nickCharField, *textTest;
         FXString commandsList, themePath, themesList, logPath;
         FXbool logging, serverWindow, sameCmd, sameList, useTray, coloredNick, closeToTray, reconnect;
+        FXbool usersShown, statusShown;
+        dxServerInfoArray serverList;
         dxIgnoreUserArray usersList;
         FXToolBar *iconsBar;
         IrcColor colors;
@@ -203,6 +182,7 @@ class ConfigDialog: public FXDialogBox
         FXSeparator *sep1, *sep2;
         FXFont *font, *ircFont;
         FXListBox *listTabs;
+        FXMainWindow *owner;
 
         void FillCommnads();
         FXString FillCommandsCombo();
@@ -217,6 +197,8 @@ class ConfigDialog: public FXDialogBox
         void ShowMessage();
         FXbool ThemeExist(const FXString &ckdTheme);
         FXbool NickExist(const FXString &ckdNick);
+        void ReadConfig();
+        void SaveConfig();
 };
 
 #endif /* CONFIGDIALOG_H */
