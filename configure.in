@@ -30,7 +30,7 @@ dnl Internationalisation
 AM_GNU_GETTEXT
 
 dnl Trayicon
-AC_ARG_ENABLE(tray, [  --disable-tray          Disable trayicon], enable_tray=no, enable_tray=yes)
+AC_ARG_ENABLE(tray, [  --disable-tray          Disable trayicon],, enable_tray=yes)
 AC_SUBST(enable_tray)
 if test "$enable_tray" = "yes"; then
   AC_DEFINE(HAVE_TRAY,1, Build with trayicon)
@@ -63,7 +63,7 @@ if test "$enable_ssl" = "yes"; then
 fi
 
 dnl Check for Lua
-AC_ARG_ENABLE(lua, [  --disable-lua           Disable Lua scripting], enable_lua=no, enable_lua=yes)
+AC_ARG_ENABLE(lua, [  --disable-lua           Disable Lua scripting],, enable_lua=yes)
 have_lua=no
 if test "$enable_lua" = "yes"; then
   PKG_CHECK_MODULES(LUA, lua5.1,

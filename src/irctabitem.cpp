@@ -678,8 +678,12 @@ long IrcTabItem::OnCommandline(FXObject *, FXSelector, void *)
             ProcessLine(text);
             return 1;
         }
+#ifdef HAVE_LUA
         parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_COMMAND), &text);
         if(!scriptHasAll) ProcessLine(text);
+#else
+        ProcessLine(text);
+#endif
     }
     return 1;
 }

@@ -10487,7 +10487,7 @@ $as_echo "#define HAVE_DCGETTEXT 1" >>confdefs.h
 
 # Check whether --enable-tray was given.
 if test "${enable_tray+set}" = set; then :
-  enableval=$enable_tray; enable_tray=no
+  enableval=$enable_tray;
 else
   enable_tray=yes
 fi
@@ -10782,7 +10782,7 @@ fi
 
 # Check whether --enable-lua was given.
 if test "${enable_lua+set}" = set; then :
-  enableval=$enable_lua; enable_lua=no
+  enableval=$enable_lua;
 else
   enable_lua=yes
 fi

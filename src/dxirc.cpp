@@ -1970,9 +1970,7 @@ long dxirc::OnIrcCommand(FXObject *sender, FXSelector, void *data)
                 }
             }
         }
-    }    
-#else
-    AppendIrcStyledText(_("dxirc is compiled without support for Lua scripting"), 4);
+    }
 #endif
     return 1;
 }
