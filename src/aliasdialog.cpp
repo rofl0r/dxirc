@@ -19,7 +19,6 @@
  *      MA 02110-1301, USA.
  */
 
-#include <fx.h>
 #include "aliasdialog.h"
 #include "utils.h"
 #include "config.h"
@@ -31,12 +30,9 @@ FXDEFMAP(AliasDialog) AliasDialogMap[] = {
     FXMAPFUNC(SEL_COMMAND,      AliasDialog::ID_DELETE,     AliasDialog::OnDelete),
     FXMAPFUNC(SEL_COMMAND,      AliasDialog::ID_CANCEL,     AliasDialog::OnCancel),
     FXMAPFUNC(SEL_CLOSE,        0,                          AliasDialog::OnCancel),
-    FXMAPFUNC(SEL_UPDATE,       0,                          AliasDialog::OnChange),
     FXMAPFUNC(SEL_COMMAND,      AliasDialog::ID_SAVECLOSE,  AliasDialog::OnSaveClose),
     FXMAPFUNC(SEL_KEYPRESS,     0,                          AliasDialog::OnKeyPress),
-    FXMAPFUNC(SEL_SELECTED,     AliasDialog::ID_TABLE,      AliasDialog::OnTableSelected),
-    FXMAPFUNC(SEL_DESELECTED,   AliasDialog::ID_TABLE,      AliasDialog::OnTableDeselected),
-    FXMAPFUNC(SEL_CHANGED,      AliasDialog::ID_TABLE,      AliasDialog::OnTableChanged)
+    FXMAPFUNC(SEL_COMMAND,      AliasDialog::ID_TABLE,      AliasDialog::OnTable),
 };
 
 FXIMPLEMENT(AliasDialog, FXDialogBox, AliasDialogMap, ARRAYNUMBER(AliasDialogMap))
@@ -46,22 +42,21 @@ AliasDialog::AliasDialog(FXMainWindow *owner)
 {
     aliases = utils::GetAliases();
 
-    setSelector(ID_CHANGE);
+    contents = new FXVerticalFrame(this, LAYOUT_FILL_X|LAYOUT_FILL_Y);
 
-    buttonframe = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X);
+    tableframe = new FXVerticalFrame(contents, LAYOUT_FILL_X|LAYOUT_FILL_Y|FRAME_THICK);
+    table = new FXIconList(tableframe, this, ID_TABLE, ICONLIST_DETAILED|ICONLIST_BROWSESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    table->appendHeader(_("Alias"), NULL, 150);
+    table->appendHeader(_("Command"), NULL, 200);
+
+    buttonframe = new FXHorizontalFrame(contents, LAYOUT_FILL_X);
     buttonAdd = new FXButton(buttonframe, _("Add"), NULL, this, ID_ADD, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
     buttonModify = new FXButton(buttonframe, _("Modify"), NULL, this, ID_MODIFY, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
     (FXint)aliases.size()? buttonModify->enable() : buttonModify->disable();
     buttonDelete = new FXButton(buttonframe, _("Delete"), NULL, this, ID_DELETE, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
     (FXint)aliases.size()? buttonDelete->enable() : buttonDelete->disable();
     buttonSaveClose = new FXButton(buttonframe, _("Save&&Close"), NULL, this, ID_SAVECLOSE, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
-    buttonCancel = new FXButton(buttonframe, _("Cancel"), NULL, this, ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);    
-
-    tableframe = new FXVerticalFrame(this, LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y|FRAME_THICK);
-    table = new FXIconList(tableframe, this, ID_TABLE, ICONLIST_DETAILED|ICONLIST_SINGLESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    table->appendHeader(_("Alias"));
-    table->appendHeader(_("Command"));
-    table->setScrollStyle(HSCROLLING_OFF);
+    buttonCancel = new FXButton(buttonframe, _("Cancel"), NULL, this, ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
 }
 
 AliasDialog::~AliasDialog()
@@ -91,11 +86,25 @@ long AliasDialog::OnAdd(FXObject*, FXSelector, void*)
 
     if(aliasEdit.execute(PLACEMENT_OWNER))
     {
-        if(!alias->getText().empty() && !command->getText().empty() && alias->getText()[0]=='/' && !alias->getText().contains(' '))
+        if(alias->getText().empty() || command->getText().empty())
+            return 1;
+        if(alias->getText()[0] != '/')
         {
-            aliases.insert(StringPair(alias->getText(), command->getText()));
-            UpdateTable();
+            FXMessageBox::information(this, MBOX_OK, _("Information"), _("Alias command has to start with '/'"));
+            return 1;
         }
+        if(alias->getText().contains(' '))
+        {
+            FXMessageBox::information(this, MBOX_OK, _("Information"), _("Alias command cann't contain space"));
+            return 1;
+        }
+        if(CommandExist(alias->getText()))
+        {
+            FXMessageBox::information(this, MBOX_OK, _("Information"), _("Command '%s' already exist"), alias->getText().text());
+            return 1;
+        }
+        aliases.insert(StringPair(alias->getText(), command->getText()));
+        UpdateTable();
     }
     return 1;
 }
@@ -119,13 +128,27 @@ long AliasDialog::OnModify(FXObject*, FXSelector, void*)
     new FXButton(buttonframe, _("Cancel"), NULL, &aliasEdit, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0, 0, 0, 0, 32, 32, 5, 5);
 
     if(aliasEdit.execute(PLACEMENT_OWNER))
-    {
-        if(!alias->getText().empty() && !command->getText().empty() && alias->getText()[0]=='/' && !alias->getText().contains(' '))
         {
-            aliases.erase(oldkey);
-            aliases.insert(StringPair(alias->getText(), command->getText()));
-            UpdateTable();
+        if(alias->getText().empty() || command->getText().empty())
+            return 1;
+        if(alias->getText()[0] != '/')
+        {
+            FXMessageBox::information(this, MBOX_OK, _("Information"), _("Alias command has to start with '/'"));
+            return 1;
         }
+        if(alias->getText().contains(' '))
+        {
+            FXMessageBox::information(this, MBOX_OK, _("Information"), _("Alias command cann't contain space"));
+            return 1;
+        }
+        if(CommandExist(alias->getText()) && comparecase(alias->getText(), oldkey))
+        {
+            FXMessageBox::information(this, MBOX_OK, _("Information"), _("Command '%s' already exist"), alias->getText().text());
+            return 1;
+        }
+        aliases.erase(oldkey);
+        aliases.insert(StringPair(alias->getText(), command->getText()));
+        UpdateTable();
     }
     return 1;
 }
@@ -168,28 +191,7 @@ long AliasDialog::OnKeyPress(FXObject *sender, FXSelector sel, void *ptr)
     return 0;
 }
 
-long AliasDialog::OnChange(FXObject *, FXSelector, void*)
-{
-    table->setHeaderSize(0, tableframe->getWidth()/2);
-    table->setHeaderSize(1, tableframe->getWidth()-tableframe->getWidth()/2);
-    return 1;
-}
-
-long AliasDialog::OnTableSelected(FXObject*, FXSelector, void *)
-{
-    buttonModify->enable();
-    buttonDelete->enable();
-    return 1;
-}
-
-long AliasDialog::OnTableDeselected(FXObject*, FXSelector, void*)
-{
-    buttonModify->disable();
-    buttonDelete->disable();
-    return 1;
-}
-
-long AliasDialog::OnTableChanged(FXObject*, FXSelector, void *)
+long AliasDialog::OnTable(FXObject*, FXSelector, void *)
 {
     buttonModify->enable();
     buttonDelete->enable();
@@ -204,4 +206,20 @@ void AliasDialog::UpdateTable()
     {
         table->appendItem((*it).first+"\t"+(*it).second);
     }
+    if((FXint)aliases.size())
+    {
+        buttonModify->enable();
+        buttonDelete->enable();
+    }
+}
+
+FXbool AliasDialog::CommandExist(const FXString &command)
+{
+    StringIt it;
+    for(it=aliases.begin(); it!=aliases.end(); it++)
+    {
+        if(!comparecase((*it).first, command)) return TRUE;
+    }
+    if(utils::IsCommand(command[0]=='/' ? command.after('/') : command)) return TRUE;
+    return FALSE;
 }

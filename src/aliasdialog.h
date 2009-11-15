@@ -37,7 +37,6 @@ public:
         ID_TABLE,
         ID_SAVECLOSE,
         ID_CANCEL,
-        ID_CHANGE,
         ID_LAST
     };
 
@@ -48,23 +47,21 @@ public:
     long OnDelete(FXObject*,FXSelector,void*);
     long OnCancel(FXObject*,FXSelector,void*);
     long OnSaveClose(FXObject*,FXSelector,void*);
-    long OnTableSelected(FXObject*,FXSelector,void*);
-    long OnTableDeselected(FXObject*,FXSelector,void*);
-    long OnTableChanged(FXObject*,FXSelector,void*);
+    long OnTable(FXObject*,FXSelector,void*);
     long OnKeyPress(FXObject*,FXSelector,void*);
-    long OnChange(FXObject*,FXSelector,void*);
 
 private:
     AliasDialog() {}
     AliasDialog(const AliasDialog& orig);
 
-    FXVerticalFrame *content, *tableframe;
+    FXVerticalFrame *contents, *tableframe;
     FXHorizontalFrame *buttonframe;
     FXIconList *table;
     FXButton *buttonAdd, *buttonModify, *buttonDelete, *buttonCancel, *buttonSaveClose;
     dxStringMap aliases;
 
     void UpdateTable();
+    FXbool CommandExist(const FXString&);
 };
 
 #endif	/* ALIASDIALOG_H */

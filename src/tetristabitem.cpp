@@ -21,6 +21,7 @@
  */
 
 #include "tetristabitem.h"
+#include "config.h"
 #include "i18n.h"
 
 static const Cell types[][4] = {

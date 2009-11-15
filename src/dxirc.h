@@ -43,6 +43,7 @@ typedef void (dxirc::* func_ptr) (const FXString&);
 class dxirc: public FXMainWindow
 {
     FXDECLARE(dxirc)
+    friend class ScriptDialog;
     public:
         dxirc(FXApp *app);
         virtual ~dxirc();
@@ -66,7 +67,7 @@ class dxirc: public FXMainWindow
             ID_ALIAS,
             ID_TRAY,
             ID_LOG,
-            ID_LOAD,
+            ID_SCRIPTS,
             ID_STIMEOUT,
             ID_TETRIS,
             ID_LAST
@@ -101,7 +102,7 @@ class dxirc: public FXMainWindow
         long OnNewTetris(FXObject*, FXSelector, void*);
         long OnTetrisKey(FXObject*, FXSelector, void*);
         long OnLua(FXObject*, FXSelector, void*);
-        long OnCommandLoad(FXObject*, FXSelector, void*);
+        long OnCommandScripts(FXObject*, FXSelector, void*);
         long OnIrcCommand(FXObject*, FXSelector, void*);
         long OnStatusTimeout(FXObject*, FXSelector, void*);
         static int OnLuaAddCommand(lua_State*);
@@ -129,8 +130,7 @@ class dxirc: public FXMainWindow
         FXFont *ircFont;
         ColorTheme appTheme;
         FXPopup *traymenu;
-        FXTrayIcon *trayIcon;
-        dxScriptEventsArray scriptEvents;
+        FXTrayIcon *trayIcon;        
         
         FXbool TabExist(IrcSocket*, FXString);
         FXbool ServerExist(const FXString&, const FXint&, const FXString&);
@@ -152,8 +152,7 @@ class dxirc: public FXMainWindow
         FXbool HasTetrisTab();
         void SortTabs();                
         void AppendIrcText(FXString);
-        void AppendIrcStyledText(FXString, FXint);
-        FXint LoadLuaScript(const FXString&);
+        void AppendIrcStyledText(FXString, FXint);        
         FXbool HasLuaAll(const FXString &);
         FXbool HasAllCommand();
 
@@ -170,7 +169,11 @@ class dxirc: public FXMainWindow
         LogViewer *viewer;
         dxServersArray servers;
         dxScriptsArray scripts;
+        dxScriptEventsArray scriptEvents;
         static dxirc *pThis;
+
+        FXint LoadLuaScript(FXString);
+        FXint UnloadLuaScript(FXString);
 };
 
 #endif // DXIRC_H

@@ -860,6 +860,7 @@ namespace utils
 
     FXbool IsCommand(const FXString &command)
     {
+        if(!commands.no()) return FALSE;
         for(FXint i=0; i<commands.no(); i++)
         {
             if(comparecase(command, commands.at(i)) == 0) return TRUE;

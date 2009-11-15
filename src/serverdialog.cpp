@@ -31,8 +31,7 @@ FXDEFMAP(ServerDialog) ServerDialogMap[] = {
     FXMAPFUNC(SEL_COMMAND,          ServerDialog::ID_CANCEL,    ServerDialog::OnCancel),
     FXMAPFUNC(SEL_CLOSE,            0,                          ServerDialog::OnCancel),
     FXMAPFUNC(SEL_COMMAND,          ServerDialog::ID_SAVECLOSE, ServerDialog::OnSaveClose),
-    FXMAPFUNC(SEL_COMMAND,          ServerDialog::ID_LIST,      ServerDialog::OnListSelected),
-    FXMAPFUNC(SEL_DESELECTED,       ServerDialog::ID_LIST,      ServerDialog::OnListDeselected),
+    FXMAPFUNC(SEL_COMMAND,          ServerDialog::ID_LIST,      ServerDialog::OnList),
     FXMAPFUNC(SEL_DOUBLECLICKED,    ServerDialog::ID_LIST,      ServerDialog::OnDoubleClick),
     FXMAPFUNC(SEL_KEYPRESS,         0,                          ServerDialog::OnKeyPress),
 };
@@ -46,7 +45,7 @@ ServerDialog::ServerDialog(FXMainWindow *owner, dxServerInfoArray servers)
 
     serverframe = new FXHorizontalFrame(contents, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     listframe = new FXVerticalFrame(serverframe, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    names = new FXList(listframe, this, ID_LIST, LIST_SINGLESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    names = new FXList(listframe, this, ID_LIST, LIST_BROWSESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     names->setScrollStyle(HSCROLLING_OFF);
     UpdateList();
 
@@ -55,36 +54,47 @@ ServerDialog::ServerDialog(FXMainWindow *owner, dxServerInfoArray servers)
 
     new FXLabel(matrix, _("Hostname:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     hostname = new FXTextField(matrix, 25, NULL, 0, TEXTFIELD_READONLY|FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    hostname->setBackColor(getApp()->getBaseColor());
 
     new FXLabel(matrix, _("Port:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     port = new FXTextField(matrix, 25, NULL, 0, TEXTFIELD_READONLY|TEXTFIELD_INTEGER|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    port->setBackColor(getApp()->getBaseColor());
 
     new FXLabel(matrix, _("Password:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     passwd = new FXTextField(matrix, 25, NULL, 0, TEXTFIELD_READONLY|TEXTFIELD_PASSWD|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    passwd->setBackColor(getApp()->getBaseColor());
 
     new FXLabel(matrix, _("Nickname:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     nick = new FXTextField(matrix, 25, NULL, 0, TEXTFIELD_READONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    nick->setBackColor(getApp()->getBaseColor());
 
     new FXLabel(matrix, _("Realname:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     realname = new FXTextField(matrix, 25, NULL, 0, TEXTFIELD_READONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    realname->setBackColor(getApp()->getBaseColor());
 
     new FXLabel(matrix, _("Channel(s):"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    channels = new FXTextField(matrix, 25, NULL, 0, TEXTFIELD_READONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    FXHorizontalFrame *channelsbox=new FXHorizontalFrame(matrix, LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW|FRAME_SUNKEN|FRAME_THICK,0,0,0,0, 0,0,0,0);
+    channels = new FXText(channelsbox, NULL, 0, TEXT_READONLY|TEXT_WORDWRAP|LAYOUT_FILL_X|LAYOUT_FILL_X);
+    channels->setVisibleRows(3);
+    channels->setVisibleColumns(25);
+    channels->setBackColor(getApp()->getBaseColor());
 
     new FXLabel(matrix, _("Commands on connection:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     FXHorizontalFrame *commandsbox=new FXHorizontalFrame(matrix, LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW|FRAME_SUNKEN|FRAME_THICK,0,0,0,0, 0,0,0,0);
     commands = new FXText(commandsbox, NULL, 0, TEXT_READONLY|TEXT_WORDWRAP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     commands->setVisibleRows(4);
     commands->setVisibleColumns(25);
+    commands->setBackColor(getApp()->getBaseColor());
 
 #ifdef HAVE_OPENSSL
     new FXLabel(matrix, _("Use SSL:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    buttonSsl = new FXCheckButton(matrix, "", NULL, 0);
+    usessl = new FXTextField(matrix, 25, NULL, 0, TEXTFIELD_READONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    usessl->setBackColor(getApp()->getBaseColor());
 #endif
 
     new FXLabel(matrix, _("Auto connect:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    buttonAuto = new FXCheckButton(matrix, "", NULL, 0);
-    //buttonAuto->disable();
+    autoconnect = new FXTextField(matrix, 25, NULL, 0, TEXTFIELD_READONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    autoconnect->setBackColor(getApp()->getBaseColor());
 
     buttonframe = new FXHorizontalFrame(contents, LAYOUT_FILL_X|LAYOUT_FILL_Y);
 
@@ -314,24 +324,13 @@ long ServerDialog::OnKeyPress(FXObject *sender,FXSelector sel,void *ptr)
     return 0;
 }
 
-long ServerDialog::OnListSelected(FXObject*,FXSelector,void*)
+long ServerDialog::OnList(FXObject*,FXSelector,void*)
 {
     UpdateDetails();
 
     buttonJoin->enable();
     buttonModify->enable();
     buttonDelete->enable();
-
-    return 1;
-}
-
-long ServerDialog::OnListDeselected(FXObject*,FXSelector,void*)
-{
-    UpdateDetails();
-
-    buttonJoin->disable();
-    buttonModify->disable();
-    buttonDelete->disable();
 
     return 1;
 }
@@ -387,15 +386,15 @@ void ServerDialog::UpdateDetails()
             if(serverList[index].passwd.length()>18) passwd->setTipText(serverList[index].passwd);
             else passwd->setTipText("");
         channels->setText(serverList[index].channels);
-            if(serverList[index].channels.length()>18) channels->setTipText(serverList[index].channels);
+            if(channels->getNumRows()>3) channels->setTipText(serverList[index].channels);
             else channels->setTipText("");
         commands->setText(serverList[index].commands);
             if(commands->getNumRows()>4) commands->setTipText(serverList[index].commands);
             else commands->setTipText("");
 #ifdef HAVE_OPENSSL
-        buttonSsl->setCheck(serverList[index].useSsl);
+        serverList[index].useSsl ? usessl->setText(_("Yes")) : usessl->setText(_("No"));
 #endif
-        buttonAuto->setCheck(serverList[index].autoConnect);
+        serverList[index].autoConnect ? autoconnect->setText(_("Yes")) : autoconnect->setText(_("No"));
     }
     else
     {
@@ -405,7 +404,11 @@ void ServerDialog::UpdateDetails()
         realname->setText("");
         passwd->setText("");
         channels->setText("");
-        buttonAuto->setCheck(FALSE);
+        commands->setText("");
+#ifdef HAVE_OPENSSL
+        usessl->setText("");
+#endif
+        autoconnect->setText("");
         buttonJoin->disable();
         buttonModify->disable();
         buttonDelete->disable();

@@ -51,8 +51,7 @@ class ServerDialog: public FXDialogBox
         long OnDelete(FXObject*,FXSelector,void*);
         long OnCancel(FXObject*,FXSelector,void*);
         long OnSaveClose(FXObject*,FXSelector,void*);
-        long OnListSelected(FXObject*,FXSelector,void*);
-        long OnListDeselected(FXObject*,FXSelector,void*);
+        long OnList(FXObject*,FXSelector,void*);
         long OnDoubleClick(FXObject*,FXSelector,void*);
         long OnKeyPress(FXObject*,FXSelector,void*);
 
@@ -67,9 +66,8 @@ class ServerDialog: public FXDialogBox
         FXGroupBox *group;
         FXMatrix *matrix;
         FXList *names;
-        FXTextField *hostname, *port, *passwd, *nick, *realname, *channels;
-        FXText *commands;
-        FXCheckButton *buttonAuto, *buttonSsl;
+        FXTextField *hostname, *port, *passwd, *nick, *realname, *autoconnect, *usessl;
+        FXText *channels, *commands;
         FXButton *buttonJoin, *buttonAdd, *buttonModify, *buttonDelete, *buttonCancel, *buttonSaveClose;
 
         FXbool HostnameExist(const FXString&, const FXint&, const FXString&);

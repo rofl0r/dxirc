@@ -35,6 +35,7 @@
 #include "aliasdialog.h"
 #include "utils.h"
 #include "tetristabitem.h"
+#include "scriptdialog.h"
 
 FXDEFMAP(dxirc) dxircMap[] = {
     FXMAPFUNC(SEL_CLOSE,        0,                          dxirc::OnCommandClose),
@@ -59,7 +60,7 @@ FXDEFMAP(dxirc) dxircMap[] = {
     FXMAPFUNC(SEL_COMMAND,      dxirc::ID_ALIAS,            dxirc::OnCommandAlias),
     FXMAPFUNC(SEL_COMMAND,      dxirc::ID_LOG,              dxirc::OnCommandLog),
     FXMAPFUNC(SEL_COMMAND,      dxirc::ID_TRAY,             dxirc::OnTrayClicked),
-    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_LOAD,             dxirc::OnCommandLoad),
+    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_SCRIPTS,              dxirc::OnCommandScripts),
     FXMAPFUNC(SEL_TIMEOUT,      dxirc::ID_STIMEOUT,         dxirc::OnStatusTimeout),
     FXMAPFUNC(SEL_COMMAND,      dxirc::ID_TETRIS,           dxirc::OnTetrisKey),
     FXMAPFUNC(SEL_COMMAND,      IrcSocket::ID_SERVER,       dxirc::OnIrcEvent),
@@ -111,7 +112,7 @@ dxirc::dxirc(FXApp *app)
     disconnect->disable();
 #ifdef HAVE_LUA
     new FXMenuSeparator(servermenu);
-    new FXMenuCommand(servermenu, _("L&oad script\tCtrl-O"), NULL, this, ID_LOAD);
+    new FXMenuCommand(servermenu, _("S&cripts\tCtrl-S"), NULL, this, ID_SCRIPTS);
 #endif
     new FXMenuSeparator(servermenu);
     logviewer = new FXMenuCommand(servermenu, _("&Log viewer\tCtrl-G"), NULL, this, ID_LOG);
@@ -346,8 +347,10 @@ void dxirc::ReadConfig()
     logPath = set.readStringEntry("SETTINGS", "logPath");
     if(logging && !FXStat::exists(logPath)) logging = FALSE;
     FXint usersNum = set.readIntEntry("USERS", "number", 0);
+    usersList.clear();
     if(usersNum)
     {
+        
         for(FXint i=0; i<usersNum; i++)
         {
             IgnoreUser user;
@@ -534,7 +537,7 @@ long dxirc::OnCommandHelp(FXObject*, FXSelector, void*)
     text->setVisibleColumns(90);
     text->setText(HELP_TEXT);
 
-    new FXButton(contents, _("Close"), NULL, &helpDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
+    new FXButton(contents, _("&Close"), NULL, &helpDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
 
     helpDialog.execute(PLACEMENT_CURSOR);
     return 1;
@@ -1177,10 +1180,10 @@ long dxirc::OnCommandDisconnect(FXObject*, FXSelector, void*)
         {
             FXDialogBox confirmDialog(this, _("Confirm disconnect"), DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0);
             FXVerticalFrame *contents = new FXVerticalFrame(&confirmDialog, LAYOUT_SIDE_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 10,10,10,10, 0,0);
-            new FXLabel(contents, FXStringFormat(_("Disconnect server: %s\nPort: %d\nNick: %s?"), currentserver->GetServerName().text(), currentserver->GetServerPort(), currentserver->GetNickName().text()), NULL, JUSTIFY_LEFT|ICON_BEFORE_TEXT);
+            new FXLabel(contents, FXStringFormat(_("Disconnect server: %s\nPort: %d\nNick: %s"), currentserver->GetServerName().text(), currentserver->GetServerPort(), currentserver->GetNickName().text()), NULL, JUSTIFY_LEFT|ICON_BEFORE_TEXT);
             FXHorizontalFrame* buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y);
-            new FXButton(buttonframe, _("OK"), NULL, &confirmDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
-            new FXButton(buttonframe, _("Cancel"), NULL, &confirmDialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
+            new FXButton(buttonframe, _("Yes"), NULL, &confirmDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
+            new FXButton(buttonframe, _("No"), NULL, &confirmDialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
             if (confirmDialog.execute(PLACEMENT_OWNER))
             {
                 currentserver->Disconnect();
@@ -1818,15 +1821,18 @@ long dxirc::OnTetrisKey(FXObject*, FXSelector, void *ptr)
     return 1;
 }
 
-long dxirc::OnCommandLoad(FXObject*, FXSelector, void*)
+long dxirc::OnCommandScripts(FXObject*, FXSelector, void*)
 {
 #ifdef HAVE_LUA
-    FXFileDialog file(this, _("Load lua script"));
-    file.setPatternList(_("Lua scripts (*.lua)"));
-    if(file.execute(PLACEMENT_CURSOR))
-    {
-        return LoadLuaScript(file.getFilename());
-    }
+    ScriptDialog *dialog = new ScriptDialog(this);
+    dialog->execute(PLACEMENT_OWNER);
+//    FXFileDialog file(this, _("Load lua script"));
+//    file.setPatternList(_("Lua scripts (*.lua)"));
+//    if(file.execute(PLACEMENT_CURSOR))
+//    {
+//        return LoadLuaScript(file.getFilename());
+//    }
+
 #endif
     return 1;
 }
@@ -1841,40 +1847,7 @@ long dxirc::OnLua(FXObject *obj, FXSelector, void *data)
     }
     if(lua->type == LUA_UNLOAD)
     {
-        FXbool success = FALSE;
-        if(!scripts.no())
-        {
-            AppendIrcStyledText(FXStringFormat(_("Script %s isn't loaded"), lua->text.lower().text()), 4);
-            return 0;
-        }
-        else
-        {
-            for(FXint i=scripts.no()-1; i>-1; i--)
-            {
-                if(comparecase(lua->text, scripts[i].name)==0)
-                {
-                    utils::RemoveScriptCommands(scripts[i].name);
-                    lua_close(scripts[i].L);
-                    scripts.erase(i);
-                    success = TRUE;
-                }
-            }            
-        }
-        if(!scriptEvents.no()) return 0;
-        else
-        {
-            for(FXint i=scriptEvents.no()-1; i>-1; i--)
-            {
-                if(comparecase(lua->text, scriptEvents[i].script)==0)
-                {
-                    scriptEvents.erase(i);
-                    success = TRUE;
-                }
-            }
-        }
-        if(success) AppendIrcStyledText(FXStringFormat(_("Script %s was unloaded"), lua->text.lower().text()), 4);
-        else AppendIrcStyledText(FXStringFormat(_("Script %s isn't loaded"), lua->text.lower().text()), 4);
-        return 1;
+        return UnloadLuaScript(lua->text);
     }
     if(lua->type == LUA_LIST)
     {
@@ -2166,7 +2139,7 @@ void dxirc::AppendIrcStyledText(FXString text, FXint style)
     }
 }
 
-FXint dxirc::LoadLuaScript(const FXString &path)
+FXint dxirc::LoadLuaScript(FXString path)
 {
 #ifdef HAVE_LUA
     if(scripts.no())
@@ -2248,11 +2221,49 @@ FXint dxirc::LoadLuaScript(const FXString &path)
 #endif
 }
 
+FXint dxirc::UnloadLuaScript(FXString name)
+{
+#ifdef HAVE_LUA
+    FXbool success = FALSE;
+    if(!scripts.no())
+    {
+        AppendIrcStyledText(FXStringFormat(_("Script %s isn't loaded"), name.text()), 4);
+        return 0;
+    }
+    else
+    {
+        for(FXint i=scripts.no()-1; i>-1; i--)
+        {
+            if(comparecase(name, scripts[i].name)==0)
+            {
+                utils::RemoveScriptCommands(scripts[i].name);
+                lua_close(scripts[i].L);
+                scripts.erase(i);
+                success = TRUE;
+            }
+        }
+    }
+    for(FXint i=scriptEvents.no()-1; i>-1; i--)
+    {
+        if(comparecase(name, scriptEvents[i].script)==0)
+        {
+            scriptEvents.erase(i);
+            success = TRUE;
+        }
+    }
+    if(success) AppendIrcStyledText(FXStringFormat(_("Script %s was unloaded"), name.text()), 4);
+    else AppendIrcStyledText(FXStringFormat(_("Script %s isn't loaded"), name.text()), 4);
+    return 1;
+#else
+    return 0;
+#endif
+}
+
 FXbool dxirc::HasLuaAll(const FXString &file)
 {
     std::ifstream fin(file.text());
     std::string line;
-    while(!fin.eof())
+    while(fin.good())
     {
         std::getline(fin, line);
         if(line.find("dxirc.AddAll") != std::string::npos) return TRUE;
@@ -2285,16 +2296,10 @@ int dxirc::OnLuaAddCommand(lua_State *lua)
     if(lua_isstring(lua, 2)) funcname = lua_tostring(lua,2);
     if(lua_isstring(lua, 3)) helptext = lua_tostring(lua,3);
     if(name.empty() || funcname.empty() || helptext.empty()) return 0;
-    if(utils::CommandsNo())
+    if(utils::IsCommand(name))
     {
-        for(FXint i=0; i < utils::CommandsNo(); i++)
-        {
-            if(comparecase(utils::CommandsAt(i), name) == 0)
-            {
-                pThis->AppendIrcStyledText(FXStringFormat(_("Command %s already exists"), name.text()), 4);
-                return 0;
-            }
-        }
+        pThis->AppendIrcStyledText(FXStringFormat(_("Command %s already exists"), name.text()), 4);
+        return 0;
     }
     if(pThis->scripts.no())
     {

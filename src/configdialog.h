@@ -95,8 +95,6 @@ class ConfigDialog: public FXDialogBox
             ID_DELETEICONS,
             ID_COMMAND,
             ID_USER,
-            ID_CHANNEL,
-            ID_SERVER,
             ID_IRCCOLORS,
             ID_IRCFONT,
             ID_COLORS,
@@ -148,7 +146,8 @@ class ConfigDialog: public FXDialogBox
         ConfigDialog() {}
         ConfigDialog(const ConfigDialog&);
 
-        FXList *commands, *users, *channels, *servers, *icons;
+        FXList *commands, *icons;
+        FXIconList *users;
         FXButton *addCommand, *deleteCommand, *addUser, *modifyUser, *deleteUser, *addTheme, *deleteTheme, *selectPath;
         FXButton *icon1, *icon2, *icon3, *icon4, *icon5, *icon6, *icon7;
         FXButton *fontButton, *ircfontButton;

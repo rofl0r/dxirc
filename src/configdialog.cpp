@@ -37,7 +37,6 @@ FXDEFMAP(ConfigDialog) ConfigDialogMap[] = {
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_MODIFYUSER, ConfigDialog::OnModifyUser),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_DELETEUSER, ConfigDialog::OnDeleteUser),
     FXMAPFUNC(SEL_CHANGED, ConfigDialog::ID_ICONS, ConfigDialog::OnIconsChanged),
-    FXMAPFUNC(SEL_SELECTED, ConfigDialog::ID_ICONS, ConfigDialog::OnIconsChanged),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_ADDICONS, ConfigDialog::OnAddIcons),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_DELETEICONS, ConfigDialog::OnDeleteIcons),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_TRAY, ConfigDialog::OnTray),
@@ -55,9 +54,9 @@ FXDEFMAP(ConfigDialog) ConfigDialogMap[] = {
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_FONT, ConfigDialog::OnFont),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_IRCFONT, ConfigDialog::OnIrcFont),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_TABPOS, ConfigDialog::OnTabPosition),
-    FXMAPFUNCS(SEL_SELECTED, ConfigDialog::ID_USER, ConfigDialog::ID_SERVER, ConfigDialog::OnUsersSelected),
-    FXMAPFUNCS(SEL_DESELECTED, ConfigDialog::ID_USER, ConfigDialog::ID_SERVER, ConfigDialog::OnUsersDeselected),
-    FXMAPFUNCS(SEL_CHANGED, ConfigDialog::ID_USER, ConfigDialog::ID_SERVER, ConfigDialog::OnUsersChanged),
+    FXMAPFUNC(SEL_SELECTED, ConfigDialog::ID_USER, ConfigDialog::OnUsersSelected),
+    FXMAPFUNC(SEL_DESELECTED, ConfigDialog::ID_USER, ConfigDialog::OnUsersDeselected),
+    FXMAPFUNC(SEL_CHANGED, ConfigDialog::ID_USER, ConfigDialog::OnUsersChanged),
 };
 
 FXIMPLEMENT(ConfigDialog, FXDialogBox, ConfigDialogMap, ARRAYNUMBER(ConfigDialogMap))
@@ -199,7 +198,7 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     addCommand = new FXButton(commandsbuttons, _("Add"), NULL, this, ID_ADDCOMMAND, FRAME_RAISED|FRAME_THICK);
     deleteCommand = new FXButton(commandsbuttons, _("Delete"), NULL, this, ID_DELETECOMMAND, FRAME_RAISED|FRAME_THICK);
     FXVerticalFrame *commandslist = new FXVerticalFrame(commandsgroup, LAYOUT_FILL_X|LAYOUT_FILL_Y|FRAME_SUNKEN|FRAME_THICK);
-    commands = new FXList(commandslist, this, ID_COMMAND, LIST_SINGLESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    commands = new FXList(commandslist, this, ID_COMMAND, LIST_BROWSESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     FXGroupBox *usersgroup = new FXGroupBox(ignorepane, _("Users"), FRAME_GROOVE|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     FXVerticalFrame *usersbuttons = new FXVerticalFrame(usersgroup, LAYOUT_SIDE_RIGHT|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
     addUser = new FXButton(usersbuttons, _("Add"), NULL, this, ID_ADDUSER, FRAME_RAISED|FRAME_THICK);
@@ -207,12 +206,10 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     deleteUser = new FXButton(usersbuttons, _("Delete"), NULL, this, ID_DELETEUSER, FRAME_RAISED|FRAME_THICK);
     FXVerticalFrame *userspane = new FXVerticalFrame(usersgroup, LAYOUT_FILL_X|LAYOUT_FILL_Y|FRAME_SUNKEN|FRAME_THICK);
     FXHorizontalFrame *usersframe = new FXHorizontalFrame(userspane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    users = new FXList(usersframe, this, ID_USER, LIST_SINGLESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    users->setScrollStyle(HSCROLLING_OFF);
-    channels = new FXList(usersframe, this, ID_CHANNEL, LIST_SINGLESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    channels->setScrollStyle(HSCROLLING_OFF);
-    servers = new FXList(usersframe, this, ID_SERVER, LIST_SINGLESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    servers->setScrollStyle(HSCROLLING_OFF);
+    users = new FXIconList(usersframe, this, ID_USER, ICONLIST_AUTOSIZE|ICONLIST_DETAILED|ICONLIST_BROWSESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    users->appendHeader(_("User"), NULL, 200);
+    users->appendHeader(_("Channel(s)"), NULL, 150);
+    users->appendHeader(_("Server(s)"), NULL, 150);
     FillCommnads();
     FillUsers();
     commands->getNumItems() ? deleteCommand->enable() : deleteCommand->disable();
@@ -235,26 +232,25 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     addTheme = new FXButton(themesbuttons, _("Add"), NULL, this, ID_ADDICONS, FRAME_RAISED|FRAME_THICK);
     deleteTheme = new FXButton(themesbuttons, _("Delete"), NULL, this, ID_DELETEICONS, FRAME_RAISED|FRAME_THICK);
     FXVerticalFrame *themeslist = new FXVerticalFrame(themesgroup, LAYOUT_FILL_X|LAYOUT_FILL_Y|FRAME_SUNKEN|FRAME_THICK);
-    icons = new FXList(themeslist, this, ID_ICONS, LIST_SINGLESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    iconsBar = new FXToolBar(themeslist, LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    icon1 = new FXButton(iconsBar, _("\tAdmin"), NULL, NULL, 0, BUTTON_TOOLBAR);
-    icon2 = new FXButton(iconsBar, _("\tOwner"), NULL, NULL, 0, BUTTON_TOOLBAR);
-    icon3 = new FXButton(iconsBar, _("\tOp"), NULL, NULL, 0, BUTTON_TOOLBAR);
-    icon4 = new FXButton(iconsBar, _("\tHalfop"), NULL, NULL, 0, BUTTON_TOOLBAR);
-    icon5 = new FXButton(iconsBar, _("\tVoice"), NULL, NULL, 0, BUTTON_TOOLBAR);
-    icon6 = new FXButton(iconsBar, _("\tNormal"), NULL, NULL, 0, BUTTON_TOOLBAR);
-    icon7 = new FXButton(iconsBar, _("\tAway"), NULL, NULL, 0, BUTTON_TOOLBAR);
+    icons = new FXList(themeslist, this, ID_ICONS, LIST_BROWSESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);    
     FillIcons();
     for(FXint i=0; i<icons->getNumItems(); i++)
     {
         if(icons->getItemText(i) == themePath)
         {
-            icons->selectItem(i, TRUE);
             icons->setCurrentItem(i);
             break;
         }
     }
     icons->getNumItems()>1 ? deleteTheme->enable() : deleteTheme->disable();
+    iconsBar = new FXToolBar(themeslist, LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    icon1 = new FXButton(iconsBar, _("\tAdmin"), MakeIcon(getApp(), themePath, "irc_admin.png", TRUE), NULL, 0, BUTTON_TOOLBAR);
+    icon2 = new FXButton(iconsBar, _("\tOwner"), MakeIcon(getApp(), themePath, "irc_owner.png", TRUE), NULL, 0, BUTTON_TOOLBAR);
+    icon3 = new FXButton(iconsBar, _("\tOp"), MakeIcon(getApp(), themePath, "irc_op.png", TRUE), NULL, 0, BUTTON_TOOLBAR);
+    icon4 = new FXButton(iconsBar, _("\tHalfop"), MakeIcon(getApp(), themePath, "irc_halfop.png", TRUE), NULL, 0, BUTTON_TOOLBAR);
+    icon5 = new FXButton(iconsBar, _("\tVoice"), MakeIcon(getApp(), themePath, "irc_voice.png", TRUE), NULL, 0, BUTTON_TOOLBAR);
+    icon6 = new FXButton(iconsBar, _("\tNormal"), MakeIcon(getApp(), themePath, "irc_normal.png", TRUE), NULL, 0, BUTTON_TOOLBAR);
+    icon7 = new FXButton(iconsBar, _("\tAway"), MakeAwayIcon(getApp(), themePath, "irc_normal.png"), NULL, 0, BUTTON_TOOLBAR);
     new FXCheckButton(otherpane, _("Reconnect after disconnection"), &targetReconnect, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
     FXHorizontalFrame *napane = new FXHorizontalFrame(otherpane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     numberAttemptLabel = new FXLabel(napane, _("Number of attempts"), NULL, LAYOUT_LEFT);
@@ -431,8 +427,6 @@ long ConfigDialog::OnUsersSelected(FXObject*, FXSelector, void *ptr)
 {
     FXint i = (FXint)(FXival)ptr;
     users->selectItem(i);
-    channels->selectItem(i);
-    servers->selectItem(i);
     deleteUser->enable();
     return 1;
 }
@@ -447,23 +441,6 @@ long ConfigDialog::OnUsersChanged(FXObject*, FXSelector, void *ptr)
 {
     FXint i = (FXint)(FXival)ptr;
     users->selectItem(i);
-    channels->selectItem(i);
-    servers->selectItem(i);
-    return 1;
-}
-
-long ConfigDialog::OnIconsChanged(FXObject*, FXSelector, void *ptr)
-{
-    FXint i = (FXint)(FXival)ptr;
-    icons->selectItem(i);
-    themePath = icons->getItemText(i);
-    icon1->setIcon(MakeIcon(getApp(), themePath, "irc_admin.png", TRUE));
-    icon2->setIcon(MakeIcon(getApp(), themePath, "irc_owner.png", TRUE));
-    icon3->setIcon(MakeIcon(getApp(), themePath, "irc_op.png", TRUE));
-    icon4->setIcon(MakeIcon(getApp(), themePath, "irc_halfop.png", TRUE));
-    icon5->setIcon(MakeIcon(getApp(), themePath, "irc_voice.png", TRUE));
-    icon6->setIcon(MakeIcon(getApp(), themePath, "irc_normal.png", TRUE));
-    icon7->setIcon(MakeAwayIcon(getApp(), themePath, "irc_normal.png"));
     return 1;
 }
 
@@ -579,9 +556,7 @@ long ConfigDialog::OnAddUser(FXObject*, FXSelector, void*)
             channel->getText().empty() ? user.channel = "all" : user.channel = channel->getText();
             server->getText().empty() ? user.server = "all" : user.server = server->getText();
             usersList.append(user);
-            users->appendItem(user.nick);
-            channels->appendItem(user.channel);
-            servers->appendItem(user.server);
+            users->appendItem(user.nick+"\t"+user.channel+"\t"+user.server);
             if(!deleteUser->isEnabled()) deleteUser->enable();
             if(!modifyUser->isEnabled()) modifyUser->enable();
         }
@@ -619,9 +594,7 @@ long ConfigDialog::OnModifyUser(FXObject*, FXSelector, void*)
             usersList[i].nick = nick->getText();
             channel->getText().empty() ? usersList[i].channel = "all" : usersList[i].channel = channel->getText();
             server->getText().empty() ? usersList[i].server = "all" : usersList[i].server = server->getText();
-            users->setItemText(i, usersList[i].nick);
-            channels->setItemText(i, usersList[i].channel);
-            servers->setItemText(i, usersList[i].server);
+            users->setItemText(i, usersList[i].nick+"\t"+usersList[i].channel+"\t"+usersList[i].server);
         }
     }
     return 1;
@@ -631,8 +604,6 @@ long ConfigDialog::OnDeleteUser(FXObject*, FXSelector, void*)
 {
     FXint i = users->getCurrentItem();
     users->removeItem(i);
-    channels->removeItem(i);
-    servers->removeItem(i);
     usersList.erase(i);
     if(usersList.no())
     {
@@ -663,9 +634,31 @@ long ConfigDialog::OnDeleteIcons(FXObject*, FXSelector, void*)
 {
     FXint i = icons->getCurrentItem();
     icons->removeItem(i);
-    icons->selectItem(icons->getNumItems()-1, TRUE);
+    i = icons->getCurrentItem();
+    themePath = icons->getItemText(i);
+    icon1->setIcon(MakeIcon(getApp(), themePath, "irc_admin.png", TRUE));
+    icon2->setIcon(MakeIcon(getApp(), themePath, "irc_owner.png", TRUE));
+    icon3->setIcon(MakeIcon(getApp(), themePath, "irc_op.png", TRUE));
+    icon4->setIcon(MakeIcon(getApp(), themePath, "irc_halfop.png", TRUE));
+    icon5->setIcon(MakeIcon(getApp(), themePath, "irc_voice.png", TRUE));
+    icon6->setIcon(MakeIcon(getApp(), themePath, "irc_normal.png", TRUE));
+    icon7->setIcon(MakeAwayIcon(getApp(), themePath, "irc_normal.png"));
     icons->getNumItems()>1 ? deleteTheme->enable() : deleteTheme->disable();
     UpdateIcons();
+    return 1;
+}
+
+long ConfigDialog::OnIconsChanged(FXObject*, FXSelector, void *ptr)
+{
+    FXint i = (FXint)(FXival)ptr;
+    themePath = icons->getItemText(i);
+    icon1->setIcon(MakeIcon(getApp(), themePath, "irc_admin.png", TRUE));
+    icon2->setIcon(MakeIcon(getApp(), themePath, "irc_owner.png", TRUE));
+    icon3->setIcon(MakeIcon(getApp(), themePath, "irc_op.png", TRUE));
+    icon4->setIcon(MakeIcon(getApp(), themePath, "irc_halfop.png", TRUE));
+    icon5->setIcon(MakeIcon(getApp(), themePath, "irc_voice.png", TRUE));
+    icon6->setIcon(MakeIcon(getApp(), themePath, "irc_normal.png", TRUE));
+    icon7->setIcon(MakeAwayIcon(getApp(), themePath, "irc_normal.png"));
     return 1;
 }
 
@@ -1066,9 +1059,7 @@ void ConfigDialog::FillUsers()
     {
         for(FXint i=0; i<usersList.no(); i++)
         {
-            users->appendItem(usersList[i].nick);
-            channels->appendItem(usersList[i].channel);
-            servers->appendItem(usersList[i].server);
+            users->appendItem(usersList[i].nick+"\t"+usersList[i].channel+"\t"+usersList[i].server);
         }
     }
 }
@@ -1186,6 +1177,7 @@ void ConfigDialog::ReadConfig()
     FXint usersNum = set.readIntEntry("USERS", "number", 0);
     if(usersNum)
     {
+
         for(FXint i=0; i<usersNum; i++)
         {
             IgnoreUser user;

@@ -522,11 +522,20 @@ void IrcTabItem::AppendLinkText(const FXString &txt, FXint style)
     FXint linkLength=0;
     FXbool bold = FALSE;
     FXbool under = FALSE;
+    FXString normalText = "";
     FXint length = txt.length();
     while(i<length)
     {
         if(txt[i]=='h' && !comparecase(txt.mid(i,7),"http://"))
         {
+            if(!normalText.empty())
+            {
+                if(bold && under) text->appendStyledText(normalText, 7);
+                else if(bold && !under) text->appendStyledText(normalText, 5);
+                else if(!bold && under) text->appendStyledText(normalText, 6);
+                else text->appendStyledText(normalText, style);
+                normalText.clear();
+            }
             for(FXint j=i; j<length; j++)
             {
                 if(Badchar(txt[j]))
@@ -541,6 +550,14 @@ void IrcTabItem::AppendLinkText(const FXString &txt, FXint style)
         }
         else if(txt[i]=='h' && !comparecase(txt.mid(i,8),"https://"))
         {
+            if(!normalText.empty())
+            {
+                if(bold && under) text->appendStyledText(normalText, 7);
+                else if(bold && !under) text->appendStyledText(normalText, 5);
+                else if(!bold && under) text->appendStyledText(normalText, 6);
+                else text->appendStyledText(normalText, style);
+                normalText.clear();
+            }
             for(FXint j=i; j<length; j++)
             {
                 if(Badchar(txt[j]))
@@ -555,6 +572,14 @@ void IrcTabItem::AppendLinkText(const FXString &txt, FXint style)
         }
         else if(txt[i]=='f' && !comparecase(txt.mid(i,6),"ftp://"))
         {
+            if(!normalText.empty())
+            {
+                if(bold && under) text->appendStyledText(normalText, 7);
+                else if(bold && !under) text->appendStyledText(normalText, 5);
+                else if(!bold && under) text->appendStyledText(normalText, 6);
+                else text->appendStyledText(normalText, style);
+                normalText.clear();
+            }
             for(FXint j=i; j<length; j++)
             {
                 if(Badchar(txt[j]))
@@ -569,6 +594,14 @@ void IrcTabItem::AppendLinkText(const FXString &txt, FXint style)
         }
         else if(txt[i]=='w' && !comparecase(txt.mid(i,4),"www."))
         {
+            if(!normalText.empty())
+            {
+                if(bold && under) text->appendStyledText(normalText, 7);
+                else if(bold && !under) text->appendStyledText(normalText, 5);
+                else if(!bold && under) text->appendStyledText(normalText, 6);
+                else text->appendStyledText(normalText, style);
+                normalText.clear();
+            }
             for(FXint j=i; j<length; j++)
             {
                 if(Badchar(txt[j]))
@@ -585,21 +618,42 @@ void IrcTabItem::AppendLinkText(const FXString &txt, FXint style)
         {
             if(txt[i] == '\002')
             {
+                if(!normalText.empty())
+                {
+                    if(bold && under) text->appendStyledText(normalText, 7);
+                    else if(bold && !under) text->appendStyledText(normalText, 5);
+                    else if(!bold && under) text->appendStyledText(normalText, 6);
+                    else text->appendStyledText(normalText, style);
+                    normalText.clear();
+                }
                 bold = !bold;
             }
             else if(txt[i] == '\037')
             {
+                if(!normalText.empty())
+                {
+                    if(bold && under) text->appendStyledText(normalText, 7);
+                    else if(bold && !under) text->appendStyledText(normalText, 5);
+                    else if(!bold && under) text->appendStyledText(normalText, 6);
+                    else text->appendStyledText(normalText, style);
+                    normalText.clear();
+                }
                 under = !under;
             }
             else
             {
-                if(bold && under) text->appendStyledText(txt.mid(i,1), 7);
-                else if(bold && !under) text->appendStyledText(txt.mid(i,1), 5);
-                else if(!bold && under) text->appendStyledText(txt.mid(i,1), 6);
-                else text->appendStyledText(txt.mid(i,1), style);
+                normalText.append(txt[i]);
             }
         }
         i++;
+    }
+    if(!normalText.empty())
+    {
+        if(bold && under) text->appendStyledText(normalText, 7);
+        else if(bold && !under) text->appendStyledText(normalText, 5);
+        else if(!bold && under) text->appendStyledText(normalText, 6);
+        else text->appendStyledText(normalText, style);
+        normalText.clear();
     }
     text->appendText("\n");
 }
@@ -697,10 +751,12 @@ FXbool IrcTabItem::ProcessLine(const FXString& commandtext)
         FXint num = acommand.contains('/');
         if(num>1 && utils::IsCommand(acommand.section('/',2).before(' ')))
         {
+            FXbool result = FALSE;
             for(FXint i=1; i<=num; i++)
             {
-                return ProcessCommand(acommand.section('/',i).prepend('/').trim());
+                result = ProcessCommand(acommand.section('/',i).prepend('/').trim());
             }
+            return result;
         }
         else
         {
@@ -1216,7 +1272,16 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     {
                         FXString channel = params.before(' ');
                         FXString message = params.after(' ');
-                        if(channel == getText()) AppendIrcStyledText(server->GetNickName()+" "+message, 2);
+                        if(channel == getText())
+                        {
+                            AppendIrcStyledText(server->GetNickName()+" "+message, 2);
+                            IrcEvent ev;
+                            ev.eventType = IRC_ACTION;
+                            ev.param1 = server->GetNickName();
+                            ev.param2 = channel;
+                            ev.param3 = message;
+                            parent->getParent()->getParent()->handle(server, FXSEL(SEL_COMMAND, IrcSocket::ID_SERVER), &ev);
+                        }
                         if(message.length() > maxLen-19-channel.length())
                         {
                             dxStringArray messages = CutText(message, maxLen-19-channel.length());
@@ -1232,6 +1297,12 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     else
                     {
                         AppendIrcStyledText(server->GetNickName()+" "+params, 2);
+                        IrcEvent ev;
+                        ev.eventType = IRC_ACTION;
+                        ev.param1 = server->GetNickName();
+                        ev.param2 = getText();
+                        ev.param3 = params;
+                        parent->getParent()->getParent()->handle(server, FXSEL(SEL_COMMAND, IrcSocket::ID_SERVER), &ev);
                         if(params.length() > maxLen-19-getText().length())
                         {
                             dxStringArray messages = CutText(params, maxLen-19-getText().length());
@@ -1309,7 +1380,13 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     if(to == getText())
                     {
                         if(coloredNick) AppendIrcNickText(server->GetNickName(), message, GetNickColor(server->GetNickName()));
-                        AppendIrcText("<"+server->GetNickName()+"> "+message);
+                        else AppendIrcText("<"+server->GetNickName()+"> "+message);
+                        IrcEvent ev;
+                        ev.eventType = IRC_PRIVMSG;
+                        ev.param1 = server->GetNickName();
+                        ev.param2 = to;
+                        ev.param3 = message;
+                        parent->getParent()->getParent()->handle(server, FXSEL(SEL_COMMAND, IrcSocket::ID_SERVER), &ev);
                     }
                     if(message.length() > maxLen-10-to.length())
                     {
@@ -1812,6 +1889,12 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
         {
             if(coloredNick) AppendIrcNickText(server->GetNickName(), commandtext, GetNickColor(server->GetNickName()));
             else AppendIrcText("<"+server->GetNickName()+"> "+commandtext);
+            IrcEvent ev;
+            ev.eventType = IRC_PRIVMSG;
+            ev.param1 = server->GetNickName();
+            ev.param2 = getText();
+            ev.param3 = commandtext;
+            parent->getParent()->getParent()->handle(server, FXSEL(SEL_COMMAND, IrcSocket::ID_SERVER), &ev);
             if(commandtext.length() > maxLen-10-getText().length())
             {
                 dxStringArray messages = CutText(commandtext, maxLen-10-getText().length());

@@ -217,6 +217,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\scriptdialog.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\src\serverdialog.cpp"
 				>
 			</File>
@@ -288,6 +292,10 @@
 			</File>
 			<File
 				RelativePath="..\src\logviewer.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\scriptdialog.h"
 				>
 			</File>
 			<File
