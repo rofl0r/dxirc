@@ -81,6 +81,8 @@ public:
         ID_GAMECANVAS = FXMainWindow::ID_LAST+45,
         ID_NEXTCANVAS,
         ID_TETRISTIMEOUT,
+        ID_NEW,
+        ID_PAUSE,
         ID_LAST
     };
 
@@ -105,6 +107,8 @@ public:
 
     long OnPaint(FXObject*, FXSelector, void*);
     long OnTimeout(FXObject*, FXSelector, void*);
+    long OnNewGame(FXObject*, FXSelector, void*);
+    long OnPauseGame(FXObject*, FXSelector, void*);
 
 private:
     TetrisTabItem() {}
@@ -114,6 +118,7 @@ private:
     FXSplitter *splitter;
     FXCanvas *gamecanvas, *nextcanvas;
     FXLabel *levelLabel, *scoreLabel, *linesLabel;
+    FXButton *newButton, *pauseButton;
     FXFont *messageFont;
     FXint cells[columns][rows];
     FXint fullLines[4];

@@ -146,6 +146,8 @@ FXbool Piece::UpdatePosition(const Cell* ucells)
 FXDEFMAP(TetrisTabItem) TetrisTabItemMap[] = {
     FXMAPFUNC(SEL_PAINT,      TetrisTabItem::ID_GAMECANVAS,         TetrisTabItem::OnPaint),
     FXMAPFUNC(SEL_PAINT,      TetrisTabItem::ID_NEXTCANVAS,         TetrisTabItem::OnPaint),
+    FXMAPFUNC(SEL_COMMAND,    TetrisTabItem::ID_NEW,                TetrisTabItem::OnNewGame),
+    FXMAPFUNC(SEL_COMMAND,    TetrisTabItem::ID_PAUSE,              TetrisTabItem::OnPauseGame),
     FXMAPFUNC(SEL_TIMEOUT,    TetrisTabItem::ID_TETRISTIMEOUT,      TetrisTabItem::OnTimeout)
 };
 
@@ -180,6 +182,9 @@ TetrisTabItem::TetrisTabItem(FXTabBook *tab, const FXString &tabtext, FXIcon *ic
     levelLabel = new FXLabel(otherframe, FXStringFormat(_("Level: %d"), level));
     scoreLabel = new FXLabel(otherframe, FXStringFormat(_("Score: %d"), score));
     linesLabel = new FXLabel(otherframe, FXStringFormat(_("Lines: %d"), removedLines));
+    newButton = new FXButton(otherframe, _("&New game"), NULL, this, ID_NEW);
+    pauseButton = new FXButton(otherframe, _("&Pause game"), NULL, this, ID_PAUSE);
+    pauseButton->disable();
 
     messageFont = new FXFont(getApp(), "helvetica", 25, FXFont::Bold, FXFont::Straight, FONTENCODING_DEFAULT, FXFont::NonExpanded, FXFont::Scalable|FXFont::Rotatable);
 
@@ -278,6 +283,8 @@ void TetrisTabItem::NewGame()
     paused = FALSE;
     done = FALSE;
     pauseEnable = TRUE;
+    pauseButton->enable();
+    pauseButton->setText(_("&Pause game"));
     removedLines = 0;
     level = 1;
     score = 0;
@@ -302,6 +309,7 @@ void TetrisTabItem::StopGame()
     paused = FALSE;
     done = FALSE;
     pauseEnable = FALSE;
+    pauseButton->disable();
     removedLines = 0;
     level = 1;
     score = 0;
@@ -491,8 +499,16 @@ void TetrisTabItem::PauseResumeGame()
 {
     if(done) return;
     if(!pauseEnable) return;
-    if(paused) getApp()->addTimeout(this, ID_TETRISTIMEOUT, timeout-(level-1)*13);
-    else getApp()->removeTimeout(this, ID_TETRISTIMEOUT);
+    if(paused)
+    {
+        getApp()->addTimeout(this, ID_TETRISTIMEOUT, timeout-(level-1)*13);
+        pauseButton->setText(_("&Pause game"));
+    }
+    else
+    {
+        getApp()->removeTimeout(this, ID_TETRISTIMEOUT);
+        pauseButton->setText(_("&Resume game"));
+    }
     paused = !paused;
     Redraw();
 }
@@ -502,6 +518,7 @@ void TetrisTabItem::GameOver()
     getApp()->removeTimeout(this, ID_TETRISTIMEOUT);
     done = TRUE;
     pauseEnable = FALSE;
+    pauseButton->disable();
     Redraw();
 }
 
@@ -545,6 +562,18 @@ long TetrisTabItem::OnTimeout(FXObject*, FXSelector, void*)
         getApp()->addTimeout(this, ID_TETRISTIMEOUT, timeout-(level-1)*13);
     }
     else LandPiece();
+    return 1;
+}
+
+long TetrisTabItem::OnNewGame(FXObject*, FXSelector, void*)
+{
+    NewGame();
+    return 1;
+}
+
+long TetrisTabItem::OnPauseGame(FXObject*, FXSelector, void*)
+{
+    PauseResumeGame();
     return 1;
 }
 
