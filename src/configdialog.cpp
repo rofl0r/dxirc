@@ -42,6 +42,8 @@ FXDEFMAP(ConfigDialog) ConfigDialogMap[] = {
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_TRAY, ConfigDialog::OnTray),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_LOG, ConfigDialog::OnLogChanged),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_LOGPATH, ConfigDialog::OnPathSelect),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_AUTOLOAD, ConfigDialog::OnAutoloadChanged),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_AUTOLOADPATH, ConfigDialog::OnAutoloadPathSelect),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_SERVERWINDOW, ConfigDialog::OnServerWindow),
     FXMAPFUNC(SEL_CHANGED, ConfigDialog::ID_NICK, ConfigDialog::OnNickCharChanged),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_RECONNECT, ConfigDialog::OnReconnect),
@@ -136,6 +138,9 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     logTarget.connect(logging);
     logTarget.setTarget(this);
     logTarget.setSelector(ID_LOG);
+    autoloadTarget.connect(autoload);
+    autoloadTarget.setTarget(this);
+    autoloadTarget.setSelector(ID_AUTOLOAD);
 
     targetReconnect.connect(reconnect);
     targetReconnect.setTarget(this);
@@ -281,11 +286,35 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     new FXLabel(logpane, _("Log path"), NULL, LAYOUT_LEFT);
     folder = new FXTextField(logpane, 25, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_X);
     if(FXStat::exists(logPath)) folder->setText(logPath);
-    else folder->setText(FXSystem::getHomeDirectory());
+    else
+    {
+        logPath = FXSystem::getHomeDirectory();
+        folder->setText(logPath);
+    }
     folder->disable();
     selectPath = new FXButton(logpane, "...", NULL, this, ID_LOGPATH, FRAME_RAISED|FRAME_THICK);
     if(logging) selectPath->enable();
     else selectPath->disable();
+#ifdef HAVE_LUA
+    new FXCheckButton(otherpane, _("Automatically load scripts"), &autoloadTarget, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
+    FXHorizontalFrame *aloadpane = new FXHorizontalFrame(otherpane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    new FXLabel(aloadpane, _("Path"), NULL, LAYOUT_LEFT);
+    autoloadFolder = new FXTextField(aloadpane, 25, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_X);
+    autoloadFolder->disable();
+    if(FXStat::exists(autoloadPath)) autoloadFolder->setText(autoloadPath);
+    else
+    {
+#ifdef WIN32
+        autoloadPath = utils::LocaleToUtf8(FXSystem::getHomeDirectory()+PATHSEPSTRING+"scripts");
+#else
+        autoloadPath = FXSystem::getHomeDirectory()+PATHSEPSTRING+".dxirc"+PATHSEPSTRING+"scripts";
+#endif
+        autoloadFolder->setText(autoloadPath);
+    }
+    selectAutoloadPath = new FXButton(aloadpane, "...", NULL, this, ID_AUTOLOADPATH, FRAME_RAISED|FRAME_THICK);
+    if(autoload) selectAutoloadPath->enable();
+    else selectAutoloadPath->disable();
+#endif
     FXHorizontalFrame *tabpane = new FXHorizontalFrame(otherpane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     new FXLabel(tabpane, _("Tab position"), NULL, LAYOUT_LEFT);
     listTabs = new FXListBox(tabpane, this, ID_TABPOS);
@@ -909,6 +938,13 @@ long ConfigDialog::OnLogChanged(FXObject*, FXSelector, void*)
     return 1;
 }
 
+long ConfigDialog::OnAutoloadChanged(FXObject*, FXSelector, void*)
+{
+    if(autoload) selectAutoloadPath->enable();
+    else selectAutoloadPath->disable();
+    return 1;
+}
+
 long ConfigDialog::OnNickCharChanged(FXObject*, FXSelector, void*)
 {
     nickChar = nickCharField->getText().left(1);
@@ -962,6 +998,18 @@ long ConfigDialog::OnPathSelect(FXObject*, FXSelector, void*)
     {
         logPath = dirdialog.getDirectory();
         folder->setText(logPath);
+    }
+    return 1;
+}
+
+long ConfigDialog::OnAutoloadPathSelect(FXObject*, FXSelector, void*)
+{
+    FXDirDialog dirdialog(this,_("Select autoload directory"));
+    dirdialog.setDirectory(autoloadFolder->getText());
+    if(dirdialog.execute(PLACEMENT_CURSOR))
+    {
+        autoloadPath = dirdialog.getDirectory();
+        autoloadFolder->setText(autoloadPath);
     }
     return 1;
 }
@@ -1205,6 +1253,13 @@ void ConfigDialog::ReadConfig()
             serverList.append(server);
         }
     }
+#ifdef HAVE_LUA
+    autoload = set.readBoolEntry("SETTINGS", "autoload", FALSE);
+#else
+    autoload = FALSE;
+#endif
+    autoloadPath = set.readStringEntry("SETTINGS", "autoloadPath");
+    if(autoload && !FXStat::exists(utils::IsUtf8(autoloadPath.text(), autoloadPath.length()) ? autoloadPath : utils::LocaleToUtf8(autoloadPath))) autoload = FALSE;
 }
 
 void ConfigDialog::SaveConfig()
@@ -1297,6 +1352,8 @@ void ConfigDialog::SaveConfig()
             i++;
         }
     }
+    set.writeBoolEntry("SETTINGS", "autoload", autoload);
+    set.writeStringEntry("SETTINGS", "autoloadPath", autoloadPath.text());
     set.setModified();
     set.unparseFile(utils::GetIniFile());
 }

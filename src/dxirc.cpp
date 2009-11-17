@@ -261,10 +261,11 @@ void dxirc::create()
     {
         setY(0);
         setHeight(maxHeight);
-    }
+    }    
+    show();
     ReadServersConfig();
     pThis = this;
-    show();
+    AutoloadScripts();
 }
 
 int CompareTabs(const void **a,const void **b)
@@ -360,6 +361,13 @@ void dxirc::ReadConfig()
             usersList.append(user);
         }
     }
+#ifdef HAVE_LUA
+    autoload = set.readBoolEntry("SETTINGS", "autoload", FALSE);
+#else
+    autoload = FALSE;
+#endif
+    autoloadPath = set.readStringEntry("SETTINGS", "autoloadPath");
+    if(autoload && !FXStat::exists(utils::IsUtf8(autoloadPath.text(), autoloadPath.length()) ? autoloadPath : utils::LocaleToUtf8(autoloadPath))) autoload = FALSE;
     setX(xx);
     setY(yy);
     setWidth(ww);
@@ -486,6 +494,8 @@ void dxirc::SaveConfig()
             i++;
         }
     }
+    set.writeBoolEntry("SETTINGS", "autoload", autoload);
+    set.writeStringEntry("SETTINGS", "autoloadPath", autoloadPath.text());
     set.setModified();
     set.unparseFile(utils::GetIniFile());
 }
@@ -1821,18 +1831,61 @@ long dxirc::OnTetrisKey(FXObject*, FXSelector, void *ptr)
     return 1;
 }
 
+void dxirc::AutoloadScripts()
+{
+#ifdef HAVE_LUA
+    if(autoload && FXStat::exists(autoloadPath))
+    {
+        FXDir dir;
+        FXString name, pathname;
+        FXStat info;
+        FXint islink;
+        // Assume not a link
+        islink = FALSE;
+        // Managed to open directory
+        if (dir.open(autoloadPath))
+        {
+            // Process directory entries
+            while (dir.next())
+            {
+                // Get name of entry
+                name = dir.name();
+                // A dot special file?
+                if (name[0] == '.' && (name[1] == 0 || (name[1] == '.' && name[2] == 0))) continue;
+                // Hidden file or directory normally not shown
+                if (name[0] == '.') continue;
+                // Build full pathname of entry
+                pathname = autoloadPath;
+                if (!ISPATHSEP(pathname[pathname.length() - 1])) pathname += PATHSEPSTRING;
+                pathname += name;
+#ifndef WIN32
+                // Get file/link info
+                if (!FXStat::statLink(pathname, info)) continue;
+                // If its a link, get the info on file itself
+                islink = info.isLink();
+                if (islink && !FXStat::statFile(pathname, info)) continue;
+#else
+                // Get file/link info
+                if (!FXStat::statFile(pathname, info)) continue;
+                // Hidden file or directory normally not shown
+                if (info.isHidden()) continue;
+#endif
+                // If it is not a directory, and not showing files and matching pattern skip it
+                if (!info.isDirectory() && !FXPath::match("*.lua", name))continue;
+                LoadLuaScript(pathname, FALSE);
+            }
+            // Close it
+            dir.close();
+        }
+    }
+#endif
+}
+
 long dxirc::OnCommandScripts(FXObject*, FXSelector, void*)
 {
 #ifdef HAVE_LUA
     ScriptDialog *dialog = new ScriptDialog(this);
     dialog->execute(PLACEMENT_OWNER);
-//    FXFileDialog file(this, _("Load lua script"));
-//    file.setPatternList(_("Lua scripts (*.lua)"));
-//    if(file.execute(PLACEMENT_CURSOR))
-//    {
-//        return LoadLuaScript(file.getFilename());
-//    }
-
 #endif
     return 1;
 }
@@ -2139,7 +2192,7 @@ void dxirc::AppendIrcStyledText(FXString text, FXint style)
     }
 }
 
-FXint dxirc::LoadLuaScript(FXString path)
+FXint dxirc::LoadLuaScript(FXString path, FXbool showMessage)
 {
 #ifdef HAVE_LUA
     if(scripts.no())
@@ -2155,7 +2208,8 @@ FXint dxirc::LoadLuaScript(FXString path)
     }
     if(HasLuaAll(path))
     {
-        if(FXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("Script %s contains dxirc.AddAll\nThis can BREAK dxirc funcionality.\nLoad it anyway?"), path.text()) == 2) return 0;
+        if(showMessage && FXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("Script %s contains dxirc.AddAll\nThis can BREAK dxirc funcionality.\nLoad it anyway?"), path.text()) == 2) return 0;
+        else AppendIrcStyledText(FXStringFormat(_("Script %s contains dxirc.AddAll. This can BREAK dxirc funcionality."), path.text()), 4);
     }
     lua_State *L = luaL_newstate();
     if(L == NULL)

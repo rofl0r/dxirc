@@ -112,6 +112,8 @@ FXint IrcSocket::Connect()
 {
 #ifdef DEBUG
     fxmessage("Connect\n");
+    fxmessage("startChannels: %s\n", startChannels.text());
+    fxmessage("startCommands: %s\n", startCommands.text());
 #endif
     if(connected)
         return 1;
@@ -184,6 +186,8 @@ FXint IrcSocket::ConnectSSL()
 {
 #ifdef DEBUG
     fxmessage("ConnectSSL\n");
+    fxmessage("startChannels: %s\n", startChannels.text());
+    fxmessage("startCommands: %s\n", startCommands.text());
 #endif
     if(connected)
         return 1;
@@ -1357,10 +1361,9 @@ void IrcSocket::SendCommands()
 {
     if(!startCommands.contains('\n')) startCommands.append('\n');
     if(startCommands.right(1) != "\n") startCommands.append('\n');
-    while(startCommands.contains('\n'))
+    for(FXint i=0; i < startCommands.contains('\n'); i++)
     {
-        SendCommand(startCommands.before('\n'));
-        startCommands = startCommands.after('\n');
+        SendCommand(startCommands.section('\n', i));
     }
 }
 
@@ -1651,9 +1654,6 @@ void IrcSocket::MakeStartChannels()
                 startChannels.append(tab->getText()+",");
         }
     }
-#ifdef DEBUG
-    fxmessage("StartChannels: %s\n", startChannels.text());
-#endif
 }
 
 FXbool IrcSocket::ClearTarget()

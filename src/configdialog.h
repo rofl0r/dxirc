@@ -110,6 +110,8 @@ class ConfigDialog: public FXDialogBox
             ID_NICK,
             ID_RECONNECT,
             ID_TABPOS,
+            ID_AUTOLOAD,
+            ID_AUTOLOADPATH,
             ID_LAST
         };
 
@@ -134,6 +136,8 @@ class ConfigDialog: public FXDialogBox
         long OnServerWindow(FXObject*,FXSelector,void*);
         long OnNickCharChanged(FXObject*,FXSelector,void*);
         long OnPathSelect(FXObject*,FXSelector,void*);
+        long OnAutoloadChanged(FXObject*,FXSelector,void*);
+        long OnAutoloadPathSelect(FXObject*,FXSelector,void*);
         long OnTheme(FXObject*,FXSelector,void*);
         long OnThemeColorChanged(FXObject*,FXSelector,void*);
         long OnFont(FXObject*,FXSelector,void*);
@@ -148,14 +152,15 @@ class ConfigDialog: public FXDialogBox
 
         FXList *commands, *icons;
         FXIconList *users;
-        FXButton *addCommand, *deleteCommand, *addUser, *modifyUser, *deleteUser, *addTheme, *deleteTheme, *selectPath;
+        FXButton *addCommand, *deleteCommand, *addUser, *modifyUser, *deleteUser;
+        FXButton *addTheme, *deleteTheme, *selectPath, *selectAutoloadPath;
         FXButton *icon1, *icon2, *icon3, *icon4, *icon5, *icon6, *icon7;
         FXButton *fontButton, *ircfontButton;
         FXCheckButton *closeToTrayButton;
-        FXTextField *folder, *nickCharField, *textTest;
-        FXString commandsList, themePath, themesList, logPath;
+        FXTextField *folder, *nickCharField, *textTest, *autoloadFolder ;
+        FXString commandsList, themePath, themesList, logPath, autoloadPath;
         FXbool logging, serverWindow, sameCmd, sameList, useTray, coloredNick, closeToTray, reconnect;
-        FXbool usersShown, statusShown;
+        FXbool usersShown, statusShown, autoload;
         dxServerInfoArray serverList;
         dxIgnoreUserArray usersList;
         FXToolBar *iconsBar;
@@ -165,7 +170,7 @@ class ConfigDialog: public FXDialogBox
         FXLabel *numberAttemptLabel, *delayAttemptLabel;
         FXString nickChar;
         FXDataTarget textTarget, backTarget, userTarget, actionTarget, noticeTarget, errorTarget, hilightTarget, linkTarget;
-        FXDataTarget trayTarget, logTarget, serverTarget;
+        FXDataTarget trayTarget, logTarget, serverTarget, autoloadTarget;
         FXHiliteStyle textStyle[6];
         FXText *text;
         ColorTheme themeCurrent, themeUser;

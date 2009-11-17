@@ -122,9 +122,9 @@ class dxirc: public FXMainWindow
         dxServerInfoArray serverList;
         dxIgnoreUserArray usersList;
         FXbool usersShown, statusShown, logging, ownServerWindow, tempServerWindow, sameCmd;
-        FXbool sameList, useTray, coloredNick, closeToTray, reconnect;
+        FXbool sameList, useTray, coloredNick, closeToTray, reconnect, autoload;
         IrcColor colors;
-        FXString commandsList, themesList, themePath, logPath;
+        FXString commandsList, themesList, themePath, logPath, autoloadPath;
         FXint maxAway, numberAttempt, delayAttempt, tabPosition;
         FXString nickCompletionChar, fontSpec;
         FXFont *ircFont;
@@ -155,6 +155,7 @@ class dxirc: public FXMainWindow
         void AppendIrcStyledText(FXString, FXint);        
         FXbool HasLuaAll(const FXString &);
         FXbool HasAllCommand();
+        void AutoloadScripts();
 
     protected:
         FXMenuBar *menubar;
@@ -172,7 +173,7 @@ class dxirc: public FXMainWindow
         dxScriptEventsArray scriptEvents;
         static dxirc *pThis;
 
-        FXint LoadLuaScript(FXString);
+        FXint LoadLuaScript(FXString, FXbool=TRUE);
         FXint UnloadLuaScript(FXString);
 };
 
