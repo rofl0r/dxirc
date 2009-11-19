@@ -1870,8 +1870,10 @@ void dxirc::AutoloadScripts()
                 // Hidden file or directory normally not shown
                 if (info.isHidden()) continue;
 #endif
-                // If it is not a directory, and not showing files and matching pattern skip it
-                if (!info.isDirectory() && !FXPath::match("*.lua", name))continue;
+                // If it is a directory
+                if(info.isDirectory()) continue;
+                // If it is not matching pattern skip it
+                if (!FXPath::match("*.lua", name))continue;
                 LoadLuaScript(pathname, FALSE);
             }
             // Close it
@@ -2171,10 +2173,20 @@ void dxirc::AppendIrcText(FXString text)
     if(tabbook->numChildren())
     {
         FXint index = tabbook->getCurrent()*2;        
-        if(compare(tabbook->childAtIndex(index)->getClassName(), "IrcTabItem") != 0) return;
+        if(compare(tabbook->childAtIndex(index)->getClassName(), "IrcTabItem"))
+        {
+            for(FXint i=0; i<tabbook->numChildren(); i+=2)
+            {
+                if(!compare(tabbook->childAtIndex(index)->getClassName(), "IrcTabItem"))
+                {
+                    index = i;
+                    break;
+                }
+            }
+        }
         IrcTabItem *currenttab = static_cast<IrcTabItem*>(tabbook->childAtIndex(index));
         FXASSERT(currenttab != 0);
-        currenttab->AppendIrcText(text);
+        currenttab->AppendIrcText(text, TRUE);
         currenttab->MakeLastRowVisible(TRUE);
     }
 }
@@ -2184,10 +2196,20 @@ void dxirc::AppendIrcStyledText(FXString text, FXint style)
     if(tabbook->numChildren())
     {
         FXint index = tabbook->getCurrent()*2;
-        if(compare(tabbook->childAtIndex(index)->getClassName(), "IrcTabItem") != 0) return;
+        if(compare(tabbook->childAtIndex(index)->getClassName(), "IrcTabItem"))
+        {
+            for(FXint i=0; i<tabbook->numChildren(); i+=2)
+            {
+                if(!compare(tabbook->childAtIndex(index)->getClassName(), "IrcTabItem"))
+                {
+                    index = i;
+                    break;
+                }
+            }
+        }
         IrcTabItem *currenttab = static_cast<IrcTabItem*>(tabbook->childAtIndex(index));
         FXASSERT(currenttab != 0);
-        currenttab->AppendIrcStyledText(text, style);
+        currenttab->AppendIrcStyledText(text, style, TRUE);
         currenttab->MakeLastRowVisible(TRUE);
     }
 }
@@ -2208,7 +2230,10 @@ FXint dxirc::LoadLuaScript(FXString path, FXbool showMessage)
     }
     if(HasLuaAll(path))
     {
-        if(showMessage && FXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("Script %s contains dxirc.AddAll\nThis can BREAK dxirc funcionality.\nLoad it anyway?"), path.text()) == 2) return 0;
+        if(showMessage)
+        {
+            if(FXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("Script %s contains dxirc.AddAll\nThis can BREAK dxirc funcionality.\nLoad it anyway?"), path.text()) == 2) return 0;
+        }
         else AppendIrcStyledText(FXStringFormat(_("Script %s contains dxirc.AddAll. This can BREAK dxirc funcionality."), path.text()), 4);
     }
     lua_State *L = luaL_newstate();
