@@ -30,6 +30,7 @@ FXIcon *irc_owner_icon, *irc_admin_icon, *irc_op_icon, *irc_voice_icon, *irc_hal
 FXIcon *irc_away_owner_icon, *irc_away_admin_icon, *irc_away_op_icon, *irc_away_voice_icon, *irc_away_halfop_icon, *irc_away_normal_icon;
 FXIcon *serverlisticon, *connecticon, *disconnecticon, *quiticon, *closeicon, *optionicon, *helpicon;
 FXIcon *servericon, *channelicon, *queryicon, *clearicon, *flagicon, *trayicon, *newm, *unewm, *chnewm, *foldericon, *ofoldericon, *fileicon;
+FXIcon *cancelicon, *finishicon, *downicon, *upicon;
 FXColor menuColor, textBackColor;
 
 /* created by reswrap from file empty.png */
@@ -315,7 +316,10 @@ FXbool MakeAllIcons(FXApp *app, const FXString &iniFile)
     success = ((foldericon = MakeIcon(app, mainpath, "folder.png", TRUE)) != NULL) &success;
     success = ((ofoldericon = MakeIcon(app, mainpath, "folder_go.png", TRUE)) != NULL) &success;
     success = ((fileicon = MakeIcon(app, mainpath, "page.png", TRUE)) != NULL) &success;
-
+    success = ((cancelicon = MakeIcon(app, mainpath, "cancel.png", TRUE)) != NULL) &success;
+    success = ((finishicon = MakeIcon(app, mainpath, "tick.png", TRUE)) != NULL) &success;
+    success = ((downicon = MakeIcon(app, mainpath, "arrow_down.png", TRUE)) != NULL) &success;
+    success = ((upicon = MakeIcon(app, mainpath, "arrow_up.png", TRUE)) != NULL) &success;
 
     return success;
 }

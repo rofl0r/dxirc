@@ -9,6 +9,7 @@ src/help.h
 src/logviewer.cpp
 src/scriptdialog.cpp
 src/tetristabitem.cpp
+src/dccdialog.cpp
 
 
 

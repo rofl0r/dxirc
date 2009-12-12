@@ -44,6 +44,7 @@ FXDEFMAP(ConfigDialog) ConfigDialogMap[] = {
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_LOGPATH, ConfigDialog::OnPathSelect),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_AUTOLOAD, ConfigDialog::OnAutoloadChanged),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_AUTOLOADPATH, ConfigDialog::OnAutoloadPathSelect),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_DCCPATH, ConfigDialog::OnDccPathSelect),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_SERVERWINDOW, ConfigDialog::OnServerWindow),
     FXMAPFUNC(SEL_CHANGED, ConfigDialog::ID_NICK, ConfigDialog::OnNickCharChanged),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_RECONNECT, ConfigDialog::OnReconnect),
@@ -59,6 +60,10 @@ FXDEFMAP(ConfigDialog) ConfigDialogMap[] = {
     FXMAPFUNC(SEL_SELECTED, ConfigDialog::ID_USER, ConfigDialog::OnUsersSelected),
     FXMAPFUNC(SEL_DESELECTED, ConfigDialog::ID_USER, ConfigDialog::OnUsersDeselected),
     FXMAPFUNC(SEL_CHANGED, ConfigDialog::ID_USER, ConfigDialog::OnUsersChanged),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_DCCPORTD, ConfigDialog::OnDccPortD),
+    FXMAPFUNC(SEL_CHANGED, ConfigDialog::ID_DCCPORTD, ConfigDialog::OnDccPortD),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_DCCPORTH, ConfigDialog::OnDccPortH),
+    FXMAPFUNC(SEL_CHANGED, ConfigDialog::ID_DCCPORTH, ConfigDialog::OnDccPortH)
 };
 
 FXIMPLEMENT(ConfigDialog, FXDialogBox, ConfigDialogMap, ARRAYNUMBER(ConfigDialogMap))
@@ -149,6 +154,24 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     targetDelayAttempt.connect(delayAttempt);
     targetMaxAway.connect(maxAway);
 
+    targetLogPath.connect(logPath);
+    targetDccPath.connect(dccPath);
+    targetAutoloadPath.connect(autoloadPath);
+
+    targetDccIP1.connect(dccIP1);
+    targetDccIP2.connect(dccIP2);
+    targetDccIP3.connect(dccIP3);
+    targetDccIP4.connect(dccIP4);
+
+    targetDccPortD.connect(dccPortD);
+    targetDccPortD.setTarget(this);
+    targetDccPortD.setSelector(ID_DCCPORTD);
+    targetDccPortH.connect(dccPortH);
+    targetDccPortH.setTarget(this);
+    targetDccPortH.setSelector(ID_DCCPORTH);
+
+    targetDccTimeout.connect(dccTimeout);
+
     getApp()->getNormalFont()->create();
     FXFontDesc fontdescription;
     getApp()->getNormalFont()->getFontDesc(fontdescription);
@@ -156,9 +179,9 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     font->create();
 
     FXHorizontalFrame *closeframe = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X);    
-    FXButton *ok = new FXButton(closeframe, _("&Close"), NULL, this, ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|LAYOUT_RIGHT|FRAME_RAISED|FRAME_THICK, 0,0,0,0, 20,20);
+    FXButton *ok = new FXButton(closeframe, _("C&lose"), NULL, this, ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|LAYOUT_RIGHT|FRAME_RAISED|FRAME_THICK, 0,0,0,0, 20,20);
     ok->addHotKey(KEY_Return);
-    new FXButton(closeframe, _("Cancel"), NULL, this, ID_CANCEL, LAYOUT_RIGHT|FRAME_RAISED|FRAME_THICK, 0,0,0,0, 20,20);
+    new FXButton(closeframe, _("&Cancel"), NULL, this, ID_CANCEL, LAYOUT_RIGHT|FRAME_RAISED|FRAME_THICK, 0,0,0,0, 20,20);
 
     FXHorizontalFrame *contents = new FXHorizontalFrame(this, LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     FXVerticalFrame *buttonframe = new FXVerticalFrame(contents, LAYOUT_FILL_Y|LAYOUT_LEFT|PACK_UNIFORM_WIDTH);
@@ -274,7 +297,7 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     new FXSpinner(maxpane, 4, &targetMaxAway, FXDataTarget::ID_VALUE, SPIN_NOMAX|FRAME_GROOVE);
     FXHorizontalFrame *nickpane = new FXHorizontalFrame(otherpane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     new FXLabel(nickpane, _("Nick completion char"), NULL, LAYOUT_LEFT);
-    nickCharField = new FXTextField(nickpane, 1, this, ID_NICK, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_X);
+    nickCharField = new FXTextField(nickpane, 1, this, ID_NICK, TEXTFIELD_LIMITED|FRAME_THICK|FRAME_SUNKEN/*|LAYOUT_FILL_X*/);
     nickCharField->setText(nickChar);
 #ifdef HAVE_TRAY
     new FXCheckButton(otherpane, _("Use trayicon"), &trayTarget, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
@@ -284,14 +307,8 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     new FXCheckButton(otherpane, _("Logging chats"), &logTarget, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
     FXHorizontalFrame *logpane = new FXHorizontalFrame(otherpane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     new FXLabel(logpane, _("Log path"), NULL, LAYOUT_LEFT);
-    folder = new FXTextField(logpane, 25, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_X);
-    if(FXStat::exists(logPath)) folder->setText(logPath);
-    else
-    {
-        logPath = FXSystem::getHomeDirectory();
-        folder->setText(logPath);
-    }
-    folder->disable();
+    (new FXTextField(logpane, 25, &targetLogPath, FXDataTarget::ID_VALUE, TEXTFIELD_READONLY|FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_X))->disable();
+    if(!FXStat::exists(logPath)) logPath = FXSystem::getHomeDirectory();
     selectPath = new FXButton(logpane, "...", NULL, this, ID_LOGPATH, FRAME_RAISED|FRAME_THICK);
     if(logging) selectPath->enable();
     else selectPath->disable();
@@ -299,17 +316,14 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     new FXCheckButton(otherpane, _("Automatically load scripts"), &autoloadTarget, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
     FXHorizontalFrame *aloadpane = new FXHorizontalFrame(otherpane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     new FXLabel(aloadpane, _("Path"), NULL, LAYOUT_LEFT);
-    autoloadFolder = new FXTextField(aloadpane, 25, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_X);
-    autoloadFolder->disable();
-    if(FXStat::exists(autoloadPath)) autoloadFolder->setText(autoloadPath);
-    else
+    (new FXTextField(aloadpane, 25, &targetAutoloadPath, FXDataTarget::ID_VALUE, TEXTFIELD_READONLY|FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_X))->disable();
+    if(!FXStat::exists(autoloadPath))
     {
 #ifdef WIN32
         autoloadPath = utils::LocaleToUtf8(FXSystem::getHomeDirectory()+PATHSEPSTRING+"scripts");
 #else
         autoloadPath = FXSystem::getHomeDirectory()+PATHSEPSTRING+".dxirc"+PATHSEPSTRING+"scripts";
 #endif
-        autoloadFolder->setText(autoloadPath);
     }
     selectAutoloadPath = new FXButton(aloadpane, "...", NULL, this, ID_AUTOLOADPATH, FRAME_RAISED|FRAME_THICK);
     if(autoload) selectAutoloadPath->enable();
@@ -377,11 +391,42 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     FXHorizontalFrame *fontframe = new FXHorizontalFrame(lookpane, LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, DEFAULT_SPACING,DEFAULT_SPACING,DEFAULT_SPACING,DEFAULT_SPACING);
     new FXLabel(fontframe, _("Font"));
     fontButton = new FXButton(fontframe, " ", NULL, this, ID_FONT, LAYOUT_CENTER_Y|FRAME_RAISED|JUSTIFY_CENTER_X|JUSTIFY_CENTER_Y|LAYOUT_FILL_X);
+
+    FXVerticalFrame *dccpane = new FXVerticalFrame(switcher, LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    new FXLabel(dccpane, _("DCC settings"), NULL, LAYOUT_LEFT);
+    new FXHorizontalSeparator(dccpane, SEPARATOR_LINE|LAYOUT_FILL_X);
+    new FXLabel(dccpane, _("Directory for saving files:"), NULL, LAYOUT_LEFT);
+    FXHorizontalFrame *pathframe = new FXHorizontalFrame(dccpane, LAYOUT_FILL_X);
+    (new FXTextField(pathframe, 30, &targetDccPath, FXDataTarget::ID_VALUE, TEXTFIELD_READONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X))->disable();
+    new FXButton(pathframe, "...", NULL, this, ID_DCCPATH, FRAME_RAISED|FRAME_THICK);
+    FXHorizontalFrame *ipframe = new FXHorizontalFrame(dccpane, LAYOUT_FILL_X);
+    new FXLabel(ipframe, _("DCC IP address:"), NULL, LAYOUT_LEFT);
+    new FXTextField(ipframe, 3, &targetDccIP1, FXDataTarget::ID_VALUE, TEXTFIELD_INTEGER|TEXTFIELD_LIMITED|FRAME_SUNKEN|FRAME_THICK);
+    new FXLabel(ipframe, ".", NULL, LAYOUT_LEFT);
+    new FXTextField(ipframe, 3, &targetDccIP2, FXDataTarget::ID_VALUE, TEXTFIELD_INTEGER|TEXTFIELD_LIMITED|FRAME_SUNKEN|FRAME_THICK);
+    new FXLabel(ipframe, ".", NULL, LAYOUT_LEFT);
+    new FXTextField(ipframe, 3, &targetDccIP3, FXDataTarget::ID_VALUE, TEXTFIELD_INTEGER|TEXTFIELD_LIMITED|FRAME_SUNKEN|FRAME_THICK);
+    new FXLabel(ipframe, ".", NULL, LAYOUT_LEFT);
+    new FXTextField(ipframe, 3, &targetDccIP4, FXDataTarget::ID_VALUE, TEXTFIELD_INTEGER|TEXTFIELD_LIMITED|FRAME_SUNKEN|FRAME_THICK);
+    new FXLabel(dccpane, _("(Leave blank for use IP address from server)"), NULL, LAYOUT_LEFT);
+    new FXSeparator(dccpane, LAYOUT_FILL_X);
+    FXHorizontalFrame *portframe = new FXHorizontalFrame(dccpane, LAYOUT_FILL_X);
+    new FXLabel(portframe, _("DCC ports:"), NULL, LAYOUT_LEFT);
+    FXSpinner *dspinner = new FXSpinner(portframe, 6, &targetDccPortD, FXDataTarget::ID_VALUE, FRAME_SUNKEN|FRAME_THICK);
+    dspinner->setRange(0, 65536);
+    new FXLabel(portframe, "-");
+    FXSpinner *hspinner = new FXSpinner(portframe, 6, &targetDccPortH, FXDataTarget::ID_VALUE, FRAME_SUNKEN|FRAME_THICK);
+    hspinner->setRange(0, 65536);
+    new FXLabel(dccpane, _("(Set 0 for use ports from OS)"), NULL, LAYOUT_LEFT);
+    FXHorizontalFrame *timeframe = new FXHorizontalFrame(dccpane, LAYOUT_FILL_X);
+    new FXLabel(timeframe, _("Time for waiting for connection"), NULL, LAYOUT_LEFT);
+    new FXSpinner(timeframe, 4, &targetDccTimeout, FXDataTarget::ID_VALUE, SPIN_NOMAX|SPIN_CYCLIC|FRAME_SUNKEN|FRAME_THICK);
     
     new FXButton(buttonframe, _("&General"), NULL, switcher, FXSwitcher::ID_OPEN_THIRD, FRAME_RAISED);
     new FXButton(buttonframe, _("&Look"), NULL, switcher, FXSwitcher::ID_OPEN_FOURTH, FRAME_RAISED);
     new FXButton(buttonframe, _("&Irc Text"), NULL, switcher, FXSwitcher::ID_OPEN_FIRST, FRAME_RAISED);
     new FXButton(buttonframe, _("I&gnore"), NULL, switcher, FXSwitcher::ID_OPEN_SECOND, FRAME_RAISED);
+    new FXButton(buttonframe, _("&DCC"), NULL, switcher, FXSwitcher::ID_OPEN_FIFTH, FRAME_RAISED);
     switcher->setCurrent(2);
 
     for(int i=0; i<6; i++)
@@ -535,8 +580,8 @@ long ConfigDialog::OnAddCommand(FXObject*, FXSelector, void*)
     command->fillItems(FillCommandsCombo());
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    new FXButton(buttonframe, _("OK"), NULL, &dialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
-    new FXButton(buttonframe, _("Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
+    new FXButton(buttonframe, _("&OK"), NULL, &dialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
+    new FXButton(buttonframe, _("&Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
 
     if(dialog.execute(PLACEMENT_CURSOR))
     {
@@ -573,8 +618,8 @@ long ConfigDialog::OnAddUser(FXObject*, FXSelector, void*)
     server->setText("all");
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    new FXButton(buttonframe, _("OK"), NULL, &dialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
-    new FXButton(buttonframe, _("Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
+    new FXButton(buttonframe, _("&OK"), NULL, &dialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
+    new FXButton(buttonframe, _("&Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
 
     if(dialog.execute(PLACEMENT_CURSOR))
     {
@@ -613,8 +658,8 @@ long ConfigDialog::OnModifyUser(FXObject*, FXSelector, void*)
     server->setText(usersList[i].server);
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    new FXButton(buttonframe, _("OK"), NULL, &dialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
-    new FXButton(buttonframe, _("Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
+    new FXButton(buttonframe, _("&OK"), NULL, &dialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
+    new FXButton(buttonframe, _("&Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
 
     if(dialog.execute(PLACEMENT_CURSOR))
     {
@@ -993,11 +1038,10 @@ long ConfigDialog::OnReconnect(FXObject*, FXSelector, void*)
 long ConfigDialog::OnPathSelect(FXObject*, FXSelector, void*)
 {
     FXDirDialog dirdialog(this,_("Select log directory"));
-    dirdialog.setDirectory(folder->getText());
+    dirdialog.setDirectory(logPath);
     if(dirdialog.execute(PLACEMENT_CURSOR))
     {
         logPath = dirdialog.getDirectory();
-        folder->setText(logPath);
     }
     return 1;
 }
@@ -1005,12 +1049,36 @@ long ConfigDialog::OnPathSelect(FXObject*, FXSelector, void*)
 long ConfigDialog::OnAutoloadPathSelect(FXObject*, FXSelector, void*)
 {
     FXDirDialog dirdialog(this,_("Select autoload directory"));
-    dirdialog.setDirectory(autoloadFolder->getText());
+    dirdialog.setDirectory(autoloadPath);
     if(dirdialog.execute(PLACEMENT_CURSOR))
     {
         autoloadPath = dirdialog.getDirectory();
-        autoloadFolder->setText(autoloadPath);
     }
+    return 1;
+}
+
+long ConfigDialog::OnDccPathSelect(FXObject*, FXSelector, void*)
+{
+    FXDirDialog dirdialog(this,_("Select directory"));
+    dirdialog.setDirectory(dccPath);
+    if(dirdialog.execute(PLACEMENT_CURSOR))
+    {
+        dccPath = dirdialog.getDirectory();
+    }
+    return 1;
+}
+
+long ConfigDialog::OnDccPortD(FXObject*, FXSelector, void*)
+{
+    if(dccPortD<0 || dccPortD>65536) dccPortD = 0;
+    if(dccPortH<dccPortD) dccPortH = dccPortD;
+    return 1;
+}
+
+long ConfigDialog::OnDccPortH(FXObject*, FXSelector, void*)
+{
+    if(dccPortH<0 || dccPortH>65536) dccPortH = 0;
+    if(dccPortD>dccPortH) dccPortD = dccPortH;
     return 1;
 }
 
@@ -1222,6 +1290,8 @@ void ConfigDialog::ReadConfig()
     nickChar = FXString(set.readStringEntry("SETTINGS", "nickCompletionChar", ":")).left(1);
     logPath = set.readStringEntry("SETTINGS", "logPath");
     if(logging && !FXStat::exists(logPath)) logging = FALSE;
+    dccPath = set.readStringEntry("SETTINGS", "dccPath");
+    if(!FXStat::exists(dccPath)) dccPath = FXSystem::getHomeDirectory();
     FXint usersNum = set.readIntEntry("USERS", "number", 0);
     if(usersNum)
     {
@@ -1260,6 +1330,28 @@ void ConfigDialog::ReadConfig()
 #endif
     autoloadPath = set.readStringEntry("SETTINGS", "autoloadPath");
     if(autoload && !FXStat::exists(utils::IsUtf8(autoloadPath.text(), autoloadPath.length()) ? autoloadPath : utils::LocaleToUtf8(autoloadPath))) autoload = FALSE;
+    FXString dccIP = set.readStringEntry("SETTINGS", "dccIP");
+    FXRex rex("\\l");
+    if(dccIP.empty() || dccIP.contains('.')!=3 || rex.match(dccIP))
+    {
+        dccIP1 = "";
+        dccIP2 = "";
+        dccIP3 = "";
+        dccIP4 = "";
+    }
+    else
+    {
+        dccIP1 = dccIP.section('.',0);
+        dccIP2 = dccIP.section('.',1);
+        dccIP3 = dccIP.section('.',2);
+        dccIP4 = dccIP.section('.',3);
+    }
+    dccPortD = set.readIntEntry("SETTINGS", "dccPortD");
+    if(dccPortD<0 || dccPortD>65536) dccPortD = 0;
+    dccPortH = set.readIntEntry("SETTINGS", "dccPortH");
+    if(dccPortH<0 || dccPortH>65536) dccPortH = 0;
+    if(dccPortH<dccPortD) dccPortH = dccPortD;
+    dccTimeout = set.readIntEntry("SETTINGS", "dccTimeout", 66);
 }
 
 void ConfigDialog::SaveConfig()
@@ -1309,6 +1401,7 @@ void ConfigDialog::SaveConfig()
     set.writeIntEntry("SETTINGS", "delayAttempt", delayAttempt);
     set.writeBoolEntry("SETTINGS", "serverWindow", serverWindow);
     set.writeStringEntry("SETTINGS", "logPath", logPath.text());
+    set.writeStringEntry("SETTINGS", "dccPath", dccPath.text());
     set.writeStringEntry("SETTINGS", "nickCompletionChar", nickChar.text());
     set.writeIntEntry("USERS", "number", usersList.no());
     if(usersList.no())
@@ -1354,6 +1447,11 @@ void ConfigDialog::SaveConfig()
     }
     set.writeBoolEntry("SETTINGS", "autoload", autoload);
     set.writeStringEntry("SETTINGS", "autoloadPath", autoloadPath.text());
+    if(dccIP1.empty() || dccIP2.empty() || dccIP3.empty() || dccIP4.empty()) set.writeStringEntry("SETTINGS", "dccIP", "");
+    else set.writeStringEntry("SETTINGS", "dccIP", FXString(dccIP1+"."+dccIP2+"."+dccIP3+"."+dccIP4).text());
+    set.writeIntEntry("SETTINGS", "dccPortD", dccPortD);
+    set.writeIntEntry("SETTINGS", "dccPortH", dccPortH);
+    set.writeIntEntry("SETTINGS", "dccTimeout", dccTimeout);
     set.setModified();
     set.unparseFile(utils::GetIniFile());
 }

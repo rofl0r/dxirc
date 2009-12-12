@@ -112,6 +112,10 @@ class ConfigDialog: public FXDialogBox
             ID_TABPOS,
             ID_AUTOLOAD,
             ID_AUTOLOADPATH,
+            ID_DCCPATH,
+            ID_DCCPORTD,
+            ID_DCCPORTH,
+            ID_DCCTIMEOUT,
             ID_LAST
         };
 
@@ -145,6 +149,9 @@ class ConfigDialog: public FXDialogBox
         long OnTray(FXObject*,FXSelector,void*);
         long OnReconnect(FXObject*,FXSelector,void*);
         long OnTabPosition(FXObject*,FXSelector,void*);
+        long OnDccPathSelect(FXObject*,FXSelector,void*);
+        long OnDccPortD(FXObject*,FXSelector,void*);
+        long OnDccPortH(FXObject*,FXSelector,void*);
 
     private:
         ConfigDialog() {}
@@ -157,15 +164,16 @@ class ConfigDialog: public FXDialogBox
         FXButton *icon1, *icon2, *icon3, *icon4, *icon5, *icon6, *icon7;
         FXButton *fontButton, *ircfontButton;
         FXCheckButton *closeToTrayButton;
-        FXTextField *folder, *nickCharField, *textTest, *autoloadFolder ;
-        FXString commandsList, themePath, themesList, logPath, autoloadPath;
+        FXTextField *textTest, *nickCharField;
+        FXString commandsList, themePath, themesList, logPath, autoloadPath, dccPath;
+        FXString dccIP1, dccIP2, dccIP3, dccIP4;
         FXbool logging, serverWindow, sameCmd, sameList, useTray, coloredNick, closeToTray, reconnect;
         FXbool usersShown, statusShown, autoload;
         dxServerInfoArray serverList;
         dxIgnoreUserArray usersList;
         FXToolBar *iconsBar;
         IrcColor colors;
-        FXint maxAway, numberAttempt, delayAttempt, tabPosition;
+        FXint maxAway, numberAttempt, delayAttempt, tabPosition, dccPortD, dccPortH, dccTimeout;
         FXSpinner *numberAttemptSpinner, *delayAttemptSpinner;
         FXLabel *numberAttemptLabel, *delayAttemptLabel;
         FXString nickChar;
@@ -178,6 +186,8 @@ class ConfigDialog: public FXDialogBox
         FXDataTarget targetBack, targetBase, targetBorder, targetFore, targetMenuback, targetMenufore, targetSelback, targetSelfore, targetTipback, targetTipfore;
         FXDataTarget targetSameCmd, targetSameList, targetColoredNick, targetCloseToTray;
         FXDataTarget targetMaxAway, targetReconnect, targetNumberAttempt, targetDelayAttempt;
+        FXDataTarget targetDccPath, targetLogPath, targetAutoloadPath;
+        FXDataTarget targetDccIP1, targetDccIP2, targetDccIP3, targetDccIP4, targetDccPortD, targetDccPortH, targetDccTimeout;
         FXLabel *labelSelected, *labelNocurrent, *labelTip, *label;
         FXVerticalFrame *vframe2, *menuFrame;
         FXLabel *menuLabels[3];

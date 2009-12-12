@@ -36,7 +36,18 @@ enum TYPE {
     SERVER,
     CHANNEL,
     QUERY,
+    DCCCHAT,
     OTHER
+};
+
+enum DCCTYPE {
+    DCC_NONE,
+    DCC_CHATIN, //connect to someone for chat
+    DCC_CHATOUT, //someone connect to me for chat
+    DCC_IN, //connect to someone for file receive
+    DCC_OUT, //someone connect to me for file send
+    DCC_PIN, //someone connect to me for file receive (PSEND)
+    DCC_POUT //connect to someone for file send (PSEND)
 };
 
 enum IrcEventType {
@@ -50,6 +61,17 @@ enum IrcEventType {
     IRC_ACTION,
     IRC_CTCPREPLY,
     IRC_CTCPREQUEST,
+    IRC_DCCCHAT,
+    IRC_DCCMSG,
+    IRC_DCCACTION,
+    IRC_DCCSERVER,
+    IRC_DCCIN,
+    IRC_DCCOUT,
+    IRC_DCCPIN,
+    IRC_DCCPOUT,
+    IRC_DCCTOKEN,
+    IRC_DCCMYTOKEN,
+    IRC_DCCPOSITION,
     IRC_JOIN,
     IRC_PART,
     IRC_QUIT,
@@ -83,11 +105,6 @@ enum LuaCommands {
     LUA_UNLOAD,
     LUA_COMMAND,
     LUA_LIST
-};
-
-struct IrcEvent {
-    IrcEventType eventType;
-    FXString param1, param2, param3, param4;
 };
 
 struct NickInfo {
@@ -169,6 +186,29 @@ struct LuaScriptEvent {
     FXString script; //script name
 };
 
+struct DccFile {
+    FXString path;
+    DCCTYPE type;
+    FXulong currentPosition;
+    FXulong previousPostion;
+    FXulong size;
+    FXbool canceled;
+    FXulong finishedPosition; //used in sending for handle user position
+    FXint token; //token passive send
+    FXString ip; //ip adrress
+    FXint port;
+    bool operator==(const DccFile& file) const
+    {
+        return path == file.path && type == file.type && ip == file.ip && port && file.port && token == file.token;
+    }
+};
+
+struct IrcEvent {
+    IrcEventType eventType;
+    FXString param1, param2, param3, param4;
+    DccFile dccFile;
+};
+
 typedef FXArray<IrcSocket*> dxServersArray;
 typedef FXArray<FXObject*> dxTargetsArray;
 typedef FXArray<FXString> dxStringArray;
@@ -178,6 +218,7 @@ typedef FXArray<IgnoreUser> dxIgnoreUserArray;
 typedef FXArray<LuaScript> dxScriptsArray;
 typedef FXArray<LuaScriptCommand> dxScriptCommandsArray;
 typedef FXArray<LuaScriptEvent> dxScriptEventsArray;
+typedef FXArray<DccFile> dxDccFilesArray;
 typedef std::map<FXString,FXString> dxStringMap;
 typedef std::pair<FXString,FXString> StringPair;
 typedef std::map<FXString, FXString>::iterator StringIt;

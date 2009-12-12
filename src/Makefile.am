@@ -12,7 +12,8 @@ dxirc_SOURCES = configdialog.cpp \
                   dxpipe.cpp \
                   logviewer.cpp \
                   tetristabitem.cpp \
-                  scriptdialog.cpp
+                  scriptdialog.cpp \
+                  dccdialog.cpp
 
 if HAVE_TRAY
 dxirc_SOURCES += FXTrayApp.cpp \
@@ -42,6 +43,7 @@ EXTRA_DIST =  configdialog.h \
               logviewer.h \
               tetristabitem.h \
               scriptdialog.h \
+              dccdialog.h \
               FXTrayApp.h \
               FXTrayIcon.h
 

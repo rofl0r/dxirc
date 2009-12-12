@@ -42,6 +42,7 @@ namespace utils
         commands.append("CONNECT");
         commands.append("COMMANDS");
         commands.append("CTCP");
+        commands.append("DCC");
         commands.append("DEOP");
         commands.append("DEVOICE");
         commands.append("DISCONNECT");
@@ -1037,5 +1038,125 @@ namespace utils
             if((i+1)%2) result += text[i];
         }
         return result;
+    }
+
+    FXString GetStringIniEntry(const FXchar *section,const FXchar *key,const FXchar *def)
+    {
+        FXSettings set;
+        set.parseFile(iniFile, TRUE);
+        return set.readStringEntry(section, key, def);
+    }
+
+    FXint GetIntIniEntry(const FXchar* section, const FXchar* key, FXint def)
+    {
+        FXSettings set;
+        set.parseFile(iniFile, TRUE);
+        return set.readIntEntry(section, key, def);
+    }
+
+    //Return file size in human readable form
+    FXString GetFileSize(FXlong size)
+    {
+        FXfloat fsize = 0.0;
+        if(size > 1000000000)
+        {
+            fsize = size/1073741824.0;
+            if(fsize == (FXint)fsize)
+                return FXStringFormat(_("%.0f %s"), fsize, _("GB"));
+            else
+                return FXStringFormat(_("%.2f %s"), fsize, _("GB"));
+        }
+        if(size > 100000)
+        {
+            fsize = size/1048576.0;
+            if(fsize == (FXint)fsize)
+                return FXStringFormat(_("%.0f %s"), fsize, _("MB"));
+            else
+                return FXStringFormat(_("%.2f %s"), fsize, _("MB"));
+        }
+        if(size > 1000)
+        {
+            fsize = size/1024.0;
+            if(fsize == (FXint)fsize)
+                return FXStringFormat(_("%.0f %s"), fsize, _("KB"));
+            else
+                return FXStringFormat(_("%.2f %s"), fsize, _("KB"));
+        }
+        return FXStringFormat(_("%llu %s"), size, _("bytes"));
+    }
+
+    //Return file size in human readable form
+    FXString GetFileSize(const FXString &ssize)
+    {
+        FXlong size = FXLongVal(ssize);
+        FXfloat fsize = 0.0;
+        if(size > 1000000000)
+        {
+            fsize = size/1073741824.0;
+            if(fsize == (FXuint)fsize)
+                return FXStringFormat(_("%.0f %s"), fsize, _("GB"));
+            else
+                return FXStringFormat(_("%.2f %s"), fsize, _("GB"));
+        }
+        if(size > 100000)
+        {
+            fsize = size/1048576.0;
+            if(fsize == (FXuint)fsize)
+                return FXStringFormat(_("%.0f %s"), fsize, _("MB"));
+            else
+                return FXStringFormat(_("%.2f %s"), fsize, _("MB"));
+        }
+        if(size > 1000)
+        {
+            fsize = size/1024.0;
+            if(fsize == (FXuint)fsize)
+                return FXStringFormat(_("%.0f %s"), fsize, _("KB"));
+            else
+                return FXStringFormat(_("%.2f %s"), fsize, _("KB"));
+        }
+        return FXStringFormat(_("%llu %s"), size, _("bytes"));
+    }
+
+    /*Return download/send speed in human readable form
+     * speed = difference between two position during 1 second
+     */
+    FXString GetSpeed(FXlong speed)
+    {
+        FXfloat fspeed = 0.0;
+        if(speed > 100000)
+        {
+            fspeed = speed/(1048576.0);
+            if(fspeed == (FXuint)fspeed)
+                return FXStringFormat(_("%.0f %s"), fspeed, _("MB/s"));
+            else
+                return FXStringFormat(_("%.2f %s"), fspeed, _("MB/s"));
+        }
+        fspeed = speed/(1024.0);
+        if(fspeed == (FXuint)fspeed)
+            return FXStringFormat(_("%.0f %s"), fspeed, _("KB/s"));
+        else
+            return FXStringFormat(_("%.2f %s"), fspeed, _("KB/s"));
+    }
+
+    //Return remaining time of download/send
+    FXString GetRemaining(FXlong size, FXlong speed)
+    {
+        FXfloat fsize = 0.0;
+        FXfloat fspeed = 0.0;
+        FXfloat fremain = 0.0;
+        fspeed = speed/1024.0;
+        fsize = size/1024.0;
+        fremain = fsize/fspeed;
+        if(fremain <= 0) return "?";
+        else
+        {
+            FXint remainingTime = (FXint)fremain;
+            FXint secs = remainingTime;
+            FXint hours = remainingTime/3600;
+            secs -= hours*3600;
+            FXint mins = remainingTime/60;
+            secs -= mins*60;
+            return FXStringFormat("%02d:%02d:%02d", hours, mins, secs);
+        }
     }
 }

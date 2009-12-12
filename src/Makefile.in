@@ -68,14 +68,14 @@ PROGRAMS = $(bin_PROGRAMS)
 am__dxirc_SOURCES_DIST = configdialog.cpp dxirc.cpp icons.cpp \
 	ircsocket.cpp irctabitem.cpp serverdialog.cpp utils.cpp \
 	aliasdialog.cpp dxpipe.cpp logviewer.cpp tetristabitem.cpp \
-	scriptdialog.cpp FXTrayApp.cpp FXTrayIcon.cpp
+	scriptdialog.cpp dccdialog.cpp FXTrayApp.cpp FXTrayIcon.cpp
 @HAVE_TRAY_TRUE@am__objects_1 = FXTrayApp.$(OBJEXT) \
 @HAVE_TRAY_TRUE@	FXTrayIcon.$(OBJEXT)
 am_dxirc_OBJECTS = configdialog.$(OBJEXT) dxirc.$(OBJEXT) \
 	icons.$(OBJEXT) ircsocket.$(OBJEXT) irctabitem.$(OBJEXT) \
 	serverdialog.$(OBJEXT) utils.$(OBJEXT) aliasdialog.$(OBJEXT) \
 	dxpipe.$(OBJEXT) logviewer.$(OBJEXT) tetristabitem.$(OBJEXT) \
-	scriptdialog.$(OBJEXT) $(am__objects_1)
+	scriptdialog.$(OBJEXT) dccdialog.$(OBJEXT) $(am__objects_1)
 dxirc_OBJECTS = $(am_dxirc_OBJECTS)
 dxirc_DEPENDENCIES =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
@@ -245,7 +245,7 @@ top_srcdir = @top_srcdir@
 dxirc_SOURCES = configdialog.cpp dxirc.cpp icons.cpp ircsocket.cpp \
 	irctabitem.cpp serverdialog.cpp utils.cpp aliasdialog.cpp \
 	dxpipe.cpp logviewer.cpp tetristabitem.cpp scriptdialog.cpp \
-	$(am__append_1)
+	dccdialog.cpp $(am__append_1)
 dxirc_LDADD = @LIBINTL@
 INCLUDES = -I. -I$(top_srcdir) -I$(top_srcdir)/intl
 EXTRA_DIST = configdialog.h \
@@ -263,6 +263,7 @@ EXTRA_DIST = configdialog.h \
               logviewer.h \
               tetristabitem.h \
               scriptdialog.h \
+              dccdialog.h \
               FXTrayApp.h \
               FXTrayIcon.h
 
@@ -351,6 +352,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FXTrayIcon.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/aliasdialog.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/configdialog.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dccdialog.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dxirc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dxpipe.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/icons.Po@am__quote@

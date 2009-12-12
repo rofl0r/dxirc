@@ -1,7 +1,7 @@
 [Project]
 FileName=dxirc.dev
 Name=dxirc
-UnitCount=32
+UnitCount=34
 Type=0
 Ver=1
 ObjFiles=
@@ -367,3 +367,22 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
+[Unit33]
+FileName=..\src\dccdialog.h
+CompileCpp=1
+Folder=dxirc
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit34]
+FileName=..\src\dccdialog.cpp
+CompileCpp=1
+Folder=dxirc
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=

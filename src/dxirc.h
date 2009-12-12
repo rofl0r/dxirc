@@ -28,6 +28,7 @@
 #include "FXTrayIcon.h"
 #include "logviewer.h"
 #include "config.h"
+#include "dccdialog.h"
 
 #ifdef HAVE_LUA
 extern "C" {
@@ -44,6 +45,7 @@ class dxirc: public FXMainWindow
 {
     FXDECLARE(dxirc)
     friend class ScriptDialog;
+    friend class DccDialog;
     public:
         dxirc(FXApp *app);
         virtual ~dxirc();
@@ -70,6 +72,7 @@ class dxirc: public FXMainWindow
             ID_SCRIPTS,
             ID_STIMEOUT,
             ID_TETRIS,
+            ID_TRANSFERS,
             ID_LAST
         };
 
@@ -94,7 +97,9 @@ class dxirc: public FXMainWindow
         long OnCommandOptions(FXObject*, FXSelector, void*);
         long OnCommandAlias(FXObject*, FXSelector, void*);
         long OnCommandLog(FXObject*, FXSelector, void*);
+        long OnCommandTransfers(FXObject*, FXSelector, void*);
         long OnCommandClose(FXObject*, FXSelector, void*);
+        long OnCommandDccCancel(FXObject*, FXSelector, void*);
         long OnMouseWheel(FXObject*, FXSelector, void*);
         long OnTabConnect(FXObject*, FXSelector, void*);
         long OnTrayClicked(FXObject*, FXSelector, void*);
@@ -125,12 +130,13 @@ class dxirc: public FXMainWindow
         FXbool sameList, useTray, coloredNick, closeToTray, reconnect, autoload;
         IrcColor colors;
         FXString commandsList, themesList, themePath, logPath, autoloadPath;
-        FXint maxAway, numberAttempt, delayAttempt, tabPosition;
-        FXString nickCompletionChar, fontSpec;
+        FXint maxAway, numberAttempt, delayAttempt, tabPosition, dccPortD, dccPortH, dccTimeout;
+        FXString nickCompletionChar, fontSpec, dccPath, dccIP;
         FXFont *ircFont;
         ColorTheme appTheme;
         FXPopup *traymenu;
-        FXTrayIcon *trayIcon;        
+        FXTrayIcon *trayIcon;
+        FXint lastToken;
         
         FXbool TabExist(IrcSocket*, FXString);
         FXbool ServerExist(const FXString&, const FXint&, const FXString&);
@@ -138,7 +144,7 @@ class dxirc: public FXMainWindow
         FXint GetTabId(IrcSocket*, FXString);
         FXint GetTabId(FXString);
         FXbool IsLastTab(IrcSocket*);
-        void ConnectServer(FXString, FXint, FXString, FXString, FXString, FXString, FXString, FXbool);
+        void ConnectServer(FXString hostname, FXint port, FXString pass, FXString nick, FXString rname, FXString channels, FXString commands, FXbool ssl, DCCTYPE dccType=DCC_NONE, FXString dccNick="", IrcSocket *dccParent=0, DccFile dccFile=DccFile());
         void ReadServersConfig();
         void ReadConfig();
         void SaveConfig();
@@ -168,9 +174,11 @@ class dxirc: public FXMainWindow
         FXVerticalFrame *mainframe;
         FXTabBook *tabbook;
         LogViewer *viewer;
+        DccDialog *transfers;
         dxServersArray servers;
         dxScriptsArray scripts;
         dxScriptEventsArray scriptEvents;
+        dxDccFilesArray dccfilesList;
         static dxirc *pThis;
 
         FXint LoadLuaScript(FXString, FXbool=TRUE);

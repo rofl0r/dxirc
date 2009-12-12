@@ -40,6 +40,38 @@ private:
     dxText() {}
 };
 
+class DccSendDialog: public FXDialogBox
+{
+    FXDECLARE(DccSendDialog)
+public:
+    DccSendDialog(FXMainWindow *owner, FXString nick);
+    virtual ~DccSendDialog();
+    enum {
+        ID_SEND = FXTopWindow::ID_LAST,
+        ID_CANCEL,
+        ID_FILE
+    };
+
+    long OnSend(FXObject*,FXSelector,void*);
+    long OnCancel(FXObject*,FXSelector,void*);
+    long OnFile(FXObject*,FXSelector,void*);
+    long OnKeyPress(FXObject*,FXSelector,void*);
+
+    FXuint execute (FXuint placement=PLACEMENT_CURSOR);
+    FXString GetFilename() { return fileText->getText(); }
+    FXbool GetPassive() { return checkPassive->getCheck(); }
+
+private:
+    DccSendDialog() {}
+    DccSendDialog(const DccSendDialog&);
+
+    FXVerticalFrame *mainFrame;
+    FXHorizontalFrame *fileFrame, *passiveFrame, *buttonFrame;
+    FXTextField *fileText;
+    FXButton *buttonFile, *buttonSend, *buttonCancel;
+    FXCheckButton *checkPassive;
+};
+
 class IrcTabItem: public FXTabItem
 {
     FXDECLARE(IrcTabItem)
@@ -71,6 +103,8 @@ class IrcTabItem: public FXTabItem
             ID_LUA,
             ID_COMMAND,
             ID_NEWTETRIS,
+            ID_DCCCHAT, //dcc chat on right click
+            ID_DCCSEND, //dcc sending on right click
             ID_LAST
         };
 
@@ -115,6 +149,8 @@ class IrcTabItem: public FXTabItem
         long OnKickban(FXObject *, FXSelector, void*);
         long OnTopic(FXObject *, FXSelector, void*);
         long OnPipe(FXObject *, FXSelector, void*);
+        long OnDccChat(FXObject *, FXSelector, void*);
+        long OnDccSend(FXObject *, FXSelector, void*);
 
     protected:        
         void AppendIrcText(FXString, FXbool);

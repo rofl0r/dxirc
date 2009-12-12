@@ -99,6 +99,86 @@ long dxText::onMotion(FXObject*, FXSelector, void*ptr)
     return 0;
 }
 
+FXDEFMAP(DccSendDialog) DccSendDialogMap[] = {
+    FXMAPFUNC(SEL_COMMAND,  DccSendDialog::ID_FILE,     DccSendDialog::OnFile),
+    FXMAPFUNC(SEL_COMMAND,  DccSendDialog::ID_SEND,     DccSendDialog::OnSend),
+    FXMAPFUNC(SEL_COMMAND,  DccSendDialog::ID_CANCEL,   DccSendDialog::OnCancel),
+    FXMAPFUNC(SEL_CLOSE,    0,                          DccSendDialog::OnCancel),
+    FXMAPFUNC(SEL_KEYPRESS, 0,                          DccSendDialog::OnKeyPress)
+};
+
+FXIMPLEMENT(DccSendDialog, FXDialogBox, DccSendDialogMap, ARRAYNUMBER(DccSendDialogMap))
+
+DccSendDialog::DccSendDialog(FXMainWindow* owner, FXString nick)
+        : FXDialogBox(owner, FXStringFormat(_("Send file to %s"), nick.text()), DECOR_RESIZE|DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0)
+{
+    mainFrame = new FXVerticalFrame(this, LAYOUT_FILL_X|LAYOUT_FILL_Y);
+
+    fileFrame = new FXHorizontalFrame(mainFrame, LAYOUT_FILL_X);
+    new FXLabel(fileFrame, _("File:"));
+    fileText = new FXTextField(fileFrame, 25, NULL, 0, TEXTFIELD_READONLY|FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_X);
+    buttonFile = new FXButton(fileFrame, "...", NULL, this, ID_FILE, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
+
+    passiveFrame = new FXHorizontalFrame(mainFrame, LAYOUT_FILL_X);
+    checkPassive = new FXCheckButton(passiveFrame, _("Send passive"), NULL, 0);
+
+    buttonFrame = new FXHorizontalFrame(mainFrame, LAYOUT_FILL_X);
+    buttonSend = new FXButton(buttonFrame, _("&Send file"), NULL, this, ID_SEND, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
+    buttonCancel = new FXButton(buttonFrame, _("&Cancel"), NULL, this, ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
+}
+
+DccSendDialog::~DccSendDialog()
+{
+}
+
+FXuint DccSendDialog::execute(FXuint placement)
+{
+    create();
+    show(placement);
+    getApp()->refresh();
+    FXFileDialog dialog(this, _("Select file"));
+    if(dialog.execute())
+    {
+        fileText->setText(dialog.getFilename());
+    }
+    return getApp()->runModalFor(this);
+}
+
+long DccSendDialog::OnFile(FXObject*, FXSelector, void*)
+{
+    FXFileDialog dialog(this, _("Select file"));
+    if(dialog.execute())
+    {
+        fileText->setText(dialog.getFilename());
+    }
+    return 1;
+}
+
+long DccSendDialog::OnSend(FXObject*, FXSelector, void*)
+{
+    getApp()->stopModal(this,TRUE);
+    hide();
+    return 1;
+}
+
+long DccSendDialog::OnCancel(FXObject*, FXSelector, void*)
+{
+    getApp()->stopModal(this,FALSE);
+    hide();
+    return 1;
+}
+
+long DccSendDialog::OnKeyPress(FXObject *sender, FXSelector sel, void *ptr)
+{
+    if(FXTopWindow::onKeyPress(sender,sel,ptr)) return 1;
+    if(((FXEvent*)ptr)->code == KEY_Escape)
+    {
+        handle(this,FXSEL(SEL_COMMAND,ID_CANCEL),NULL);
+        return 1;
+    }
+    return 0;
+}
+
 FXDEFMAP(IrcTabItem) IrcTabItemMap[] = {
     FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_COMMANDLINE,     IrcTabItem::OnCommandline),
     FXMAPFUNC(SEL_KEYPRESS,             IrcTabItem::ID_COMMANDLINE,     IrcTabItem::OnKeyPress),
@@ -110,6 +190,8 @@ FXDEFMAP(IrcTabItem) IrcTabItemMap[] = {
     FXMAPFUNC(SEL_DOUBLECLICKED,        IrcTabItem::ID_USERS,           IrcTabItem::OnDoubleclick),
     FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_NEWQUERY,        IrcTabItem::OnNewQuery),
     FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_WHOIS,           IrcTabItem::OnWhois),
+    FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_DCCCHAT,         IrcTabItem::OnDccChat),
+    FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_DCCSEND,         IrcTabItem::OnDccSend),
     FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_OP,              IrcTabItem::OnOp),
     FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_DEOP,            IrcTabItem::OnDeop),
     FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_VOICE,           IrcTabItem::OnVoice),
@@ -691,7 +773,7 @@ void IrcTabItem::LogLine(const FXString &line)
 
 FXbool IrcTabItem::IsChannel(const FXString &text)
 {
-    if(text.length()) return text[0] == '#' || text[0] == '&' || text[0] == '+' || text[0] == '!';
+    if(text.length()) return server->GetChanTypes().contains(text[0]);
     return FALSE;
 }
 
@@ -770,6 +852,32 @@ FXbool IrcTabItem::ProcessLine(const FXString& commandtext)
 FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
 {
     FXString command = (commandtext[0] == '/' ? commandtext.after('/').before(' ').lower() : "");
+    if(type == DCCCHAT)
+    {
+        if(server->GetConnected())
+        {
+            if(command == "me")
+            {
+                AppendIrcStyledText(server->GetNickName()+" "+commandtext.after(' '), 2);
+                return server->SendDccChatText("\001ACTION "+commandtext.after(' ')+"\001");
+            }
+            if(command == "say")
+            {
+                if(coloredNick) AppendIrcNickText(server->GetNickName(), commandtext.after(' '), GetNickColor(server->GetNickName()));
+                else AppendIrcText("<"+server->GetNickName()+"> "+commandtext.after(' '));
+                return server->SendDccChatText(commandtext.after(' '));
+            }
+            if(commandtext[0] != '/')
+            {
+                if(coloredNick) AppendIrcNickText(server->GetNickName(), commandtext, GetNickColor(server->GetNickName()));
+                else AppendIrcText("<"+server->GetNickName()+"> "+commandtext);
+                return server->SendDccChatText(commandtext);
+            }
+        }
+        else
+            AppendIrcStyledText(_("You aren't connected"), 4);
+        return TRUE;
+    }
     if(commandtext[0] == '/')
     {
         if(utils::IsScriptCommand(command))
@@ -876,6 +984,105 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     return FALSE;
                 }
                 else return server->SendCtcp(to, msg);
+            }
+            else
+            {
+                AppendIrcStyledText(_("You aren't connected"), 4);
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                return TRUE;
+            }
+        }
+        if(command == "dcc")
+        {
+            if(server->GetConnected())
+            {
+                FXString dccCommand = utils::GetParam(commandtext, 2, FALSE).lower();
+                if(dccCommand == "chat")
+                {
+                    FXString nick = utils::GetParam(commandtext, 3, FALSE);
+                    if(!comparecase(nick, "chat"))
+                    {
+                        AppendIrcStyledText(_("Nick for chat wasn't entered."), 4);
+                        return FALSE;
+                    }
+                    if(!comparecase(nick, server->GetNickName()))
+                    {
+                        AppendIrcStyledText(_("Chat with yourself isn't good idea."), 4);
+                        return FALSE;
+                    }
+                    IrcEvent ev;
+                    ev.eventType = IRC_DCCSERVER;
+                    ev.param1 = nick;
+                    parent->getParent()->getParent()->handle(server, FXSEL(SEL_COMMAND, IrcSocket::ID_SERVER), &ev);
+                    return TRUE;
+                }
+                else if(dccCommand == "send")
+                {
+                    FXString nick = utils::GetParam(commandtext, 3, FALSE);
+                    FXString file = utils::GetParam(commandtext, 4, TRUE);
+                    if(!comparecase(nick, "send"))
+                    {
+                        AppendIrcStyledText(_("Nick for sending file wasn't entered."), 4);
+                        return FALSE;
+                    }
+                    if(!comparecase(nick, server->GetNickName()))
+                    {
+                        AppendIrcStyledText(_("Sending to yourself isn't good idea."), 4);
+                        return FALSE;
+                    }
+                    if(!comparecase(nick, file))
+                    {
+                        AppendIrcStyledText(_("Filename wasn't entered"), 4);
+                        return FALSE;
+                    }
+                    if(!FXStat::exists(file))
+                    {
+                        AppendIrcStyledText(FXStringFormat(_("File '%s' doesn't exist"), file.text()), 4);
+                        return FALSE;
+                    }
+                    IrcEvent ev;
+                    ev.eventType = IRC_DCCOUT;
+                    ev.param1 = nick;
+                    ev.param2 = file;
+                    parent->getParent()->getParent()->handle(server, FXSEL(SEL_COMMAND, IrcSocket::ID_SERVER), &ev);
+                    return TRUE;
+                }
+                else if(dccCommand == "psend")
+                {
+                    FXString nick = utils::GetParam(commandtext, 3, FALSE);
+                    FXString file = utils::GetParam(commandtext, 4, TRUE);
+                    if(!comparecase(nick, "psend"))
+                    {
+                        AppendIrcStyledText(_("Nick for sending file wasn't entered."), 4);
+                        return FALSE;
+                    }
+                    if(!comparecase(nick, server->GetNickName()))
+                    {
+                        AppendIrcStyledText(_("Sending to yourself isn't good idea."), 4);
+                        return FALSE;
+                    }
+                    if(!comparecase(nick, file))
+                    {
+                        AppendIrcStyledText(_("Filename wasn't entered"), 4);
+                        return FALSE;
+                    }
+                    if(!FXStat::exists(file))
+                    {
+                        AppendIrcStyledText(FXStringFormat(_("File '%s' doesn't exist"), file.text()), 4);
+                        return FALSE;
+                    }
+                    IrcEvent ev;
+                    ev.eventType = IRC_DCCPOUT;
+                    ev.param1 = nick;
+                    ev.param2 = file;
+                    parent->getParent()->getParent()->handle(server, FXSEL(SEL_COMMAND, IrcSocket::ID_SERVER), &ev);
+                    return TRUE;
+                }
+                else
+                {
+                    AppendIrcStyledText(FXStringFormat(_("'%s' isn't dcc command <chat|send|psend>"), dccCommand.text()), 4);
+                    return FALSE;
+                }
             }
             else
             {
@@ -1031,8 +1238,8 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
         if(command == "egg")
         {
             AppendIrcStyledText("ahoj sem pan Vajíčko,", 3);
-            AppendIrcStyledText("dneska vám přináším anketní otázku:", 3);
-            AppendIrcStyledText("Jaká značka piva je podle Vás nejlepší? Pište autorovi.", 3);
+            AppendIrcStyledText("musím vám říct, že Vánoce nemám rád.", 3);
+            AppendIrcStyledText("Přesto se na ně můžete těšit!", 3);
             return TRUE;
         }
         if(command == "exec")
@@ -1107,6 +1314,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 if(!IsChannel(channel))
                 {
                     AppendIrcStyledText(_("/join <channel>, joins a channel."), 4);
+                    AppendIrcStyledText(FXStringFormat(_("'%c' isn't valid char for channel."), channel[0]), 4);
                     return FALSE;
                 }
                 else return server->SendJoin(channel);
@@ -1245,7 +1453,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
             else if(comparecase(luacommand, "list")==0) lua.type = LUA_LIST;            
             else
             {
-                AppendIrcStyledText(FXStringFormat(_("%s isn't <help|load|unload|list>"), luacommand.text()), 4);
+                AppendIrcStyledText(FXStringFormat(_("'%s' isn't <help|load|unload|list>"), luacommand.text()), 4);
                 return FALSE;
             }
             lua.text = luatext;
@@ -1644,13 +1852,19 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 {
                     if(coloredNick) AppendIrcNickText(server->GetNickName(), commandtext.after(' '), GetNickColor(server->GetNickName()));
                     else AppendIrcText("<"+server->GetNickName()+"> "+commandtext.after(' '));
+                    IrcEvent ev;
+                    ev.eventType = IRC_PRIVMSG;
+                    ev.param1 = server->GetNickName();
+                    ev.param2 = getText();
+                    ev.param3 = commandtext.after(' ');
+                    parent->getParent()->getParent()->handle(server, FXSEL(SEL_COMMAND, IrcSocket::ID_SERVER), &ev);
                     if(commandtext.after(' ').length() > maxLen-10-getText().length())
                     {
                         dxStringArray messages = CutText(commandtext.after(' '), maxLen-10-getText().length());
                         FXbool result = TRUE;
                         for(FXint i=0; i<messages.no(); i++)
                         {
-                            result = server->SendMe(getText(), messages[i]) &result;
+                            result = server->SendMsg(getText(), messages[i]) &result;
                         }
                         return result;
                     }
@@ -1942,6 +2156,14 @@ FXbool IrcTabItem::ShowHelp(FXString command)
     if(command == "ctcp")
     {
         AppendIrcText(_("CTCP <nick> <message>, sends a CTCP message to a user."));
+        return TRUE;
+    }
+    if(command == "dcc")
+    {
+        AppendIrcText(_("DCC <chat> <nick>, starts DCC chat."));
+        AppendIrcText(_("DCC <send> <nick> <filename>, sends file over DCC."));
+        AppendIrcText(_("DCC <psend> <nick> <filename>, sends file passive over DCC."));
+        AppendIrcText(_("More information about passive DCC on http://en.wikipedia.org/wiki/Direct_Client-to-Client#Passive_DCC"));
         return TRUE;
     }
     if(command == "deop")
@@ -2273,32 +2495,59 @@ FXbool IrcTabItem::IsCommandIgnored(const FXString &command)
 
 void IrcTabItem::AddUser(const FXString& user)
 {
-    FXRex rx("(\\*|\\!|@|\\+|\\%)");
-    if((rx.match(user) ? users->findItem(user.mid(1, user.length()-1)) : users->findItem(user)) == -1)
+    if(user[0] == server->GetAdminPrefix()
+            && users->findItem(user.after(server->GetAdminPrefix())) == -1)
     {
-        FXchar status = user[0];
-        switch(status) {
-            case '*':
-                users->appendItem(user.after('*'), irc_owner_icon);
-                break;
-            case '!':
-                users->appendItem(user.after('!'), irc_admin_icon);
-                break;
-            case '@':
-                users->appendItem(user.after('@'), irc_op_icon);
-                break;
-            case '+':
-                users->appendItem(user.after('+'), irc_voice_icon);
-                break;
-            case '%':
-                users->appendItem(user.after('%'), irc_halfop_icon);
-                break;
-            default:
-                users->appendItem(user, irc_normal_icon);
-        }
+        users->appendItem(user.after(server->GetAdminPrefix()), irc_admin_icon);
+        numberUsers++;
+        users->sortItems();
+        return;
     }
-    numberUsers++;
-    users->sortItems();
+    if(user[0] == server->GetOwnerPrefix()
+            && users->findItem(user.after(server->GetOwnerPrefix())) == -1)
+    {
+        users->appendItem(user.after(server->GetOwnerPrefix()), irc_owner_icon);
+        numberUsers++;
+        users->sortItems();
+        return;
+    }
+    if(user[0] == server->GetOpPrefix()
+            && users->findItem(user.after(server->GetOpPrefix())) == -1)
+    {
+        users->appendItem(user.after(server->GetOpPrefix()), irc_op_icon);
+        numberUsers++;
+        users->sortItems();
+        return;
+    }
+    if(user[0] == server->GetVoicePrefix()
+            && users->findItem(user.after(server->GetVoicePrefix())) == -1)
+    {
+        users->appendItem(user.after(server->GetVoicePrefix()), irc_voice_icon);
+        numberUsers++;
+        users->sortItems();
+        return;
+    }
+    if(user[0] == server->GetHalfopPrefix()
+            && users->findItem(user.after(server->GetHalfopPrefix())) == -1)
+    {
+        users->appendItem(user.after(server->GetHalfopPrefix()), irc_halfop_icon);
+        numberUsers++;
+        users->sortItems();
+        return;
+    }
+    if(user[0] == server->GetAdminPrefix()
+            || user[0] == server->GetOwnerPrefix()
+            || user[0] == server->GetOpPrefix()
+            || user[0] == server->GetVoicePrefix()
+            || user[0] == server->GetHalfopPrefix())
+        return;
+    if(users->findItem(user) == -1)
+    {
+        users->appendItem(user, irc_normal_icon);
+        numberUsers++;
+        users->sortItems();
+        return;
+    }
 }
 
 void IrcTabItem::RemoveUser(const FXString& user)
@@ -2319,27 +2568,27 @@ void IrcTabItem::ChangeNickUser(const FXString& nick, const FXString& newnick)
         if(users->getItemIcon(i) == irc_owner_icon || users->getItemIcon(i) == irc_away_owner_icon)
         {
             RemoveUser(nick);
-            AddUser("*"+newnick);
+            AddUser(server->GetOwnerPrefix()+newnick);
         }
         else if(users->getItemIcon(i) == irc_admin_icon || users->getItemIcon(i) == irc_away_admin_icon)
         {
             RemoveUser(nick);
-            AddUser("!"+newnick);
+            AddUser(server->GetAdminPrefix()+newnick);
         }
         else if(users->getItemIcon(i) == irc_op_icon || users->getItemIcon(i) == irc_away_op_icon)
         {
             RemoveUser(nick);
-            AddUser("@"+newnick);
+            AddUser(server->GetOpPrefix()+newnick);
         }
         else if(users->getItemIcon(i) == irc_voice_icon || users->getItemIcon(i) == irc_away_voice_icon)
         {
             RemoveUser(nick);
-            AddUser("+"+newnick);
+            AddUser(server->GetVoicePrefix()+newnick);
         }
         else if(users->getItemIcon(i) == irc_halfop_icon || users->getItemIcon(i) == irc_away_halfop_icon)
         {
             RemoveUser(nick);
-            AddUser("%"+newnick);
+            AddUser(server->GetHalfopPrefix()+newnick);
         }
         else
         {
@@ -2427,6 +2676,43 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
             }
         }
         return 1;
+    }
+    if(ev->eventType == IRC_DCCMSG && type == DCCCHAT)
+    {
+        if(coloredNick)
+        {
+            if(ev->param1.contains(server->GetNickName())) AppendIrcStyledText(getText()+": "+ev->param1, 8);
+            else AppendIrcNickText(getText(), ev->param1, GetNickColor(getText()));
+        }
+        else
+        {
+            if(ev->param1.contains(server->GetNickName())) AppendIrcStyledText("<"+getText()+"> "+ev->param1, 8);
+            else AppendIrcText("<"+getText()+"> "+ev->param1);
+        }
+        if(FXRGB(255,0,0) != this->getTextColor() && parent->getCurrent()*2 != parent->indexOfChild(this))
+        {
+            if(ev->param1.contains(server->GetNickName()))
+            {
+                this->setTextColor(FXRGB(255,0,0));
+            }
+            else this->setTextColor(FXRGB(0,0,255));
+            this->setIcon(unewm);
+            parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_NEWMSG), NULL);
+        }
+    }
+    if(ev->eventType == IRC_DCCACTION && type == DCCCHAT)
+    {
+        AppendIrcStyledText(getText()+" "+ev->param1, 2);
+        if(FXRGB(255,0,0) != this->getTextColor() && parent->getCurrent()*2 != parent->indexOfChild(this))
+        {
+            if(ev->param1.contains(server->GetNickName()))
+            {
+                this->setTextColor(FXRGB(255,0,0));
+            }
+            else this->setTextColor(FXRGB(0,0,255));
+            this->setIcon(unewm);
+            parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_NEWMSG), NULL);
+        }
     }
     if(ev->eventType == IRC_JOIN)
     {
@@ -2600,7 +2886,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
                         RemoveUser(nick);
                         if(sign)
                         {
-                            AddUser("!"+nick);
+                            AddUser(server->GetAdminPrefix()+nick);
                             if(!IsCommandIgnored("mode"))
                             {
                                 if(nick == server->GetNickName()) AppendIrcStyledText(FXStringFormat(_("%s gave you admin"), moderator.text()), 1);
@@ -2624,7 +2910,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
                         RemoveUser(nick);
                         if(sign)
                         {
-                            AddUser("@"+nick);
+                            AddUser(server->GetOpPrefix()+nick);
                             if(!IsCommandIgnored("mode"))
                             {
                                 if(nick == server->GetNickName()) AppendIrcStyledText(FXStringFormat(_("%s gave you op"), moderator.text()), 1);
@@ -2649,7 +2935,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
                         RemoveUser(nick);
                         if(sign)
                         {
-                            AddUser("+"+nick);
+                            AddUser(server->GetVoicePrefix()+nick);
                             if(!IsCommandIgnored("mode"))
                             {
                                 if(nick == server->GetNickName()) AppendIrcStyledText(FXStringFormat(_("%s gave you voice"), moderator.text()), 1);
@@ -2673,7 +2959,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
                         RemoveUser(nick);
                         if(sign)
                         {
-                            AddUser("%"+nick);
+                            AddUser(server->GetHalfopPrefix()+nick);
                             if(!IsCommandIgnored("mode"))
                             {
                                 if(nick == server->GetNickName()) AppendIrcStyledText(FXStringFormat(_("%s gave you halfop"), moderator.text()), 1);
@@ -2925,7 +3211,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
             while (usersStr.contains(' '))
             {
                 AddUser(usersStr.before(' '));
-                if(usersStr[0] == '@' && usersStr.before(' ').after('@') == myNick) iamOp = TRUE;
+                if(usersStr[0] == server->GetOpPrefix() && usersStr.before(' ').after(server->GetOpPrefix()) == myNick) iamOp = TRUE;
                 usersStr = usersStr.after(' ');
             }
         }
@@ -3182,6 +3468,8 @@ long IrcTabItem::OnRightMouse(FXObject *, FXSelector, void *ptr)
             new FXMenuSeparator(&popup);
             new FXMenuCommand(&popup, _("Query"), NULL, this, ID_NEWQUERY);
             new FXMenuCommand(&popup, _("User information (WHOIS)"), NULL, this, ID_WHOIS);
+            new FXMenuCommand(&popup, _("DCC chat"), NULL, this, ID_DCCCHAT);
+            new FXMenuCommand(&popup, _("Send file"), NULL, this, ID_DCCSEND);
             if(iamOp) new FXMenuCascade(&popup, _("Operator actions"), NULL, &opmenu);
         }
         popup.create();
@@ -3222,6 +3510,29 @@ long IrcTabItem::OnWhois(FXObject *, FXSelector, void *)
     return 1;
 }
 
+long IrcTabItem::OnDccChat(FXObject*, FXSelector, void*)
+{
+    IrcEvent ev;
+    ev.eventType = IRC_DCCSERVER;
+    ev.param1 = nickOnRight.nick;
+    parent->getParent()->getParent()->handle(server, FXSEL(SEL_COMMAND, IrcSocket::ID_SERVER), &ev);
+    return 1;
+}
+
+long IrcTabItem::OnDccSend(FXObject*, FXSelector, void*)
+{
+    DccSendDialog dialog((FXMainWindow*)parent->getParent()->getParent(), nickOnRight.nick);
+    if(dialog.execute())
+    {
+        IrcEvent ev;
+        ev.eventType = dialog.GetPassive() ? IRC_DCCPOUT: IRC_DCCOUT;
+        ev.param1 = nickOnRight.nick;
+        ev.param2 = dialog.GetFilename();
+        parent->getParent()->getParent()->handle(server, FXSEL(SEL_COMMAND, IrcSocket::ID_SERVER), &ev);
+    }
+    return 1;
+}
+
 long IrcTabItem::OnOp(FXObject *, FXSelector, void *)
 {
     server->SendMode(getText()+" +o "+nickOnRight.nick);
@@ -3256,8 +3567,8 @@ long IrcTabItem::OnKick(FXObject *, FXSelector, void *)
     FXTextField *reasonEdit = new FXTextField(kickframe, 25, NULL, 0, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents, LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    new FXButton(buttonframe, _("OK"), NULL, &kickDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0, 0, 0, 0, 32, 32, 5, 5);
-    new FXButton(buttonframe, _("Cancel"), NULL, &kickDialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0, 0, 0, 0, 32, 32, 5, 5);
+    new FXButton(buttonframe, _("&OK"), NULL, &kickDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0, 0, 0, 0, 32, 32, 5, 5);
+    new FXButton(buttonframe, _("&Cancel"), NULL, &kickDialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0, 0, 0, 0, 32, 32, 5, 5);
 
     if(kickDialog.execute(PLACEMENT_CURSOR))
     {
@@ -3277,8 +3588,8 @@ long IrcTabItem::OnBan(FXObject *, FXSelector, void *)
     banEdit->setText(nickOnRight.nick+"!"+nickOnRight.user+"@"+nickOnRight.host);
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents, LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    new FXButton(buttonframe, _("OK"), NULL, &banDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0, 0, 0, 0, 32, 32, 5, 5);
-    new FXButton(buttonframe, _("Cancel"), NULL, &banDialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0, 0, 0, 0, 32, 32, 5, 5);
+    new FXButton(buttonframe, _("&OK"), NULL, &banDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0, 0, 0, 0, 32, 32, 5, 5);
+    new FXButton(buttonframe, _("&Cancel"), NULL, &banDialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0, 0, 0, 0, 32, 32, 5, 5);
 
     if(banDialog.execute(PLACEMENT_CURSOR))
     {
@@ -3302,8 +3613,8 @@ long IrcTabItem::OnKickban(FXObject *, FXSelector, void *)
     banEdit->setText(nickOnRight.nick+"!"+nickOnRight.user+"@"+nickOnRight.host);
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents, LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    new FXButton(buttonframe, _("OK"), NULL, &banDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0, 0, 0, 0, 32, 32, 5, 5);
-    new FXButton(buttonframe, _("Cancel"), NULL, &banDialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0, 0, 0, 0, 32, 32, 5, 5);
+    new FXButton(buttonframe, _("&OK"), NULL, &banDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0, 0, 0, 0, 32, 32, 5, 5);
+    new FXButton(buttonframe, _("&Cancel"), NULL, &banDialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0, 0, 0, 0, 32, 32, 5, 5);
 
     if(banDialog.execute(PLACEMENT_CURSOR))
     {

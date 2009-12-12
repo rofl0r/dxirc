@@ -98,6 +98,12 @@ namespace utils
     FXString CheckThemesList(const FXString&);
     FXString Encrypt(const FXString&);
     FXString Decrypt(const FXString&);
+    FXString GetStringIniEntry(const FXchar *section,const FXchar *key,const FXchar *def=NULL);
+    FXint GetIntIniEntry(const FXchar *section, const FXchar *key, FXint def=0);
+    FXString GetFileSize(FXlong);
+    FXString GetFileSize(const FXString&);
+    FXString GetSpeed(FXlong);
+    FXString GetRemaining(FXlong, FXlong);
 }
 
 

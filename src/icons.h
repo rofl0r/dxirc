@@ -61,6 +61,11 @@ extern FXIcon *chnewm;
 extern FXIcon *foldericon;
 extern FXIcon *ofoldericon;
 extern FXIcon *fileicon;
+extern FXIcon *cancelicon;
+extern FXIcon *finishicon;
+extern FXIcon *downicon;
+extern FXIcon *upicon;
+
 
 extern const unsigned char empty[];
 extern const unsigned char admin[];
