@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-12-12 17:17+0100\n"
+"POT-Creation-Date: 2009-12-12 21:11+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -751,7 +751,7 @@ msgid ""
 msgstr ""
 
 #: src/ircsocket.cpp:133
-msgid "Connection closed. Client did'nt connect in given timeout"
+msgid "Connection closed. Client didn't connect in given timeout"
 msgstr ""
 
 #: src/ircsocket.cpp:197 src/ircsocket.cpp:290
@@ -760,7 +760,7 @@ msgid "Connecting to %s"
 msgstr ""
 
 #: src/ircsocket.cpp:201 src/ircsocket.cpp:294 src/ircsocket.cpp:424
-msgid "Unable initiliaze socket"
+msgid "Unable to initiliaze socket"
 msgstr ""
 
 #: src/ircsocket.cpp:209 src/ircsocket.cpp:302
@@ -769,12 +769,12 @@ msgid "Bad host: %s"
 msgstr ""
 
 #: src/ircsocket.cpp:216 src/ircsocket.cpp:309 src/ircsocket.cpp:432
-msgid "Unable create socket"
+msgid "Unable to create socket"
 msgstr ""
 
 #: src/ircsocket.cpp:230 src/ircsocket.cpp:322
 #, c-format
-msgid "Unable connect to: %s"
+msgid "Unable to connect to: %s"
 msgstr ""
 
 #: src/ircsocket.cpp:264 src/ircsocket.cpp:381
@@ -792,7 +792,7 @@ msgid "SSL connect error %d"
 msgstr ""
 
 #: src/ircsocket.cpp:454 src/ircsocket.cpp:467
-msgid "Unable bind socket"
+msgid "Unable to bind socket"
 msgstr ""
 
 #: src/ircsocket.cpp:482
@@ -825,16 +825,16 @@ msgid "But better doesn't exist."
 msgstr ""
 
 #: src/ircsocket.cpp:517
-msgid "Unable listen"
+msgid "Unable to listen"
 msgstr ""
 
 #: src/ircsocket.cpp:529
-msgid "Unable accept connection"
+msgid "Unable to accept connection"
 msgstr ""
 
 #: src/ircsocket.cpp:543
 #, c-format
-msgid "Someone connect from %s"
+msgid "Someone connected from %s"
 msgstr ""
 
 #: src/ircsocket.cpp:635
@@ -1237,7 +1237,7 @@ msgid "PONG from "
 msgstr ""
 
 #: src/ircsocket.cpp:1928
-msgid "Unable send data"
+msgid "Unable to send data"
 msgstr ""
 
 #: src/ircsocket.cpp:2107
@@ -1529,15 +1529,15 @@ msgid "CTCP <nick> <message>, sends a CTCP message to a user."
 msgstr ""
 
 #: src/irctabitem.cpp:2163
-msgid "DCC <chat> <nick>, starts DCC chat."
+msgid "DCC chat <nick>, starts DCC chat."
 msgstr ""
 
 #: src/irctabitem.cpp:2164
-msgid "DCC <send> <nick> <filename>, sends file over DCC."
+msgid "DCC send <nick> <filename>, sends file over DCC."
 msgstr ""
 
 #: src/irctabitem.cpp:2165
-msgid "DCC <psend> <nick> <filename>, sends file passive over DCC."
+msgid "DCC psend <nick> <filename>, sends file passive over DCC."
 msgstr ""
 
 #: src/irctabitem.cpp:2166
@@ -1589,11 +1589,11 @@ msgid "LIST [channel], lists channels and their topics."
 msgstr ""
 
 #: src/irctabitem.cpp:2224
-msgid "LUA <help>, shows help for lua scripting."
+msgid "LUA help, shows help for lua scripting."
 msgstr ""
 
 #: src/irctabitem.cpp:2225
-msgid "LUA <load> <path>, loads script."
+msgid "LUA load <path>, loads script."
 msgstr ""
 
 #: src/irctabitem.cpp:2226
@@ -1601,7 +1601,7 @@ msgid "Example: /lua load /home/dvx/test.lua"
 msgstr ""
 
 #: src/irctabitem.cpp:2227
-msgid "LUA <unload> <name>, unloads script."
+msgid "LUA unload <name>, unloads script."
 msgstr ""
 
 #: src/irctabitem.cpp:2228
@@ -1609,7 +1609,7 @@ msgid "Example: /lua unload test"
 msgstr ""
 
 #: src/irctabitem.cpp:2229
-msgid "LUA <list>, shows list of loaded scripts"
+msgid "LUA list, shows list of loaded scripts"
 msgstr ""
 
 #: src/irctabitem.cpp:2241

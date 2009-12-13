@@ -2160,9 +2160,9 @@ FXbool IrcTabItem::ShowHelp(FXString command)
     }
     if(command == "dcc")
     {
-        AppendIrcText(_("DCC <chat> <nick>, starts DCC chat."));
-        AppendIrcText(_("DCC <send> <nick> <filename>, sends file over DCC."));
-        AppendIrcText(_("DCC <psend> <nick> <filename>, sends file passive over DCC."));
+        AppendIrcText(_("DCC chat <nick>, starts DCC chat."));
+        AppendIrcText(_("DCC send <nick> <filename>, sends file over DCC."));
+        AppendIrcText(_("DCC psend <nick> <filename>, sends file passive over DCC."));
         AppendIrcText(_("More information about passive DCC on http://en.wikipedia.org/wiki/Direct_Client-to-Client#Passive_DCC"));
         return TRUE;
     }
@@ -2221,12 +2221,12 @@ FXbool IrcTabItem::ShowHelp(FXString command)
 #ifdef HAVE_LUA
     if(command == "lua")
     {
-        AppendIrcText(_("LUA <help>, shows help for lua scripting."));
-        AppendIrcText(_("LUA <load> <path>, loads script."));
+        AppendIrcText(_("LUA help, shows help for lua scripting."));
+        AppendIrcText(_("LUA load <path>, loads script."));
         AppendIrcText(_("Example: /lua load /home/dvx/test.lua"));
-        AppendIrcText(_("LUA <unload> <name>, unloads script."));
+        AppendIrcText(_("LUA unload <name>, unloads script."));
         AppendIrcText(_("Example: /lua unload test"));
-        AppendIrcText(_("LUA <list>, shows list of loaded scripts"));
+        AppendIrcText(_("LUA list, shows list of loaded scripts"));
         return TRUE;
     }
 #else

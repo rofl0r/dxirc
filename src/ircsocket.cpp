@@ -130,7 +130,7 @@ long IrcSocket::OnCloseTimeout(FXObject*, FXSelector, void*)
     }
     if(!connected)
     {
-        SendEvent(IRC_DISCONNECT, _("Connection closed. Client did'nt connect in given timeout"));
+        SendEvent(IRC_DISCONNECT, _("Connection closed. Client didn't connect in given timeout"));
         CloseConnection(TRUE);
     }
     return 1;
@@ -198,7 +198,7 @@ FXint IrcSocket::Connect()
 #ifdef WIN32
     if (WSAStartup(wVersionRequested, &data) != 0)
     {
-        SendEvent(IRC_ERROR, _("Unable initiliaze socket"));
+        SendEvent(IRC_ERROR, _("Unable to initiliaze socket"));
         ClearChannelsCommands(FALSE);
         connecting = FALSE;
         return -1;
@@ -213,7 +213,7 @@ FXint IrcSocket::Connect()
     }
     if ((serverid = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
     {
-        SendEvent(IRC_ERROR, _("Unable create socket"));
+        SendEvent(IRC_ERROR, _("Unable to create socket"));
         ClearChannelsCommands(FALSE);
 #ifdef WIN32
         WSACleanup();
@@ -227,7 +227,7 @@ FXint IrcSocket::Connect()
     memcpy(&(serverSock.sin_addr), host->h_addr, host->h_length);
     if (connect(serverid, (sockaddr *)&serverSock, sizeof(serverSock)) == -1)
     {
-        SendEvent(IRC_ERROR, FXStringFormat(_("Unable connect to: %s"), serverName.text()));
+        SendEvent(IRC_ERROR, FXStringFormat(_("Unable to connect to: %s"), serverName.text()));
         ClearChannelsCommands(FALSE);
 #ifdef WIN32
         closesocket(serverid);
@@ -291,7 +291,7 @@ FXint IrcSocket::ConnectSSL()
 #ifdef WIN32
     if (WSAStartup(wVersionRequested, &data) != 0)
     {
-        SendEvent(IRC_ERROR, _("Unable initiliaze socket"));
+        SendEvent(IRC_ERROR, _("Unable to initiliaze socket"));
         ClearChannelsCommands(FALSE);
         connecting = FALSE;
         return -1;
@@ -306,7 +306,7 @@ FXint IrcSocket::ConnectSSL()
     }
     if ((serverid = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
     {
-        SendEvent(IRC_ERROR, _("Unable create socket"));
+        SendEvent(IRC_ERROR, _("Unable to create socket"));
         ClearChannelsCommands(FALSE);
 #ifdef WIN32
         WSACleanup();
@@ -319,7 +319,7 @@ FXint IrcSocket::ConnectSSL()
     memcpy(&(serverSock.sin_addr), host->h_addr, host->h_length);
     if (connect(serverid, (sockaddr *)&serverSock, sizeof(serverSock)) == -1)
     {
-        SendEvent(IRC_ERROR, FXStringFormat(_("Unable connect to: %s"), serverName.text()));
+        SendEvent(IRC_ERROR, FXStringFormat(_("Unable to connect to: %s"), serverName.text()));
         ClearChannelsCommands(FALSE);
 #ifdef WIN32
         closesocket(serverid);
@@ -421,7 +421,7 @@ FXint IrcSocket::Listen()
 #ifdef WIN32
     if (WSAStartup(wVersionRequested, &data) != 0)
     {
-        SendEvent(IRC_ERROR, _("Unable initiliaze socket"));
+        SendEvent(IRC_ERROR, _("Unable to initiliaze socket"));
         ClearChannelsCommands(FALSE);
         connecting = FALSE;
         return -1;
@@ -429,7 +429,7 @@ FXint IrcSocket::Listen()
 #endif
     if ((serverid = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
     {
-        SendEvent(IRC_ERROR, _("Unable create socket"));
+        SendEvent(IRC_ERROR, _("Unable to create socket"));
         ClearChannelsCommands(FALSE);
 #ifdef WIN32
         WSACleanup();
@@ -451,7 +451,7 @@ FXint IrcSocket::Listen()
         }
         if (bindResult == -1)
         {
-            SendEvent(IRC_ERROR, _("Unable bind socket"));
+            SendEvent(IRC_ERROR, _("Unable to bind socket"));
 #ifdef WIN32
             WSACleanup();
 #endif
@@ -464,7 +464,7 @@ FXint IrcSocket::Listen()
         serverSock.sin_port = 0;
         if (bind(serverid, (sockaddr *)&serverSock, sizeof(serverSock)) == -1)
         {
-            SendEvent(IRC_ERROR, _("Unable bind socket"));
+            SendEvent(IRC_ERROR, _("Unable to bind socket"));
 #ifdef WIN32
             WSACleanup();
 #endif
@@ -514,7 +514,7 @@ FXint IrcSocket::Listen()
     }
     if(listen(serverid, 1) == -1)
     {
-        SendEvent(IRC_ERROR, _("Unable listen"));
+        SendEvent(IRC_ERROR, _("Unable to listen"));
 #ifdef WIN32
         WSACleanup();
 #endif
@@ -526,7 +526,7 @@ FXint IrcSocket::Listen()
     clientid = accept(serverid, (sockaddr *)&clientSock, &addrlen);
     if(clientid == -1)
     {
-        SendEvent(IRC_ERROR, _("Unable accept connection"));
+        SendEvent(IRC_ERROR, _("Unable to accept connection"));
 #ifdef WIN32
         WSACleanup();
 #endif
@@ -540,7 +540,7 @@ FXint IrcSocket::Listen()
     shutdown(serverid, SHUT_RDWR);
     close(serverid);
 #endif
-    SendEvent(IRC_CONNECT, FXStringFormat(_("Someone connect from %s"), inet_ntoa((in_addr)clientSock.sin_addr)));
+    SendEvent(IRC_CONNECT, FXStringFormat(_("Someone connected from %s"), inet_ntoa((in_addr)clientSock.sin_addr)));
 #ifdef WIN32
     event = WSACreateEvent();
     WSAEventSelect(clientid, event, FD_CONNECT|FD_READ|FD_WRITE|FD_CLOSE); // sets non-blocking!!
@@ -1925,7 +1925,7 @@ FXbool IrcSocket::SendLine(const FXString& line)
         {
             if ((size = send(dccType == DCC_CHATOUT ? clientid : serverid, line.text(), line.length(), 0)) == -1)
             {
-                SendEvent(IRC_ERROR, _("Unable send data"));
+                SendEvent(IRC_ERROR, _("Unable to send data"));
 #ifdef WIN32
                 WSACleanup();
 #endif
@@ -2390,8 +2390,12 @@ FXString IrcSocket::BinaryIPToString(const FXString &address)
 //address as "127.0.0.1" or "locahost"
 FXuint IrcSocket::StringIPToBinary(const FXString &address)
 {
-    if(inet_addr(address.text()) >= 0)
-        return ntohl(inet_addr(address.text()));
+    if(address.contains('.') == 3)
+    {
+        FXRex rex("\\l");
+        if(!rex.match(address))
+            return ntohl(inet_addr(address.text()));
+    }
     struct hostent *dns_query;
     FXuint addr = 0;
     dns_query = gethostbyname(address.text());
