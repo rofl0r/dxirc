@@ -1628,7 +1628,10 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
         }
         if(index == -1)
             return 1;
+        dccfilesList[index].ip = ev->param1;
+        dccfilesList[index].port = FXIntVal(ev->param2);
         ConnectServer(ev->param1, FXIntVal(ev->param2), "", server->GetNickName(), "", "", "", FALSE, dccfilesList[index].type, "", NULL, dccfilesList[index]);
+        OnCommandTransfers(NULL, 0, NULL);
         return 1;
     }
     if(ev->eventType == IRC_DCCTOKEN)

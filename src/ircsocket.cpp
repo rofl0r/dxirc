@@ -504,8 +504,20 @@ FXint IrcSocket::Listen()
     if(dccParent->GetConnected())
     {
         if(dccType == DCC_CHATOUT) dccParent->SendCtcp(dccNick, "DCC CHAT chat "+FXStringVal(StringIPToBinary(serverName))+" "+FXStringVal(serverPort));
-        else if(dccType == DCC_OUT) dccParent->SendCtcp(dccNick, "DCC SEND "+utils::RemoveSpaces(dccFile.path.rafter(PATHSEP))+" "+FXStringVal(StringIPToBinary(serverName))+" "+FXStringVal(serverPort)+" "+FXStringVal(dccFile.size));
-        else if(dccType == DCC_PIN) dccParent->SendCtcp(dccNick, "DCC SEND "+utils::RemoveSpaces(dccFile.path.rafter(PATHSEP))+" "+FXStringVal(StringIPToBinary(serverName))+" "+FXStringVal(serverPort)+" "+FXStringVal(dccFile.size)+" "+FXStringVal(dccFile.token));
+        else if(dccType == DCC_OUT)
+        {
+            dccParent->SendCtcp(dccNick, "DCC SEND "+utils::RemoveSpaces(dccFile.path.rafter(PATHSEP))+" "+FXStringVal(StringIPToBinary(serverName))+" "+FXStringVal(serverPort)+" "+FXStringVal(dccFile.size));
+            dccFile.ip = serverName;
+            dccFile.port = serverPort;
+            SendEvent(IRC_DCCPOSITION, dccFile);
+        }
+        else if(dccType == DCC_PIN)
+        {
+            dccParent->SendCtcp(dccNick, "DCC SEND "+utils::RemoveSpaces(dccFile.path.rafter(PATHSEP))+" "+FXStringVal(StringIPToBinary(serverName))+" "+FXStringVal(serverPort)+" "+FXStringVal(dccFile.size)+" "+FXStringVal(dccFile.token));
+            dccFile.ip = serverName;
+            dccFile.port = serverPort;
+            SendEvent(IRC_DCCPOSITION, dccFile);
+        }
     }
     else
     {
@@ -552,20 +564,15 @@ FXint IrcSocket::Listen()
 #endif
     connected = TRUE;
     connecting = FALSE;
+    application->removeTimeout(this, ID_CTIME);
     if(dccType == DCC_OUT)
     {
-        dccFile.ip = serverName;
-        dccFile.port = serverPort;
-        SendEvent(IRC_DCCPOSITION, dccFile);
         sentFile.open(dccFile.path.text(), std::ios_base::in|std::ios_base::binary);
         SendFile();
         application->addTimeout(this, ID_PTIME, 1000);
     }
     if(dccType == DCC_PIN)
     {
-        dccFile.ip = serverName;
-        dccFile.port = serverPort;
-        SendEvent(IRC_DCCPOSITION, dccFile);
         receivedFile.open(dccFile.path.text(), std::ios_base::out|std::ios_base::binary);
         application->addTimeout(this, ID_PTIME, 1000);
     }
@@ -775,7 +782,8 @@ void IrcSocket::SendFile()
 {
     FXbool client = dccType == DCC_OUT;
     FXchar buf[1024];
-    sentFile.read(buf, 1024);
+    if(sentFile.good())
+        sentFile.read(buf, 1024);
     int readedChars = (int)sentFile.gcount();
     int size = 0;
     if(connected && dccFile.currentPosition < dccFile.size)

@@ -261,7 +261,7 @@ void DccDialog::UpdateTable()
         }
         table->setItemText(i, 0, irc->dccfilesList[i].path.rafter(PATHSEP));
         table->setItemText(i, 1, utils::GetFileSize(irc->dccfilesList[i].size));
-        if(irc->dccfilesList[i].currentPosition)
+        if(irc->dccfilesList[i].currentPosition < irc->dccfilesList[i].size)
             table->setItemText(i, 2, utils::GetFileSize(irc->dccfilesList[i].currentPosition));
         else
             table->setItemText(i, 2, "--:--");

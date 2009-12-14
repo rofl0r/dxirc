@@ -1147,7 +1147,7 @@ namespace utils
         fspeed = speed/1024.0;
         fsize = size/1024.0;
         fremain = fsize/fspeed;
-        if(fremain <= 0) return "?";
+        if(fremain <= 0 || fremain > 86400.0) return "?";
         else
         {
             FXint remainingTime = (FXint)fremain;
