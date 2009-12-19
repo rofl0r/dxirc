@@ -830,20 +830,22 @@ FXbool IrcTabItem::ProcessLine(const FXString& commandtext)
     if(!utils::GetAlias(command).empty())
     {
         FXString acommand = utils::GetAlias(command);
-        FXint num = acommand.contains('/');
-        if(num>1 && utils::IsCommand(acommand.section('/',2).before(' ')))
+        if(acommand.contains("%s"))
+            acommand.substitute("%s", commandtext.after(' '));
+        FXint num = acommand.contains("&&");
+        if(num)
         {
+            acommand.substitute("&&", "&");
             FXbool result = FALSE;
-            for(FXint i=1; i<=num; i++)
+            for(FXint i=0; i<=num; i++)
             {
-                result = ProcessCommand(acommand.section('/',i).prepend('/').trim());
+                result = ProcessCommand(acommand.section('&',i).trim());
             }
             return result;
         }
         else
         {
-            if(acommand.contains("%s")) return ProcessCommand(acommand.substitute("%s", commandtext.after(' ')));
-            else return ProcessCommand(acommand + (command == commandtext? "" : " "+commandtext.after(' ')));
+            return ProcessCommand(command == commandtext? acommand : acommand+" "+commandtext.after(' '));
         }
     }
     return ProcessCommand(commandtext);
