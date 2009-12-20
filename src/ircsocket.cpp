@@ -28,7 +28,6 @@
 #include <openssl/err.h>
 #include <openssl/rand.h>
 #endif
-#include <exception>
 
 FXDEFMAP(IrcSocket) IrcSocketMap[] = {
     FXMAPFUNC(SEL_IO_READ,      IrcSocket::ID_SOCKET,   IrcSocket::OnIORead),

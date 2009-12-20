@@ -153,9 +153,9 @@ class IrcSocket: public FXObject
         FXbool SendWhowas(const FXString &params);
 
         long OnIORead(FXObject*, FXSelector, void*);
+        long OnIOWrite(FXObject*, FXSelector, void*);
         long OnReconnectTimeout(FXObject*, FXSelector, void*);
         long OnPositionTimeout(FXObject*, FXSelector, void*);
-        long OnIOWrite(FXObject*, FXSelector, void*);
         long OnCloseTimeout(FXObject*, FXSelector, void*);
 
     private:

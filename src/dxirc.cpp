@@ -1187,6 +1187,13 @@ void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString
                 tabbook->setCurrent(0, TRUE);
             }
             SortTabs();
+            if(dcc)
+            {
+                for(FXint i = 0; i < tabbook->numChildren(); i=i+2)
+                {
+                    if(servers[0]->FindTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(i))) && comparecase(static_cast<FXTabItem*>(tabbook->childAtIndex(i))->getText(), dccNick) == 0) tabbook->setCurrent(i/2, TRUE);
+                }
+            }
         }
         servers[0]->ClearAttempts();
         if(dccType == DCC_CHATOUT
@@ -1222,6 +1229,13 @@ void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString
             servers[0]->AppendTarget(tabitem);
             UpdateTabPosition();
             SortTabs();
+            if(dcc)
+            {
+                for(FXint i = 0; i < tabbook->numChildren(); i=i+2)
+                {
+                    if(servers[0]->FindTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(i))) && comparecase(static_cast<FXTabItem*>(tabbook->childAtIndex(i))->getText(), dccNick) == 0) tabbook->setCurrent(i/2, TRUE);
+                }
+            }
         }
         servers[0]->ClearAttempts();
         if(dccType == DCC_CHATOUT
