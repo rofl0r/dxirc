@@ -1059,8 +1059,15 @@ long dxirc::OnCommandDccCancel(FXObject*, FXSelector, void *ptr)
         return 1;
     for(FXint i=0; i<servers.no(); i++)
     {
-        servers[i]->CloseDccfileConnection(dccfilesList[index]);
+        if(servers[i]->HasDccFile(dccfilesList[index]))
+        {
+            servers[i]->CloseDccfileConnection(dccfilesList[index]);
+            return 1;
+        }
     }
+    //dccfile hasn't server
+    dccfilesList[index].canceled = TRUE;
+    dccfilesList[index].token = -1;
     return 1;
 }
 

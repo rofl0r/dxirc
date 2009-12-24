@@ -99,6 +99,7 @@ class IrcSocket: public FXObject
         void SetDccType(const DCCTYPE &dt) { dccType = dt; }
         DCCTYPE GetDccType() { return dccType; }
         void SetDccFile(DccFile file) { dccFile = file; }
+        FXbool HasDccFile(DccFile file) { return dccFile == file; }
         FXbool GetConnected() { return connected; }
         FXbool GetConnecting() { return connecting; }
         FXbool GetUseSsl() { return useSsl; }

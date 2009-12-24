@@ -92,6 +92,7 @@ void DccDialog::create()
 
 long DccDialog::OnClose(FXObject*,FXSelector,void*)
 {
+    getApp()->removeTimeout(this, ID_UTIME);
     hide();    
     return 1;
 }

@@ -955,7 +955,7 @@ void IrcSocket::ReadData()
 void IrcSocket::ParseLine(const FXString &line)
 {
 #ifdef DEBUG
-    fxmessage("%s\n",line.text());
+    fxmessage("<< %s\n",line.text());
 #endif
     FXString from, command, params;
     if (line[0] == ':')
@@ -1917,7 +1917,7 @@ FXbool IrcSocket::SendWhowas(const FXString& params)
 FXbool IrcSocket::SendLine(const FXString& line)
 {
 #ifdef DEBUG
-    fxmessage("%s", line.text());
+    fxmessage(">> %s", line.text());
 #endif
     int size;
     if (connected)
