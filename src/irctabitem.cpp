@@ -834,6 +834,8 @@ FXbool IrcTabItem::ProcessLine(const FXString& commandtext)
         FXString acommand = utils::GetAlias(command);
         if(acommand.contains("%s"))
             acommand.substitute("%s", commandtext.after(' '));
+        else
+            acommand += commandtext.after(' ');
         FXint num = acommand.contains("&&");
         if(num)
         {
@@ -847,7 +849,7 @@ FXbool IrcTabItem::ProcessLine(const FXString& commandtext)
         }
         else
         {
-            return ProcessCommand(command == commandtext? acommand : acommand+" "+commandtext.after(' '));
+            return ProcessCommand(acommand);
         }
     }
     return ProcessCommand(commandtext);
