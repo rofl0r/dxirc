@@ -102,6 +102,7 @@ class IrcTabItem: public FXTabItem
             ID_NEWMSG,
             ID_LUA,
             ID_COMMAND,
+            ID_MYMSG,
             ID_NEWTETRIS,
             ID_DCCCHAT, //dcc chat on right click
             ID_DCCSEND, //dcc sending on right click
@@ -158,6 +159,7 @@ class IrcTabItem: public FXTabItem
         FXbool ProcessLine(const FXString &);
         void MakeLastRowVisible(FXbool);
         void HasAllCommand(FXbool);
+        void HasMyMsg(FXbool);
 
     private:
         IrcTabItem(){}
@@ -173,7 +175,8 @@ class IrcTabItem: public FXTabItem
         FXTextField *commandline, *topicline;
         FXint currentPosition, historyMax, numberUsers;
         FXbool checkAway, iamOp, usersShown, logging, ownServerWindow;
-        FXbool sameCmd, sameList, coloredNick, editableTopic, sendPipe, scriptHasAll;
+        FXbool sameCmd, sameList, coloredNick, editableTopic, sendPipe;
+        FXbool scriptHasAll, scriptHasMyMsg;
         dxStringArray commandsHistory, pipeStrings;
         FXHiliteStyle textStyleList[17];
         IrcColor colors;

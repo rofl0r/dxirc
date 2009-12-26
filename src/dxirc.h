@@ -109,9 +109,11 @@ class dxirc: public FXMainWindow
         long OnLua(FXObject*, FXSelector, void*);
         long OnCommandScripts(FXObject*, FXSelector, void*);
         long OnIrcCommand(FXObject*, FXSelector, void*);
+        long OnIrcMyMsg(FXObject*, FXSelector, void*);
         long OnStatusTimeout(FXObject*, FXSelector, void*);
         static int OnLuaAddCommand(lua_State*);
         static int OnLuaAddEvent(lua_State*);
+        static int OnLuaAddMyMsg(lua_State*);
         static int OnLuaAddAll(lua_State*);
         static int OnLuaRemoveName(lua_State*);
         static int OnLuaCommand(lua_State*);
@@ -161,6 +163,7 @@ class dxirc: public FXMainWindow
         void AppendIrcStyledText(FXString, FXint);        
         FXbool HasLuaAll(const FXString &);
         FXbool HasAllCommand();
+        FXbool HasMyMsg();
         void AutoloadScripts();
 
     protected:

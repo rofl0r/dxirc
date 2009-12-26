@@ -815,8 +815,10 @@ long IrcTabItem::OnCommandline(FXObject *, FXSelector, void *)
             return 1;
         }
 #ifdef HAVE_LUA
+        if(text[0] != '/') parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_MYMSG), &text);
         parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_COMMAND), &text);
-        if(!scriptHasAll) ProcessLine(text);
+        if(text[0] == '/' && !scriptHasAll) ProcessLine(text);
+        else if(!scriptHasMyMsg && !scriptHasAll) ProcessLine(text);
 #else
         ProcessLine(text);
 #endif
@@ -3778,4 +3780,10 @@ void IrcTabItem::SetCommandFocus()
 void IrcTabItem::HasAllCommand(FXbool result)
 {
     scriptHasAll = result;
+}
+
+//for "handle" checking, if script contains "mymsg". Send from dxirc.
+void IrcTabItem::HasMyMsg(FXbool result)
+{
+    scriptHasMyMsg = result;
 }

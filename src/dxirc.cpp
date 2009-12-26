@@ -73,6 +73,7 @@ FXDEFMAP(dxirc) dxircMap[] = {
     FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_NEWMSG,      dxirc::OnNewMsg),
     FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_LUA,         dxirc::OnLua),
     FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_COMMAND,     dxirc::OnIrcCommand),
+    FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_MYMSG,       dxirc::OnIrcMyMsg),
     FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_NEWTETRIS,   dxirc::OnNewTetris),
     FXMAPFUNC(SEL_COMMAND,      DccDialog::ID_DCCCANCEL,    dxirc::OnCommandDccCancel)
 };
@@ -84,6 +85,7 @@ dxirc *dxirc::pThis = NULL;
 static luaL_reg dxircFunctions[] = {
     {"AddCommand",  dxirc::OnLuaAddCommand},
     {"AddEvent",    dxirc::OnLuaAddEvent},
+    {"AddMyMsg",    dxirc::OnLuaAddMyMsg},
     {"AddAll",      dxirc::OnLuaAddAll},
     {"RemoveName",  dxirc::OnLuaRemoveName},
     {"Command",     dxirc::OnLuaCommand},
@@ -2237,6 +2239,48 @@ long dxirc::OnLua(FXObject *obj, FXSelector, void *data)
     return 1;
 }
 
+//Handle for entered text in IrcTab for mymsg in lua scripting
+long dxirc::OnIrcMyMsg(FXObject *sender, FXSelector, void *data)
+{
+#ifdef HAVE_LUA
+    if(compare(sender->getClassName(), "IrcTabItem") != 0) return 0;
+    IrcTabItem *tab = static_cast<IrcTabItem*>(sender);
+    FXString *text = static_cast<FXString*>(data);
+    if(!scripts.no() || !scriptEvents.no())
+    {
+        tab->HasMyMsg(FALSE);
+        return 0;
+    }
+    tab->HasMyMsg(HasMyMsg());
+    for(FXint i=0; i<scriptEvents.no(); i++)
+    {
+        if(comparecase("mymsg", scriptEvents[i].name) == 0)
+        {
+            for(FXint j=0; j<scripts.no(); j++)
+            {
+                if(comparecase(scriptEvents[i].script, scripts[j].name) == 0)
+                {
+                    lua_pushstring(scripts[j].L, scriptEvents[i].funcname.text());
+                    lua_gettable(scripts[j].L, LUA_GLOBALSINDEX);
+                    if (lua_type(scripts[j].L, -1) != LUA_TFUNCTION) lua_pop(scripts[j].L, 1);
+                    else
+                    {
+                        lua_pushstring(scripts[j].L, text->text());
+                        lua_pushinteger(scripts[j].L, tabbook->indexOfChild(tab)/2);
+                        if (lua_pcall(scripts[j].L, 2, 0, 0))
+                        {
+                            AppendIrcStyledText(FXStringFormat(_("Lua plugin: error calling %s %s"), scriptEvents[i].funcname.text(), lua_tostring(scripts[j].L, -1)), 4);
+                            lua_pop(scripts[j].L, 1);
+                        }
+                    }
+                }
+            }
+        }
+    }
+#endif
+    return 1;
+}
+
 //Handle for entered command in IrcTab for all in lua scripting
 long dxirc::OnIrcCommand(FXObject *sender, FXSelector, void *data)
 {
@@ -2246,6 +2290,7 @@ long dxirc::OnIrcCommand(FXObject *sender, FXSelector, void *data)
     FXString *commandtext = static_cast<FXString*>(data);
     if(!scripts.no() || !scriptEvents.no())
     {
+        tab->HasAllCommand(FALSE);
         return 0;
     }
     tab->HasAllCommand(HasAllCommand());
@@ -2634,6 +2679,23 @@ FXbool dxirc::HasLuaAll(const FXString &file)
     return FALSE;
 }
 
+//check for mymsg in loaded script
+FXbool dxirc::HasMyMsg()
+{
+    if(!scripts.no() || !scriptEvents.no())
+    {
+        return FALSE;
+    }
+    for(FXint i=0; i<scriptEvents.no(); i++)
+    {
+        if(comparecase("mymsg", scriptEvents[i].name) == 0)
+        {
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
 //check for all in loaded script
 FXbool dxirc::HasAllCommand()
 {
@@ -2719,6 +2781,31 @@ int dxirc::OnLuaAddEvent(lua_State *lua)
 #else
     return 0;
 #endif    
+}
+
+int dxirc::OnLuaAddMyMsg(lua_State *lua)
+{
+#ifdef HAVE_LUA
+    FXString funcname, script;
+    if(lua_isstring(lua, 1)) funcname = lua_tostring(lua,1);
+    if(funcname.empty()) return 0;
+    if(pThis->scripts.no())
+    {
+        for(FXint i=0; i<pThis->scripts.no(); i++)
+        {
+            if(lua == pThis->scripts[i].L) script = pThis->scripts[i].name;
+        }
+    }
+    if(script.empty()) return 0;
+    LuaScriptEvent event;
+    event.name = "mymsg";
+    event.funcname = funcname;
+    event.script = script;
+    pThis->scriptEvents.append(event);
+    return  1;
+#else
+    return 0;
+#endif
 }
 
 int dxirc::OnLuaAddAll(lua_State *lua)
