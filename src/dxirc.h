@@ -29,6 +29,7 @@
 #include "logviewer.h"
 #include "config.h"
 #include "dccdialog.h"
+#include "dxtabbook.h"
 
 #ifdef HAVE_LUA
 extern "C" {
@@ -175,7 +176,7 @@ class dxirc: public FXMainWindow
         FXHorizontalFrame *statusbar;
         FXLabel *statuslabel;
         FXVerticalFrame *mainframe;
-        FXTabBook *tabbook;
+        dxTabBook *tabbook;
         LogViewer *viewer;
         DccDialog *transfers;
         dxServersArray servers;

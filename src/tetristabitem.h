@@ -24,6 +24,7 @@
 #define	TETRISTABITEM_H
 
 #include "defs.h"
+#include "dxtabbook.h"
 
 static const FXint columns = 12;
 static const FXint rows = 20;
@@ -75,7 +76,7 @@ class TetrisTabItem : public FXTabItem
 {
     FXDECLARE(TetrisTabItem)
 public:
-    TetrisTabItem(FXTabBook*, const FXString&, FXIcon*, FXuint);
+    TetrisTabItem(dxTabBook*, const FXString&, FXIcon*, FXuint);
     virtual ~TetrisTabItem();
     enum {
         ID_GAMECANVAS = FXMainWindow::ID_LAST+45,
@@ -113,7 +114,7 @@ public:
 private:
     TetrisTabItem() {}
 
-    FXTabBook *parent;
+    dxTabBook *parent;
     FXVerticalFrame *mainframe, *gameframe, *otherframe;
     FXSplitter *splitter;
     FXCanvas *gamecanvas, *nextcanvas;

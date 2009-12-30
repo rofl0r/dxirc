@@ -25,6 +25,7 @@
 
 #include <fstream>
 #include "ircsocket.h"
+#include "dxtabbook.h"
 #include "dxpipe.h"
 #include "defs.h"
 
@@ -77,7 +78,7 @@ class IrcTabItem: public FXTabItem
     FXDECLARE(IrcTabItem)
     friend class dxirc;
     public:
-        IrcTabItem(FXTabBook*, const FXString&, FXIcon*, FXuint, TYPE, IrcSocket*, FXbool, FXbool, FXbool, FXString, FXString, FXint, IrcColor, FXString, FXFont*, FXbool, FXbool, FXbool);
+        IrcTabItem(dxTabBook*, const FXString&, FXIcon*, FXuint, TYPE, IrcSocket*, FXbool, FXbool, FXbool, FXString, FXString, FXint, IrcColor, FXString, FXFont*, FXbool, FXbool, FXbool);
         virtual ~IrcTabItem();
         enum {
             ID_COMMANDLINE = FXMainWindow::ID_LAST+25,
@@ -164,7 +165,7 @@ class IrcTabItem: public FXTabItem
     private:
         IrcTabItem(){}
 
-        FXTabBook *parent;
+        dxTabBook *parent;
         IrcSocket *server;
         dxPipe *pipe;
         TYPE type;

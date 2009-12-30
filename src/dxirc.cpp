@@ -153,7 +153,7 @@ dxirc::dxirc(FXApp *app)
 
     mainframe = new FXVerticalFrame(this, LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 1,1,1,1);
 
-    tabbook = new FXTabBook(mainframe, this, ID_TABS, PACK_UNIFORM_WIDTH|PACK_UNIFORM_HEIGHT|LAYOUT_FILL_X|LAYOUT_FILL_Y);    
+    tabbook = new dxTabBook(mainframe, this, ID_TABS, PACK_UNIFORM_WIDTH|PACK_UNIFORM_HEIGHT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
 
     IrcSocket *server = new IrcSocket(app, this, "", "");
     server->SetUsersList(usersList);
@@ -1744,6 +1744,10 @@ long dxirc::OnTabBook(FXObject *, FXSelector, void *ptr)
             TetrisTabItem *tetristab = static_cast<TetrisTabItem*>(tabbook->childAtIndex(GetTabId("tetris")*2));
             if(tetristab->IsPauseEnable() && !tetristab->IsPaused()) tetristab->PauseResumeGame();
         }
+        if(currenttab->GetType() == SERVER)
+            UpdateStatus(currenttab->GetServerName()+"-"+currenttab->GetNickName());
+        else
+            UpdateStatus(currenttab->getText()+"-"+currenttab->GetServerName()+"-"+currenttab->GetNickName());
     }    
     if(compare(tabbook->childAtIndex(index)->getClassName(), "TetrisTabItem") == 0)
     {
@@ -1989,54 +1993,56 @@ long dxirc::OnCommandCloseTab(FXObject *, FXSelector, void *)
 
 long dxirc::OnCommandSelectTab(FXObject*, FXSelector, void *ptr)
 {
+    FXint index = 0;
     FXEvent* event = (FXEvent*)ptr;
     switch(event->code){
         case KEY_1:
         {
-            tabbook->setCurrent(0, tabbook->numChildren() ? TRUE : FALSE);
+            index = 0;
             break;
         }
         case KEY_2:
         {
-            tabbook->setCurrent(1, tabbook->numChildren() > 2 ? TRUE : FALSE);
+            index = 1;
             break;
         }
         case KEY_3:
         {
-            tabbook->setCurrent(2, tabbook->numChildren() > 4 ? TRUE : FALSE);
+            index = 2;
             break;
         }
         case KEY_4:
         {
-            tabbook->setCurrent(3, tabbook->numChildren() > 6 ? TRUE : FALSE);
+            index = 3;
             break;
         }
         case KEY_5:
         {
-            tabbook->setCurrent(4, tabbook->numChildren() > 8 ? TRUE : FALSE);
+            index = 4;
             break;
         }
         case KEY_6:
         {
-            tabbook->setCurrent(5, tabbook->numChildren() > 10 ? TRUE : FALSE);
+            index = 5;
             break;
         }
         case KEY_7:
         {
-            tabbook->setCurrent(6, tabbook->numChildren() > 12 ? TRUE : FALSE);
+            index = 6;
             break;
         }
         case KEY_8:
         {
-            tabbook->setCurrent(7, tabbook->numChildren() > 14 ? TRUE : FALSE);
+            index = 7;
             break;
         }
         case KEY_9:
         {
-            tabbook->setCurrent(8, tabbook->numChildren() > 16 ? TRUE : FALSE);
+            index = 8;
             break;
         }
     }
+    if((index)*2 < tabbook->numChildren()) tabbook->setCurrent(index, tabbook->numChildren() > index*2 ? TRUE : FALSE);
     return 1;
 }
 
