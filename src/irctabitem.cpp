@@ -2702,7 +2702,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
                 this->setTextColor(FXRGB(255,0,0));
             }
             else this->setTextColor(FXRGB(0,0,255));
-            this->setIcon(unewm);
+            this->setIcon(dccnewm);
             parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_NEWMSG), NULL);
         }
     }
@@ -2716,7 +2716,7 @@ long IrcTabItem::OnIrcEvent(FXObject *, FXSelector, void *data)
                 this->setTextColor(FXRGB(255,0,0));
             }
             else this->setTextColor(FXRGB(0,0,255));
-            this->setIcon(unewm);
+            this->setIcon(dccnewm);
             parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_NEWMSG), NULL);
         }
     }

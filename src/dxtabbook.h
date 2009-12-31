@@ -31,7 +31,9 @@ public:
     dxTabBook(FXComposite* p, FXObject* tgt=NULL, FXSelector sel=0, FXuint opts=TABBOOK_NORMAL);
     enum {
         ID_BPREVIOUS = FXMainWindow::ID_LAST+200,
-        ID_BNEXT
+        ID_BNEXT,
+        ID_BHIDDEN,
+        ID_TAB
     };
 
     void layout();
@@ -39,10 +41,12 @@ public:
 
     long OnPrevious(FXObject*, FXSelector, void*);
     long OnNext(FXObject*, FXSelector, void*);
+    long OnHidden(FXObject*, FXSelector, void*);
+    long OnTab(FXObject*, FXSelector, void*);
 private:
     dxTabBook() {}
 
-    FXButton *buttonPrevious, *buttonNext;
+    FXArrowButton *buttonPrevious, *buttonNext, *buttonHidden;
 };
 
 #endif	/* _DXTABBOOK_H */

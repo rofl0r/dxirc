@@ -65,7 +65,11 @@ extern FXIcon *cancelicon;
 extern FXIcon *finishicon;
 extern FXIcon *downicon;
 extern FXIcon *upicon;
-
+extern FXIcon *dccicon;
+extern FXIcon *dccnewm;
+extern FXIcon *logsicon;
+extern FXIcon *scripticon;
+extern FXIcon *transfericon;
 
 extern const unsigned char empty[];
 extern const unsigned char admin[];
@@ -73,6 +77,5 @@ extern const unsigned char halfop[];
 extern const unsigned char op[];
 extern const unsigned char owner[];
 extern const unsigned char voice[];
-
 
 #endif // ICONS_H

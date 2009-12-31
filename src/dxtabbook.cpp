@@ -21,12 +21,15 @@
 
 #include "dxtabbook.h"
 
-#define TABBOOK_MASK       (TABBOOK_SIDEWAYS|TABBOOK_BOTTOMTABS)
-#define REVEAL_PIXELS      20
+#define TABBOOK_MASK    (TABBOOK_SIDEWAYS|TABBOOK_BOTTOMTABS)
+#define REVEAL_PIXELS   20
+#define TABMAX          50
 
 FXDEFMAP(dxTabBook) dxTabBookMap[] = {
     FXMAPFUNC(SEL_COMMAND,  dxTabBook::ID_BPREVIOUS,    dxTabBook::OnPrevious),
-    FXMAPFUNC(SEL_COMMAND,  dxTabBook::ID_BNEXT,        dxTabBook::OnNext)
+    FXMAPFUNC(SEL_COMMAND,  dxTabBook::ID_BNEXT,        dxTabBook::OnNext),
+    FXMAPFUNC(SEL_COMMAND,  dxTabBook::ID_BHIDDEN,       dxTabBook::OnHidden),
+    FXMAPFUNCS(SEL_COMMAND, dxTabBook::ID_TAB, dxTabBook::ID_TAB+TABMAX, dxTabBook::OnTab)
 };
 
 FXIMPLEMENT(dxTabBook, FXTabBook, dxTabBookMap, ARRAYNUMBER(dxTabBookMap))
@@ -34,8 +37,12 @@ FXIMPLEMENT(dxTabBook, FXTabBook, dxTabBookMap, ARRAYNUMBER(dxTabBookMap))
 dxTabBook::dxTabBook(FXComposite* p, FXObject* tgt, FXSelector sel, FXuint opts)
     : FXTabBook(p, tgt, sel, opts)
 {
-    buttonPrevious = new FXButton(p, "<", NULL, this, ID_BPREVIOUS, LAYOUT_FIX_X|LAYOUT_FIX_Y);
-    buttonNext = new FXButton(p, ">", NULL, this, ID_BNEXT, LAYOUT_FIX_X|LAYOUT_FIX_Y);
+    buttonPrevious = new FXArrowButton(p, this, ID_BPREVIOUS, LAYOUT_FIX_X|LAYOUT_FIX_Y|ARROW_LEFT);
+    buttonPrevious->setArrowColor(getApp()->getForeColor());
+    buttonNext = new FXArrowButton(p, this, ID_BNEXT, LAYOUT_FIX_X|LAYOUT_FIX_Y|ARROW_RIGHT);
+    buttonNext->setArrowColor(getApp()->getForeColor());
+    buttonHidden = new FXArrowButton(p, this, ID_BHIDDEN, LAYOUT_FIX_X|LAYOUT_FIX_Y|ARROW_DOWN);
+    buttonHidden->setArrowColor(getApp()->getForeColor());
 }
 
 long dxTabBook::OnPrevious(FXObject*, FXSelector, void*)
@@ -53,7 +60,36 @@ long dxTabBook::OnNext(FXObject*, FXSelector, void*)
     return 1;
 }
 
-//Get number of tabs
+long dxTabBook::OnHidden(FXObject*, FXSelector, void*)
+{
+    register FXint i;
+    register FXWindow *tab;
+    FXMenuPane popup(buttonHidden->getParent());
+    for(tab = getFirst(), i = 0; tab && tab->getNext(); tab = tab->getNext()->getNext(), i++)
+    {
+        if(!tab->shown() && i<=TABMAX)
+        {
+            FXMenuCommand *menu = new FXMenuCommand(&popup, static_cast<FXTabItem*>(tab)->getText(), static_cast<FXTabItem*>(tab)->getIcon(), this, ID_TAB+i);
+            menu->setTextColor(static_cast<FXTabItem*>(tab)->getTextColor());
+        }
+    }
+    FXint x, y;
+    FXuint button;
+    getRoot()->getCursorPosition(x, y, button);
+    popup.create();
+    popup.popup(NULL, x, y);
+    getApp()->runModalWhileShown(&popup);
+    return 1;
+}
+
+long dxTabBook::OnTab(FXObject*, FXSelector sel, void*)
+{
+    FXint i = FXSELID(sel)-FXSELID(ID_TAB);
+    setCurrent(i, TRUE);
+    return 1;
+}
+
+//Return the number of tabs
 FXint dxTabBook::numTabs() const
 {
     return numChildren()/2;
@@ -63,7 +99,7 @@ FXint dxTabBook::numTabs() const
 void dxTabBook::layout() {
     register FXint i, xx, yy, x, y, w, h, px, py, pw, ph, maxtabw, maxtabh;
     register FXint currentWidth, currentHeight, tabsWidth, tabsHeight;
-    register FXint previoustabsWidth, previoustabsHeight, nexttabsHeight;
+    register FXint previoustabsWidth, previoustabsHeight;
     register FXWindow *raisepane = NULL;
     register FXWindow *raisetab = NULL;
     register FXWindow *pane, *tab;
@@ -72,8 +108,7 @@ void dxTabBook::layout() {
 
     // Measure tabs again
     maxtabw = maxtabh = currentWidth = currentHeight = tabsWidth = tabsHeight 
-            = previoustabsWidth = previoustabsHeight 
-            = nexttabsHeight= 0;
+            = previoustabsWidth = previoustabsHeight = 0;
     for (tab = getFirst(), i = 0; tab && tab->getNext(); tab = tab->getNext()->getNext(), i++) {
             hints = tab->getLayoutHints();
             if (hints & LAYOUT_FIX_WIDTH) w = tab->getWidth();
@@ -86,12 +121,9 @@ void dxTabBook::layout() {
                 previoustabsWidth += w;
                 previoustabsHeight += h;
             }
-            else if(i == current) {
+            if(i == current) {
                 currentWidth = w;
                 currentHeight = h;
-            }
-            else {
-                nexttabsHeight += h;
             }
             if (w > maxtabw) maxtabw = w;
             if (h > maxtabh) maxtabh = h;
@@ -127,7 +159,7 @@ void dxTabBook::layout() {
                 else
                     tab->position(px - w + 4, y + 2, w, h);
                 tab->raise();
-                if(previoustabsHeight+currentHeight > getHeight()-buttonPrevious->getDefaultHeight()-buttonNext->getDefaultHeight())
+                if(previoustabsHeight+currentHeight > getHeight()-FXMAX3(buttonPrevious->getDefaultHeight(), buttonNext->getDefaultHeight(), buttonHidden->getDefaultHeight()))
                     tab->hide();
                 else
                     tab->show();
@@ -143,7 +175,7 @@ void dxTabBook::layout() {
                 else
                     tab->position(px - w + 4, y + 2, w, h);
                 tab->lower();
-                if(y+h > getHeight()-buttonPrevious->getDefaultHeight()-buttonNext->getDefaultHeight() || hidden) {
+                if((y+h > getHeight()-FXMAX3(buttonPrevious->getDefaultHeight(), buttonNext->getDefaultHeight(), buttonHidden->getDefaultHeight())) || hidden) {
                     tab->hide();
                     hidden = TRUE;
                 }
@@ -166,17 +198,21 @@ void dxTabBook::layout() {
                 yy += h - 3;
             }
         }
-        buttonPrevious->position(options & TABBOOK_BOTTOMTABS ? px+pw+2 : px-buttonPrevious->getDefaultWidth()-buttonNext->getDefaultWidth(), yy+6, buttonPrevious->getDefaultWidth(), buttonPrevious->getDefaultHeight());
-        buttonNext->position(options & TABBOOK_BOTTOMTABS ? px+pw+2+buttonPrevious->getDefaultWidth() : px-buttonNext->getDefaultWidth(), yy+6, buttonNext->getDefaultWidth(), buttonNext->getDefaultHeight());
+        buttonPrevious->position(options & TABBOOK_BOTTOMTABS ? px+pw+2 : px-buttonPrevious->getDefaultWidth()-buttonNext->getDefaultWidth()-buttonHidden->getDefaultWidth(), yy+6, buttonPrevious->getDefaultWidth(), buttonPrevious->getDefaultHeight());
+        buttonNext->position(options & TABBOOK_BOTTOMTABS ? px+pw+2+buttonPrevious->getDefaultWidth() : px-buttonNext->getDefaultWidth()-buttonHidden->getDefaultWidth(), yy+6, buttonNext->getDefaultWidth(), buttonNext->getDefaultHeight());
+        buttonHidden->position(options & TABBOOK_BOTTOMTABS ? px+pw+2+buttonPrevious->getDefaultWidth()+buttonNext->getDefaultWidth() : px-buttonHidden->getDefaultWidth(), yy+6, buttonHidden->getDefaultWidth(), buttonHidden->getDefaultHeight());
         if(yy >= tabsHeight) {
             buttonPrevious->hide();
             buttonNext->hide();
+            buttonHidden->hide();
         }
         else {
             buttonPrevious->raise();
             buttonPrevious->show();
             buttonNext->raise();
             buttonNext->show();
+            buttonHidden->raise();
+            buttonHidden->show();
         }
         if(!current)
             buttonPrevious->disable();
@@ -217,7 +253,7 @@ void dxTabBook::layout() {
                 else
                     tab->position(x, py - h + 4, w, h);
                 tab->raise();
-                if(previoustabsWidth+currentWidth > getWidth()-buttonPrevious->getDefaultWidth()-buttonNext->getDefaultWidth())
+                if(previoustabsWidth+currentWidth > getWidth()-buttonPrevious->getDefaultWidth()-buttonNext->getDefaultWidth()-buttonHidden->getDefaultWidth()-6)
                     tab->hide();
                 else
                     tab->show();
@@ -233,7 +269,7 @@ void dxTabBook::layout() {
                 else
                     tab->position(x, py - h + 4, w, h);
                 tab->lower();
-                if(x+w > getWidth()-buttonPrevious->getDefaultWidth()-buttonNext->getDefaultWidth() || hidden) {
+                if((x+w > getWidth()-buttonPrevious->getDefaultWidth()-buttonNext->getDefaultWidth()-buttonHidden->getDefaultWidth()-6) || hidden) {
                     tab->hide();
                     hidden = TRUE;
                 }
@@ -256,17 +292,21 @@ void dxTabBook::layout() {
                 xx += w - 3;
             }
         }
-        buttonPrevious->position(xx+5, options & TABBOOK_BOTTOMTABS ? py+ph+2 : py-buttonPrevious->getDefaultHeight(), buttonPrevious->getDefaultWidth(), buttonPrevious->getDefaultHeight());
-        buttonNext->position(xx+5+buttonPrevious->getDefaultWidth(), options & TABBOOK_BOTTOMTABS ? py+ph+2 : py-buttonPrevious->getDefaultHeight(), buttonNext->getDefaultWidth(), buttonNext->getDefaultHeight());
+        buttonPrevious->position(getWidth()-buttonPrevious->getDefaultWidth()-buttonNext->getDefaultWidth()-buttonHidden->getDefaultWidth(), options & TABBOOK_BOTTOMTABS ? py+ph+2 : py-FXMAX3(buttonPrevious->getDefaultHeight(), buttonNext->getDefaultHeight(), buttonHidden->getDefaultHeight()), buttonPrevious->getDefaultWidth(), buttonPrevious->getDefaultHeight());
+        buttonNext->position(getWidth()-buttonNext->getDefaultWidth()-buttonHidden->getDefaultWidth(), options & TABBOOK_BOTTOMTABS ? py+ph+2 : py-FXMAX3(buttonPrevious->getDefaultHeight(), buttonNext->getDefaultHeight(), buttonHidden->getDefaultHeight()), buttonNext->getDefaultWidth(), buttonNext->getDefaultHeight());
+        buttonHidden->position(getWidth()-buttonHidden->getDefaultWidth(), options & TABBOOK_BOTTOMTABS ? py+ph+2 : py-FXMAX3(buttonPrevious->getDefaultHeight(), buttonNext->getDefaultHeight(), buttonHidden->getDefaultHeight()), buttonHidden->getDefaultWidth(), buttonHidden->getDefaultHeight());
         if(xx >= tabsWidth) {
             buttonPrevious->hide();
             buttonNext->hide();
+            buttonHidden->hide();
         }
         else {
             buttonPrevious->raise();
             buttonPrevious->show();
             buttonNext->raise();
             buttonNext->show();
+            buttonHidden->raise();
+            buttonHidden->show();
         }
         if(!current)
             buttonPrevious->disable();

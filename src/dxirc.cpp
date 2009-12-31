@@ -119,13 +119,13 @@ dxirc::dxirc(FXApp *app)
     disconnect = new FXMenuCommand(servermenu, _("&Disconnect\tCtrl-D"), disconnecticon, this, ID_DISCONNECT);
     disconnect->disable();
     new FXMenuSeparator(servermenu);
-    new FXMenuCommand(servermenu, _("DCC &transfers\tCtrl-T"), NULL, this, ID_TRANSFERS);
+    new FXMenuCommand(servermenu, _("DCC &transfers\tCtrl-T"), transfericon, this, ID_TRANSFERS);
 #ifdef HAVE_LUA
     new FXMenuSeparator(servermenu);
-    new FXMenuCommand(servermenu, _("S&cripts\tCtrl-S"), NULL, this, ID_SCRIPTS);
+    new FXMenuCommand(servermenu, _("S&cripts\tCtrl-S"), scripticon, this, ID_SCRIPTS);
 #endif
     new FXMenuSeparator(servermenu);
-    logviewer = new FXMenuCommand(servermenu, _("&Log viewer\tCtrl-G"), NULL, this, ID_LOG);
+    logviewer = new FXMenuCommand(servermenu, _("&Log viewer\tCtrl-G"), logsicon, this, ID_LOG);
     if(!logging) logviewer->disable();
     new FXMenuSeparator(servermenu);
     new FXMenuCommand(servermenu, _("&Quit\tAlt-F4"), quiticon, this, ID_QUIT);
@@ -252,6 +252,11 @@ dxirc::~dxirc()
     delete finishicon;
     delete downicon;
     delete upicon;
+    delete dccicon;
+    delete dccnewm;
+    delete logsicon;
+    delete scripticon;
+    delete transfericon;
     delete servermenu;
     delete editmenu;
     delete helpmenu;
@@ -664,6 +669,7 @@ void dxirc::UpdateTheme()
     FXListBox * listbox;
     FXTreeList * treelist;
     FXComboBox * combobox;
+    FXArrowButton * arrowbuton;
     FXButton * button;
     FXFrame * frame;
     FXLabel * label;
@@ -737,6 +743,10 @@ void dxirc::UpdateTheme()
                     radiobutton->setRadioColor(appTheme.fore);
                     radiobutton->setDiskColor(appTheme.back);
                 }
+            }
+            else if ((arrowbuton = dynamic_cast<FXArrowButton*> (w)))
+            {
+                arrowbuton->setArrowColor(appTheme.fore);
             }
             else if ((textfield = dynamic_cast<FXTextField*> (w)))
             {
@@ -1184,7 +1194,7 @@ void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString
         {
             if (!tabbook->numChildren())
             {
-                IrcTabItem *tabitem = new IrcTabItem(tabbook, dcc ? dccNick : hostname, dcc ? queryicon : servericon, TAB_BOTTOM, dcc ? DCCCHAT : SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList, coloredNick);
+                IrcTabItem *tabitem = new IrcTabItem(tabbook, dcc ? dccNick : hostname, dcc ? dccicon : servericon, TAB_BOTTOM, dcc ? DCCCHAT : SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList, coloredNick);
                 tabitem->create();
                 tabitem->CreateGeom();
                 servers[0]->AppendTarget(tabitem);
@@ -1232,7 +1242,7 @@ void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString
         servers[0]->SetDccFile(dccFile);
         if(dccType != DCC_IN && dccType != DCC_OUT && dccType != DCC_PIN && dccType != DCC_POUT)
         {
-            IrcTabItem *tabitem = new IrcTabItem(tabbook, dcc ? dccNick : hostname, dcc ? queryicon : servericon, TAB_BOTTOM, dcc ? DCCCHAT : SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList, coloredNick);
+            IrcTabItem *tabitem = new IrcTabItem(tabbook, dcc ? dccNick : hostname, dcc ? dccicon : servericon, TAB_BOTTOM, dcc ? DCCCHAT : SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList, coloredNick);
             tabitem->create();
             tabitem->CreateGeom();
             servers[0]->AppendTarget(tabitem);
@@ -1729,9 +1739,17 @@ long dxirc::OnTabBook(FXObject *, FXSelector, void *ptr)
                 trayIcon->setIcon(trayicon);
 #endif
         }
-        if((currenttab->GetType() == QUERY || currenttab->GetType() == DCCCHAT) && currenttab->getIcon() == unewm)
+        if(currenttab->GetType() == QUERY && currenttab->getIcon() == unewm)
         {
             currenttab->setIcon(queryicon);
+#ifdef HAVE_TRAY
+            if(trayIcon && trayIcon->getIcon() == newm)
+                trayIcon->setIcon(trayicon);
+#endif
+        }
+        if(currenttab->GetType() == DCCCHAT && currenttab->getIcon() == dccnewm)
+        {
+            currenttab->setIcon(dccicon);
 #ifdef HAVE_TRAY
             if(trayIcon && trayIcon->getIcon() == newm)
                 trayIcon->setIcon(trayicon);
