@@ -45,7 +45,7 @@ EXTRA_DIST =  configdialog.h \
               tetristabitem.h \
               scriptdialog.h \
               dccdialog.h \
-              dxtabbook \
+              dxtabbook.h \
               FXTrayApp.h \
               FXTrayIcon.h
 

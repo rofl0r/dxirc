@@ -30,6 +30,7 @@
 #include "config.h"
 #include "dccdialog.h"
 #include "dxtabbook.h"
+#include "ircsocket.h"
 
 #ifdef HAVE_LUA
 extern "C" {
@@ -140,7 +141,24 @@ class dxirc: public FXMainWindow
         FXPopup *traymenu;
         FXTrayIcon *trayIcon;
         FXint lastToken;
-        
+
+        void OnIrcNewchannel(IrcSocket*, IrcEvent*);
+        void OnIrcQuery(IrcSocket*, IrcEvent*);
+        void OnIrcPart(IrcSocket*, IrcEvent*);
+        void OnIrcKick(IrcSocket*, IrcEvent*);
+        void OnIrcDisconnect(IrcSocket*, IrcEvent*);
+        void OnIrcConnectAndReconnect(IrcEvent*);
+        void OnIrcEndmotd();
+        void OnIrcPrivmsgAndAction(IrcSocket*, IrcEvent*);
+        void OnIrcJoin(IrcSocket*, IrcEvent*);
+        void OnIrcDccChat(IrcSocket*, IrcEvent*);
+        void OnIrcDccServer(IrcSocket*, IrcEvent*);
+        void OnIrcDccIn(IrcSocket*, IrcEvent*);
+        void OnIrcDccOut(IrcSocket*, IrcEvent*);
+        void OnIrcDccPout(IrcSocket*, IrcEvent*);
+        void OnIrcDccMyToken(IrcSocket*, IrcEvent*);
+        void OnIrcDccToken(IrcSocket*, IrcEvent*);
+        void OnIrcDccPosition(IrcSocket*, IrcEvent*);
         FXbool TabExist(IrcSocket*, FXString);
         FXbool ServerExist(const FXString&, const FXint&, const FXString&);
         FXint GetServerTab(IrcSocket*);

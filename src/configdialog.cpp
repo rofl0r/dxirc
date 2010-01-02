@@ -290,7 +290,7 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     delayAttemptLabel = new FXLabel(dapane, _("Delay between two attempts in seconds"), NULL, LAYOUT_LEFT);
     if(!reconnect) delayAttemptLabel->disable();
     delayAttemptSpinner = new FXSpinner(dapane, 4, &targetDelayAttempt, FXDataTarget::ID_VALUE, SPIN_CYCLIC|FRAME_GROOVE);
-    delayAttemptSpinner->setRange(20,120);
+    delayAttemptSpinner->setRange(10,120);
     if(!reconnect) delayAttemptSpinner->disable();
     FXHorizontalFrame *maxpane = new FXHorizontalFrame(otherpane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     new FXLabel(maxpane, _("Max. users number for checking away\tToo high number can be reason for ban"), NULL, LAYOUT_LEFT);

@@ -155,8 +155,8 @@ class IrcTabItem: public FXTabItem
         long OnDccSend(FXObject *, FXSelector, void*);
 
     protected:        
-        void AppendIrcText(FXString, FXbool);
-        void AppendIrcStyledText(FXString, FXint, FXbool);
+        void AppendText(FXString, FXbool);
+        void AppendStyledText(FXString, FXint, FXbool);
         FXbool ProcessLine(const FXString &);
         void MakeLastRowVisible(FXbool);
         void HasAllCommand(FXbool);
@@ -188,10 +188,44 @@ class IrcTabItem: public FXTabItem
         std::ofstream *logstream;        
         
 
+        void OnIrcPrivmsg(IrcEvent *ev);
+        void OnIrcAction(IrcEvent *ev);
+        void OnIrcCtpcReply(IrcEvent *ev);
+        void OnIrcCtcpRequest(IrcEvent *ev);
+        void OnIrcDccMsg(IrcEvent *ev);
+        void OnIrcDccAction(IrcEvent *ev);
+        void OnIrcJoin(IrcEvent *ev);
+        void OnIrcQuit(IrcEvent *ev);
+        void OnIrcPart(IrcEvent *ev);
+        void OnIrcChnotice(IrcEvent *ev);
+        void OnIrcNotice(IrcEvent *ev);
+        void OnIrcNick(IrcEvent *ev);
+        void OnIrcTopic(IrcEvent *ev);
+        void OnIrcInvite(IrcEvent *ev);
+        void OnIrcKick(IrcEvent *ev);
+        void OnIrcMode(IrcEvent *ev);
+        void OnIrcUmode(IrcEvent *ev);
+        void OnIrcChmode(IrcEvent *ev);
+        void OnIrcServerReply(IrcEvent *ev);
+        void OnIrcConnect(IrcEvent *ev);
+        void OnIrcError(IrcEvent *ev);
+        void OnIrcServerError(IrcEvent *ev);
+        void OnIrcDisconnect(IrcEvent *ev);
+        void OnIrcReconnect(IrcEvent *ev);
+        void OnIrcUnknown(IrcEvent *ev);
+        void OnIrc301(IrcEvent *ev);
+        void OnIrc305(IrcEvent *ev);
+        void OnIrc306(IrcEvent *ev);
+        void OnIrc331332333(IrcEvent *ev);
+        void OnIrc353(IrcEvent *ev);
+        void OnIrc366(IrcEvent *ev);
+        void OnIrc372(IrcEvent *ev);
+        void OnIrcAway(IrcEvent *ev);
+        void OnIrcEndMotd();
         FXString StripColors(const FXString &text, const FXbool stripOther);
-        void AppendIrcText(FXString);
-        void AppendIrcStyledText(FXString, FXint);
-        void AppendIrcNickText(FXString, FXString, FXint);
+        void AppendIrcText(FXString, FXTime);
+        void AppendIrcStyledText(FXString, FXint, FXTime);
+        void AppendIrcNickText(FXString, FXString, FXint, FXTime);
         void AppendLinkText(const FXString &, FXint);
         FXString GetNick(int);
         FXbool IsFirst();
@@ -199,11 +233,11 @@ class IrcTabItem: public FXTabItem
         void AddUser(const FXString &user);
         void RemoveUser(const FXString &user);
         void ChangeNickUser(const FXString &nick, const FXString &newnick);
-        void OnBan(const FXString &banmask, const FXbool &sign, const FXString &sender);
+        void OnBan(const FXString &banmask, const FXbool &sign, const FXString &sender, const FXTime &time);
         void OnAway();
         void StartLogging();
         void StopLogging();
-        void LogLine(const FXString &line);
+        void LogLine(const FXString &line, const FXTime &time);
         FXbool IsChannel(const FXString &text);
         void SetTextColor(FXColor);
         void SetTextBackColor(FXColor);

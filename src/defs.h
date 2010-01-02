@@ -207,6 +207,7 @@ struct IrcEvent {
     IrcEventType eventType;
     FXString param1, param2, param3, param4;
     DccFile dccFile;
+    FXTime time; //for stored events
 };
 
 typedef FXArray<IrcSocket*> dxServersArray;
@@ -219,6 +220,7 @@ typedef FXArray<LuaScript> dxScriptsArray;
 typedef FXArray<LuaScriptCommand> dxScriptCommandsArray;
 typedef FXArray<LuaScriptEvent> dxScriptEventsArray;
 typedef FXArray<DccFile> dxDccFilesArray;
+typedef FXArray<IrcEvent> dxIrcEventArray;
 typedef std::map<FXString,FXString> dxStringMap;
 typedef std::pair<FXString,FXString> StringPair;
 typedef std::map<FXString, FXString>::iterator StringIt;

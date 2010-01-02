@@ -29,13 +29,16 @@
 #include <openssl/rand.h>
 #endif
 
+#define ETIMEOUT 666 //timeout for event fire
+
 FXDEFMAP(IrcSocket) IrcSocketMap[] = {
     FXMAPFUNC(SEL_IO_READ,      IrcSocket::ID_SOCKET,   IrcSocket::OnIORead),
     FXMAPFUNC(SEL_TIMEOUT,      IrcSocket::ID_SSLTIME,  IrcSocket::OnIORead),
     FXMAPFUNC(SEL_IO_WRITE,     IrcSocket::ID_SOCKET,   IrcSocket::OnIOWrite),
     FXMAPFUNC(SEL_TIMEOUT,      IrcSocket::ID_RTIME,    IrcSocket::OnReconnectTimeout),
     FXMAPFUNC(SEL_TIMEOUT,      IrcSocket::ID_PTIME,    IrcSocket::OnPositionTimeout),
-    FXMAPFUNC(SEL_TIMEOUT,      IrcSocket::ID_CTIME,    IrcSocket::OnCloseTimeout)
+    FXMAPFUNC(SEL_TIMEOUT,      IrcSocket::ID_CTIME,    IrcSocket::OnCloseTimeout),
+    FXMAPFUNC(SEL_TIMEOUT,      IrcSocket::ID_ETIME,    IrcSocket::OnEventTimeout)
 };
 
 FXIMPLEMENT(IrcSocket, FXObject, IrcSocketMap, ARRAYNUMBER(IrcSocketMap))
@@ -101,8 +104,8 @@ long IrcSocket::OnReconnectTimeout(FXObject*, FXSelector, void*)
 {
     if(attempts < numberAttempt && !connected)
     {
-        if(useSsl) ConnectSSL();
-        else Connect();
+        SendEvents();
+        StartConnection();
         attempts++;
         application->addTimeout(this, ID_RTIME, delayAttempt*1000);
     }
@@ -135,6 +138,13 @@ long IrcSocket::OnCloseTimeout(FXObject*, FXSelector, void*)
     return 1;
 }
 
+//fired events stored during thread
+long IrcSocket::OnEventTimeout(FXObject*, FXSelector, void*)
+{
+    SendEvents();
+    return 1;
+}
+
 long IrcSocket::OnIORead(FXObject *, FXSelector, void *)
 {
 #ifdef WIN32
@@ -159,6 +169,7 @@ long IrcSocket::OnIOWrite(FXObject*, FXSelector, void*)
 
 void IrcSocket::StartConnection()
 {
+    FXASSERT(thread);
 #ifdef DEBUG
     fxmessage("StartConnection\n");
     fxmessage("Attempts on %s-%d-%s: %d\n", serverName.text(), serverPort, nickName.text(), attempts);
@@ -169,6 +180,7 @@ void IrcSocket::StartConnection()
 
 void IrcSocket::StartListening(const  FXString &nick, IrcSocket *server)
 {
+    FXASSERT(thread);
 #ifdef DEBUG
     fxmessage("StartListening\n");
 #endif
@@ -186,7 +198,10 @@ FXint IrcSocket::Connect()
     fxmessage("startCommands: %s\n", startCommands.text());
 #endif
     if(connected)
+    {
+        application->addTimeout(this, ID_ETIME, ETIMEOUT);
         return 1;
+    }
     endmotd = FALSE;
 #ifdef WIN32
     WORD wVersionRequested = MAKEWORD(2,0);
@@ -200,6 +215,7 @@ FXint IrcSocket::Connect()
         SendEvent(IRC_ERROR, _("Unable to initiliaze socket"));
         ClearChannelsCommands(FALSE);
         connecting = FALSE;
+        application->addTimeout(this, ID_ETIME, ETIMEOUT);
         return -1;
     }
 #endif
@@ -208,6 +224,7 @@ FXint IrcSocket::Connect()
         SendEvent(IRC_ERROR, FXStringFormat(_("Bad host: %s"), serverName.text()));
         ClearChannelsCommands(FALSE);
         connecting = FALSE;
+        application->addTimeout(this, ID_ETIME, ETIMEOUT);
         return -1;
     }
     if ((serverid = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
@@ -218,6 +235,7 @@ FXint IrcSocket::Connect()
         WSACleanup();
 #endif
         connecting = FALSE;
+        application->addTimeout(this, ID_ETIME, ETIMEOUT);
         return -1;
     }
     if(dccType == DCC_IN) receivedFile.open(dccFile.path.text(), std::ios_base::out|std::ios_base::binary);
@@ -235,6 +253,7 @@ FXint IrcSocket::Connect()
 #endif
         connecting = FALSE;
         receivedFile.close();
+        application->addTimeout(this, ID_ETIME, ETIMEOUT);
         return -1;
     }
 #ifdef WIN32
@@ -267,6 +286,7 @@ FXint IrcSocket::Connect()
         SendLine("NICK "+nickName+"\r\n");
     if(dccType != DCC_CHATIN && dccType != DCC_IN && dccType != DCC_POUT)
         SendLine("USER "+userName+" 0 * :"+realName+"\r\n");
+    application->addTimeout(this, ID_ETIME, ETIMEOUT);
     return 1;
 }
 
@@ -278,7 +298,10 @@ FXint IrcSocket::ConnectSSL()
     fxmessage("startCommands: %s\n", startCommands.text());
 #endif
     if(connected)
+    {
+        application->addTimeout(this, ID_ETIME, ETIMEOUT);
         return 1;
+    }
     endmotd = FALSE;
 #ifdef HAVE_OPENSSL
 #ifdef WIN32
@@ -293,6 +316,7 @@ FXint IrcSocket::ConnectSSL()
         SendEvent(IRC_ERROR, _("Unable to initiliaze socket"));
         ClearChannelsCommands(FALSE);
         connecting = FALSE;
+        application->addTimeout(this, ID_ETIME, ETIMEOUT);
         return -1;
     }
 #endif
@@ -301,6 +325,7 @@ FXint IrcSocket::ConnectSSL()
         SendEvent(IRC_ERROR, FXStringFormat(_("Bad host: %s"), serverName.text()));
         ClearChannelsCommands(FALSE);
         connecting = FALSE;
+        application->addTimeout(this, ID_ETIME, ETIMEOUT);
         return -1;
     }
     if ((serverid = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
@@ -311,6 +336,7 @@ FXint IrcSocket::ConnectSSL()
         WSACleanup();
 #endif
         connecting = FALSE;
+        application->addTimeout(this, ID_ETIME, ETIMEOUT);
         return -1;
     }
     serverSock.sin_family = AF_INET;
@@ -326,6 +352,7 @@ FXint IrcSocket::ConnectSSL()
         close(serverid);
 #endif
         connecting = FALSE;
+        application->addTimeout(this, ID_ETIME, ETIMEOUT);
         return -1;
     }
     SSLeay_add_ssl_algorithms();
@@ -355,6 +382,7 @@ FXint IrcSocket::ConnectSSL()
 #endif
         SendEvent(IRC_ERROR, _("SSL creation error"));
         connecting = FALSE;
+        application->addTimeout(this, ID_ETIME, ETIMEOUT);
         return -1;
     }
     SSL_set_fd(ssl, serverid);
@@ -373,6 +401,7 @@ FXint IrcSocket::ConnectSSL()
 #endif
         SendEvent(IRC_ERROR, FXStringFormat(_("SSL connect error %d"), SSL_get_error(ssl, err)));
         connecting = FALSE;
+        application->addTimeout(this, ID_ETIME, ETIMEOUT);
         return -1;
     }
     connected = TRUE;
@@ -395,6 +424,7 @@ FXint IrcSocket::ConnectSSL()
     connected = FALSE;
 #endif //HAVE_OPENSSL    
     connecting = FALSE;
+    application->addTimeout(this, ID_ETIME, ETIMEOUT);
     return 1;
 }
 
@@ -407,6 +437,7 @@ FXint IrcSocket::Listen()
     if(connected)
     {
         connecting = FALSE;
+        application->addTimeout(this, ID_ETIME, ETIMEOUT);
         return 1;
     }
     FXint i, bindResult = -1;
@@ -423,6 +454,7 @@ FXint IrcSocket::Listen()
         SendEvent(IRC_ERROR, _("Unable to initiliaze socket"));
         ClearChannelsCommands(FALSE);
         connecting = FALSE;
+        application->addTimeout(this, ID_ETIME, ETIMEOUT);
         return -1;
     }
 #endif
@@ -434,6 +466,7 @@ FXint IrcSocket::Listen()
         WSACleanup();
 #endif
         connecting = FALSE;
+        application->addTimeout(this, ID_ETIME, ETIMEOUT);
         return -1;
     }
     serverSock.sin_family = AF_INET;
@@ -455,6 +488,7 @@ FXint IrcSocket::Listen()
             WSACleanup();
 #endif
             connecting = FALSE;
+            application->addTimeout(this, ID_ETIME, ETIMEOUT);
             return -1;
         }
     }
@@ -468,6 +502,7 @@ FXint IrcSocket::Listen()
             WSACleanup();
 #endif
             connecting = FALSE;
+            application->addTimeout(this, ID_ETIME, ETIMEOUT);
             return -1;
         }
     }
@@ -521,6 +556,7 @@ FXint IrcSocket::Listen()
     else
     {
         connecting = FALSE;
+        application->addTimeout(this, ID_ETIME, ETIMEOUT);
         return -1;
     }
     if(listen(serverid, 1) == -1)
@@ -530,6 +566,7 @@ FXint IrcSocket::Listen()
         WSACleanup();
 #endif
         connecting = FALSE;
+        application->addTimeout(this, ID_ETIME, ETIMEOUT);
         return -1;
     }
     application->addTimeout(this, ID_CTIME, dccTimeout*1000);
@@ -542,6 +579,7 @@ FXint IrcSocket::Listen()
         WSACleanup();
 #endif
         connecting = FALSE;
+        application->addTimeout(this, ID_ETIME, ETIMEOUT);
         return -1;
     }
 #ifdef WIN32
@@ -575,6 +613,7 @@ FXint IrcSocket::Listen()
         receivedFile.open(dccFile.path.text(), std::ios_base::out|std::ios_base::binary);
         application->addTimeout(this, ID_PTIME, 1000);
     }
+    application->addTimeout(this, ID_ETIME, ETIMEOUT);
     return 1;
 }
 
@@ -598,6 +637,7 @@ void IrcSocket::Disconnect(const FXString& reason)
 
 void IrcSocket::CloseConnection(FXbool disableReconnect)
 {
+    SendEvents();
     FXbool client = dccType == DCC_CHATOUT || dccType == DCC_OUT || dccType == DCC_PIN;
     ClearChannelsCommands(disableReconnect);
     if(!connected && disableReconnect)
@@ -2118,6 +2158,20 @@ FXbool IrcSocket::SendCommand(const FXString& commandtext)
         return FALSE;
 }
 
+void IrcSocket::SendEvents()
+{
+    if(thread->running())
+        return;
+    while(events.no())
+    {
+        for (FXint i=0; i < targets.no(); i++)
+        {
+            targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &events[0]);
+        }
+        events.erase(0);
+    }
+}
+
 void IrcSocket::SendEvent(IrcEventType eventType)
 {
     IrcEvent ev;
@@ -2127,9 +2181,16 @@ void IrcSocket::SendEvent(IrcEventType eventType)
     ev.param3 = "";
     ev.param4 = "";
     ev.dccFile = DccFile();
-    for (FXint i=0; i < targets.no(); i++)
+    ev.time = FXSystem::now();
+    if(thread->running())
+        events.append(ev);
+    else
     {
-        targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
+        SendEvents();
+        for (FXint i=0; i < targets.no(); i++)
+        {
+            targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
+        }
     }
 }
 
@@ -2142,9 +2203,16 @@ void IrcSocket::SendEvent(IrcEventType eventType, const FXString &param1)
     ev.param3 = "";
     ev.param4 = "";
     ev.dccFile = DccFile();
-    for (FXint i=0; i < targets.no(); i++)
+    ev.time = FXSystem::now();
+    if(thread->running())
+        events.append(ev);
+    else
     {
-        targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
+        SendEvents();
+        for (FXint i=0; i < targets.no(); i++)
+        {
+            targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
+        }
     }
 }
 
@@ -2157,9 +2225,16 @@ void IrcSocket::SendEvent(IrcEventType eventType, const FXString &param1, const 
     ev.param3 = "";
     ev.param4 = "";
     ev.dccFile = DccFile();
-    for (FXint i=0; i < targets.no(); i++)
+    ev.time = FXSystem::now();
+    if(thread->running())
+        events.append(ev);
+    else
     {
-        targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
+        SendEvents();
+        for (FXint i=0; i < targets.no(); i++)
+        {
+            targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
+        }
     }
 }
 
@@ -2172,9 +2247,16 @@ void IrcSocket::SendEvent(IrcEventType eventType, const FXString &param1, const 
     ev.param3 = param3;
     ev.param4 = "";
     ev.dccFile = DccFile();
-    for (FXint i=0; i < targets.no(); i++)
+    ev.time = FXSystem::now();
+    if(thread->running())
+        events.append(ev);
+    else
     {
-        targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
+        SendEvents();
+        for (FXint i=0; i < targets.no(); i++)
+        {
+            targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
+        }
     }
 }
 
@@ -2187,9 +2269,16 @@ void IrcSocket::SendEvent(IrcEventType eventType, const FXString &param1, const 
     ev.param3 = param3;
     ev.param4 = param4;
     ev.dccFile = DccFile();
-    for (FXint i=0; i < targets.no(); i++)
+    ev.time = FXSystem::now();
+    if(thread->running())
+        events.append(ev);
+    else
     {
-        targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
+        SendEvents();
+        for (FXint i=0; i < targets.no(); i++)
+        {
+            targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
+        }
     }
 }
 
@@ -2203,9 +2292,16 @@ void IrcSocket::SendEvent(IrcEventType eventType, DccFile file)
     ev.param3 = "";
     ev.param4 = "";
     ev.dccFile = file;
-    for (FXint i=0; i < targets.no(); i++)
+    ev.time = FXSystem::now();
+    if(thread->running())
+        events.append(ev);
+    else
     {
-        targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
+        SendEvents();
+        for (FXint i=0; i < targets.no(); i++)
+        {
+            targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
+        }
     }
 }
 

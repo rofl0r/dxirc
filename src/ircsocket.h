@@ -24,6 +24,7 @@
 #define IRCSOCKET_H
 
 #ifdef WIN32
+#define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>
 #include <windows.h>
 #define socklen_t int
@@ -62,6 +63,7 @@ class IrcSocket: public FXObject
             ID_RTIME, //reconnect
             ID_PTIME, //dccfile position
             ID_CTIME, //timeout for check and disconnect offered connection
+            ID_ETIME, //event timeout
             ID_LAST
         };
 
@@ -158,6 +160,7 @@ class IrcSocket: public FXObject
         long OnReconnectTimeout(FXObject*, FXSelector, void*);
         long OnPositionTimeout(FXObject*, FXSelector, void*);
         long OnCloseTimeout(FXObject*, FXSelector, void*);
+        long OnEventTimeout(FXObject*, FXSelector, void*);
 
     private:
         IrcSocket(){}
@@ -178,6 +181,7 @@ class IrcSocket: public FXObject
         dxStringArray ignoreCommands;
         dxIgnoreUserArray usersList;
         dxNicksArray nicks;
+        dxIrcEventArray events;
         #ifdef WIN32            
             WSAEVENT event;
         #endif
@@ -195,6 +199,7 @@ class IrcSocket: public FXObject
         void SendFile();
         void SendCommands();
         FXbool SendCommand(const FXString &commandtext);
+        void SendEvents();
         void ParseLine(const FXString &line);
         void SendEvent(IrcEventType);
         void SendEvent(IrcEventType, const FXString&);
@@ -244,20 +249,6 @@ class ConnectThread : public FXThread
         FXint run();
     private:
         IrcSocket *socket;
-
 };
-
-class SocketException : public std::exception
-{
-    const char *error;
-public:
-    SocketException(const char *e) : error(e) { }
-    const char * what() const throw()
-    {
-        return error;
-    }
-};
-
-class SocketDisconnectedException : public std::exception { };
 
 #endif // IRCSOCKET_H

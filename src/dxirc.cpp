@@ -128,7 +128,11 @@ dxirc::dxirc(FXApp *app)
     logviewer = new FXMenuCommand(servermenu, _("&Log viewer\tCtrl-G"), logsicon, this, ID_LOG);
     if(!logging) logviewer->disable();
     new FXMenuSeparator(servermenu);
+#ifdef WIN32
     new FXMenuCommand(servermenu, _("&Quit\tAlt-F4"), quiticon, this, ID_QUIT);
+#else
+    new FXMenuCommand(servermenu, _("&Quit\tCtrl-Q"), quiticon, this, ID_QUIT);
+#endif
     new FXMenuTitle(menubar, _("&Server"), NULL, servermenu);
 
     editmenu = new FXMenuPane(this);
@@ -1334,95 +1338,153 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
     IrcSocket *server = (IrcSocket *)obj;
     if(ev->eventType == IRC_NEWCHANNEL)
     {
-        FXint serverTabIndex = GetServerTab(server);
-        if(TabExist(server, ev->param1))
-        {
-            return 1;
-        }
-        if(serverTabIndex != -1 && !ownServerWindow)
-        {
-            static_cast<IrcTabItem*>(tabbook->childAtIndex(serverTabIndex))->SetType(CHANNEL, ev->param1);
-            tabbook->setCurrent(serverTabIndex/2-1, TRUE);
-        }
-        else
-        {
-            IrcTabItem* tabitem = new IrcTabItem(tabbook, ev->param1, channelicon, TAB_BOTTOM, CHANNEL, server, ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList, coloredNick);
-            server->AppendTarget(tabitem);
-            tabitem->create();
-            tabitem->CreateGeom();
-            UpdateTabPosition();
-        }
-        SortTabs();
-        UpdateMenus();
+        OnIrcNewchannel(server, ev);
         return 1;
     }
-    if(ev->eventType == IRC_QUERY && !TabExist(server, ev->param1))
+    if(ev->eventType == IRC_QUERY)
     {
-        FXint serverTabIndex = GetServerTab(server);
-        if(serverTabIndex != -1 && !ownServerWindow)
-        {
-            static_cast<IrcTabItem*>(tabbook->childAtIndex(serverTabIndex))->SetType(QUERY, ev->param1);
-            tabbook->setCurrent(serverTabIndex/2-1, TRUE);
-        }
-        else
-        {
-            IrcTabItem* tabitem = new IrcTabItem(tabbook, ev->param1, queryicon, TAB_BOTTOM, QUERY, server, ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList, coloredNick);
-            server->AppendTarget(tabitem);
-            tabitem->create();
-            tabitem->CreateGeom();
-            UpdateTabPosition();
-        }        
-        SortTabs();
-        if(ev->param2 == server->GetNickName())
-        {
-            for(FXint i = 0; i < tabbook->numChildren(); i=i+2)
-            {
-                if(server->FindTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(i))) && comparecase(static_cast<FXTabItem*>(tabbook->childAtIndex(i))->getText(), ev->param1) == 0) tabbook->setCurrent(i/2, TRUE);
-            }
-        }
-        UpdateMenus();
+        OnIrcQuery(server, ev);
         return 1;
     }
     if(ev->eventType == IRC_PART)
     {
-        if(TabExist(server, ev->param2))
-        {
-            if(ev->param1 == server->GetNickName())
-            {
-                if(server->GetConnected() && IsLastTab(server))
-                {
-                    for(FXint j = 0; j < tabbook->numChildren(); j=j+2)
-                    {
-                        if(server->FindTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(j))))
-                        {
-                            static_cast<IrcTabItem*>(tabbook->childAtIndex(j))->SetType(SERVER, server->GetServerName());
-                            tabbook->setCurrent(j/2-1, TRUE);
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-                    FXint index = -1;
-                    for(FXint j = 0; j < tabbook->numChildren(); j=j+2)
-                    {
-                        if((comparecase(static_cast<FXTabItem*>(tabbook->childAtIndex(j))->getText(), ev->param2) == 0) && server->FindTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(j)))) index = j;
-                    }
-                    if(index == -1) return 0;
-                    server->RemoveTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(index)));
-                    delete tabbook->childAtIndex(index);
-                    delete tabbook->childAtIndex(index);
-                    tabbook->recalc();
-                }
-                SortTabs();
-                UpdateMenus();
-            }
-        }
+        OnIrcPart(server, ev);
         return 1;
     }
     if(ev->eventType == IRC_KICK)
     {
-        if(ev->param2 == server->GetNickName())
+        OnIrcKick(server, ev);
+        return 1;
+    }
+    if(ev->eventType == IRC_DISCONNECT)
+    {
+        OnIrcDisconnect(server, ev);
+        return 1;
+    }
+    if(ev->eventType == IRC_RECONNECT || ev->eventType == IRC_CONNECT)
+    {
+        OnIrcConnectAndReconnect(ev);
+        return 1;
+    }
+    if(ev->eventType == IRC_ENDMOTD)
+    {
+        OnIrcEndmotd();
+        return 1;
+    }
+    if(ev->eventType == IRC_PRIVMSG || ev->eventType == IRC_ACTION)
+    {
+        OnIrcPrivmsgAndAction(server, ev);
+        return 1;
+    }
+    if(ev->eventType == IRC_JOIN)
+    {
+        OnIrcJoin(server, ev);
+        return 1;
+    }
+    if(ev->eventType == IRC_DCCCHAT)
+    {
+        OnIrcDccChat(server, ev);
+        return 1;
+    }
+    if(ev->eventType == IRC_DCCSERVER)
+    {
+        OnIrcDccServer(server, ev);
+        return 1;
+    }
+    if(ev->eventType == IRC_DCCIN)
+    {
+        OnIrcDccIn(server, ev);
+        return 1;
+    }
+    if(ev->eventType == IRC_DCCOUT)
+    {
+        OnIrcDccOut(server, ev);
+        return 1;
+    }
+    if(ev->eventType == IRC_DCCPOUT)
+    {
+        OnIrcDccPout(server, ev);
+        return 1;
+    }
+    if(ev->eventType == IRC_DCCMYTOKEN)
+    {
+        OnIrcDccMyToken(server, ev);
+        return 1;
+    }
+    if(ev->eventType == IRC_DCCTOKEN)
+    {
+        OnIrcDccToken(server, ev);
+        return 1;
+    }
+    if(ev->eventType == IRC_DCCPOSITION)
+    {
+        OnIrcDccPosition(server, ev);
+        return 1;
+    }
+    return 1;
+}
+
+//handle IrcEvent IRC_NEWCHANNEL
+void dxirc::OnIrcNewchannel(IrcSocket *server, IrcEvent *ev)
+{
+    FXint serverTabIndex = GetServerTab(server);
+    if(TabExist(server, ev->param1))
+    {
+        return;
+    }
+    if(serverTabIndex != -1 && !ownServerWindow)
+    {
+        static_cast<IrcTabItem*>(tabbook->childAtIndex(serverTabIndex))->SetType(CHANNEL, ev->param1);
+        tabbook->setCurrent(serverTabIndex/2-1, TRUE);
+    }
+    else
+    {
+        IrcTabItem* tabitem = new IrcTabItem(tabbook, ev->param1, channelicon, TAB_BOTTOM, CHANNEL, server, ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList, coloredNick);
+        server->AppendTarget(tabitem);
+        tabitem->create();
+        tabitem->CreateGeom();
+        UpdateTabPosition();
+    }
+    SortTabs();
+    UpdateMenus();
+}
+
+//handle IrcEvent IRC_QUERY
+void dxirc::OnIrcQuery(IrcSocket *server, IrcEvent *ev)
+{
+    if(TabExist(server, ev->param1))
+        return;
+    FXint serverTabIndex = GetServerTab(server);
+    if(serverTabIndex != -1 && !ownServerWindow)
+    {
+        static_cast<IrcTabItem*>(tabbook->childAtIndex(serverTabIndex))->SetType(QUERY, ev->param1);
+        tabbook->setCurrent(serverTabIndex/2-1, TRUE);
+    }
+    else
+    {
+        IrcTabItem* tabitem = new IrcTabItem(tabbook, ev->param1, queryicon, TAB_BOTTOM, QUERY, server, ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList, coloredNick);
+        server->AppendTarget(tabitem);
+        tabitem->create();
+        tabitem->CreateGeom();
+        UpdateTabPosition();
+    }
+    SortTabs();
+    if(ev->param2 == server->GetNickName())
+    {
+        for(FXint i = 0; i < tabbook->numChildren(); i=i+2)
+        {
+            if(server->FindTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(i))) && comparecase(static_cast<FXTabItem*>(tabbook->childAtIndex(i))->getText(), ev->param1) == 0) tabbook->setCurrent(i/2, TRUE);
+        }
+    }
+    UpdateMenus();
+}
+
+//handle IrcEvent IRC_PART
+void dxirc::OnIrcPart(IrcSocket *server, IrcEvent *ev)
+{
+    if(TabExist(server, ev->param2))
+    {
+        if(ev->param1 == server->GetNickName())
         {
             if(server->GetConnected() && IsLastTab(server))
             {
@@ -1441,10 +1503,9 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
                 FXint index = -1;
                 for(FXint j = 0; j < tabbook->numChildren(); j=j+2)
                 {
-                    if((comparecase(static_cast<FXTabItem*>(tabbook->childAtIndex(j))->getText(), ev->param3) == 0) && server->FindTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(j)))) index = j;
+                    if((comparecase(static_cast<FXTabItem*>(tabbook->childAtIndex(j))->getText(), ev->param2) == 0) && server->FindTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(j)))) index = j;
                 }
-                if(index == -1) return 0;
-                tabbook->setCurrent(index/2, TRUE);
+                if(index == -1) return;
                 server->RemoveTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(index)));
                 delete tabbook->childAtIndex(index);
                 delete tabbook->childAtIndex(index);
@@ -1453,272 +1514,319 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
             SortTabs();
             UpdateMenus();
         }
-        return 1;
     }
-    if(ev->eventType == IRC_DISCONNECT)
+}
+
+//handle IrcEvent IRC_KICK
+void dxirc::OnIrcKick(IrcSocket *server, IrcEvent *ev)
+{
+    if(ev->param2 == server->GetNickName())
     {
-        for(FXint i = tabbook->numChildren()-2; i > -1; i=i-2)
+        if(server->GetConnected() && IsLastTab(server))
         {
-            if(server->FindTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(i))))
+            for(FXint j = 0; j < tabbook->numChildren(); j=j+2)
             {
-                tabbook->setCurrent(i/2, TRUE);
-                if(static_cast<IrcTabItem*>(tabbook->childAtIndex(i))->GetType() == DCCCHAT && server->GetDccType() == DCC_CHATOUT)
-                    return 1;
-                server->RemoveTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(i)));
-                delete tabbook->childAtIndex(i);
-                delete tabbook->childAtIndex(i);
-                tabbook->recalc();
+                if(server->FindTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(j))))
+                {
+                    static_cast<IrcTabItem*>(tabbook->childAtIndex(j))->SetType(SERVER, server->GetServerName());
+                    tabbook->setCurrent(j/2-1, TRUE);
+                    break;
+                }
             }
+        }
+        else
+        {
+            FXint index = -1;
+            for(FXint j = 0; j < tabbook->numChildren(); j=j+2)
+            {
+                if((comparecase(static_cast<FXTabItem*>(tabbook->childAtIndex(j))->getText(), ev->param3) == 0) && server->FindTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(j)))) index = j;
+            }
+            if(index == -1) return;
+            tabbook->setCurrent(index/2, TRUE);
+            server->RemoveTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(index)));
+            delete tabbook->childAtIndex(index);
+            delete tabbook->childAtIndex(index);
+            tabbook->recalc();
         }
         SortTabs();
         UpdateMenus();
-        UpdateStatus(ev->param1);
-        return 1;
     }
-    if(ev->eventType == IRC_RECONNECT || ev->eventType == IRC_CONNECT)
+}
+
+//handle IrcEvent IRC_DISCONNECT
+void dxirc::OnIrcDisconnect(IrcSocket *server, IrcEvent *ev)
+{
+    for(FXint i = tabbook->numChildren()-2; i > -1; i=i-2)
     {
-        UpdateStatus(ev->param1);
-        return 1;
-    }
-    if(ev->eventType == IRC_ENDMOTD)
-    {
-        UpdateMenus();
-        return 1;
-    }
-    if(ev->eventType == IRC_PRIVMSG || ev->eventType == IRC_ACTION)
-    {
-        if(ev->param3.contains(server->GetNickName())) UpdateStatus(FXStringFormat(_("New highlighted message on %s"), ev->param2 == server->GetNickName() ? ev->param1.text() : ev->param2.text()));
-#ifdef HAVE_LUA
-        if(!scripts.no() || !scriptEvents.no()) return 0;
-        for(FXint i=0; i<scriptEvents.no(); i++)
+        if(server->FindTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(i))))
         {
-            if(comparecase("privmsg", scriptEvents[i].name) == 0)
+            tabbook->setCurrent(i/2, TRUE);
+            if(static_cast<IrcTabItem*>(tabbook->childAtIndex(i))->GetType() == DCCCHAT && server->GetDccType() == DCC_CHATOUT)
+                return;
+            server->RemoveTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(i)));
+            delete tabbook->childAtIndex(i);
+            delete tabbook->childAtIndex(i);
+            tabbook->recalc();
+        }
+    }
+    SortTabs();
+    UpdateMenus();
+    UpdateStatus(ev->param1);
+}
+
+//handle IrcEvent IRC_CONNECT and IRC_RECONNECT
+void dxirc::OnIrcConnectAndReconnect(IrcEvent *ev)
+{
+    UpdateStatus(ev->param1);
+}
+
+//handle IrcEvent IRC_ENDMOTD
+void dxirc::OnIrcEndmotd()
+{
+    UpdateMenus();
+}
+
+//handle IrcEvent IRC_PRIVMSG and IRC_ACTION
+void dxirc::OnIrcPrivmsgAndAction(IrcSocket *server, IrcEvent *ev)
+{
+    if(ev->param3.contains(server->GetNickName())) UpdateStatus(FXStringFormat(_("New highlighted message on %s"), ev->param2 == server->GetNickName() ? ev->param1.text() : ev->param2.text()));
+#ifdef HAVE_LUA
+    if(!scripts.no() || !scriptEvents.no()) return;
+    for(FXint i=0; i<scriptEvents.no(); i++)
+    {
+        if(comparecase("privmsg", scriptEvents[i].name) == 0)
+        {
+            for(FXint j=0; j<scripts.no(); j++)
             {
-                for(FXint j=0; j<scripts.no(); j++)
+                if(comparecase(scriptEvents[i].script, scripts[j].name) == 0)
                 {
-                    if(comparecase(scriptEvents[i].script, scripts[j].name) == 0)
+                    lua_pushstring(scripts[j].L, scriptEvents[i].funcname.text());
+                    lua_gettable(scripts[j].L, LUA_GLOBALSINDEX);
+                    if (lua_type(scripts[j].L, -1) != LUA_TFUNCTION) lua_pop(scripts[j].L, 1);
+                    else
                     {
-                        lua_pushstring(scripts[j].L, scriptEvents[i].funcname.text());
-                        lua_gettable(scripts[j].L, LUA_GLOBALSINDEX);
-                        if (lua_type(scripts[j].L, -1) != LUA_TFUNCTION) lua_pop(scripts[j].L, 1);
-                        else
+                        lua_pushstring(scripts[j].L, ev->param1.text());
+                        lua_pushstring(scripts[j].L, ev->param3.text());
+                        lua_pushinteger(scripts[j].L, GetTabId(server, ev->param2 == server->GetNickName() ? ev->param1 : ev->param2));
+                        if (lua_pcall(scripts[j].L, 3, 0, 0))
                         {
-                            lua_pushstring(scripts[j].L, ev->param1.text());
-                            lua_pushstring(scripts[j].L, ev->param3.text());
-                            lua_pushinteger(scripts[j].L, GetTabId(server, ev->param2 == server->GetNickName() ? ev->param1 : ev->param2));
-                            if (lua_pcall(scripts[j].L, 3, 0, 0))
-                            {
-                                AppendIrcStyledText(FXStringFormat(_("Lua plugin: error calling %s %s"), scriptEvents[i].funcname.text(), lua_tostring(scripts[j].L, -1)), 4);
-                                lua_pop(scripts[j].L, 1);
-                            }
+                            AppendIrcStyledText(FXStringFormat(_("Lua plugin: error calling %s %s"), scriptEvents[i].funcname.text(), lua_tostring(scripts[j].L, -1)), 4);
+                            lua_pop(scripts[j].L, 1);
                         }
                     }
                 }
             }
         }
-#endif        
-        return 1;
     }
-    if(ev->eventType == IRC_JOIN)
-    {
-#ifdef HAVE_LUA
-        if(!scripts.no() || !scriptEvents.no()) return 0;
-        for(FXint i=0; i<scriptEvents.no(); i++)
-        {
-            if(comparecase("join", scriptEvents[i].name) == 0)
-            {
-                for(FXint j=0; j<scripts.no(); j++)
-                {
-                    if(comparecase(scriptEvents[i].script, scripts[j].name) == 0)
-                    {
-                        lua_pushstring(scripts[j].L, scriptEvents[i].funcname.text());
-                        lua_gettable(scripts[j].L, LUA_GLOBALSINDEX);
-                        if (lua_type(scripts[j].L, -1) != LUA_TFUNCTION) lua_pop(scripts[j].L, 1);
-                        else
-                        {
-                            lua_pushstring(scripts[j].L, ev->param1.text());
-                            //lua_pushstring(scripts[j].L, ev->param2.text());
-                            lua_pushinteger(scripts[j].L, GetTabId(server, ev->param2));
-                            if (lua_pcall(scripts[j].L, 2, 0, 0))
-                            {
-                                AppendIrcStyledText(FXStringFormat(_("Lua plugin: error calling %s %s"), scriptEvents[i].funcname.text(), lua_tostring(scripts[j].L, -1)), 4);
-                                lua_pop(scripts[j].L, 1);
-                            }
-                        }
-                    }
-                }
-            }
-        }
 #endif
-        return 1;
-    }
-    if(ev->eventType == IRC_DCCCHAT)
+}
+
+//handle IrcEvent IRC_JOIN
+void dxirc::OnIrcJoin(IrcSocket *server, IrcEvent *ev)
+{
+#ifdef HAVE_LUA
+    if(!scripts.no() || !scriptEvents.no()) return;
+    for(FXint i=0; i<scriptEvents.no(); i++)
     {
-        if(FXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("%s offers DCC Chat on %s port %s.\n Do you want connect?"), ev->param1.text(), ev->param2.text(), ev->param3.text()) == 1)
+        if(comparecase("join", scriptEvents[i].name) == 0)
         {
-            ConnectServer(ev->param2, FXIntVal(ev->param3), "", server->GetNickName(), "", "", "", FALSE, DCC_CHATIN, ev->param1);
-        }
-        return 1;
-    }
-    if(ev->eventType == IRC_DCCSERVER)
-    {
-        ConnectServer(server->GetLocalIP(), 0, "", server->GetNickName(), "", "", "", FALSE, DCC_CHATOUT, ev->param1, server);
-        return 1;
-    }
-    if(ev->eventType == IRC_DCCIN)
-    {
-        if(FXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("%s offers file %s with size %s over DCC .\n Do you want connect?"), ev->param1.text(), ev->param3.text(), utils::GetFileSize(ev->param4).text()) == 1)
-        {
-            FXFileDialog dialog(this, _("Save file"));
-            dialog.setFilename(dccPath+PATHSEPSTRING+ev->param3);
-            if(dialog.execute())
+            for(FXint j=0; j<scripts.no(); j++)
             {
-                DccFile dcc;
-                dcc.path = dialog.getFilename();
-                dcc.previousPostion = 0;
-                dcc.currentPosition = 0;
-                dcc.size = FXLongVal(ev->param4);
-                dcc.type = DCC_IN;
-                dcc.canceled = FALSE;
-                dcc.finishedPosition = 0;
-                dcc.token = -1;
-                dcc.ip = ev->param2.before('@');
-                dcc.port = FXIntVal(ev->param2.after('@'));
-                for(FXint i=0; i<dccfilesList.no(); i++)
+                if(comparecase(scriptEvents[i].script, scripts[j].name) == 0)
                 {
-                    if(dcc.path == dccfilesList[i].path && (dccfilesList[i].type==DCC_IN || dccfilesList[i].type==DCC_PIN))
+                    lua_pushstring(scripts[j].L, scriptEvents[i].funcname.text());
+                    lua_gettable(scripts[j].L, LUA_GLOBALSINDEX);
+                    if (lua_type(scripts[j].L, -1) != LUA_TFUNCTION) lua_pop(scripts[j].L, 1);
+                    else
                     {
-                        dccfilesList.erase(i);
-                        break;
+                        lua_pushstring(scripts[j].L, ev->param1.text());
+                        //lua_pushstring(scripts[j].L, ev->param2.text());
+                        lua_pushinteger(scripts[j].L, GetTabId(server, ev->param2));
+                        if (lua_pcall(scripts[j].L, 2, 0, 0))
+                        {
+                            AppendIrcStyledText(FXStringFormat(_("Lua plugin: error calling %s %s"), scriptEvents[i].funcname.text(), lua_tostring(scripts[j].L, -1)), 4);
+                            lua_pop(scripts[j].L, 1);
+                        }
                     }
                 }
-                ConnectServer(ev->param2.before('@'), FXIntVal(ev->param2.after('@')), "", server->GetNickName(), "", "", "", FALSE, DCC_IN, ev->param1, NULL, dcc);
-                dccfilesList.append(dcc);
-                OnCommandTransfers(NULL, 0, NULL);
             }
         }
-        return 1;
     }
-    if(ev->eventType == IRC_DCCOUT)
+#endif    
+}
+
+//handle IrcEvent IRC_DCCCHAT
+void dxirc::OnIrcDccChat(IrcSocket *server, IrcEvent *ev)
+{
+    if(FXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("%s offers DCC Chat on %s port %s.\n Do you want connect?"), ev->param1.text(), ev->param2.text(), ev->param3.text()) == 1)
     {
-        DccFile dcc;
-        dcc.path = ev->param2;
-        dcc.previousPostion = 0;
-        dcc.currentPosition = 0;
-        dcc.size = FXStat::size(ev->param2);
-        dcc.type = DCC_OUT;
-        dcc.canceled = FALSE;
-        dcc.finishedPosition = 0;
-        dcc.token = -1;
-        for(FXint i=0; i<dccfilesList.no(); i++)
-        {
-            if(dcc.path == dccfilesList[i].path && dcc.type == dccfilesList[i].type)
-            {
-                dccfilesList.erase(i);
-                break;
-            }
-        }
-        ConnectServer(server->GetLocalIP(), 0, "", server->GetNickName(), "", "", "", FALSE, DCC_OUT, ev->param1, server, dcc);
-        dccfilesList.append(dcc);
-        OnCommandTransfers(NULL, 0, NULL);
-        return 1;
+        ConnectServer(ev->param2, FXIntVal(ev->param3), "", server->GetNickName(), "", "", "", FALSE, DCC_CHATIN, ev->param1);
     }
-    if(ev->eventType == IRC_DCCPOUT)
+}
+
+//handle IrcEvent IRC_DCCSERVER
+void dxirc::OnIrcDccServer(IrcSocket *server, IrcEvent *ev)
+{
+    ConnectServer(server->GetLocalIP(), 0, "", server->GetNickName(), "", "", "", FALSE, DCC_CHATOUT, ev->param1, server);
+}
+
+//handle IrcEvent IRC_DCCIN
+void dxirc::OnIrcDccIn(IrcSocket *server, IrcEvent *ev)
+{
+    if(FXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("%s offers file %s with size %s over DCC .\n Do you want connect?"), ev->param1.text(), ev->param3.text(), utils::GetFileSize(ev->param4).text()) == 1)
     {
-        DccFile dcc;
-        dcc.path = ev->param2;
-        dcc.previousPostion = 0;
-        dcc.currentPosition = 0;
-        dcc.size = FXStat::size(ev->param2);
-        dcc.type = DCC_POUT;
-        dcc.canceled = FALSE;
-        dcc.finishedPosition = 0;
-        if(lastToken==65000) lastToken=0;
-        dcc.token = ++lastToken;
-        for(FXint i=0; i<dccfilesList.no(); i++)
+        FXFileDialog dialog(this, _("Save file"));
+        dialog.setFilename(dccPath+PATHSEPSTRING+ev->param3);
+        if(dialog.execute())
         {
-            if(dcc.path == dccfilesList[i].path && dcc.type == dccfilesList[i].type)
+            DccFile dcc;
+            dcc.path = dialog.getFilename();
+            dcc.previousPostion = 0;
+            dcc.currentPosition = 0;
+            dcc.size = FXLongVal(ev->param4);
+            dcc.type = DCC_IN;
+            dcc.canceled = FALSE;
+            dcc.finishedPosition = 0;
+            dcc.token = -1;
+            dcc.ip = ev->param2.before('@');
+            dcc.port = FXIntVal(ev->param2.after('@'));
+            for(FXint i=0; i<dccfilesList.no(); i++)
             {
-                dccfilesList.erase(i);
-                break;
-            }
-        }
-        dccfilesList.append(dcc);
-        server->SendCtcp(ev->param1, "DCC SEND "+utils::RemoveSpaces(dcc.path.rafter(PATHSEP))+" "+server->GetLocalIP()+" 0 "+FXStringVal(dcc.size)+" "+FXStringVal(dcc.token));
-        return 1;
-    }
-    if(ev->eventType == IRC_DCCMYTOKEN)
-    {
-        FXint token = FXIntVal(ev->param3);
-        FXint index = -1;
-        for(FXint i=0; i<dccfilesList.no(); i++)
-        {
-            if(dccfilesList[i].token == token && dccfilesList[i].type == DCC_POUT)
-            {
-                index = i;
-                break;
-            }
-        }
-        if(index == -1)
-            return 1;
-        dccfilesList[index].ip = ev->param1;
-        dccfilesList[index].port = FXIntVal(ev->param2);
-        ConnectServer(ev->param1, FXIntVal(ev->param2), "", server->GetNickName(), "", "", "", FALSE, dccfilesList[index].type, "", NULL, dccfilesList[index]);
-        OnCommandTransfers(NULL, 0, NULL);
-        return 1;
-    }
-    if(ev->eventType == IRC_DCCTOKEN)
-    {
-        if(FXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("%s offers file %s with size %s over DCC passive.\n Do you want accept?"), ev->param1.text(), ev->param2.text(), utils::GetFileSize(ev->param3).text()) == 1)
-        {
-            FXFileDialog dialog(this, _("Save file"));
-            dialog.setFilename(dccPath+PATHSEPSTRING+ev->param2);
-            if(dialog.execute())
-            {
-                DccFile dcc;
-                dcc.path = dialog.getFilename();
-                dcc.previousPostion = 0;
-                dcc.currentPosition = 0;
-                dcc.size = FXLongVal(ev->param3);
-                dcc.type = DCC_PIN;
-                dcc.canceled = FALSE;
-                dcc.finishedPosition = 0;
-                dcc.token = FXIntVal(ev->param4);
-                for(FXint i=0; i<dccfilesList.no(); i++)
+                if(dcc.path == dccfilesList[i].path && (dccfilesList[i].type==DCC_IN || dccfilesList[i].type==DCC_PIN))
                 {
-                    if(dcc.path == dccfilesList[i].path && (dccfilesList[i].type==DCC_IN || dccfilesList[i].type==DCC_PIN))
-                    {
-                        dccfilesList.erase(i);
-                        break;
-                    }
+                    dccfilesList.erase(i);
+                    break;
                 }
-                ConnectServer(server->GetLocalIP(), 0, "", server->GetNickName(), "", "", "", FALSE, DCC_PIN, ev->param1, server, dcc);
-                dccfilesList.append(dcc);
-                OnCommandTransfers(NULL, 0, NULL);
             }
+            ConnectServer(ev->param2.before('@'), FXIntVal(ev->param2.after('@')), "", server->GetNickName(), "", "", "", FALSE, DCC_IN, ev->param1, NULL, dcc);
+            dccfilesList.append(dcc);
+            OnCommandTransfers(NULL, 0, NULL);
         }
-        return 1;
     }
-    if(ev->eventType == IRC_DCCPOSITION)
+}
+
+//handle IrcEvent IRC_DCCOUT
+void dxirc::OnIrcDccOut(IrcSocket *server, IrcEvent *ev)
+{
+    DccFile dcc;
+    dcc.path = ev->param2;
+    dcc.previousPostion = 0;
+    dcc.currentPosition = 0;
+    dcc.size = FXStat::size(ev->param2);
+    dcc.type = DCC_OUT;
+    dcc.canceled = FALSE;
+    dcc.finishedPosition = 0;
+    dcc.token = -1;
+    for(FXint i=0; i<dccfilesList.no(); i++)
     {
-        FXint index = -1;
-        for(FXint i=0; i<dccfilesList.no(); i++)
+        if(dcc.path == dccfilesList[i].path && dcc.type == dccfilesList[i].type)
         {
-            if (dccfilesList[i].path == ev->dccFile.path)
-            {
-                index = i;
-                break;
-            }
+            dccfilesList.erase(i);
+            break;
         }
-        dccfilesList[index].previousPostion = dccfilesList[index].currentPosition;
-        dccfilesList[index].currentPosition = ev->dccFile.currentPosition;
-        dccfilesList[index].finishedPosition = ev->dccFile.finishedPosition;
-        dccfilesList[index].canceled = ev->dccFile.canceled;
-        dccfilesList[index].ip = ev->dccFile.ip;
-        dccfilesList[index].port = ev->dccFile.port;
-        return 1;
     }
-    return 1;
+    ConnectServer(server->GetLocalIP(), 0, "", server->GetNickName(), "", "", "", FALSE, DCC_OUT, ev->param1, server, dcc);
+    dccfilesList.append(dcc);
+    OnCommandTransfers(NULL, 0, NULL);
+}
+
+//handle IrcEvent IRC_DCCPOUT
+void dxirc::OnIrcDccPout(IrcSocket *server, IrcEvent *ev)
+{
+    DccFile dcc;
+    dcc.path = ev->param2;
+    dcc.previousPostion = 0;
+    dcc.currentPosition = 0;
+    dcc.size = FXStat::size(ev->param2);
+    dcc.type = DCC_POUT;
+    dcc.canceled = FALSE;
+    dcc.finishedPosition = 0;
+    if(lastToken==65000) lastToken=0;
+    dcc.token = ++lastToken;
+    for(FXint i=0; i<dccfilesList.no(); i++)
+    {
+        if(dcc.path == dccfilesList[i].path && dcc.type == dccfilesList[i].type)
+        {
+            dccfilesList.erase(i);
+            break;
+        }
+    }
+    dccfilesList.append(dcc);
+    server->SendCtcp(ev->param1, "DCC SEND "+utils::RemoveSpaces(dcc.path.rafter(PATHSEP))+" "+server->GetLocalIP()+" 0 "+FXStringVal(dcc.size)+" "+FXStringVal(dcc.token));
+}
+
+//handle IrcEvent IRC_DCCMYTOKEN
+void dxirc::OnIrcDccMyToken(IrcSocket *server, IrcEvent *ev)
+{
+    FXint token = FXIntVal(ev->param3);
+    FXint index = -1;
+    for(FXint i=0; i<dccfilesList.no(); i++)
+    {
+        if(dccfilesList[i].token == token && dccfilesList[i].type == DCC_POUT)
+        {
+            index = i;
+            break;
+        }
+    }
+    if(index == -1)
+        return;
+    dccfilesList[index].ip = ev->param1;
+    dccfilesList[index].port = FXIntVal(ev->param2);
+    ConnectServer(ev->param1, FXIntVal(ev->param2), "", server->GetNickName(), "", "", "", FALSE, dccfilesList[index].type, "", NULL, dccfilesList[index]);
+    OnCommandTransfers(NULL, 0, NULL);
+}
+
+//handle IrcEvent IRC_DCCTOKEN
+void dxirc::OnIrcDccToken(IrcSocket *server, IrcEvent *ev)
+{
+    if(FXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("%s offers file %s with size %s over DCC passive.\n Do you want accept?"), ev->param1.text(), ev->param2.text(), utils::GetFileSize(ev->param3).text()) == 1)
+    {
+        FXFileDialog dialog(this, _("Save file"));
+        dialog.setFilename(dccPath+PATHSEPSTRING+ev->param2);
+        if(dialog.execute())
+        {
+            DccFile dcc;
+            dcc.path = dialog.getFilename();
+            dcc.previousPostion = 0;
+            dcc.currentPosition = 0;
+            dcc.size = FXLongVal(ev->param3);
+            dcc.type = DCC_PIN;
+            dcc.canceled = FALSE;
+            dcc.finishedPosition = 0;
+            dcc.token = FXIntVal(ev->param4);
+            for(FXint i=0; i<dccfilesList.no(); i++)
+            {
+                if(dcc.path == dccfilesList[i].path && (dccfilesList[i].type==DCC_IN || dccfilesList[i].type==DCC_PIN))
+                {
+                    dccfilesList.erase(i);
+                    break;
+                }
+            }
+            ConnectServer(server->GetLocalIP(), 0, "", server->GetNickName(), "", "", "", FALSE, DCC_PIN, ev->param1, server, dcc);
+            dccfilesList.append(dcc);
+            OnCommandTransfers(NULL, 0, NULL);
+        }
+    }
+}
+
+//handle IrcEvent IRC_DCCPOSITION
+void dxirc::OnIrcDccPosition(IrcSocket *server, IrcEvent *ev)
+{
+    FXint index = -1;
+    for(FXint i=0; i<dccfilesList.no(); i++)
+    {
+        if (dccfilesList[i].path == ev->dccFile.path)
+        {
+            index = i;
+            break;
+        }
+    }
+    dccfilesList[index].previousPostion = dccfilesList[index].currentPosition;
+    dccfilesList[index].currentPosition = ev->dccFile.currentPosition;
+    dccfilesList[index].finishedPosition = ev->dccFile.finishedPosition;
+    dccfilesList[index].canceled = ev->dccFile.canceled;
+    dccfilesList[index].ip = ev->dccFile.ip;
+    dccfilesList[index].port = ev->dccFile.port;
 }
 
 long dxirc::OnTabBook(FXObject *, FXSelector, void *ptr)
@@ -2539,7 +2647,7 @@ void dxirc::AppendIrcText(FXString text)
         }
         IrcTabItem *currenttab = static_cast<IrcTabItem*>(tabbook->childAtIndex(index));
         FXASSERT(currenttab != 0);
-        currenttab->AppendIrcText(text, TRUE);
+        currenttab->AppendText(text, TRUE);
         currenttab->MakeLastRowVisible(TRUE);
     }
 }
@@ -2562,7 +2670,7 @@ void dxirc::AppendIrcStyledText(FXString text, FXint style)
         }
         IrcTabItem *currenttab = static_cast<IrcTabItem*>(tabbook->childAtIndex(index));
         FXASSERT(currenttab != 0);
-        currenttab->AppendIrcStyledText(text, style, TRUE);
+        currenttab->AppendStyledText(text, style, TRUE);
         currenttab->MakeLastRowVisible(TRUE);
     }
 }
@@ -2935,7 +3043,7 @@ int dxirc::OnLuaPrint(lua_State *lua)
             {
                 if(compare(pThis->tabbook->childAtIndex(i)->getClassName(), "IrcTabItem") != 0) return 0;
                 IrcTabItem *tab = static_cast<IrcTabItem*>(pThis->tabbook->childAtIndex(i));
-                tab->AppendIrcStyledText(text, style, TRUE);
+                tab->AppendStyledText(text, style, TRUE);
                 tab->MakeLastRowVisible(TRUE);
                 return 1;
             }
