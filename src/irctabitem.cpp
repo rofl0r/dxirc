@@ -546,7 +546,7 @@ void IrcTabItem::AppendText(FXString msg, FXbool highlight)
 
 void IrcTabItem::AppendIrcText(FXString msg, FXTime time)
 {
-    if(!time) FXSystem::now();
+    if(!time) time = FXSystem::now();
     text->appendText("["+FXSystem::time("%H:%M:%S", time) +"] ");
     AppendLinkText(StripColors(msg, FALSE), 0);
     MakeLastRowVisible(FALSE);
@@ -555,7 +555,7 @@ void IrcTabItem::AppendIrcText(FXString msg, FXTime time)
 
 void IrcTabItem::AppendIrcNickText(FXString nick, FXString msg, FXint color, FXTime time)
 {
-    if(!time) FXSystem::now();
+    if(!time) time = FXSystem::now();
     text->appendText("["+FXSystem::time("%H:%M:%S", time) +"] ");
     text->appendStyledText(nick+": ", color);
     AppendLinkText(StripColors(msg, FALSE), 0);
@@ -581,7 +581,7 @@ void IrcTabItem::AppendStyledText(FXString text, FXint style, FXbool highlight)
 
 void IrcTabItem::AppendIrcStyledText(FXString styled, FXint stylenum, FXTime time)
 {
-    if(!time) FXSystem::now();
+    if(!time) time = FXSystem::now();
     text->appendText("["+FXSystem::time("%H:%M:%S", time) +"] ");
     AppendLinkText(StripColors(styled, TRUE), stylenum);
     MakeLastRowVisible(FALSE);
