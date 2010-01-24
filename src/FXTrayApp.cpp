@@ -129,7 +129,7 @@ bool FXTrayApp::dispatchEvent(FXRawEvent& ev)
         XSelectInput(dpy, manager_id, StructureNotifyMask);
 
         // remap icons to new tray manager
-        for (int i=0; i < mIcons.no(); i++) 
+        for(int i=0; i < mIcons.no(); i++) 
         {
             mIcons[i]->mapToManager();
         }

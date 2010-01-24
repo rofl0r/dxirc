@@ -637,7 +637,7 @@ void LogViewer::ListChildItems(LogItem *par)
             if (!info.isDirectory() && !FXPath::match("*-*-*", name))continue;
 
             // Find it, and take it out from the old list if found
-            for (pp = po; (item = *pp) != NULL; pp = &item->link)
+            for(pp = po; (item = *pp) != NULL; pp = &item->link)
             {
                 if (compare(item->label, name) == 0)
                 {
@@ -755,7 +755,7 @@ fnd:
     }
 
     // Wipe items remaining in list:- they have disappeared!!
-    for (item = oldlist; item; item = link)
+    for(item = oldlist; item; item = link)
     {
         link = item->link;
         treeHistory->removeItem(item, TRUE);

@@ -805,13 +805,12 @@ void IrcTabItem::MakeLastRowVisible(FXbool force)
 long IrcTabItem::OnCommandline(FXObject *, FXSelector, void *)
 {
     FXString commandtext = commandline->getText();
+    if(commandtext.empty())
+        return 1;
     commandsHistory.append(commandtext);
-    currentPosition = commandsHistory.no();
-    if (currentPosition > historyMax)
-    {
+    if (commandsHistory.no() > historyMax)
         commandsHistory.erase(0);
-        --currentPosition;
-    }
+    currentPosition = commandsHistory.no()-1;
     commandline->setText("");
     for(FXint i=0; i<=commandtext.contains('\n'); i++)
     {
@@ -847,11 +846,10 @@ FXbool IrcTabItem::ProcessLine(const FXString& commandtext)
         FXint num = acommand.contains("&&");
         if(num)
         {
-            acommand.substitute("&&", "&");
             FXbool result = FALSE;
-            for(FXint i=0; i<=num; i++)
+            for(FXint i=0; i<=acommand.contains('&'); i++)
             {
-                result = ProcessCommand(acommand.section('&',i).trim());
+                if(!acommand.section('&',i).trim().empty()) result = ProcessCommand(acommand.section('&',i).trim());
             }
             return result;
         }
@@ -998,6 +996,48 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     return FALSE;
                 }
                 else return server->SendCtcp(to, msg);
+            }
+            else
+            {
+                AppendIrcStyledText(_("You aren't connected"), 4, FXSystem::now());
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                return TRUE;
+            }
+        }
+        if(command == "cycle")
+        {
+            if(server->GetConnected())
+            {
+                if(type == CHANNEL)
+                {
+                    if(IsChannel(commandtext.after(' ')))
+                    {
+                        FXString channel = commandtext.after(' ').before(' ');
+                        FXString reason = commandtext.after(' ', 2);
+                        reason.empty() ? server->SendPart(channel) : server->SendPart(channel, reason);
+                        return server->SendJoin(channel);
+                    }
+                    else
+                    {
+                        commandtext.after(' ').empty() ? server->SendPart(getText()) : server->SendPart(getText(), commandtext.after(' '));
+                        return server->SendJoin(getText());
+                    }
+                }
+                else
+                {
+                    if(IsChannel(commandtext.after(' ')))
+                    {
+                        FXString channel = commandtext.after(' ').before(' ');
+                        FXString reason = commandtext.after(' ', 2);
+                        reason.empty() ? server->SendPart(channel) : server->SendPart(channel, reason);
+                        return server->SendJoin(channel);
+                    }
+                    else
+                    {
+                        AppendIrcStyledText(_("/cycle <channel> [message], leaves and join channel."), 4, FXSystem::now());
+                        return FALSE;
+                    }
+                }
             }
             else
             {
@@ -1252,8 +1292,8 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
         if(command == "egg")
         {
             AppendIrcStyledText("ahoj sem pan Vajíčko,", 3, FXSystem::now());
-            AppendIrcStyledText("musím vám říct, že Vánoce nemám rád.", 3, FXSystem::now());
-            AppendIrcStyledText("Přesto se na ně můžete těšit!", 3, FXSystem::now());
+            AppendIrcStyledText("Lidi neblbněte!!!", 3, FXSystem::now());
+            AppendIrcStyledText("Sluničko svítí. Život je KRASNEJ!!!", 3, FXSystem::now());
             return TRUE;
         }
         if(command == "exec")
@@ -1809,6 +1849,21 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     if(commandtext.after(' ').empty()) return server->SendPart(getText());
                     else return server->SendPart(getText(), commandtext.after(' '));
                 }
+                else
+                {
+                    if(IsChannel(commandtext.after(' ')))
+                    {
+                        FXString channel = commandtext.after(' ').before(' ');
+                        FXString reason = commandtext.after(' ', 2);
+                        if(reason.empty()) return server->SendPart(channel);
+                        else return server->SendPart(channel, reason);
+                    }
+                    else
+                    {
+                        AppendIrcStyledText(_("/part <channel> [reason], leaves channel."), 4, FXSystem::now());
+                        return FALSE;
+                    }
+                }
             }
             else
             {
@@ -1897,6 +1952,16 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
         {
             parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_NEWTETRIS), NULL);
             return TRUE;
+        }
+        if(command == "time")
+        {
+            if(server->GetConnected()) return server->SendQuote("TIME");
+            else
+            {
+                AppendIrcStyledText(_("You aren't connected"), 4, FXSystem::now());
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                return TRUE;
+            }
         }
         if(command == "topic")
         {
@@ -2135,6 +2200,12 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
             }
             else return server->SendMsg(getText(), commandtext);
         }
+        if(!server->GetConnected())
+        {
+            AppendIrcStyledText(_("You aren't connected"), 4, FXSystem::now());
+            parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+            return TRUE;
+        }
         return FALSE;
     }
     return FALSE;
@@ -2170,6 +2241,11 @@ FXbool IrcTabItem::ShowHelp(FXString command)
     if(command == "ctcp")
     {
         AppendIrcText(_("CTCP <nick> <message>, sends a CTCP message to a user."), FXSystem::now());
+        return TRUE;
+    }
+    if(command == "cycle")
+    {
+        AppendIrcText(_("CYCLE <channel> [message], leaves and join channel."), FXSystem::now());
         return TRUE;
     }
     if(command == "dcc")
@@ -2319,12 +2395,17 @@ FXbool IrcTabItem::ShowHelp(FXString command)
     {
         AppendIrcText(_("TETRIS, start small easteregg."), FXSystem::now());
         AppendIrcText(_("Keys for playing:"), FXSystem::now());
-        AppendIrcText(_("\tN .. new game"), FXSystem::now());
-        AppendIrcText(_("\tP .. pause game"), FXSystem::now());
-        AppendIrcText(_("\tNum5 .. rotate piece"), FXSystem::now());
-        AppendIrcText(_("\tNum3 .. move piece right"), FXSystem::now());
-        AppendIrcText(_("\tNum2 .. drop piece"), FXSystem::now());
-        AppendIrcText(_("\tNum1 .. move piece left"), FXSystem::now());
+        AppendIrcText(_("N .. new game"), FXSystem::now());
+        AppendIrcText(_("P .. pause game"), FXSystem::now());
+        AppendIrcText(_("Num5 .. rotate piece"), FXSystem::now());
+        AppendIrcText(_("Num3 .. move piece right"), FXSystem::now());
+        AppendIrcText(_("Num2 .. drop piece"), FXSystem::now());
+        AppendIrcText(_("Num1 .. move piece left"), FXSystem::now());
+        return TRUE;
+    }
+    if(command == "time")
+    {
+        AppendIrcText(_("TIME, displays the time of day, local to server."), FXSystem::now());
         return TRUE;
     }
     if(command == "topic")
@@ -2377,6 +2458,7 @@ long IrcTabItem::OnKeyPress(FXObject *, FXSelector, void *ptr)
     if (commandline->hasFocus())
     {
         FXEvent* event = (FXEvent*)ptr;
+        FXString line = commandline->getText();
         switch(event->code){
             case KEY_Tab:
                 if(event->state&CONTROLMASK)
@@ -2386,7 +2468,7 @@ long IrcTabItem::OnKeyPress(FXObject *, FXSelector, void *ptr)
                 }
                 if(commandline->getText()[0] == '/' && commandline->getText().after(' ').empty())
                 {
-                    for (FXint i = 0; i < utils::CommandsNo(); i++)
+                    for(FXint i = 0; i < utils::CommandsNo(); i++)
                     {
                         if(comparecase(commandline->getText().after('/').before(' '), utils::CommandsAt(i)) == 0)
                         {
@@ -2421,7 +2503,6 @@ long IrcTabItem::OnKeyPress(FXObject *, FXSelector, void *ptr)
                 if(commandline->getText().find(' ') != -1)
                 {
                     FXint curpos;
-                    FXString line = commandline->getText();
                     line[commandline->getCursorPos()] == ' ' ? curpos = commandline->getCursorPos()-1 : curpos = commandline->getCursorPos();
                     FXint pos = line.rfind(' ', curpos)+1;
                     FXint n = line.find(' ', curpos)>0 ? line.find(' ', curpos)-pos : line.length()-pos;
@@ -2453,23 +2534,42 @@ long IrcTabItem::OnKeyPress(FXObject *, FXSelector, void *ptr)
                 }
                 return 1;
             case KEY_Up:
-                if (currentPosition > 0)
+                if(currentPosition!=-1 && currentPosition<commandsHistory.no())
                 {
-                    --currentPosition;
-                    commandline->setText(commandsHistory.at(currentPosition));
+                    if(!line.empty() && line!=commandsHistory[currentPosition])
+                    {
+                        commandsHistory.append(line);
+                        if(commandsHistory.no() > historyMax)
+                            commandsHistory.erase(0);
+                        currentPosition = commandsHistory.no()-1;
+                    }
+                    if(currentPosition > 0 && !line.empty())
+                        --currentPosition;
+                    commandline->setText(commandsHistory[currentPosition]);
                 }
+                for(FXint i=0; i<commandsHistory.no(); i++)
+                    fxmessage("currentPosition: %d\nPosition %d: %s\n", currentPosition, i, commandsHistory[i].text());
                 return 1;
             case KEY_Down:
-                if (currentPosition < commandsHistory.no()-1)
+                if(currentPosition!=-1 && currentPosition<commandsHistory.no())
                 {
-                    ++currentPosition;
-                    commandline->setText(commandsHistory.at(currentPosition));
+                    if(!line.empty() && line!=commandsHistory[currentPosition])
+                    {
+                        commandsHistory.append(line);
+                        if(commandsHistory.no() > historyMax)
+                            commandsHistory.erase(0);
+                        currentPosition = commandsHistory.no()-1;
+                    }
+                    if(currentPosition < commandsHistory.no()-1)
+                    {
+                        ++currentPosition;
+                        commandline->setText(commandsHistory[currentPosition]);
+                    }
+                    else
+                        commandline->setText("");
                 }
-                else
-                {
-                    currentPosition = commandsHistory.no();
-                    commandline->setText("");
-                }
+                for(FXint i=0; i<commandsHistory.no(); i++)
+                    fxmessage("currentPosition: %d\nPosition %d: %s\n", currentPosition, i, commandsHistory[i].text());
                 return 1;
         }
     }
@@ -2489,7 +2589,7 @@ FXbool IrcTabItem::IsFirst()
     }
     else
     {
-        for (FXint i = 0; i<parent->numChildren(); i=i+2)
+        for(FXint i = 0; i<parent->numChildren(); i+=2)
         {
             if(server->FindTarget(static_cast<IrcTabItem*>(parent->childAtIndex(i))))
             {
@@ -3456,7 +3556,7 @@ void IrcTabItem::OnIrc353(IrcEvent* ev)
     else
     {
         FXbool channelOn = FALSE;
-        for (FXint i = 0; i<parent->numChildren(); i=i+2)
+        for(FXint i = 0; i<parent->numChildren(); i+=2)
         {
             if(server->FindTarget(static_cast<IrcTabItem*>(parent->childAtIndex(i))) && comparecase(static_cast<FXTabItem*>(parent->childAtIndex(i))->getText(), channel) == 0)
             {

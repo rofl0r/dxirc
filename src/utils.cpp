@@ -42,6 +42,7 @@ namespace utils
         commands.append("CONNECT");
         commands.append("COMMANDS");
         commands.append("CTCP");
+        commands.append("CYCLE");
         commands.append("DCC");
         commands.append("DEOP");
         commands.append("DEVOICE");
@@ -71,6 +72,7 @@ namespace utils
         commands.append("QUIT");
         commands.append("QUOTE");
         commands.append("SAY");
+        commands.append("TIME");
         commands.append("TOPIC");
         commands.append("VOICE");
         commands.append("WALLOPS");
@@ -90,9 +92,9 @@ namespace utils
         register FXString v;
         register FXint i,j,h;
         for(h=1; h<=commands.no()/9; h=3*h+1);
-        for (; h > 0; h /= 3)
+        for(; h > 0; h /= 3)
         {
-            for (i = h + 1; i <= commands.no(); i++)
+            for(i = h + 1; i <= commands.no(); i++)
             {
                 v = commands[i - 1];
                 j = i;

@@ -419,7 +419,7 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     hspinner->setRange(0, 65536);
     new FXLabel(dccpane, _("(Set 0 for use ports from OS)"), NULL, LAYOUT_LEFT);
     FXHorizontalFrame *timeframe = new FXHorizontalFrame(dccpane, LAYOUT_FILL_X);
-    new FXLabel(timeframe, _("Time for waiting for connection"), NULL, LAYOUT_LEFT);
+    new FXLabel(timeframe, _("Time for waiting for connection in seconds"), NULL, LAYOUT_LEFT);
     new FXSpinner(timeframe, 4, &targetDccTimeout, FXDataTarget::ID_VALUE, SPIN_NOMAX|SPIN_CYCLIC|FRAME_SUNKEN|FRAME_THICK);
     
     new FXButton(buttonframe, _("&General"), NULL, switcher, FXSwitcher::ID_OPEN_THIRD, FRAME_RAISED);
@@ -888,7 +888,7 @@ void ConfigDialog::UpdateColors()
     sep2->setBackColor(themeCurrent.base);
     sep2->setShadowColor(themeCurrent.shadow);
     sep2->setHiliteColor(themeCurrent.hilite);
-    for (int i=0; i<3; i++)
+    for(int i=0; i<3; i++)
     {
         menuLabels[i]->setBorderColor(themeCurrent.border);
         menuLabels[i]->setBaseColor(themeCurrent.base);
@@ -1437,8 +1437,8 @@ void ConfigDialog::SaveConfig()
     if((FXint)aliases.size())
     {
         StringIt it;
-        FXint i=0;
-        for(it=aliases.begin(); it!=aliases.end(); it++)
+        FXint i;
+        for(i=0, it=aliases.begin(); it!=aliases.end(); it++,i++)
         {
             set.writeStringEntry("ALIASES", FXStringFormat("key%d", i).text(), (*it).first.text());
             set.writeStringEntry("ALIASES", FXStringFormat("value%d", i).text(), (*it).second.text());

@@ -175,6 +175,7 @@ void IrcSocket::StartConnection()
     fxmessage("Attempts on %s-%d-%s: %d\n", serverName.text(), serverPort, nickName.text(), attempts);
 #endif
     connecting = TRUE;
+    SendEvent(IRC_CONNECT, FXStringFormat(_("Connecting to %s"), serverName.text()));
     thread->start();
 }
 
@@ -208,7 +209,6 @@ FXint IrcSocket::Connect()
     WSADATA data;
 #endif
     hostent *host;
-    SendEvent(IRC_CONNECT, FXStringFormat(_("Connecting to %s"), serverName.text()));
 #ifdef WIN32
     if (WSAStartup(wVersionRequested, &data) != 0)
     {
@@ -309,7 +309,6 @@ FXint IrcSocket::ConnectSSL()
     WSADATA data;
 #endif
     hostent *host;
-    SendEvent(IRC_CONNECT, FXStringFormat(_("Connecting to %s"), serverName.text()));
 #ifdef WIN32
     if (WSAStartup(wVersionRequested, &data) != 0)
     {
@@ -2164,7 +2163,7 @@ void IrcSocket::SendEvents()
         return;
     while(events.no())
     {
-        for (FXint i=0; i < targets.no(); i++)
+        for(FXint i=0; i < targets.no(); i++)
         {
             targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &events[0]);
         }
@@ -2187,7 +2186,7 @@ void IrcSocket::SendEvent(IrcEventType eventType)
     else
     {
         SendEvents();
-        for (FXint i=0; i < targets.no(); i++)
+        for(FXint i=0; i < targets.no(); i++)
         {
             targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
         }
@@ -2209,7 +2208,7 @@ void IrcSocket::SendEvent(IrcEventType eventType, const FXString &param1)
     else
     {
         SendEvents();
-        for (FXint i=0; i < targets.no(); i++)
+        for(FXint i=0; i < targets.no(); i++)
         {
             targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
         }
@@ -2231,7 +2230,7 @@ void IrcSocket::SendEvent(IrcEventType eventType, const FXString &param1, const 
     else
     {
         SendEvents();
-        for (FXint i=0; i < targets.no(); i++)
+        for(FXint i=0; i < targets.no(); i++)
         {
             targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
         }
@@ -2253,7 +2252,7 @@ void IrcSocket::SendEvent(IrcEventType eventType, const FXString &param1, const 
     else
     {
         SendEvents();
-        for (FXint i=0; i < targets.no(); i++)
+        for(FXint i=0; i < targets.no(); i++)
         {
             targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
         }
@@ -2275,7 +2274,7 @@ void IrcSocket::SendEvent(IrcEventType eventType, const FXString &param1, const 
     else
     {
         SendEvents();
-        for (FXint i=0; i < targets.no(); i++)
+        for(FXint i=0; i < targets.no(); i++)
         {
             targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
         }
@@ -2298,7 +2297,7 @@ void IrcSocket::SendEvent(IrcEventType eventType, DccFile file)
     else
     {
         SendEvents();
-        for (FXint i=0; i < targets.no(); i++)
+        for(FXint i=0; i < targets.no(); i++)
         {
             targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
         }

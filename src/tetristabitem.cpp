@@ -60,7 +60,7 @@ Piece::Piece(FXint type, TetrisTabItem* parent)
 FXbool Piece::Rotate()
 {
     Cell rotated[4];
-    for (int i = 0; i < 4; ++i)
+    for(int i = 0; i < 4; ++i)
     {
         FXint x = static_cast<FXint>(cells[i].x) - pivot.x;
         FXint y = static_cast<FXint>(cells[i].y) - pivot.y;
@@ -282,6 +282,7 @@ void TetrisTabItem::NewGame()
     piece = 0;
     paused = FALSE;
     done = FALSE;
+    newButton->disable();
     pauseEnable = TRUE;
     pauseButton->enable();
     pauseButton->setText(_("&Pause game"));
@@ -290,10 +291,10 @@ void TetrisTabItem::NewGame()
     score = 0;
     nextPiece = rand()%7+1;
     for(FXint i=0; i<4; ++i)
-	fullLines[i] = -1;
-    for (int col = 0; col < columns; ++col)
+    fullLines[i] = -1;
+    for(int col = 0; col < columns; ++col)
     {
-        for (int row = 0; row < rows; ++row)
+        for(int row = 0; row < rows; ++row)
         {
             cells[col][row] = 0;
         }
@@ -308,6 +309,7 @@ void TetrisTabItem::StopGame()
     piece = 0;
     paused = FALSE;
     done = FALSE;
+    newButton->enable();
     pauseEnable = FALSE;
     pauseButton->disable();
     removedLines = 0;
@@ -315,10 +317,10 @@ void TetrisTabItem::StopGame()
     score = 0;
     nextPiece = rand()%7+1;
     for(FXint i=0; i<4; ++i)
-	fullLines[i] = -1;
-    for (int col = 0; col < columns; ++col)
+    fullLines[i] = -1;
+    for(int col = 0; col < columns; ++col)
     {
-        for (int row = 0; row < rows; ++row)
+        for(int row = 0; row < rows; ++row)
         {
             cells[col][row] = 0;
         }
@@ -388,14 +390,6 @@ void TetrisTabItem::DrawLines()
     dc.fillRectangle(0, 0, gamecanvas->getWidth(), gamecanvas->getHeight());
     dc.setLineWidth(2);
     dc.setForeground(penColor);
-//    for(FXint i=0; i<(rows+1)*apiece; i+=apiece)
-//    {
-//        dc.drawLine(0,i,columns*apiece,i);
-//    }
-//    for(FXint i=0; i<(columns+1)*apiece; i+=apiece)
-//    {
-//        dc.drawLine(i,0,i,rows*apiece);
-//    }
     dc.drawLine(0,0,0,rows*apiece);
     dc.drawLine(0,rows*apiece,columns*apiece,rows*apiece);
     dc.drawLine(columns*apiece,rows*apiece,columns*apiece,0);
@@ -410,8 +404,19 @@ void TetrisTabItem::DrawLines()
             }
         }
     }
-    dc.setFont(messageFont);
     dc.setForeground(penColor);
+    if(!done && !piece)
+    {
+        dc.setFont(getApp()->getNormalFont());
+        dc.drawText(2, getApp()->getNormalFont()->getFontHeight()+2, _("Keys for playing:"));
+        dc.drawText(2, 2*(getApp()->getNormalFont()->getFontHeight()+2), _("N .. new game"));
+        dc.drawText(2, 3*(getApp()->getNormalFont()->getFontHeight()+2), _("P .. pause game"));
+        dc.drawText(2, 4*(getApp()->getNormalFont()->getFontHeight()+2), _("Num5 .. rotate piece"));
+        dc.drawText(2, 5*(getApp()->getNormalFont()->getFontHeight()+2), _("Num3 .. move piece right"));
+        dc.drawText(2, 6*(getApp()->getNormalFont()->getFontHeight()+2), _("Num2 .. drop piece"));
+        dc.drawText(2, 7*(getApp()->getNormalFont()->getFontHeight()+2), _("Num1 .. move piece left"));
+    }
+    dc.setFont(messageFont);
     if(done)
     {
         FXint width = messageFont->getTextWidth(_("GAME OVER"));
@@ -461,7 +466,7 @@ void TetrisTabItem::RemoveLines()
         // Shift board down
         for(; row > 0; --row)
         {
-            for (FXint col = 0; col < columns; ++col)
+            for(FXint col = 0; col < columns; ++col)
             {
                 cells[col][row] = cells[col][row - 1];
             }
@@ -507,6 +512,7 @@ void TetrisTabItem::PauseResumeGame()
     else
     {
         getApp()->removeTimeout(this, ID_TETRISTIMEOUT);
+        newButton->enable();
         pauseButton->setText(_("&Resume game"));
     }
     paused = !paused;
@@ -517,6 +523,7 @@ void TetrisTabItem::GameOver()
 {
     getApp()->removeTimeout(this, ID_TETRISTIMEOUT);
     done = TRUE;
+    newButton->enable();
     pauseEnable = FALSE;
     pauseButton->disable();
     Redraw();

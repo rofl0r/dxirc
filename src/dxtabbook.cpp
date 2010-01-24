@@ -109,7 +109,8 @@ void dxTabBook::layout() {
     // Measure tabs again
     maxtabw = maxtabh = currentWidth = currentHeight = tabsWidth = tabsHeight 
             = previoustabsWidth = previoustabsHeight = 0;
-    for (tab = getFirst(), i = 0; tab && tab->getNext(); tab = tab->getNext()->getNext(), i++) {
+    for(tab = getFirst(), i = 0; tab && tab->getNext(); tab = tab->getNext()->getNext(), i++)
+    {
             hints = tab->getLayoutHints();
             if (hints & LAYOUT_FIX_WIDTH) w = tab->getWidth();
             else w = tab->getDefaultWidth();
@@ -140,7 +141,8 @@ void dxTabBook::layout() {
 
         // Place all of the children
         shift = 0;
-        for (tab = getFirst(), yy = py + shift, i = 0; tab && tab->getNext(); tab = tab->getNext()->getNext(), i++) {
+        for(tab = getFirst(), yy = py + shift, i = 0; tab && tab->getNext(); tab = tab->getNext()->getNext(), i++)
+        {
             pane = tab->getNext();
             pane->position(px, py, pw, ph);
             hints = tab->getLayoutHints();
@@ -234,7 +236,8 @@ void dxTabBook::layout() {
 
         // Place all of the children
         shift = 0;
-        for (tab = getFirst(), xx = px + shift, i = 0; tab && tab->getNext(); tab = tab->getNext()->getNext(), i++) {
+        for(tab = getFirst(), xx = px + shift, i = 0; tab && tab->getNext(); tab = tab->getNext()->getNext(), i++)
+        {
             pane = tab->getNext();
             pane->position(px, py, pw, ph);
             hints = tab->getLayoutHints();
