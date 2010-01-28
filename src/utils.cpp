@@ -72,6 +72,7 @@ namespace utils
         commands.append("QUIT");
         commands.append("QUOTE");
         commands.append("SAY");
+        commands.append("STATS");
         commands.append("TIME");
         commands.append("TOPIC");
         commands.append("VOICE");

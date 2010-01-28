@@ -4,7 +4,7 @@ DevCpp
 ======
 
 You use dxirc.dev for compilation.
-Check path for OpenSSL or delete HAVE_OPENSSL.
+Check OpenSSL or delete HAVE_OPENSSL.
 You have to installed fox, libpng, libtiff, libjpeg, lua (optional) and libintl (gettext) devpak.
 
 Visual C++

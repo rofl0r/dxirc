@@ -1910,6 +1910,14 @@ FXbool IrcSocket::SendQuote(const FXString& text)
     return SendLine(text+"\r\n");
 }
 
+FXbool IrcSocket::SendStats(const FXString& type)
+{
+    if(type.empty())
+        return SendLine("STATS\r\n");
+    else
+        return SendLine("STATS "+type+"\r\n");
+}
+
 FXbool IrcSocket::SendTopic(const FXString& chan, const FXString& topic)
 {
     if (topic.empty())

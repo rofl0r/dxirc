@@ -146,6 +146,7 @@ class IrcSocket: public FXObject
         FXbool SendPart(const FXString &chan);
         FXbool SendPart(const FXString &chan, const FXString &reason);
         FXbool SendQuote(const FXString &text);
+        FXbool SendStats(const FXString &type);
         FXbool SendTopic(const FXString &chan, const FXString &topic);
         FXbool SendTopic(const FXString &chan);
         FXbool SendVersion(const FXString &to);

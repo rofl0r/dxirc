@@ -1948,6 +1948,17 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 return TRUE;
             }
         }
+        if(command == "stats")
+        {
+            if(server->GetConnected())
+                return server->SendStats(commandtext.after(' '));
+            else
+            {
+                AppendIrcStyledText(_("You aren't connected"), 4, FXSystem::now());
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                return TRUE;
+            }
+        }
         if(command == "tetris")
         {
             parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_NEWTETRIS), NULL);
@@ -2391,6 +2402,22 @@ FXbool IrcTabItem::ShowHelp(FXString command)
         AppendIrcText(_("SAY [text], sends text to current tab."), FXSystem::now());
         return TRUE;
     }
+    if(command == "stats")
+    {
+        AppendIrcText(_("STATS <type>, shows some irc server usage statistics. Available types vary slightly per server; some common ones are:"), FXSystem::now());
+        AppendIrcText(_("c - shows C and N lines for a given server.  These are the names of the servers that are allowed to connect."), FXSystem::now());
+        AppendIrcText(_("h - shows H and L lines for a given server (Hubs and Leaves)."), FXSystem::now());
+        AppendIrcText(_("k - show K lines for a server.  This shows who is not allowed to connect and possibly at what time they are not allowed to connect."), FXSystem::now());
+        AppendIrcText(_("i - shows I lines. This is who CAN connect to a server."), FXSystem::now());
+        AppendIrcText(_("l - shows information about amount of information passed to servers and users."), FXSystem::now());
+        AppendIrcText(_("m - shows a count for the number of times the various commands have been used since the server was booted."), FXSystem::now());
+        AppendIrcText(_("o - shows the list of authorized operators on the server."), FXSystem::now());
+        AppendIrcText(_("p - shows online operators and their idle times."), FXSystem::now());
+        AppendIrcText(_("u - shows the uptime for a server."), FXSystem::now());
+        AppendIrcText(_("y - shows Y lines, which lists the various connection classes for a given server."), FXSystem::now());
+
+        return TRUE;
+    }
     if(command == "tetris")
     {
         AppendIrcText(_("TETRIS, start small easteregg."), FXSystem::now());
@@ -2547,8 +2574,6 @@ long IrcTabItem::OnKeyPress(FXObject *, FXSelector, void *ptr)
                         --currentPosition;
                     commandline->setText(commandsHistory[currentPosition]);
                 }
-                for(FXint i=0; i<commandsHistory.no(); i++)
-                    fxmessage("currentPosition: %d\nPosition %d: %s\n", currentPosition, i, commandsHistory[i].text());
                 return 1;
             case KEY_Down:
                 if(currentPosition!=-1 && currentPosition<commandsHistory.no())
@@ -2568,8 +2593,6 @@ long IrcTabItem::OnKeyPress(FXObject *, FXSelector, void *ptr)
                     else
                         commandline->setText("");
                 }
-                for(FXint i=0; i<commandsHistory.no(); i++)
-                    fxmessage("currentPosition: %d\nPosition %d: %s\n", currentPosition, i, commandsHistory[i].text());
                 return 1;
         }
     }
