@@ -107,6 +107,7 @@ dxirc::dxirc(FXApp *app)
     ircFont = NULL;
     viewer = NULL;
     transfers = NULL;
+    traymenu = NULL;
     lastToken = 0;
 
     ReadConfig();
@@ -181,7 +182,8 @@ dxirc::dxirc(FXApp *app)
     if(useTray)
     {
         trayIcon = new FXTrayIcon(app, "dxirc", trayicon, 0, this, ID_TRAY, TRAY_CMD_ON_LEFT|TRAY_MENU_ON_RIGHT);
-        traymenu = new FXPopup(trayIcon);
+        if(traymenu == NULL)
+            traymenu = new FXPopup(trayIcon);
         new FXMenuCommand(traymenu, _("&Quit"), quiticon, this, ID_QUIT);
         trayIcon->setMenu(traymenu);
     }
@@ -265,7 +267,7 @@ dxirc::~dxirc()
     delete editmenu;
     delete helpmenu;
 #ifdef HAVE_TRAY
-    if(useTray)
+    if(traymenu)
     {
         delete traymenu;
     }
