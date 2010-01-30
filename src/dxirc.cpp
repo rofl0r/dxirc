@@ -264,7 +264,12 @@ dxirc::~dxirc()
     delete servermenu;
     delete editmenu;
     delete helpmenu;
-    delete traymenu;
+#ifdef HAVE_TRAY
+    if(useTray)
+    {
+        delete traymenu;
+    }
+#endif
     delete ircFont;
     pThis = NULL;
 }
