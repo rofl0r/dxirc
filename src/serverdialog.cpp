@@ -169,7 +169,7 @@ long ServerDialog::OnAdd(FXObject*,FXSelector,void*)
 
     new FXLabel(matrix, _("Commands on connection:\tOne command on one line"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     FXHorizontalFrame *commandsbox=new FXHorizontalFrame(matrix, LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW|FRAME_SUNKEN|FRAME_THICK,0,0,0,0, 0,0,0,0);
-    FXText *command = new FXText(commandsbox, NULL, 0, TEXT_WORDWRAP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    FXText *command = new FXText(commandsbox, NULL, 0, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     command->setVisibleRows(4);
     command->setVisibleColumns(25);
     command->setTipText(_("One command on one line"));
@@ -253,7 +253,7 @@ long ServerDialog::OnModify(FXObject*,FXSelector,void*)
 
     new FXLabel(matrix, _("Commands on connection:\tOne command on one line"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     FXHorizontalFrame *commandsbox=new FXHorizontalFrame(matrix, LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW|FRAME_SUNKEN|FRAME_THICK,0,0,0,0, 0,0,0,0);
-    FXText *command = new FXText(commandsbox, NULL, 0, TEXT_WORDWRAP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    FXText *command = new FXText(commandsbox, NULL, 0, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     command->setVisibleRows(4);
     command->setVisibleColumns(25);
     command->setText(serverList[index].commands);

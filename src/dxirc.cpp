@@ -2993,6 +2993,7 @@ int dxirc::OnLuaRemoveName(lua_State *lua)
             if(comparecase(command, pThis->scriptEvents[i].name) == 0 && comparecase(script, pThis->scriptEvents[i].script) == 0)
             {
                 pThis->scriptEvents.erase(i);
+                pThis->AppendIrcStyledText(FXStringFormat(_("Command/event %s in script %s was removed"), command.text(), script.text()), 3);
             }
         }
     }
@@ -3039,7 +3040,11 @@ int dxirc::OnLuaPrint(lua_State *lua)
     FXint id, style;
     if(lua_isnumber(lua, 2)) id = lua_tointeger(lua, 2);
     else id = pThis->tabbook->getCurrent();
-    if(lua_isnumber(lua, 3)) style = lua_tointeger(lua, 3);
+    if(lua_isnumber(lua, 3))
+    {
+        style = lua_tointeger(lua, 3);
+        if(style<0 || style>8) style = 0;
+    }
     else style = 0;
     if(pThis->tabbook->numChildren())
     {
