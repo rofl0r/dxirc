@@ -32,6 +32,7 @@ FXDEFMAP(LogViewer) LogViewerMap[] = {
     FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_CLOSE,      LogViewer::OnClose),
     FXMAPFUNC(SEL_CLOSE,    0,                        LogViewer::OnClose),
     FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_TREE,       LogViewer::OnTree),
+    FXMAPFUNC(SEL_RIGHTBUTTONRELEASE,   LogViewer::ID_TREE, LogViewer::OnRightTree),
     FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_RESET,      LogViewer::OnReset),
     FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_SEARCH,     LogViewer::OnSearch),
     FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_SEARCHNEXT, LogViewer::OnSearchNext),
@@ -366,6 +367,38 @@ long LogViewer::OnTree(FXObject*, FXSelector, void *ptr)
     return 1;
 }
 
+long LogViewer::OnRightTree(FXObject*, FXSelector, void *ptr)
+{
+    FXEvent* event = (FXEvent*)ptr;
+    if(event->moved) return 1;
+    LogItem *item = (LogItem*)treeHistory->getItemAt(event->win_x,event->win_y);
+    if(item)
+    {
+        if(item == treeHistory->getFirstItem())
+            return 1;
+        FXString message;
+        if(item->isDirectory())
+        {
+            if(item->hasItems())
+                message = FXStringFormat(_("Delete %s with all child items?\nThis cann't be UNDONE!"), item->getText().text());
+            else
+                message = FXStringFormat(_("Delete %s?\nThis cann't be UNDONE!"), item->getText().text());
+        }
+        else if(item->isFile())
+            message = FXStringFormat(_("Delete file %s?\nThis cann't be UNDONE!"), item->getText().text());
+        else
+            return 1;
+        if(FXMessageBox::question(this, MBOX_YES_NO, _("Question"), message.text()) == 1)
+        {
+            FXFile::removeFiles(GetItemPathname(item), TRUE);
+            treeHistory->removeItem(item, TRUE);
+        }
+        else
+            return 1;
+    }
+    return 1;
+}
+
 long LogViewer::OnKeyPress(FXObject *sender, FXSelector sel, void *ptr)
 {
     FXEvent *event = (FXEvent*)ptr;
@@ -595,7 +628,6 @@ void LogViewer::ListChildItems(LogItem *par)
     // Managed to open directory
     if (dir.open(directory))
     {
-
         // Process directory entries
         while (dir.next())
         {

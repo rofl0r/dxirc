@@ -1065,27 +1065,27 @@ namespace utils
         {
             fsize = size/1073741824.0;
             if(fsize == (FXint)fsize)
-                return FXStringFormat(_("%.0f %s"), fsize, _("GB"));
+                return FXStringFormat("%.0f %s", fsize, _("GB"));
             else
-                return FXStringFormat(_("%.2f %s"), fsize, _("GB"));
+                return FXStringFormat("%.2f %s", fsize, _("GB"));
         }
         if(size > 100000)
         {
             fsize = size/1048576.0;
             if(fsize == (FXint)fsize)
-                return FXStringFormat(_("%.0f %s"), fsize, _("MB"));
+                return FXStringFormat("%.0f %s", fsize, _("MB"));
             else
-                return FXStringFormat(_("%.2f %s"), fsize, _("MB"));
+                return FXStringFormat("%.2f %s", fsize, _("MB"));
         }
         if(size > 1000)
         {
             fsize = size/1024.0;
             if(fsize == (FXint)fsize)
-                return FXStringFormat(_("%.0f %s"), fsize, _("KB"));
+                return FXStringFormat("%.0f %s", fsize, _("KB"));
             else
-                return FXStringFormat(_("%.2f %s"), fsize, _("KB"));
+                return FXStringFormat("%.2f %s", fsize, _("KB"));
         }
-        return FXStringFormat(_("%llu %s"), size, _("bytes"));
+        return FXStringFormat("%s %s", FXStringVal(size).text(), _("bytes"));
     }
 
     //Return file size in human readable form
@@ -1097,27 +1097,27 @@ namespace utils
         {
             fsize = size/1073741824.0;
             if(fsize == (FXuint)fsize)
-                return FXStringFormat(_("%.0f %s"), fsize, _("GB"));
+                return FXStringFormat("%.0f %s", fsize, _("GB"));
             else
-                return FXStringFormat(_("%.2f %s"), fsize, _("GB"));
+                return FXStringFormat("%.2f %s", fsize, _("GB"));
         }
         if(size > 100000)
         {
             fsize = size/1048576.0;
             if(fsize == (FXuint)fsize)
-                return FXStringFormat(_("%.0f %s"), fsize, _("MB"));
+                return FXStringFormat("%.0f %s", fsize, _("MB"));
             else
-                return FXStringFormat(_("%.2f %s"), fsize, _("MB"));
+                return FXStringFormat("%.2f %s", fsize, _("MB"));
         }
         if(size > 1000)
         {
             fsize = size/1024.0;
             if(fsize == (FXuint)fsize)
-                return FXStringFormat(_("%.0f %s"), fsize, _("KB"));
+                return FXStringFormat("%.0f %s", fsize, _("KB"));
             else
-                return FXStringFormat(_("%.2f %s"), fsize, _("KB"));
+                return FXStringFormat("%.2f %s", fsize, _("KB"));
         }
-        return FXStringFormat(_("%llu %s"), size, _("bytes"));
+        return FXStringFormat("%s %s", ssize.text(), _("bytes"));
     }
 
     /*Return download/send speed in human readable form
@@ -1130,15 +1130,15 @@ namespace utils
         {
             fspeed = speed/(1048576.0);
             if(fspeed == (FXuint)fspeed)
-                return FXStringFormat(_("%.0f %s"), fspeed, _("MB/s"));
+                return FXStringFormat("%.0f %s", fspeed, _("MB/s"));
             else
-                return FXStringFormat(_("%.2f %s"), fspeed, _("MB/s"));
+                return FXStringFormat("%.2f %s", fspeed, _("MB/s"));
         }
         fspeed = speed/(1024.0);
         if(fspeed == (FXuint)fspeed)
-            return FXStringFormat(_("%.0f %s"), fspeed, _("KB/s"));
+            return FXStringFormat("%.0f %s", fspeed, _("KB/s"));
         else
-            return FXStringFormat(_("%.2f %s"), fspeed, _("KB/s"));
+            return FXStringFormat("%.2f %s", fspeed, _("KB/s"));
     }
 
     //Return remaining time of download/send

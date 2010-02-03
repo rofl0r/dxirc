@@ -167,6 +167,7 @@ public:
     long OnClose(FXObject*,FXSelector,void*);
     long OnKeyPress(FXObject*,FXSelector,void*);
     long OnTree(FXObject*,FXSelector,void*);
+    long OnRightTree(FXObject*,FXSelector,void*);
     long OnSearch(FXObject*,FXSelector,void*);
     long OnSearchNext(FXObject*,FXSelector,void*);
     long OnReset(FXObject*,FXSelector,void*);
