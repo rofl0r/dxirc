@@ -37,6 +37,9 @@ FXDEFMAP(LogViewer) LogViewerMap[] = {
     FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_SEARCH,     LogViewer::OnSearch),
     FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_SEARCHNEXT, LogViewer::OnSearchNext),
     FXMAPFUNCS(SEL_COMMAND, LogViewer::ID_ALL, LogViewer::ID_FILE, LogViewer::OnCmdSearchOptions),
+    FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_PACK,       LogViewer::OnPack),
+    FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_UNPACK,     LogViewer::OnUnpack),
+    FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_DELETEITEM,     LogViewer::OnDelete),
     FXMAPFUNC(SEL_KEYPRESS, 0,                        LogViewer::OnKeyPress)
 };
 
@@ -98,6 +101,7 @@ LogViewer::LogViewer(FXApp *app, const FXString &lpath, FXFont *fnt)
     getAccelTable()->addAccel(MKUINT(KEY_F3, 0), this, FXSEL(SEL_COMMAND,LogViewer::ID_SEARCHNEXT));
 
     searchstring = "";
+    itemOnRight = NULL;
 }
 
 LogViewer::~LogViewer()
@@ -376,22 +380,60 @@ long LogViewer::OnRightTree(FXObject*, FXSelector, void *ptr)
     {
         if(item == treeHistory->getFirstItem())
             return 1;
+        itemOnRight = item;
+        FXMenuPane popup(this);
+        if(item->isExpanded())
+            new FXMenuCommand(&popup, _("Collapse"), NULL, this, ID_PACK);
+        else
+            new FXMenuCommand(&popup, _("Expand"), NULL, this, ID_UNPACK);
+        new FXMenuCommand(&popup, _("Delete"), NULL, this, ID_DELETEITEM);
+        popup.create();
+        popup.popup(NULL,event->root_x,event->root_y);
+        getApp()->runModalWhileShown(&popup);
+    }
+    return 1;
+}
+
+long LogViewer::OnPack(FXObject*, FXSelector, void*)
+{
+    if(itemOnRight)
+    {
+        treeHistory->collapseTree(itemOnRight, TRUE);
+    }
+    return 1;
+}
+
+long LogViewer::OnUnpack(FXObject*, FXSelector, void*)
+{
+    if(itemOnRight)
+    {
+        treeHistory->expandTree(itemOnRight, TRUE);
+    }
+    return 1;
+}
+
+long LogViewer::OnDelete(FXObject*, FXSelector, void*)
+{
+    if(itemOnRight)
+    {
+        if(itemOnRight == treeHistory->getFirstItem())
+            return 1;
         FXString message;
-        if(item->isDirectory())
+        if(itemOnRight->isDirectory())
         {
-            if(item->hasItems())
-                message = FXStringFormat(_("Delete %s with all child items?\nThis cann't be UNDONE!"), item->getText().text());
+            if(itemOnRight->hasItems())
+                message = FXStringFormat(_("Delete %s with all child items?\nThis cann't be UNDONE!"), itemOnRight->getText().text());
             else
-                message = FXStringFormat(_("Delete %s?\nThis cann't be UNDONE!"), item->getText().text());
+                message = FXStringFormat(_("Delete %s?\nThis cann't be UNDONE!"), itemOnRight->getText().text());
         }
-        else if(item->isFile())
-            message = FXStringFormat(_("Delete file %s?\nThis cann't be UNDONE!"), item->getText().text());
+        else if(itemOnRight->isFile())
+            message = FXStringFormat(_("Delete file %s?\nThis cann't be UNDONE!"), itemOnRight->getText().text());
         else
             return 1;
         if(FXMessageBox::question(this, MBOX_YES_NO, _("Question"), message.text()) == 1)
         {
-            FXFile::removeFiles(GetItemPathname(item), TRUE);
-            treeHistory->removeItem(item, TRUE);
+            FXFile::removeFiles(GetItemPathname(itemOnRight), TRUE);
+            treeHistory->removeItem(itemOnRight, TRUE);
         }
         else
             return 1;

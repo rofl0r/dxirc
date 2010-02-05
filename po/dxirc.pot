@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-02-03 21:35+0100\n"
+"POT-Creation-Date: 2010-02-05 21:45+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,7 +20,7 @@ msgstr ""
 msgid "Preferences"
 msgstr ""
 
-#: src/configdialog.cpp:182 src/dxirc.cpp:593 src/logviewer.cpp:67
+#: src/configdialog.cpp:182 src/dxirc.cpp:593 src/logviewer.cpp:70
 #: src/scriptdialog.cpp:85 src/scriptdialog.cpp:220 src/dccdialog.cpp:77
 msgid "C&lose"
 msgstr ""
@@ -99,6 +99,7 @@ msgid "Add"
 msgstr ""
 
 #: src/configdialog.cpp:227 src/configdialog.cpp:234 src/configdialog.cpp:261
+#: src/logviewer.cpp:389
 msgid "Delete"
 msgstr ""
 
@@ -425,8 +426,8 @@ msgstr ""
 
 #: src/configdialog.cpp:1203 src/aliasdialog.cpp:93 src/aliasdialog.cpp:98
 #: src/aliasdialog.cpp:103 src/aliasdialog.cpp:136 src/aliasdialog.cpp:141
-#: src/aliasdialog.cpp:146 src/logviewer.cpp:164 src/logviewer.cpp:210
-#: src/logviewer.cpp:285
+#: src/aliasdialog.cpp:146 src/logviewer.cpp:168 src/logviewer.cpp:214
+#: src/logviewer.cpp:289
 msgid "Information"
 msgstr ""
 
@@ -614,7 +615,7 @@ msgid "Lua plugin: error calling %s %s"
 msgstr ""
 
 #: src/dxirc.cpp:1667 src/dxirc.cpp:1682 src/dxirc.cpp:1788 src/dxirc.cpp:2702
-#: src/logviewer.cpp:391
+#: src/logviewer.cpp:433
 msgid "Question"
 msgstr ""
 
@@ -2273,89 +2274,97 @@ msgid ""
 " "
 msgstr ""
 
-#: src/logviewer.cpp:46
+#: src/logviewer.cpp:49
 msgid "dxirc - log viewer"
 msgstr ""
 
-#: src/logviewer.cpp:79
+#: src/logviewer.cpp:82
 msgid "F3 for next"
 msgstr ""
 
-#: src/logviewer.cpp:81
+#: src/logviewer.cpp:84
 msgid "&Search"
 msgstr ""
 
-#: src/logviewer.cpp:83
+#: src/logviewer.cpp:86
 msgid "&Reset"
 msgstr ""
 
-#: src/logviewer.cpp:85
+#: src/logviewer.cpp:88
 msgid "Search options"
 msgstr ""
 
-#: src/logviewer.cpp:86
+#: src/logviewer.cpp:89
 msgid "&Ignore case"
 msgstr ""
 
-#: src/logviewer.cpp:88
+#: src/logviewer.cpp:91
 msgid "Search file"
 msgstr ""
 
-#: src/logviewer.cpp:90
+#: src/logviewer.cpp:93
 msgid "Search channel/query"
 msgstr ""
 
-#: src/logviewer.cpp:92
+#: src/logviewer.cpp:95
 msgid "Search all"
 msgstr ""
 
-#: src/logviewer.cpp:164 src/logviewer.cpp:210 src/logviewer.cpp:285
+#: src/logviewer.cpp:168 src/logviewer.cpp:214 src/logviewer.cpp:289
 #, c-format
 msgid "'%s' wasn't found"
 msgstr ""
 
-#: src/logviewer.cpp:383
+#: src/logviewer.cpp:386
+msgid "Collapse"
+msgstr ""
+
+#: src/logviewer.cpp:388
+msgid "Expand"
+msgstr ""
+
+#: src/logviewer.cpp:425
 #, c-format
 msgid ""
 "Delete %s with all child items?\n"
 "This cann't be UNDONE!"
 msgstr ""
 
-#: src/logviewer.cpp:385
+#: src/logviewer.cpp:427
 #, c-format
 msgid ""
 "Delete %s?\n"
 "This cann't be UNDONE!"
 msgstr ""
 
-#: src/logviewer.cpp:388
+#: src/logviewer.cpp:430
 #, c-format
 msgid ""
 "Delete file %s?\n"
 "This cann't be UNDONE!"
 msgstr ""
 
-#: src/logviewer.cpp:448 src/logviewer.cpp:458 src/logviewer.cpp:470
+#: src/logviewer.cpp:490 src/logviewer.cpp:500 src/logviewer.cpp:512
 #: src/scriptdialog.cpp:229 src/scriptdialog.cpp:239 src/scriptdialog.cpp:251
 msgid "Error Loading File"
 msgstr ""
 
-#: src/logviewer.cpp:448 src/scriptdialog.cpp:229
+#: src/logviewer.cpp:490 src/scriptdialog.cpp:229
 #, c-format
 msgid "Unable to open file: %s"
 msgstr ""
 
-#: src/logviewer.cpp:458 src/scriptdialog.cpp:239
+#: src/logviewer.cpp:500 src/scriptdialog.cpp:239
 #, c-format
 msgid "File is too big: %s (%d bytes)"
 msgstr ""
 
-#: src/logviewer.cpp:470 src/scriptdialog.cpp:251
+#: src/logviewer.cpp:512 src/scriptdialog.cpp:251
 #, c-format
 msgid "Unable to read file: %s"
 msgstr ""
 
-#: src/logviewer.cpp:565
+#: src/logviewer.cpp:607
 msgid "Logs"
 msgstr ""
 

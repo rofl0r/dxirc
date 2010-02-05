@@ -159,6 +159,9 @@ public:
         ID_FILE,
         ID_SEARCH,
         ID_SEARCHNEXT,
+        ID_PACK,
+        ID_UNPACK,
+        ID_DELETEITEM,
         ID_LAST
     };
 
@@ -172,6 +175,9 @@ public:
     long OnSearchNext(FXObject*,FXSelector,void*);
     long OnReset(FXObject*,FXSelector,void*);
     long OnCmdSearchOptions(FXObject*,FXSelector,void*);
+    long OnPack(FXObject*,FXSelector,void*);
+    long OnUnpack(FXObject*,FXSelector,void*);
+    long OnDelete(FXObject*,FXSelector,void*);
     void SetFont(FXFont*);
 
 private:
@@ -195,6 +201,7 @@ private:
     FXRadioButton *buttonAll, *buttonChannel, *buttonFile;
     FXCheckButton *buttonIcase;
     FXText *text;
+    LogItem *itemOnRight;
     FXString logPath, searchstring;
     FXDataTarget targetAll, targetChannel, targetFile, targetIcase;
     FXbool all, channel, file, icase;
