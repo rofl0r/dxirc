@@ -335,7 +335,33 @@ long LogViewer::OnTree(FXObject*, FXSelector, void *ptr)
     LogItem *item = (LogItem*)ptr;
     if(item->isFile())
     {
-        LoadFile(GetItemPathname(item));
+        if(!LoadFile(GetItemPathname(item)))
+        {
+            LogItem *parent = (LogItem*)item->getParent();
+            treeHistory->removeItem(item, TRUE);
+            treeHistory->setCurrentItem(parent, TRUE);
+            text->removeText(0, text->getLength());
+            buttonIcase->enable();
+            buttonFile->disable();
+            file = FALSE;
+            if(IsChannelItem(parent))
+            {
+                buttonChannel->enable();
+                channel = TRUE;
+                all = FALSE;
+            }
+            else
+            {
+                buttonChannel->disable();
+                channel = FALSE;
+                all = TRUE;
+            }
+            buttonAll->enable();
+            searchfield->enable();
+            buttonSearch->enable();
+            if(!searchstring.empty()) buttonReset->enable();
+            return 1;
+        }
         OnSearchNext(NULL, 0, NULL);
         buttonIcase->enable();
         buttonFile->enable();
@@ -708,7 +734,7 @@ void LogViewer::ListChildItems(LogItem *par)
 #endif
 
             // If it is not a directory, and not showing files and matching pattern skip it
-            if (!info.isDirectory() && !FXPath::match("*-*-*", name))continue;
+            if (!info.isDirectory() && !FXRex("^\\d\\d\\d\\d-\\d\\d-\\d\\d+$").match(name))continue;
 
             // Find it, and take it out from the old list if found
             for(pp = po; (item = *pp) != NULL; pp = &item->link)

@@ -801,6 +801,26 @@ namespace utils
             return text;
     }
 
+    FXString RemoveNonalphanumeric(const FXString &text)
+    {
+        if(FXRex("^[a-zA-Z0-9]+$").match(text))
+            return text;
+        else
+        {
+            FXString rettxt;
+            for(FXint i=0; i<text.length(); i++)
+            {
+                if((47<(FXint)text[i]&&(FXint)text[i]<58) ||
+                        (64<(FXint)text[i]&&(FXint)text[i]<91) ||
+                        (96<(FXint)text[i]&&text[i]<123))
+                    rettxt += text[i];
+                else
+                    rettxt += '0';
+            }
+            return rettxt;
+        }
+    }
+
     FXString CreateModes(FXchar sign, FXchar mode, FXString nicks)
     {
         FXString modes;

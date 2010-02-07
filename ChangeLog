@@ -1,3 +1,8 @@
+Version 0.40.0 (released 07-02-2010)
+- improved GUI (alias dialog, tabs etc.)
+- added Lua scripting support
+- added DCC
+
 Version 0.30.1 (released 18-10-2009)
 - alias dialog was improved
 - small issues in disconnection, ignore user etc. fixed

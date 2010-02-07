@@ -89,7 +89,7 @@ class IrcSocket: public FXObject
         void SetServerPassword(const FXString &pass) { serverPassword = pass; }
         void SetNickName(const FXString &nick) { nickName = nick; }
         FXString GetNickName() { return nickName; }
-        void SetUserName(const FXString &user) { userName = user; }
+        void SetUserName(const FXString &user);
         void SetRealName(const FXString &rname) { realName = rname; }
         void SetStartChannels(const FXString &channels) { startChannels = utils::RemoveSpaces(channels); }
         void SetStartCommands(const FXString &commands) { startCommands = commands; }

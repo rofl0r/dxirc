@@ -3124,7 +3124,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=dxirc
- VERSION=0.40.svn
+ VERSION=0.40.0
 
 
 cat >>confdefs.h <<_ACEOF

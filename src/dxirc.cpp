@@ -1317,6 +1317,7 @@ long dxirc::OnCommandDisconnect(FXObject*, FXSelector, void*)
         }
         else
         {
+            currentserver->Disconnect();
             for(FXint i = tabbook->numChildren()-2; i > -1; i-=2)
             {
                 if(currentserver->FindTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(i))))
@@ -1595,7 +1596,7 @@ void dxirc::OnIrcEndmotd()
 //handle IrcEvent IRC_PRIVMSG and IRC_ACTION
 void dxirc::OnIrcPrivmsgAndAction(IrcSocket *server, IrcEvent *ev)
 {
-    if(ev->param3.contains(server->GetNickName())) UpdateStatus(FXStringFormat(_("New highlighted message on %s"), ev->param2 == server->GetNickName() ? ev->param1.text() : ev->param2.text()));
+    if(ev->param3.contains(server->GetNickName()) && ev->param1!=server->GetNickName()) UpdateStatus(FXStringFormat(_("New highlighted message on %s"), ev->param2 == server->GetNickName() ? ev->param1.text() : ev->param2.text()));
 #ifdef HAVE_LUA
     if(!scripts.no() || !scriptEvents.no()) return;
     for(FXint i=0; i<scriptEvents.no(); i++)
@@ -2316,6 +2317,7 @@ long dxirc::OnCommandScripts(FXObject*, FXSelector, void*)
     return 1;
 }
 
+//fired from tab by command /lua
 long dxirc::OnLua(FXObject *obj, FXSelector, void *data)
 {
 #ifdef HAVE_LUA
@@ -2748,6 +2750,7 @@ FXint dxirc::LoadLuaScript(FXString path, FXbool showMessage)
         script.path = path;
         scripts.append(script);
         AppendIrcStyledText(FXStringFormat(_("Script %s was loaded"), path.text()), 3);
+        AppendIrcStyledText(FXStringFormat("%s: %s", script.name.text(), script.description.text()), 3);
         lua_pushstring(L, "dxirc_Init");
         lua_gettable(L, LUA_GLOBALSINDEX);
         if (lua_type(L, -1) != LUA_TFUNCTION) lua_pop(L, 1);

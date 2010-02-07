@@ -30,7 +30,7 @@
 #include "config.h"
 #include "i18n.h"
 
-#define LUA_HELP_PATH "http://files.dxirc.org/dxirclua.html"
+#define LUA_HELP_PATH "http://www.dxirc.org/dxirc-lua.html"
 
 FXDEFMAP(dxText) dxTextMap[] = {
     FXMAPFUNC(SEL_MOTION, 0, dxText::onMotion)
@@ -190,6 +190,7 @@ FXDEFMAP(IrcTabItem) IrcTabItemMap[] = {
     FXMAPFUNC(SEL_COMMAND,              IrcSocket::ID_SERVER,           IrcTabItem::OnIrcEvent),
     FXMAPFUNC(SEL_TIMEOUT,              IrcTabItem::ID_TIME,            IrcTabItem::OnTimeout),
     FXMAPFUNC(SEL_TIMEOUT,              IrcTabItem::ID_PTIME,           IrcTabItem::OnPipeTimeout),
+    FXMAPFUNC(SEL_TIMEOUT,              IrcTabItem::ID_ETIME,           IrcTabItem::OnEggTimeout),
     FXMAPFUNC(SEL_LEFTBUTTONRELEASE,    IrcTabItem::ID_TEXT,            IrcTabItem::OnLeftMouse),
     FXMAPFUNC(SEL_RIGHTBUTTONRELEASE,   IrcTabItem::ID_USERS,           IrcTabItem::OnRightMouse),
     FXMAPFUNC(SEL_DOUBLECLICKED,        IrcTabItem::ID_USERS,           IrcTabItem::OnDoubleclick),
@@ -225,6 +226,7 @@ IrcTabItem::IrcTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FX
     pipe = NULL;
     sendPipe = FALSE;
     scriptHasAll = FALSE;
+    scriptHasMyMsg = FALSE;
 
     if(type == CHANNEL && server->GetConnected())
     {
@@ -1290,10 +1292,11 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
             return TRUE;
         }
         if(command == "egg")
-        {
-            AppendIrcStyledText("ahoj sem pan Vajíčko,", 3, FXSystem::now());
-            AppendIrcStyledText("Lidi neblbněte!!!", 3, FXSystem::now());
-            AppendIrcStyledText("Sluničko svítí. Život je KRASNEJ!!!", 3, FXSystem::now());
+        {            
+            text->appendStyledText(FXString("ahoj sem pan Vajíčko,\n"), 3);
+            text->appendStyledText(FXString("a dnes Vám přináším killer feature VODOTRYSK!!!\n"), 3);
+            getApp()->addTimeout(this, ID_ETIME, 1000);
+            pics = 0;
             return TRUE;
         }
         if(command == "exec")
@@ -1329,7 +1332,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
         }
         if(command == "help")
         {
-            return ShowHelp(commandtext.after(' ').lower());
+            return ShowHelp(commandtext.after(' ').lower().trim());
         }
         if(command == "invite")
         {
@@ -1499,7 +1502,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
             }
             if(comparecase(luacommand, "help")==0)
             {
-                AppendIrcText(FXStringFormat(_("For help about Lua scripting visit: %s"), LUA_HELP_PATH), FXSystem::now());
+                AppendIrcStyledText(FXStringFormat(_("For help about Lua scripting visit: %s"), LUA_HELP_PATH), 3, FXSystem::now());
                 return TRUE;
             }
             else if(comparecase(luacommand, "load")==0) lua.type = LUA_LOAD;
@@ -2226,108 +2229,108 @@ FXbool IrcTabItem::ShowHelp(FXString command)
 {
     if(utils::IsScriptCommand(command))
     {
-        AppendIrcText(utils::GetHelpText(command), FXSystem::now());
+        AppendIrcStyledText(utils::GetHelpText(command), 3, FXSystem::now());
         return TRUE;
     }
     if(command == "admin")
     {
-        AppendIrcText(_("ADMIN [server], finds information about administrator for current server or [server]."), FXSystem::now());
+        AppendIrcStyledText(_("ADMIN [server], finds information about administrator for current server or [server]."), 3, FXSystem::now());
         return TRUE;
     }
     if(command == "away")
     {
-        AppendIrcText(_("AWAY [message], sets away status."), FXSystem::now());
+        AppendIrcStyledText(_("AWAY [message], sets away status."), 3, FXSystem::now());
         return TRUE;
     }
     if(command == "banlist")
     {
-        AppendIrcText(_("BANLIST <channel>, shows banlist for channel."), FXSystem::now());
+        AppendIrcStyledText(_("BANLIST <channel>, shows banlist for channel."), 3, FXSystem::now());
         return TRUE;
     }
     if(command == "connect")
     {
-        AppendIrcText(_("CONNECT <server> [port] [nick] [password] [realname] [channels], connects for given server."), FXSystem::now());
+        AppendIrcStyledText(_("CONNECT <server> [port] [nick] [password] [realname] [channels], connects for given server."), 3, FXSystem::now());
         return TRUE;
     }
     if(command == "ctcp")
     {
-        AppendIrcText(_("CTCP <nick> <message>, sends a CTCP message to a user."), FXSystem::now());
+        AppendIrcStyledText(_("CTCP <nick> <message>, sends a CTCP message to a user."), 3, FXSystem::now());
         return TRUE;
     }
     if(command == "cycle")
     {
-        AppendIrcText(_("CYCLE <channel> [message], leaves and join channel."), FXSystem::now());
+        AppendIrcStyledText(_("CYCLE <channel> [message], leaves and join channel."), 3, FXSystem::now());
         return TRUE;
     }
     if(command == "dcc")
     {
-        AppendIrcText(_("DCC chat <nick>, starts DCC chat."), FXSystem::now());
-        AppendIrcText(_("DCC send <nick> <filename>, sends file over DCC."), FXSystem::now());
-        AppendIrcText(_("DCC psend <nick> <filename>, sends file passive over DCC."), FXSystem::now());
-        AppendIrcText(_("More information about passive DCC on http://en.wikipedia.org/wiki/Direct_Client-to-Client#Passive_DCC"), FXSystem::now());
+        AppendIrcStyledText(_("DCC chat <nick>, starts DCC chat."), 3, FXSystem::now());
+        AppendIrcStyledText(_("DCC send <nick> <filename>, sends file over DCC."), 3, FXSystem::now());
+        AppendIrcStyledText(_("DCC psend <nick> <filename>, sends file passive over DCC."), 3, FXSystem::now());
+        AppendIrcStyledText(_("More information about passive DCC on http://en.wikipedia.org/wiki/Direct_Client-to-Client#Passive_DCC"), 3, FXSystem::now());
         return TRUE;
     }
     if(command == "deop")
     {
-        AppendIrcText(_("DEOP <channel> <nicks>, removes operator status from one or more nicks."), FXSystem::now());
+        AppendIrcStyledText(_("DEOP <channel> <nicks>, removes operator status from one or more nicks."), 3, FXSystem::now());
         return TRUE;
     }
     if(command == "devoice")
     {
-        AppendIrcText(_("DEVOICE <channel> <nicks>, removes voice from one or more nicks."), FXSystem::now());
+        AppendIrcStyledText(_("DEVOICE <channel> <nicks>, removes voice from one or more nicks."), 3, FXSystem::now());
         return TRUE;
     }
     if(command == "disconnect")
     {
-        AppendIrcText(_("DISCONNECT [reason], leaves server."), FXSystem::now());
+        AppendIrcStyledText(_("DISCONNECT [reason], leaves server."), 3, FXSystem::now());
         return TRUE;
     }
 #ifndef WIN32
     if(command == "exec")
     {
-        AppendIrcText(_("EXEC [-o|-c] <command>, executes command, -o sends output to channel/query, -c closes running command."), FXSystem::now());
+        AppendIrcStyledText(_("EXEC [-o|-c] <command>, executes command, -o sends output to channel/query, -c closes running command."), 3, FXSystem::now());
         return TRUE;
     }
 #endif
     if(command == "help")
     {
-        AppendIrcText(_("HELP <command>, shows help for command."), FXSystem::now());
+        AppendIrcStyledText(_("HELP <command>, shows help for command."), 3, FXSystem::now());
         return TRUE;
     }
     if(command == "invite")
     {
-        AppendIrcText(_("INVITE <nick> <channel>, invites someone to a channel."), FXSystem::now());
+        AppendIrcStyledText(_("INVITE <nick> <channel>, invites someone to a channel."), 3, FXSystem::now());
         return TRUE;
     }
     if(command == "join")
     {
-        AppendIrcText(_("JOIN <channel>, joins a channel."), FXSystem::now());
+        AppendIrcStyledText(_("JOIN <channel>, joins a channel."), 3, FXSystem::now());
         return TRUE;
     }
     if(command == "kick")
     {
-        AppendIrcText(_("KICK <channel> <nick>, kicks a user from a channel."), FXSystem::now());
+        AppendIrcStyledText(_("KICK <channel> <nick>, kicks a user from a channel."), 3, FXSystem::now());
         return TRUE;
     }
     if(command == "kill")
     {
-        AppendIrcText(_("KILL <user> [reason], kills a user from the network."), FXSystem::now());
+        AppendIrcStyledText(_("KILL <user> [reason], kills a user from the network."), 3, FXSystem::now());
         return TRUE;
     }
     if(command == "list")
     {
-        AppendIrcText(_("LIST [channel], lists channels and their topics."), FXSystem::now());
+        AppendIrcStyledText(_("LIST [channel], lists channels and their topics."), 3, FXSystem::now());
         return TRUE;
     }
 #ifdef HAVE_LUA
     if(command == "lua")
     {
-        AppendIrcText(_("LUA help, shows help for lua scripting."), FXSystem::now());
-        AppendIrcText(_("LUA load <path>, loads script."), FXSystem::now());
-        AppendIrcText(_("Example: /lua load /home/dvx/test.lua"), FXSystem::now());
-        AppendIrcText(_("LUA unload <name>, unloads script."), FXSystem::now());
-        AppendIrcText(_("Example: /lua unload test"), FXSystem::now());
-        AppendIrcText(_("LUA list, shows list of loaded scripts"), FXSystem::now());
+        AppendIrcStyledText(_("LUA help, shows help for lua scripting."), 3, FXSystem::now());
+        AppendIrcStyledText(_("LUA load <path>, loads script."), 3, FXSystem::now());
+        AppendIrcStyledText(_("Example: /lua load /home/dvx/test.lua"), 3, FXSystem::now());
+        AppendIrcStyledText(_("LUA unload <name>, unloads script."), 3, FXSystem::now());
+        AppendIrcStyledText(_("Example: /lua unload test"), 3, FXSystem::now());
+        AppendIrcStyledText(_("LUA list, shows list of loaded scripts"), 3, FXSystem::now());
         return TRUE;
     }
 #else
@@ -2339,140 +2342,140 @@ FXbool IrcTabItem::ShowHelp(FXString command)
 #endif
     if(command == "me")
     {
-        AppendIrcText(_("ME <to> <message>, sends the action."), FXSystem::now());
+        AppendIrcStyledText(_("ME <to> <message>, sends the action."), 3, FXSystem::now());
         return TRUE;
     }
     if(command == "mode")
     {
-        AppendIrcText(_("MODE <channel> <modes>, sets modes for a channel."), FXSystem::now());
+        AppendIrcStyledText(_("MODE <channel> <modes>, sets modes for a channel."), 3, FXSystem::now());
         return TRUE;
     }
     if(command == "msg")
     {
-        AppendIrcText(_("MSG <nick/channel> <message>, sends a normal message."), FXSystem::now());
+        AppendIrcStyledText(_("MSG <nick/channel> <message>, sends a normal message."), 3, FXSystem::now());
         return TRUE;
     }
     if(command == "names")
     {
-        AppendIrcText(_("NAMES <channel>, for nicks on a channel."), FXSystem::now());
+        AppendIrcStyledText(_("NAMES <channel>, for nicks on a channel."), 3, FXSystem::now());
         return TRUE;
     }
     if(command == "nick")
     {
-        AppendIrcText(_("NICK <nick>, changes nick."), FXSystem::now());
+        AppendIrcStyledText(_("NICK <nick>, changes nick."), 3, FXSystem::now());
         return TRUE;
     }
     if(command == "notice")
     {
-        AppendIrcText(_("NOTICE <nick/channel> <message>, sends a notice."), FXSystem::now());
+        AppendIrcStyledText(_("NOTICE <nick/channel> <message>, sends a notice."), 3, FXSystem::now());
         return TRUE;
     }
     if(command == "op")
     {
-        AppendIrcText(_("OP <channel> <nicks>, gives operator status for one or more nicks."), FXSystem::now());
+        AppendIrcStyledText(_("OP <channel> <nicks>, gives operator status for one or more nicks."), 3, FXSystem::now());
         return TRUE;
     }
     if(command == "oper")
     {
-        AppendIrcText(_("OPER <login> <password>, oper up."), FXSystem::now());
+        AppendIrcStyledText(_("OPER <login> <password>, oper up."), 3, FXSystem::now());
         return TRUE;
     }
     if(command == "part")
     {
-        AppendIrcText(_("PART <channel> [reason], leaves channel."), FXSystem::now());
+        AppendIrcStyledText(_("PART <channel> [reason], leaves channel."), 3, FXSystem::now());
         return TRUE;
     }
     if(command == "query")
     {
-        AppendIrcText(_("QUERY <nick>, opens query with nick."), FXSystem::now());
+        AppendIrcStyledText(_("QUERY <nick>, opens query with nick."), 3, FXSystem::now());
         return TRUE;
     }
     if(command == "quit")
     {
-        AppendIrcText(_("QUIT, closes application."), FXSystem::now());
+        AppendIrcStyledText(_("QUIT, closes application."), 3, FXSystem::now());
         return TRUE;
     }
     if(command == "quote")
     {
-        AppendIrcText(_("QUOTE [text], sends text to server."), FXSystem::now());
+        AppendIrcStyledText(_("QUOTE [text], sends text to server."), 3, FXSystem::now());
         return TRUE;
     }
     if(command == "say")
     {
-        AppendIrcText(_("SAY [text], sends text to current tab."), FXSystem::now());
+        AppendIrcStyledText(_("SAY [text], sends text to current tab."), 3, FXSystem::now());
         return TRUE;
     }
     if(command == "stats")
     {
-        AppendIrcText(_("STATS <type>, shows some irc server usage statistics. Available types vary slightly per server; some common ones are:"), FXSystem::now());
-        AppendIrcText(_("c - shows C and N lines for a given server.  These are the names of the servers that are allowed to connect."), FXSystem::now());
-        AppendIrcText(_("h - shows H and L lines for a given server (Hubs and Leaves)."), FXSystem::now());
-        AppendIrcText(_("k - show K lines for a server.  This shows who is not allowed to connect and possibly at what time they are not allowed to connect."), FXSystem::now());
-        AppendIrcText(_("i - shows I lines. This is who CAN connect to a server."), FXSystem::now());
-        AppendIrcText(_("l - shows information about amount of information passed to servers and users."), FXSystem::now());
-        AppendIrcText(_("m - shows a count for the number of times the various commands have been used since the server was booted."), FXSystem::now());
-        AppendIrcText(_("o - shows the list of authorized operators on the server."), FXSystem::now());
-        AppendIrcText(_("p - shows online operators and their idle times."), FXSystem::now());
-        AppendIrcText(_("u - shows the uptime for a server."), FXSystem::now());
-        AppendIrcText(_("y - shows Y lines, which lists the various connection classes for a given server."), FXSystem::now());
+        AppendIrcStyledText(_("STATS <type>, shows some irc server usage statistics. Available types vary slightly per server; some common ones are:"), 3, FXSystem::now());
+        AppendIrcStyledText(_("c - shows C and N lines for a given server.  These are the names of the servers that are allowed to connect."), 3, FXSystem::now());
+        AppendIrcStyledText(_("h - shows H and L lines for a given server (Hubs and Leaves)."), 3, FXSystem::now());
+        AppendIrcStyledText(_("k - show K lines for a server.  This shows who is not allowed to connect and possibly at what time they are not allowed to connect."), 3, FXSystem::now());
+        AppendIrcStyledText(_("i - shows I lines. This is who CAN connect to a server."), 3, FXSystem::now());
+        AppendIrcStyledText(_("l - shows information about amount of information passed to servers and users."), 3, FXSystem::now());
+        AppendIrcStyledText(_("m - shows a count for the number of times the various commands have been used since the server was booted."), 3, FXSystem::now());
+        AppendIrcStyledText(_("o - shows the list of authorized operators on the server."), 3, FXSystem::now());
+        AppendIrcStyledText(_("p - shows online operators and their idle times."), 3, FXSystem::now());
+        AppendIrcStyledText(_("u - shows the uptime for a server."), 3, FXSystem::now());
+        AppendIrcStyledText(_("y - shows Y lines, which lists the various connection classes for a given server."), 3, FXSystem::now());
 
         return TRUE;
     }
     if(command == "tetris")
     {
-        AppendIrcText(_("TETRIS, start small easteregg."), FXSystem::now());
-        AppendIrcText(_("Keys for playing:"), FXSystem::now());
-        AppendIrcText(_("N .. new game"), FXSystem::now());
-        AppendIrcText(_("P .. pause game"), FXSystem::now());
-        AppendIrcText(_("Num5 .. rotate piece"), FXSystem::now());
-        AppendIrcText(_("Num3 .. move piece right"), FXSystem::now());
-        AppendIrcText(_("Num2 .. drop piece"), FXSystem::now());
-        AppendIrcText(_("Num1 .. move piece left"), FXSystem::now());
+        AppendIrcStyledText(_("TETRIS, start small easteregg."), 3, FXSystem::now());
+        AppendIrcStyledText(_("Keys for playing:"), 3, FXSystem::now());
+        AppendIrcStyledText(_("N .. new game"), 3, FXSystem::now());
+        AppendIrcStyledText(_("P .. pause game"), 3, FXSystem::now());
+        AppendIrcStyledText(_("Num5 .. rotate piece"), 3, FXSystem::now());
+        AppendIrcStyledText(_("Num3 .. move piece right"), 3, FXSystem::now());
+        AppendIrcStyledText(_("Num2 .. drop piece"), 3, FXSystem::now());
+        AppendIrcStyledText(_("Num1 .. move piece left"), 3, FXSystem::now());
         return TRUE;
     }
     if(command == "time")
     {
-        AppendIrcText(_("TIME, displays the time of day, local to server."), FXSystem::now());
+        AppendIrcStyledText(_("TIME, displays the time of day, local to server."), 3, FXSystem::now());
         return TRUE;
     }
     if(command == "topic")
     {
-        AppendIrcText(_("TOPIC [topic], sets or shows topic."), FXSystem::now());
+        AppendIrcStyledText(_("TOPIC [topic], sets or shows topic."), 3, FXSystem::now());
         return TRUE;
     }
     if(command == "voice")
     {
-        AppendIrcText(_("VOICE <channel> <nicks>, gives voice for one or more nicks."), FXSystem::now());
+        AppendIrcStyledText(_("VOICE <channel> <nicks>, gives voice for one or more nicks."), 3, FXSystem::now());
         return TRUE;
     }
     if(command == "wallops")
     {
-        AppendIrcText(_("WALLOPS <message>, sends wallop message."), FXSystem::now());
+        AppendIrcStyledText(_("WALLOPS <message>, sends wallop message."), 3, FXSystem::now());
         return TRUE;
     }
     if(command == "who")
     {
-        AppendIrcText(_("WHO <mask> [o], searchs for mask on network, if o is supplied, only search for opers."), FXSystem::now());
+        AppendIrcStyledText(_("WHO <mask> [o], searchs for mask on network, if o is supplied, only search for opers."), 3, FXSystem::now());
         return TRUE;
     }
     if(command == "whoami")
     {
-        AppendIrcText(_("WHOAMI, whois about you."), FXSystem::now());
+        AppendIrcStyledText(_("WHOAMI, whois about you."), 3, FXSystem::now());
         return TRUE;
     }
     if(command == "whois")
     {
-        AppendIrcText(_("WHOIS <nick>, whois nick."), FXSystem::now());
+        AppendIrcStyledText(_("WHOIS <nick>, whois nick."), 3, FXSystem::now());
         return TRUE;
     }
     if(command == "whowas")
     {
-        AppendIrcText(_("WHOWAS <nick>, whowas nick."), FXSystem::now());
+        AppendIrcStyledText(_("WHOWAS <nick>, whowas nick."), 3, FXSystem::now());
         return TRUE;
     }
     if(!utils::GetAlias(command[0] == '/' ? command:"/"+command).empty())
     {
-        AppendIrcText(FXStringFormat("%s: %s", command.upper().text(), utils::GetAlias(command[0] == '/' ? command:"/"+command).text()), FXSystem::now());
+        AppendIrcStyledText(FXStringFormat("%s: %s", command.upper().text(), utils::GetAlias(command[0] == '/' ? command:"/"+command).text()), 3, FXSystem::now());
         return TRUE;
     }
     if(command.empty()) AppendIrcStyledText(_("Command is empty, type /commands for available commands"), 4, FXSystem::now());
@@ -3654,6 +3657,7 @@ long IrcTabItem::OnPipe(FXObject*, FXSelector, void *ptr)
     return 1;
 }
 
+//timeout for checking away in channel
 long IrcTabItem::OnTimeout(FXObject *, FXSelector, void*)
 {
     getApp()->addTimeout(this, ID_TIME, 180000);
@@ -3728,6 +3732,40 @@ long IrcTabItem::OnPipeTimeout(FXObject*, FXSelector, void*)
                 pipeStrings.erase(0);
             }
         }
+    }
+    return 1;
+}
+
+long IrcTabItem::OnEggTimeout(FXObject*, FXSelector, void*)
+{
+    FXString pic1 = "     ,.    ,-.\n   ,'  `. /  ,--.\n  /      ' ,'  \\ `.\n '  .--, |/     '  \\\n |.'    `| ,-.  |   |\n /   ,-. |/   \\     |\n|   /   \\|     |    |\n|   | ,--!--.  |    |\n     (   |   )\n      `-----'\n";
+    FXString pic2 = "     .,    .-,\n   .'  `, /  .-,.\n  /      \" .`  \\ ',\n |  ,-,. |/     |  \\\n ','    `| .,.  '   '\n /   .-, !/   \\     |\n'   / ,-\\|--.  '    |\n|   !'   |   `.|    !\n   (     |     )\n    `.       ,'\n      `-----'\n";
+    FXString pic3 = "     ,.    .-.\n   ,'  '. /  ,--,\n  '      ' .'  \\ `,\n '  ,,-. !/     '  \\\n |,`    '| .-,  |   |\n /   ,-.-|/--.\\     |\n|  ,/   \\|    `|    '\n' / |    |     '\\   |\n (     ( | )     )\n  \\             /\n   `.         ,'\n     '-------'\n";
+    if(pics<24)
+    {
+        
+        getApp()->addTimeout(this, ID_ETIME, 222);
+        text->removeText(0, text->getLength());
+        if((pics)%3==0)
+        {
+            fxmessage("pics: %d\n", pics);
+            fxmessage("pic1\n");
+            text->appendStyledText(pic1, 3);
+            pics++;
+            return 1;
+        }
+        if((pics)%3==1)
+        {
+            fxmessage("pics: %d\n", pics);
+            fxmessage("pic2\n");
+            text->appendStyledText(pic2, 3);
+            pics++;
+            return 1;
+        }
+        fxmessage("pics: %d\n", pics);
+        fxmessage("pic3\n");
+        text->appendStyledText(pic3, 3);
+        pics++;
     }
     return 1;
 }
@@ -4109,9 +4147,8 @@ FXint IrcTabItem::LaunchLink(const FXString &link)
 
 FXint IrcTabItem::GetNickColor(const FXString &nick)
 {
-    FXint color = 10;
-    color += nick.hash()%8;
-    return color;
+    //10 is first colored nick style
+    return 10+nick.hash()%8;
 }
 
 dxStringArray IrcTabItem::CutText(FXString text, FXint len)

@@ -79,6 +79,7 @@ namespace utils
     FXString GetParam(FXString, FXint, FXbool);
     FXString GetParam(FXString, FXint, FXbool, const FXchar&);
     FXString RemoveSpaces(const FXString&);
+    FXString RemoveNonalphanumeric(const FXString&);
     FXString CreateModes(FXchar sign, FXchar mode, FXString nicks);
     void SetAlias();
     void SetAliases(dxStringMap);

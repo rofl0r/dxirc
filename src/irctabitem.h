@@ -86,6 +86,7 @@ class IrcTabItem: public FXTabItem
             ID_CQUIT,
             ID_TIME,
             ID_PTIME,
+            ID_ETIME,
             ID_USERS,
             ID_NEWQUERY,
             ID_WHOIS,
@@ -136,6 +137,7 @@ class IrcTabItem: public FXTabItem
         long OnKeyPress(FXObject *, FXSelector, void*);
         long OnIrcEvent(FXObject *, FXSelector, void*);
         long OnTimeout(FXObject *, FXSelector, void*);
+        long OnEggTimeout(FXObject *, FXSelector, void*);
         long OnPipeTimeout(FXObject *, FXSelector, void*);
         long OnRightMouse(FXObject *, FXSelector, void*);
         long OnDoubleclick(FXObject *, FXSelector, void*);
@@ -174,7 +176,7 @@ class IrcTabItem: public FXTabItem
         dxText *text;
         FXList *users;
         FXTextField *commandline, *topicline;
-        FXint currentPosition, historyMax, numberUsers;
+        FXint currentPosition, historyMax, numberUsers, pics;
         FXbool checkAway, iamOp, usersShown, logging, ownServerWindow;
         FXbool sameCmd, sameList, coloredNick, editableTopic, sendPipe;
         FXbool scriptHasAll, scriptHasMyMsg;

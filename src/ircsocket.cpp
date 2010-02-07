@@ -82,6 +82,7 @@ IrcSocket::IrcSocket(FXApp *app, FXObject *tgt, FXString channels, FXString comm
     voicePrefix = '+';
     halfopPrefix = '%';
     attempts = 0;
+    numberAttempt = 1;
     nickLen = 460;
     topicLen = 460;
     kickLen = 460;
@@ -100,14 +101,24 @@ IrcSocket::~IrcSocket()
     delete thread;
 }
 
+void IrcSocket::SetUserName(const FXString& user)
+{
+    //needed for freenode
+    userName = utils::RemoveNonalphanumeric(user);
+}
+
 long IrcSocket::OnReconnectTimeout(FXObject*, FXSelector, void*)
 {
     if(attempts < numberAttempt && !connected)
     {
-        SendEvents();
-        StartConnection();
-        attempts++;
-        application->addTimeout(this, ID_RTIME, delayAttempt*1000);
+        if(thread->running())
+            application->addTimeout(this, ID_RTIME, 1000);
+        else
+        {
+            SendEvents();
+            StartConnection();
+            application->addTimeout(this, ID_RTIME, delayAttempt*1000);
+        }
     }
     else
         ClearAttempts();
@@ -176,7 +187,11 @@ void IrcSocket::StartConnection()
 #endif
     connecting = TRUE;
     SendEvent(IRC_CONNECT, FXStringFormat(_("Connecting to %s"), serverName.text()));
-    thread->start();
+    if(!thread->running())
+    {
+        attempts++;
+        thread->start();
+    }
 }
 
 void IrcSocket::StartListening(const  FXString &nick, IrcSocket *server)
@@ -188,7 +203,8 @@ void IrcSocket::StartListening(const  FXString &nick, IrcSocket *server)
     connecting = TRUE;
     dccNick = nick;
     dccParent = server;
-    thread->start();
+    if(!thread->running())
+        thread->start();
 }
 
 FXint IrcSocket::Connect()

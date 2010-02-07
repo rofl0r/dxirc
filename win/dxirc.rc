@@ -12,14 +12,14 @@ FILETYPE VFT_APP
 		 BLOCK "040504E4"
 		 {
 			 VALUE "CompanyName", "David Vachulka"
-			 VALUE "FileVersion", "0.40.svn"
+			 VALUE "FileVersion", "0.40.0"
 			 VALUE "FileDescription", "dxirc - simple IRC client"
 			 VALUE "InternalName", "dxirc"
 			 VALUE "LegalCopyright", "Copyright (C) 2008~ David Vachulka"
 			 VALUE "LegalTrademarks", "GPL"
 			 VALUE "OriginalFilename", "dxirc.exe"
 			 VALUE "ProductName", "dxirc - simple IRC client"
-			 VALUE "ProductVersion", "0.40.svn"
+			 VALUE "ProductVersion", "0.40.0"
 		 }
 	 }
   BLOCK "VarFileInfo"
