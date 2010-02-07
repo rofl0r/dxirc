@@ -38,7 +38,7 @@ public:
 
     enum
     {
-        ID_READ = FXMainWindow::ID_LAST+40,
+        ID_READ = FXMainWindow::ID_LAST+300,
         ID_PIPE,
         ID_LAST
     };

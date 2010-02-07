@@ -79,7 +79,7 @@ public:
     TetrisTabItem(dxTabBook*, const FXString&, FXIcon*, FXuint);
     virtual ~TetrisTabItem();
     enum {
-        ID_GAMECANVAS = FXMainWindow::ID_LAST+45,
+        ID_GAMECANVAS = FXMainWindow::ID_LAST+400,
         ID_NEXTCANVAS,
         ID_TETRISTIMEOUT,
         ID_NEW,
