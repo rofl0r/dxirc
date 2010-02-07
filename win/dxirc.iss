@@ -7,7 +7,7 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{11B40D37-A7C9-4720-8741-EEC36F2D07DB}
 AppName=dxirc
-AppVerName=dxirc 0.40.0
+AppVerName=dxirc 0.50.svn
 AppPublisher=David Vachulka
 AppPublisherURL=http://www.dxirc.org
 AppSupportURL=http://www.dxirc.org
@@ -15,7 +15,7 @@ AppUpdatesURL=http://www.dxirc.org
 DefaultDirName={pf}\dxirc
 DefaultGroupName=dxirc
 LicenseFile=..\COPYING
-OutputBaseFilename=dxirc-0.40.0-setup
+OutputBaseFilename=dxirc-0.50.svn-setup
 Compression=lzma
 SolidCompression=yes
 
