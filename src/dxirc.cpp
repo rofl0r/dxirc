@@ -1517,6 +1517,10 @@ void dxirc::OnIrcPart(IrcSocket *server, IrcEvent *ev)
                 delete tabbook->childAtIndex(index);
                 delete tabbook->childAtIndex(index);
                 tabbook->recalc();
+                if(tabbook->numChildren())
+                {
+                    tabbook->setCurrent(index/2-1, TRUE);
+                }
             }
             SortTabs();
             UpdateMenus();
@@ -3245,6 +3249,7 @@ int dxirc::OnLuaSetTab(lua_State *lua)
         -h, --help         Print (this) help screen and exit.\n\
         -v, --version      Print version information and exit.\n\
         -l [FILE]          Load configuration from FILE.\n\
+        -i [PATH]          Use PATH for icons.\n\
 \n")
 
 int main(int argc,char *argv[])
@@ -3252,7 +3257,8 @@ int main(int argc,char *argv[])
 #ifndef WIN32
     signal(SIGPIPE, SIG_IGN);
 #endif
-    FXbool loadIcon;    
+    FXbool loadIcon;
+    FXString datadir = DXIRC_DATADIR;
 
 #if ENABLE_NLS
     bindtextdomain(PACKAGE, LOCALEDIR);
@@ -3276,7 +3282,12 @@ int main(int argc,char *argv[])
         {
             utils::SetIniFile(argv[i+1]);
         }
+        if(compare(argv[i],"-i")==0)
+        {
+            if(FXStat::exists(argv[i+1])) datadir = argv[i+1];
+        }
     }
+    fxmessage("datadir: %s\n", datadir.text());
 
 #ifdef HAVE_TRAY
     FXTrayApp app(PACKAGE, FXString::null);
@@ -3285,7 +3296,7 @@ int main(int argc,char *argv[])
 #endif
     app.reg().setAsciiMode(TRUE);
     app.init(argc,argv);
-    loadIcon = MakeAllIcons(&app, utils::GetIniFile());    
+    loadIcon = MakeAllIcons(&app, utils::GetIniFile(), datadir);
     new dxirc(&app);
     app.create();
     utils::SetAlias();

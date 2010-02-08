@@ -26,7 +26,7 @@
 FXIcon* MakeIcon(FXApp *app, const FXString path, const FXString name, const FXbool menu);
 FXIcon* MakeIcon(FXApp *app, const FXString path, const FXString name);
 FXIcon* MakeAwayIcon(FXApp *app, const FXString path, const FXString name);
-FXbool MakeAllIcons(FXApp *app, const FXString &iniFile);
+FXbool MakeAllIcons(FXApp *app, const FXString &iniFile, const FXString &datadir);
 
 extern FXIcon *bigicon;
 extern FXIcon *smallicon;
@@ -77,5 +77,6 @@ extern const unsigned char halfop[];
 extern const unsigned char op[];
 extern const unsigned char owner[];
 extern const unsigned char voice[];
+extern const unsigned char small_dxirc[];
 
 #endif // ICONS_H

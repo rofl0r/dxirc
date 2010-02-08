@@ -3412,6 +3412,8 @@ void IrcTabItem::OnIrcDisconnect(IrcEvent* ev)
             if(parent->getCurrent()*2 != parent->indexOfChild(this)) this->setTextColor(FXRGB(255,0,0));
         }
     }
+    if(type == CHANNEL)
+        users->clearItems();
 }
 
 //handle IrcEvent IRC_RECONNECT
@@ -3432,6 +3434,8 @@ void IrcTabItem::OnIrcReconnect(IrcEvent* ev)
             if(parent->getCurrent()*2 != parent->indexOfChild(this)) this->setTextColor(FXRGB(255,0,0));
         }
     }
+    if(type == CHANNEL)
+        users->clearItems();
 }
 
 //handle IrcEvent IRC_UNKNOWN
