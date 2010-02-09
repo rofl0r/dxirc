@@ -1309,8 +1309,7 @@ long dxirc::OnCommandDisconnect(FXObject*, FXSelector, void*)
                     {
                         currentserver->RemoveTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(i)));
                         delete tabbook->childAtIndex(i);
-                        delete tabbook->childAtIndex(i);
-                        tabbook->recalc();
+                        delete tabbook->childAtIndex(i);                        
                     }
                 }
             }
@@ -1325,10 +1324,10 @@ long dxirc::OnCommandDisconnect(FXObject*, FXSelector, void*)
                     currentserver->RemoveTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(i)));
                     delete tabbook->childAtIndex(i);
                     delete tabbook->childAtIndex(i);
-                    tabbook->recalc();
                 }
             }
         }
+        tabbook->recalc();
         if(tabbook->numChildren())
         {
             tabbook->setCurrent(tabbook->numChildren()/2-1, TRUE);
@@ -1442,7 +1441,7 @@ void dxirc::OnIrcNewchannel(IrcSocket *server, IrcEvent *ev)
     if(serverTabIndex != -1 && !ownServerWindow)
     {
         static_cast<IrcTabItem*>(tabbook->childAtIndex(serverTabIndex))->SetType(CHANNEL, ev->param1);
-        tabbook->setCurrent(serverTabIndex/2-1, TRUE);
+        tabbook->setCurrent(FXMAX(0,serverTabIndex/2-1), TRUE);
     }
     else
     {
@@ -1465,7 +1464,7 @@ void dxirc::OnIrcQuery(IrcSocket *server, IrcEvent *ev)
     if(serverTabIndex != -1 && !ownServerWindow)
     {
         static_cast<IrcTabItem*>(tabbook->childAtIndex(serverTabIndex))->SetType(QUERY, ev->param1);
-        tabbook->setCurrent(serverTabIndex/2-1, TRUE);
+        tabbook->setCurrent(FXMAX(0,serverTabIndex/2-1), TRUE);
     }
     else
     {
@@ -1519,7 +1518,7 @@ void dxirc::OnIrcPart(IrcSocket *server, IrcEvent *ev)
                 tabbook->recalc();
                 if(tabbook->numChildren())
                 {
-                    tabbook->setCurrent(index/2-1, TRUE);
+                    tabbook->setCurrent(FXMAX(0,index/2-1), TRUE);
                 }
             }
             SortTabs();
@@ -1553,11 +1552,14 @@ void dxirc::OnIrcKick(IrcSocket *server, IrcEvent *ev)
                 if((comparecase(static_cast<FXTabItem*>(tabbook->childAtIndex(j))->getText(), ev->param3) == 0) && server->FindTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(j)))) index = j;
             }
             if(index == -1) return;
-            tabbook->setCurrent(index/2, TRUE);
             server->RemoveTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(index)));
             delete tabbook->childAtIndex(index);
             delete tabbook->childAtIndex(index);
             tabbook->recalc();
+            if(tabbook->numChildren())
+            {
+                tabbook->setCurrent(FXMAX(0,index/2-1), TRUE);
+            }
         }
         SortTabs();
         UpdateMenus();
@@ -1571,14 +1573,20 @@ void dxirc::OnIrcDisconnect(IrcSocket *server, IrcEvent *ev)
     {
         if(server->FindTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(i))))
         {
-            tabbook->setCurrent(i/2, TRUE);
             if(static_cast<IrcTabItem*>(tabbook->childAtIndex(i))->GetType() == DCCCHAT && server->GetDccType() == DCC_CHATOUT)
+            {
+                tabbook->setCurrent(i/2, TRUE);
                 return;
+            }
             server->RemoveTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(i)));
             delete tabbook->childAtIndex(i);
             delete tabbook->childAtIndex(i);
-            tabbook->recalc();
         }
+    }
+    tabbook->recalc();
+    if(tabbook->numChildren())
+    {
+        tabbook->setCurrent(0, TRUE);
     }
     SortTabs();
     UpdateMenus();
@@ -2028,7 +2036,7 @@ long dxirc::OnCommandCloseTab(FXObject *, FXSelector, void *)
                     tabbook->recalc();
                     if(tabbook->numChildren())
                     {
-                        tabbook->setCurrent(index/2-1, TRUE);
+                        tabbook->setCurrent(FXMAX(0,index/2-1), TRUE);
                     }
                 }
                 SortTabs();
@@ -2060,7 +2068,7 @@ long dxirc::OnCommandCloseTab(FXObject *, FXSelector, void *)
                     tabbook->recalc();
                     if(tabbook->numChildren())
                     {
-                        tabbook->setCurrent(index/2-1, TRUE);
+                        tabbook->setCurrent(FXMAX(0,index/2-1), TRUE);
                     }
                 }
                 SortTabs();
@@ -2081,7 +2089,7 @@ long dxirc::OnCommandCloseTab(FXObject *, FXSelector, void *)
                 tabbook->recalc();
                 if(tabbook->numChildren())
                 {
-                    tabbook->setCurrent(index/2-1, TRUE);
+                    tabbook->setCurrent(FXMAX(0,index/2-1), TRUE);
                 }
                 SortTabs();
                 UpdateMenus();
@@ -2097,12 +2105,12 @@ long dxirc::OnCommandCloseTab(FXObject *, FXSelector, void *)
                         currentserver->RemoveTarget(static_cast<IrcTabItem*>(tabbook->childAtIndex(i)));
                         delete tabbook->childAtIndex(i);
                         delete tabbook->childAtIndex(i);
-                        tabbook->recalc();
-                        if(tabbook->numChildren())
-                        {
-                            tabbook->setCurrent(index/2-1, TRUE);
-                        }
                     }
+                }
+                tabbook->recalc();
+                if(tabbook->numChildren())
+                {
+                    tabbook->setCurrent(FXMAX(0,index/2-1), TRUE);
                 }
                 SortTabs();
                 UpdateMenus();
@@ -2118,7 +2126,7 @@ long dxirc::OnCommandCloseTab(FXObject *, FXSelector, void *)
             tabbook->recalc();
             if(tabbook->numChildren())
             {
-                tabbook->setCurrent(index/2-1, TRUE);
+                tabbook->setCurrent(FXMAX(0,index/2-1), TRUE);
             }
             SortTabs();
             UpdateMenus();
@@ -2179,7 +2187,7 @@ long dxirc::OnCommandSelectTab(FXObject*, FXSelector, void *ptr)
             break;
         }
     }
-    if((index)*2 < tabbook->numChildren()) tabbook->setCurrent(index, tabbook->numChildren() > index*2 ? TRUE : FALSE);
+    if((index)*2 < tabbook->numChildren()) tabbook->setCurrent(index, TRUE);
     return 1;
 }
 
@@ -3287,7 +3295,6 @@ int main(int argc,char *argv[])
             if(FXStat::exists(argv[i+1])) datadir = argv[i+1];
         }
     }
-    fxmessage("datadir: %s\n", datadir.text());
 
 #ifdef HAVE_TRAY
     FXTrayApp app(PACKAGE, FXString::null);

@@ -1292,7 +1292,8 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
             return TRUE;
         }
         if(command == "egg")
-        {            
+        {
+            text->removeText(0, text->getLength());
             text->appendStyledText(FXString("ahoj sem pan Vajíčko,\n"), 3);
             text->appendStyledText(FXString("a dnes Vám přináším killer feature VODOTRYSK!!!\n"), 3);
             getApp()->addTimeout(this, ID_ETIME, 1000);
@@ -3752,22 +3753,16 @@ long IrcTabItem::OnEggTimeout(FXObject*, FXSelector, void*)
         text->removeText(0, text->getLength());
         if((pics)%3==0)
         {
-            fxmessage("pics: %d\n", pics);
-            fxmessage("pic1\n");
             text->appendStyledText(pic1, 3);
             pics++;
             return 1;
         }
         if((pics)%3==1)
         {
-            fxmessage("pics: %d\n", pics);
-            fxmessage("pic2\n");
             text->appendStyledText(pic2, 3);
             pics++;
             return 1;
         }
-        fxmessage("pics: %d\n", pics);
-        fxmessage("pic3\n");
         text->appendStyledText(pic3, 3);
         pics++;
     }
@@ -4173,6 +4168,7 @@ dxStringArray IrcTabItem::CutText(FXString text, FXint len)
 void IrcTabItem::SetCommandFocus()
 {
     commandline->setFocus();
+    commandline->setCursorPos(0);
 }
 
 //for "handle" checking, if script contains "all". Send from dxirc.
