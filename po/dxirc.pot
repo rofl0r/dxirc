@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-02-07 22:50+0100\n"
+"POT-Creation-Date: 2010-02-12 19:38+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,7 +27,7 @@ msgstr ""
 
 #: src/configdialog.cpp:184 src/configdialog.cpp:584 src/configdialog.cpp:622
 #: src/configdialog.cpp:662 src/dxirc.cpp:1159 src/irctabitem.cpp:132
-#: src/irctabitem.cpp:3971 src/irctabitem.cpp:3992 src/irctabitem.cpp:4017
+#: src/irctabitem.cpp:3973 src/irctabitem.cpp:3994 src/irctabitem.cpp:4019
 #: src/serverdialog.cpp:114 src/serverdialog.cpp:187 src/serverdialog.cpp:274
 #: src/aliasdialog.cpp:59 src/aliasdialog.cpp:85 src/aliasdialog.cpp:128
 #: src/dccdialog.cpp:171
@@ -365,8 +365,8 @@ msgid "Command:"
 msgstr ""
 
 #: src/configdialog.cpp:583 src/configdialog.cpp:621 src/configdialog.cpp:661
-#: src/dxirc.cpp:1070 src/dxirc.cpp:1158 src/irctabitem.cpp:3970
-#: src/irctabitem.cpp:3991 src/irctabitem.cpp:4016 src/serverdialog.cpp:186
+#: src/dxirc.cpp:1070 src/dxirc.cpp:1158 src/irctabitem.cpp:3972
+#: src/irctabitem.cpp:3993 src/irctabitem.cpp:4018 src/serverdialog.cpp:186
 #: src/serverdialog.cpp:273 src/aliasdialog.cpp:84 src/aliasdialog.cpp:127
 msgid "&OK"
 msgstr ""
@@ -604,89 +604,89 @@ msgstr ""
 msgid "&No"
 msgstr ""
 
-#: src/dxirc.cpp:1599
+#: src/dxirc.cpp:1611
 #, c-format
 msgid "New highlighted message on %s"
 msgstr ""
 
-#: src/dxirc.cpp:1620 src/dxirc.cpp:1654 src/dxirc.cpp:2412 src/dxirc.cpp:2463
+#: src/dxirc.cpp:1632 src/dxirc.cpp:1666 src/dxirc.cpp:2424 src/dxirc.cpp:2475
 #, c-format
 msgid "Lua plugin: error calling %s %s"
 msgstr ""
 
-#: src/dxirc.cpp:1668 src/dxirc.cpp:1683 src/dxirc.cpp:1789 src/dxirc.cpp:2704
+#: src/dxirc.cpp:1680 src/dxirc.cpp:1695 src/dxirc.cpp:1801 src/dxirc.cpp:2716
 #: src/logviewer.cpp:459
 msgid "Question"
 msgstr ""
 
-#: src/dxirc.cpp:1668
+#: src/dxirc.cpp:1680
 #, c-format
 msgid ""
 "%s offers DCC Chat on %s port %s.\n"
 " Do you want connect?"
 msgstr ""
 
-#: src/dxirc.cpp:1683
+#: src/dxirc.cpp:1695
 #, c-format
 msgid ""
 "%s offers file %s with size %s over DCC .\n"
 " Do you want connect?"
 msgstr ""
 
-#: src/dxirc.cpp:1685 src/dxirc.cpp:1791
+#: src/dxirc.cpp:1697 src/dxirc.cpp:1803
 msgid "Save file"
 msgstr ""
 
-#: src/dxirc.cpp:1789
+#: src/dxirc.cpp:1801
 #, c-format
 msgid ""
 "%s offers file %s with size %s over DCC passive.\n"
 " Do you want accept?"
 msgstr ""
 
-#: src/dxirc.cpp:2337
+#: src/dxirc.cpp:2349
 msgid "Scripts aren't loaded"
 msgstr ""
 
-#: src/dxirc.cpp:2342
+#: src/dxirc.cpp:2354
 msgid "Loaded scrips:"
 msgstr ""
 
-#: src/dxirc.cpp:2345
+#: src/dxirc.cpp:2357
 #, c-format
 msgid "Name: %s"
 msgstr ""
 
-#: src/dxirc.cpp:2346
+#: src/dxirc.cpp:2358
 #, c-format
 msgid "Description: %s"
 msgstr ""
 
-#: src/dxirc.cpp:2347
+#: src/dxirc.cpp:2359
 #, c-format
 msgid "Version: %s"
 msgstr ""
 
-#: src/dxirc.cpp:2348
+#: src/dxirc.cpp:2360
 #, c-format
 msgid "Path: %s"
 msgstr ""
 
-#: src/dxirc.cpp:2369
+#: src/dxirc.cpp:2381
 #, c-format
 msgid "Error: %s"
 msgstr ""
 
-#: src/dxirc.cpp:2377 src/irctabitem.cpp:1520 src/irctabitem.cpp:2339
+#: src/dxirc.cpp:2389 src/irctabitem.cpp:1523 src/irctabitem.cpp:2342
 msgid "dxirc is compiled without support for Lua scripting"
 msgstr ""
 
-#: src/dxirc.cpp:2695
+#: src/dxirc.cpp:2707
 #, c-format
 msgid "Script %s is already loaded"
 msgstr ""
 
-#: src/dxirc.cpp:2704
+#: src/dxirc.cpp:2716
 #, c-format
 msgid ""
 "Script %s contains dxirc.AddAll\n"
@@ -694,61 +694,61 @@ msgid ""
 "Load it anyway?"
 msgstr ""
 
-#: src/dxirc.cpp:2706
+#: src/dxirc.cpp:2718
 #, c-format
 msgid "Script %s contains dxirc.AddAll. This can BREAK dxirc funcionality."
 msgstr ""
 
-#: src/dxirc.cpp:2711
+#: src/dxirc.cpp:2723
 msgid "Unable to initialize Lua."
 msgstr ""
 
-#: src/dxirc.cpp:2720
+#: src/dxirc.cpp:2732
 #, c-format
 msgid "Unable to load/run the file %s"
 msgstr ""
 
-#: src/dxirc.cpp:2727
+#: src/dxirc.cpp:2739
 #, c-format
 msgid "Lua plugin: error registering script %s"
 msgstr ""
 
-#: src/dxirc.cpp:2740
+#: src/dxirc.cpp:2752
 #, c-format
 msgid "Script with name %s is already loaded"
 msgstr ""
 
-#: src/dxirc.cpp:2752
+#: src/dxirc.cpp:2764
 #, c-format
 msgid "Script %s was loaded"
 msgstr ""
 
-#: src/dxirc.cpp:2779 src/dxirc.cpp:2804
+#: src/dxirc.cpp:2791 src/dxirc.cpp:2816
 #, c-format
 msgid "Script %s isn't loaded"
 msgstr ""
 
-#: src/dxirc.cpp:2803
+#: src/dxirc.cpp:2815
 #, c-format
 msgid "Script %s was unloaded"
 msgstr ""
 
-#: src/dxirc.cpp:2867
+#: src/dxirc.cpp:2879
 #, c-format
 msgid "Command %s already exists"
 msgstr ""
 
-#: src/dxirc.cpp:2911
+#: src/dxirc.cpp:2923
 #, c-format
 msgid "Function %s for event %s already exists"
 msgstr ""
 
-#: src/dxirc.cpp:2999
+#: src/dxirc.cpp:3011
 #, c-format
 msgid "Command/event %s in script %s was removed"
 msgstr ""
 
-#: src/dxirc.cpp:3240
+#: src/dxirc.cpp:3252
 msgid ""
 "\n"
 "Usage: dxirc [options] \n"
@@ -758,6 +758,7 @@ msgid ""
 "        -h, --help         Print (this) help screen and exit.\n"
 "        -v, --version      Print version information and exit.\n"
 "        -l [FILE]          Load configuration from FILE.\n"
+"        -i [PATH]          Use PATH for icons.\n"
 "\n"
 msgstr ""
 
@@ -954,7 +955,7 @@ msgstr ""
 msgid "%s : is signed on as account %s"
 msgstr ""
 
-#: src/ircsocket.cpp:1162 src/irctabitem.cpp:224 src/irctabitem.cpp:396
+#: src/ircsocket.cpp:1162 src/irctabitem.cpp:224 src/irctabitem.cpp:397
 msgid "No topic is set"
 msgstr ""
 
@@ -1277,817 +1278,818 @@ msgstr ""
 msgid "Select file"
 msgstr ""
 
-#: src/irctabitem.cpp:892 src/irctabitem.cpp:910 src/irctabitem.cpp:929
-#: src/irctabitem.cpp:949 src/irctabitem.cpp:1004 src/irctabitem.cpp:1046
-#: src/irctabitem.cpp:1145 src/irctabitem.cpp:1200 src/irctabitem.cpp:1255
-#: src/irctabitem.cpp:1361 src/irctabitem.cpp:1381 src/irctabitem.cpp:1451
-#: src/irctabitem.cpp:1477 src/irctabitem.cpp:1487 src/irctabitem.cpp:1611
-#: src/irctabitem.cpp:1631 src/irctabitem.cpp:1676 src/irctabitem.cpp:1703
-#: src/irctabitem.cpp:1730 src/irctabitem.cpp:1765 src/irctabitem.cpp:1820
-#: src/irctabitem.cpp:1841 src/irctabitem.cpp:1873 src/irctabitem.cpp:1899
-#: src/irctabitem.cpp:1914 src/irctabitem.cpp:1949 src/irctabitem.cpp:1960
-#: src/irctabitem.cpp:1975 src/irctabitem.cpp:2031 src/irctabitem.cpp:2086
-#: src/irctabitem.cpp:2118 src/irctabitem.cpp:2137 src/irctabitem.cpp:2147
-#: src/irctabitem.cpp:2166 src/irctabitem.cpp:2185 src/irctabitem.cpp:2219
+#: src/irctabitem.cpp:893 src/irctabitem.cpp:911 src/irctabitem.cpp:930
+#: src/irctabitem.cpp:950 src/irctabitem.cpp:1005 src/irctabitem.cpp:1047
+#: src/irctabitem.cpp:1146 src/irctabitem.cpp:1201 src/irctabitem.cpp:1256
+#: src/irctabitem.cpp:1364 src/irctabitem.cpp:1384 src/irctabitem.cpp:1454
+#: src/irctabitem.cpp:1480 src/irctabitem.cpp:1490 src/irctabitem.cpp:1614
+#: src/irctabitem.cpp:1634 src/irctabitem.cpp:1679 src/irctabitem.cpp:1706
+#: src/irctabitem.cpp:1733 src/irctabitem.cpp:1768 src/irctabitem.cpp:1823
+#: src/irctabitem.cpp:1844 src/irctabitem.cpp:1876 src/irctabitem.cpp:1902
+#: src/irctabitem.cpp:1917 src/irctabitem.cpp:1952 src/irctabitem.cpp:1963
+#: src/irctabitem.cpp:1978 src/irctabitem.cpp:2034 src/irctabitem.cpp:2089
+#: src/irctabitem.cpp:2121 src/irctabitem.cpp:2140 src/irctabitem.cpp:2150
+#: src/irctabitem.cpp:2169 src/irctabitem.cpp:2188 src/irctabitem.cpp:2222
 msgid "You aren't connected"
 msgstr ""
 
-#: src/irctabitem.cpp:921
+#: src/irctabitem.cpp:922
 #, c-format
-msgid "Away message is too long. Max. away message length is %d."
+msgid "Warning: Away message is too long. Max. away message length is %d."
 msgstr ""
 
-#: src/irctabitem.cpp:942
+#: src/irctabitem.cpp:943
 msgid "/banlist <channel>, shows banlist for channel."
 msgstr ""
 
-#: src/irctabitem.cpp:958
+#: src/irctabitem.cpp:959
 msgid ""
 "/connect <server> [port] [nick] [password] [realname] [channels], connects "
 "for given server."
 msgstr ""
 
-#: src/irctabitem.cpp:976
+#: src/irctabitem.cpp:977
 msgid "Available commnads: "
 msgstr ""
 
-#: src/irctabitem.cpp:992
+#: src/irctabitem.cpp:993
 msgid "/ctcp <nick> <message>, sends a CTCP message to a user."
 msgstr ""
 
-#: src/irctabitem.cpp:997
+#: src/irctabitem.cpp:998
 #, c-format
-msgid "Ctcp message is too long. Max. ctcp message length is %d."
+msgid "Warning: ctcp message is too long. Max. ctcp message length is %d."
 msgstr ""
 
-#: src/irctabitem.cpp:1039
+#: src/irctabitem.cpp:1040
 msgid "/cycle <channel> [message], leaves and join channel."
 msgstr ""
 
-#: src/irctabitem.cpp:1061
+#: src/irctabitem.cpp:1062
 msgid "Nick for chat wasn't entered."
 msgstr ""
 
-#: src/irctabitem.cpp:1066
+#: src/irctabitem.cpp:1067
 msgid "Chat with yourself isn't good idea."
 msgstr ""
 
-#: src/irctabitem.cpp:1081 src/irctabitem.cpp:1112
+#: src/irctabitem.cpp:1082 src/irctabitem.cpp:1113
 msgid "Nick for sending file wasn't entered."
 msgstr ""
 
-#: src/irctabitem.cpp:1086 src/irctabitem.cpp:1117
+#: src/irctabitem.cpp:1087 src/irctabitem.cpp:1118
 msgid "Sending to yourself isn't good idea."
 msgstr ""
 
-#: src/irctabitem.cpp:1091 src/irctabitem.cpp:1122
+#: src/irctabitem.cpp:1092 src/irctabitem.cpp:1123
 msgid "Filename wasn't entered"
 msgstr ""
 
-#: src/irctabitem.cpp:1096 src/irctabitem.cpp:1127
+#: src/irctabitem.cpp:1097 src/irctabitem.cpp:1128
 #, c-format
 msgid "File '%s' doesn't exist"
 msgstr ""
 
-#: src/irctabitem.cpp:1139
+#: src/irctabitem.cpp:1140
 #, c-format
 msgid "'%s' isn't dcc command <chat|send|psend>"
 msgstr ""
 
-#: src/irctabitem.cpp:1159
+#: src/irctabitem.cpp:1160
 msgid "/deop <nicks>, removes operator status from one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:1164 src/irctabitem.cpp:1193
+#: src/irctabitem.cpp:1165 src/irctabitem.cpp:1194
 msgid ""
 "/deop <channel> <nicks>, removes operator status from one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:1214
+#: src/irctabitem.cpp:1215
 msgid "/devoice <nicks>, removes voice from one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:1219 src/irctabitem.cpp:1248
+#: src/irctabitem.cpp:1220 src/irctabitem.cpp:1249
 msgid "/devoice <channel> <nicks>, removes voice from one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:1307
+#: src/irctabitem.cpp:1310
 msgid ""
 "/exec [-o|-c] <command>, executes command, -o sends output to channel/query, "
 "-c closes running command."
 msgstr ""
 
-#: src/irctabitem.cpp:1344 src/irctabitem.cpp:1349
+#: src/irctabitem.cpp:1347 src/irctabitem.cpp:1352
 msgid "/invite <nick> <channel>, invites someone to a channel."
 msgstr ""
 
-#: src/irctabitem.cpp:1373
+#: src/irctabitem.cpp:1376
 msgid "/join <channel>, joins a channel."
 msgstr ""
 
-#: src/irctabitem.cpp:1374
+#: src/irctabitem.cpp:1377
 #, c-format
 msgid "'%c' isn't valid char for channel."
 msgstr ""
 
-#: src/irctabitem.cpp:1395
+#: src/irctabitem.cpp:1398
 msgid "/kick <nick>, kicks a user from a channel."
 msgstr ""
 
-#: src/irctabitem.cpp:1400 src/irctabitem.cpp:1444
+#: src/irctabitem.cpp:1403 src/irctabitem.cpp:1447
 msgid "/kick <channel> <nick>, kicks a user from a channel."
 msgstr ""
 
-#: src/irctabitem.cpp:1410 src/irctabitem.cpp:1422 src/irctabitem.cpp:1437
+#: src/irctabitem.cpp:1413 src/irctabitem.cpp:1425 src/irctabitem.cpp:1440
 #, c-format
-msgid "Reason of kick is too long. Max. reason length is %d."
+msgid "Warning: reason of kick is too long. Max. reason length is %d."
 msgstr ""
 
-#: src/irctabitem.cpp:1465
+#: src/irctabitem.cpp:1468
 msgid "/kill <user> [reason], kills a user from the network."
 msgstr ""
 
-#: src/irctabitem.cpp:1470
+#: src/irctabitem.cpp:1473
 #, c-format
-msgid "Reason of kill is too long. Max. reason length is %d."
+msgid "Warning: reason of kill is too long. Max. reason length is %d."
 msgstr ""
 
-#: src/irctabitem.cpp:1500
+#: src/irctabitem.cpp:1503
 msgid "/lua <help|load|unload|list> [scriptpath|scriptname]"
 msgstr ""
 
-#: src/irctabitem.cpp:1505
+#: src/irctabitem.cpp:1508
 #, c-format
 msgid "For help about Lua scripting visit: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:1513
+#: src/irctabitem.cpp:1516
 #, c-format
 msgid "'%s' isn't <help|load|unload|list>"
 msgstr ""
 
-#: src/irctabitem.cpp:1533
+#: src/irctabitem.cpp:1536
 msgid "/me <message>, sends the action to the current channel."
 msgstr ""
 
-#: src/irctabitem.cpp:1604
+#: src/irctabitem.cpp:1607
 msgid "/me <to> <message>, sends the action."
 msgstr ""
 
-#: src/irctabitem.cpp:1623
+#: src/irctabitem.cpp:1626
 msgid "/mode <channel> <modes>, sets modes for a channel."
 msgstr ""
 
-#: src/irctabitem.cpp:1670
+#: src/irctabitem.cpp:1673
 msgid "/msg <nick/channel> <message>, sends a normal message."
 msgstr ""
 
-#: src/irctabitem.cpp:1695
+#: src/irctabitem.cpp:1698
 msgid "/names <channel>, for nicks on a channel."
 msgstr ""
 
-#: src/irctabitem.cpp:1715
+#: src/irctabitem.cpp:1718
 msgid "/nick <nick>, changes nick."
 msgstr ""
 
-#: src/irctabitem.cpp:1720
+#: src/irctabitem.cpp:1723
 #, c-format
-msgid "Nick is too long. Max. nick length is %d."
+msgid "Warning: nick is too long. Max. nick length is %d."
 msgstr ""
 
-#: src/irctabitem.cpp:1744
+#: src/irctabitem.cpp:1747
 #, c-format
 msgid "NOTICE to %s: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:1759
+#: src/irctabitem.cpp:1762
 msgid "/notice <nick/channel> <message>, sends a notice."
 msgstr ""
 
-#: src/irctabitem.cpp:1779
+#: src/irctabitem.cpp:1782
 msgid "/op <nicks>, gives operator status for one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:1784 src/irctabitem.cpp:1813
+#: src/irctabitem.cpp:1787 src/irctabitem.cpp:1816
 msgid "/op <channel> <nicks>, gives operator status for one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:1835
+#: src/irctabitem.cpp:1838
 msgid "/oper <login> <password>, oper up."
 msgstr ""
 
-#: src/irctabitem.cpp:1866
+#: src/irctabitem.cpp:1869
 msgid "/part <channel> [reason], leaves channel."
 msgstr ""
 
-#: src/irctabitem.cpp:1884
+#: src/irctabitem.cpp:1887
 msgid "/query <nick>, opens query with nick."
 msgstr ""
 
-#: src/irctabitem.cpp:1994 src/irctabitem.cpp:2003 src/irctabitem.cpp:2017
+#: src/irctabitem.cpp:1997 src/irctabitem.cpp:2006 src/irctabitem.cpp:2020
+#: src/irctabitem.cpp:4035
 #, c-format
-msgid "Topic is too long. Max. topic length is %d."
+msgid "Warning: topic is too long. Max. topic length is %d."
 msgstr ""
 
-#: src/irctabitem.cpp:2024
+#: src/irctabitem.cpp:2027
 msgid "/topic <channel> [topic], views or changes channel topic."
 msgstr ""
 
-#: src/irctabitem.cpp:2045
+#: src/irctabitem.cpp:2048
 msgid "/voice <nicks>, gives voice for one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:2050 src/irctabitem.cpp:2079
+#: src/irctabitem.cpp:2053 src/irctabitem.cpp:2082
 msgid "/voice <channel> <nicks>, gives voice for one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:2098
+#: src/irctabitem.cpp:2101
 msgid "/wallops <message>, sends wallop message."
 msgstr ""
 
-#: src/irctabitem.cpp:2130
+#: src/irctabitem.cpp:2133
 msgid ""
 "/who <mask> [o], searchs for mask on network, if o is supplied, only search "
 "for opers."
 msgstr ""
 
-#: src/irctabitem.cpp:2159
+#: src/irctabitem.cpp:2162
 msgid "/whois <nick>, whois nick."
 msgstr ""
 
-#: src/irctabitem.cpp:2178
+#: src/irctabitem.cpp:2181
 msgid "/whowas <nick>, whowas nick."
 msgstr ""
 
-#: src/irctabitem.cpp:2190 src/irctabitem.cpp:2482
+#: src/irctabitem.cpp:2193 src/irctabitem.cpp:2485
 #, c-format
 msgid "Unknown command '%s', type /commands for available commands"
 msgstr ""
 
-#: src/irctabitem.cpp:2237
+#: src/irctabitem.cpp:2240
 msgid ""
 "ADMIN [server], finds information about administrator for current server or "
 "[server]."
 msgstr ""
 
-#: src/irctabitem.cpp:2242
+#: src/irctabitem.cpp:2245
 msgid "AWAY [message], sets away status."
 msgstr ""
 
-#: src/irctabitem.cpp:2247
+#: src/irctabitem.cpp:2250
 msgid "BANLIST <channel>, shows banlist for channel."
 msgstr ""
 
-#: src/irctabitem.cpp:2252
+#: src/irctabitem.cpp:2255
 msgid ""
 "CONNECT <server> [port] [nick] [password] [realname] [channels], connects "
 "for given server."
 msgstr ""
 
-#: src/irctabitem.cpp:2257
+#: src/irctabitem.cpp:2260
 msgid "CTCP <nick> <message>, sends a CTCP message to a user."
 msgstr ""
 
-#: src/irctabitem.cpp:2262
+#: src/irctabitem.cpp:2265
 msgid "CYCLE <channel> [message], leaves and join channel."
 msgstr ""
 
-#: src/irctabitem.cpp:2267
+#: src/irctabitem.cpp:2270
 msgid "DCC chat <nick>, starts DCC chat."
 msgstr ""
 
-#: src/irctabitem.cpp:2268
+#: src/irctabitem.cpp:2271
 msgid "DCC send <nick> <filename>, sends file over DCC."
 msgstr ""
 
-#: src/irctabitem.cpp:2269
+#: src/irctabitem.cpp:2272
 msgid "DCC psend <nick> <filename>, sends file passive over DCC."
 msgstr ""
 
-#: src/irctabitem.cpp:2270
+#: src/irctabitem.cpp:2273
 msgid ""
 "More information about passive DCC on http://en.wikipedia.org/wiki/"
 "Direct_Client-to-Client#Passive_DCC"
 msgstr ""
 
-#: src/irctabitem.cpp:2275
+#: src/irctabitem.cpp:2278
 msgid "DEOP <channel> <nicks>, removes operator status from one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:2280
+#: src/irctabitem.cpp:2283
 msgid "DEVOICE <channel> <nicks>, removes voice from one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:2285
+#: src/irctabitem.cpp:2288
 msgid "DISCONNECT [reason], leaves server."
 msgstr ""
 
-#: src/irctabitem.cpp:2291
+#: src/irctabitem.cpp:2294
 msgid ""
 "EXEC [-o|-c] <command>, executes command, -o sends output to channel/query, -"
 "c closes running command."
 msgstr ""
 
-#: src/irctabitem.cpp:2297
+#: src/irctabitem.cpp:2300
 msgid "HELP <command>, shows help for command."
 msgstr ""
 
-#: src/irctabitem.cpp:2302
+#: src/irctabitem.cpp:2305
 msgid "INVITE <nick> <channel>, invites someone to a channel."
 msgstr ""
 
-#: src/irctabitem.cpp:2307
+#: src/irctabitem.cpp:2310
 msgid "JOIN <channel>, joins a channel."
 msgstr ""
 
-#: src/irctabitem.cpp:2312
+#: src/irctabitem.cpp:2315
 msgid "KICK <channel> <nick>, kicks a user from a channel."
 msgstr ""
 
-#: src/irctabitem.cpp:2317
+#: src/irctabitem.cpp:2320
 msgid "KILL <user> [reason], kills a user from the network."
 msgstr ""
 
-#: src/irctabitem.cpp:2322
+#: src/irctabitem.cpp:2325
 msgid "LIST [channel], lists channels and their topics."
 msgstr ""
 
-#: src/irctabitem.cpp:2328
+#: src/irctabitem.cpp:2331
 msgid "LUA help, shows help for lua scripting."
 msgstr ""
 
-#: src/irctabitem.cpp:2329
+#: src/irctabitem.cpp:2332
 msgid "LUA load <path>, loads script."
 msgstr ""
 
-#: src/irctabitem.cpp:2330
+#: src/irctabitem.cpp:2333
 msgid "Example: /lua load /home/dvx/test.lua"
 msgstr ""
 
-#: src/irctabitem.cpp:2331
+#: src/irctabitem.cpp:2334
 msgid "LUA unload <name>, unloads script."
 msgstr ""
 
-#: src/irctabitem.cpp:2332
+#: src/irctabitem.cpp:2335
 msgid "Example: /lua unload test"
 msgstr ""
 
-#: src/irctabitem.cpp:2333
+#: src/irctabitem.cpp:2336
 msgid "LUA list, shows list of loaded scripts"
 msgstr ""
 
-#: src/irctabitem.cpp:2345
+#: src/irctabitem.cpp:2348
 msgid "ME <to> <message>, sends the action."
 msgstr ""
 
-#: src/irctabitem.cpp:2350
+#: src/irctabitem.cpp:2353
 msgid "MODE <channel> <modes>, sets modes for a channel."
 msgstr ""
 
-#: src/irctabitem.cpp:2355
+#: src/irctabitem.cpp:2358
 msgid "MSG <nick/channel> <message>, sends a normal message."
 msgstr ""
 
-#: src/irctabitem.cpp:2360
+#: src/irctabitem.cpp:2363
 msgid "NAMES <channel>, for nicks on a channel."
 msgstr ""
 
-#: src/irctabitem.cpp:2365
+#: src/irctabitem.cpp:2368
 msgid "NICK <nick>, changes nick."
 msgstr ""
 
-#: src/irctabitem.cpp:2370
+#: src/irctabitem.cpp:2373
 msgid "NOTICE <nick/channel> <message>, sends a notice."
 msgstr ""
 
-#: src/irctabitem.cpp:2375
+#: src/irctabitem.cpp:2378
 msgid "OP <channel> <nicks>, gives operator status for one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:2380
+#: src/irctabitem.cpp:2383
 msgid "OPER <login> <password>, oper up."
 msgstr ""
 
-#: src/irctabitem.cpp:2385
+#: src/irctabitem.cpp:2388
 msgid "PART <channel> [reason], leaves channel."
 msgstr ""
 
-#: src/irctabitem.cpp:2390
+#: src/irctabitem.cpp:2393
 msgid "QUERY <nick>, opens query with nick."
 msgstr ""
 
-#: src/irctabitem.cpp:2395
+#: src/irctabitem.cpp:2398
 msgid "QUIT, closes application."
 msgstr ""
 
-#: src/irctabitem.cpp:2400
+#: src/irctabitem.cpp:2403
 msgid "QUOTE [text], sends text to server."
 msgstr ""
 
-#: src/irctabitem.cpp:2405
+#: src/irctabitem.cpp:2408
 msgid "SAY [text], sends text to current tab."
 msgstr ""
 
-#: src/irctabitem.cpp:2410
+#: src/irctabitem.cpp:2413
 msgid ""
 "STATS <type>, shows some irc server usage statistics. Available types vary "
 "slightly per server; some common ones are:"
 msgstr ""
 
-#: src/irctabitem.cpp:2411
+#: src/irctabitem.cpp:2414
 msgid ""
 "c - shows C and N lines for a given server.  These are the names of the "
 "servers that are allowed to connect."
 msgstr ""
 
-#: src/irctabitem.cpp:2412
+#: src/irctabitem.cpp:2415
 msgid "h - shows H and L lines for a given server (Hubs and Leaves)."
 msgstr ""
 
-#: src/irctabitem.cpp:2413
+#: src/irctabitem.cpp:2416
 msgid ""
 "k - show K lines for a server.  This shows who is not allowed to connect and "
 "possibly at what time they are not allowed to connect."
 msgstr ""
 
-#: src/irctabitem.cpp:2414
+#: src/irctabitem.cpp:2417
 msgid "i - shows I lines. This is who CAN connect to a server."
 msgstr ""
 
-#: src/irctabitem.cpp:2415
+#: src/irctabitem.cpp:2418
 msgid ""
 "l - shows information about amount of information passed to servers and "
 "users."
 msgstr ""
 
-#: src/irctabitem.cpp:2416
+#: src/irctabitem.cpp:2419
 msgid ""
 "m - shows a count for the number of times the various commands have been "
 "used since the server was booted."
 msgstr ""
 
-#: src/irctabitem.cpp:2417
+#: src/irctabitem.cpp:2420
 msgid "o - shows the list of authorized operators on the server."
 msgstr ""
 
-#: src/irctabitem.cpp:2418
+#: src/irctabitem.cpp:2421
 msgid "p - shows online operators and their idle times."
 msgstr ""
 
-#: src/irctabitem.cpp:2419
+#: src/irctabitem.cpp:2422
 msgid "u - shows the uptime for a server."
 msgstr ""
 
-#: src/irctabitem.cpp:2420
+#: src/irctabitem.cpp:2423
 msgid ""
 "y - shows Y lines, which lists the various connection classes for a given "
 "server."
 msgstr ""
 
-#: src/irctabitem.cpp:2426
+#: src/irctabitem.cpp:2429
 msgid "TETRIS, start small easteregg."
 msgstr ""
 
-#: src/irctabitem.cpp:2427 src/tetristabitem.cpp:411
+#: src/irctabitem.cpp:2430 src/tetristabitem.cpp:411
 msgid "Keys for playing:"
 msgstr ""
 
-#: src/irctabitem.cpp:2428 src/tetristabitem.cpp:412
+#: src/irctabitem.cpp:2431 src/tetristabitem.cpp:412
 msgid "N .. new game"
 msgstr ""
 
-#: src/irctabitem.cpp:2429 src/tetristabitem.cpp:413
+#: src/irctabitem.cpp:2432 src/tetristabitem.cpp:413
 msgid "P .. pause game"
 msgstr ""
 
-#: src/irctabitem.cpp:2430 src/tetristabitem.cpp:414
+#: src/irctabitem.cpp:2433 src/tetristabitem.cpp:414
 msgid "Num5 .. rotate piece"
 msgstr ""
 
-#: src/irctabitem.cpp:2431 src/tetristabitem.cpp:415
+#: src/irctabitem.cpp:2434 src/tetristabitem.cpp:415
 msgid "Num3 .. move piece right"
 msgstr ""
 
-#: src/irctabitem.cpp:2432 src/tetristabitem.cpp:416
+#: src/irctabitem.cpp:2435 src/tetristabitem.cpp:416
 msgid "Num2 .. drop piece"
 msgstr ""
 
-#: src/irctabitem.cpp:2433 src/tetristabitem.cpp:417
+#: src/irctabitem.cpp:2436 src/tetristabitem.cpp:417
 msgid "Num1 .. move piece left"
 msgstr ""
 
-#: src/irctabitem.cpp:2438
+#: src/irctabitem.cpp:2441
 msgid "TIME, displays the time of day, local to server."
 msgstr ""
 
-#: src/irctabitem.cpp:2443
+#: src/irctabitem.cpp:2446
 msgid "TOPIC [topic], sets or shows topic."
 msgstr ""
 
-#: src/irctabitem.cpp:2448
+#: src/irctabitem.cpp:2451
 msgid "VOICE <channel> <nicks>, gives voice for one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:2453
+#: src/irctabitem.cpp:2456
 msgid "WALLOPS <message>, sends wallop message."
 msgstr ""
 
-#: src/irctabitem.cpp:2458
+#: src/irctabitem.cpp:2461
 msgid ""
 "WHO <mask> [o], searchs for mask on network, if o is supplied, only search "
 "for opers."
 msgstr ""
 
-#: src/irctabitem.cpp:2463
+#: src/irctabitem.cpp:2466
 msgid "WHOAMI, whois about you."
 msgstr ""
 
-#: src/irctabitem.cpp:2468
+#: src/irctabitem.cpp:2471
 msgid "WHOIS <nick>, whois nick."
 msgstr ""
 
-#: src/irctabitem.cpp:2473
+#: src/irctabitem.cpp:2476
 msgid "WHOWAS <nick>, whowas nick."
 msgstr ""
 
-#: src/irctabitem.cpp:2481
+#: src/irctabitem.cpp:2484
 msgid "Command is empty, type /commands for available commands"
 msgstr ""
 
-#: src/irctabitem.cpp:2978
+#: src/irctabitem.cpp:2981
 #, c-format
 msgid "CTCP %s reply from %s: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:2991
+#: src/irctabitem.cpp:2994
 #, c-format
 msgid "CTCP %s request from %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3043
+#: src/irctabitem.cpp:3046
 #, c-format
 msgid "%s has joined to %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3056 src/irctabitem.cpp:3065
+#: src/irctabitem.cpp:3059 src/irctabitem.cpp:3068
 #, c-format
 msgid "%s has quit"
 msgstr ""
 
-#: src/irctabitem.cpp:3060
+#: src/irctabitem.cpp:3063
 #, c-format
 msgid "%s has quit (%s)"
 msgstr ""
 
-#: src/irctabitem.cpp:3074
+#: src/irctabitem.cpp:3077
 #, c-format
 msgid "%s has parted %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3075
+#: src/irctabitem.cpp:3078
 #, c-format
 msgid "%s has parted %s (%s)"
 msgstr ""
 
-#: src/irctabitem.cpp:3087 src/irctabitem.cpp:3106 src/irctabitem.cpp:3124
+#: src/irctabitem.cpp:3090 src/irctabitem.cpp:3109 src/irctabitem.cpp:3127
 #, c-format
 msgid "%s's NOTICE: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3119
+#: src/irctabitem.cpp:3122
 #, c-format
 msgid "NOTICE for you: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3135
+#: src/irctabitem.cpp:3138
 #, c-format
 msgid "You're now known as %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3136
+#: src/irctabitem.cpp:3139
 #, c-format
 msgid "%s is now known as %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3150
+#: src/irctabitem.cpp:3153
 #, c-format
 msgid "%s Set new topic for %s: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3161
+#: src/irctabitem.cpp:3164
 #, c-format
 msgid "%s invites you to: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3173
+#: src/irctabitem.cpp:3176
 #, c-format
 msgid "%s was kicked from %s by %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3174
+#: src/irctabitem.cpp:3177
 #, c-format
 msgid "%s was kicked from %s by %s (%s)"
 msgstr ""
 
-#: src/irctabitem.cpp:3180
+#: src/irctabitem.cpp:3183
 #, c-format
 msgid "You were kicked from %s by %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3181
+#: src/irctabitem.cpp:3184
 #, c-format
 msgid "You were kicked from %s by %s (%s)"
 msgstr ""
 
-#: src/irctabitem.cpp:3191
+#: src/irctabitem.cpp:3194
 #, c-format
 msgid "Mode change [%s] for %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3224
+#: src/irctabitem.cpp:3227
 #, c-format
 msgid "%s gave you admin"
 msgstr ""
 
-#: src/irctabitem.cpp:3225
+#: src/irctabitem.cpp:3228
 #, c-format
 msgid "%s gave %s admin"
 msgstr ""
 
-#: src/irctabitem.cpp:3233
+#: src/irctabitem.cpp:3236
 #, c-format
 msgid "%s removed you admin"
 msgstr ""
 
-#: src/irctabitem.cpp:3234
+#: src/irctabitem.cpp:3237
 #, c-format
 msgid "%s removed %s admin"
 msgstr ""
 
-#: src/irctabitem.cpp:3248
+#: src/irctabitem.cpp:3251
 #, c-format
 msgid "%s gave you op"
 msgstr ""
 
-#: src/irctabitem.cpp:3249
+#: src/irctabitem.cpp:3252
 #, c-format
 msgid "%s gave %s op"
 msgstr ""
 
-#: src/irctabitem.cpp:3257
+#: src/irctabitem.cpp:3260
 #, c-format
 msgid "%s removed you op"
 msgstr ""
 
-#: src/irctabitem.cpp:3258
+#: src/irctabitem.cpp:3261
 #, c-format
 msgid "%s removed %s op"
 msgstr ""
 
-#: src/irctabitem.cpp:3273
+#: src/irctabitem.cpp:3276
 #, c-format
 msgid "%s gave you voice"
 msgstr ""
 
-#: src/irctabitem.cpp:3274
+#: src/irctabitem.cpp:3277
 #, c-format
 msgid "%s gave %s voice"
 msgstr ""
 
-#: src/irctabitem.cpp:3282
+#: src/irctabitem.cpp:3285
 #, c-format
 msgid "%s removed you voice"
 msgstr ""
 
-#: src/irctabitem.cpp:3283
+#: src/irctabitem.cpp:3286
 #, c-format
 msgid "%s removed %s voice"
 msgstr ""
 
-#: src/irctabitem.cpp:3297
+#: src/irctabitem.cpp:3300
 #, c-format
 msgid "%s gave you halfop"
 msgstr ""
 
-#: src/irctabitem.cpp:3298
+#: src/irctabitem.cpp:3301
 #, c-format
 msgid "%s gave %s halfop"
 msgstr ""
 
-#: src/irctabitem.cpp:3306
+#: src/irctabitem.cpp:3309
 #, c-format
 msgid "%s removed you halfop"
 msgstr ""
 
-#: src/irctabitem.cpp:3307
+#: src/irctabitem.cpp:3310
 #, c-format
 msgid "%s removed %s halfop"
 msgstr ""
 
-#: src/irctabitem.cpp:3324
+#: src/irctabitem.cpp:3327
 #, c-format
 msgid "%s set Mode: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3444 src/irctabitem.cpp:3452
+#: src/irctabitem.cpp:3451 src/irctabitem.cpp:3459
 #, c-format
 msgid "Unhandled command '%s' params: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3463
+#: src/irctabitem.cpp:3470
 #, c-format
 msgid "%s is away: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3593
+#: src/irctabitem.cpp:3600
 #, c-format
 msgid "Users on %s: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3853
+#: src/irctabitem.cpp:3855
 msgid "Give op"
 msgstr ""
 
-#: src/irctabitem.cpp:3854
+#: src/irctabitem.cpp:3856
 msgid "Remove op"
 msgstr ""
 
-#: src/irctabitem.cpp:3856
+#: src/irctabitem.cpp:3858
 msgid "Give voice"
 msgstr ""
 
-#: src/irctabitem.cpp:3857
+#: src/irctabitem.cpp:3859
 msgid "Remove voice"
 msgstr ""
 
-#: src/irctabitem.cpp:3859
+#: src/irctabitem.cpp:3861
 msgid "Kick"
 msgstr ""
 
-#: src/irctabitem.cpp:3861
+#: src/irctabitem.cpp:3863
 msgid "Ban"
 msgstr ""
 
-#: src/irctabitem.cpp:3862
+#: src/irctabitem.cpp:3864
 msgid "KickBan"
 msgstr ""
 
-#: src/irctabitem.cpp:3864
+#: src/irctabitem.cpp:3866
 #, c-format
 msgid "User: %s@%s"
 msgstr ""
 
-#: src/irctabitem.cpp:3865
+#: src/irctabitem.cpp:3867
 #, c-format
 msgid "Realname: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3869
+#: src/irctabitem.cpp:3871
 msgid "Query"
 msgstr ""
 
-#: src/irctabitem.cpp:3870
+#: src/irctabitem.cpp:3872
 msgid "User information (WHOIS)"
 msgstr ""
 
-#: src/irctabitem.cpp:3871
+#: src/irctabitem.cpp:3873
 msgid "DCC chat"
 msgstr ""
 
-#: src/irctabitem.cpp:3872
+#: src/irctabitem.cpp:3874
 msgid "Send file"
 msgstr ""
 
-#: src/irctabitem.cpp:3873
+#: src/irctabitem.cpp:3875
 msgid "Operator actions"
 msgstr ""
 
-#: src/irctabitem.cpp:3962
+#: src/irctabitem.cpp:3964
 msgid "Kick dialog"
 msgstr ""
 
-#: src/irctabitem.cpp:3966 src/irctabitem.cpp:4007
+#: src/irctabitem.cpp:3968 src/irctabitem.cpp:4009
 msgid "Kick reason:"
 msgstr ""
 
-#: src/irctabitem.cpp:3982
+#: src/irctabitem.cpp:3984
 msgid "Ban dialog"
 msgstr ""
 
-#: src/irctabitem.cpp:3986 src/irctabitem.cpp:4011
+#: src/irctabitem.cpp:3988 src/irctabitem.cpp:4013
 msgid "Banmask:"
 msgstr ""
 
-#: src/irctabitem.cpp:4003
+#: src/irctabitem.cpp:4005
 msgid "Kick/Ban dialog"
 msgstr ""
 
-#: src/irctabitem.cpp:4049
+#: src/irctabitem.cpp:4057
 #, c-format
 msgid "You was banned by %s"
 msgstr ""
 
-#: src/irctabitem.cpp:4052
+#: src/irctabitem.cpp:4060
 #, c-format
 msgid "%s was banned by %s"
 msgstr ""

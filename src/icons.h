@@ -78,5 +78,6 @@ extern const unsigned char op[];
 extern const unsigned char owner[];
 extern const unsigned char voice[];
 extern const unsigned char small_dxirc[];
+extern const unsigned char big_dxirc[];
 
 #endif // ICONS_H
