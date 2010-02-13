@@ -115,9 +115,9 @@ class IrcTabItem: public FXTabItem
         void ClearChat();
         void HideUsers();
         void ShowUsers();
-        FXString GetServerName() { return server->GetServerName(); }
-        FXint GetServerPort() { return server->GetServerPort(); }
-        FXString GetNickName() { return server->GetNickName(); }
+        FXString GetServerName() { return server ? server->GetServerName() : ""; }
+        FXint GetServerPort() { return server ? server->GetServerPort() : 0; }
+        FXString GetNickName() { return server ? server->GetNickName() : ""; }
         void SetType(const TYPE &typ, const FXString &tabtext);
         TYPE GetType() { return type; }
         void ReparentTab();        

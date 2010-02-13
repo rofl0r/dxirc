@@ -24,6 +24,7 @@
  #include <windows.h>
 #else
  #include <signal.h>
+ #include <X11/Xlib.h>
 #endif
 
 #include <string>
@@ -38,6 +39,8 @@
 #include "utils.h"
 #include "tetristabitem.h"
 #include "scriptdialog.h"
+
+#define DISPLAY(app) ((Display*)((app)->getDisplay()))
 
 FXDEFMAP(dxirc) dxircMap[] = {
     FXMAPFUNC(SEL_CLOSE,        0,                          dxirc::OnCommandClose),
@@ -94,6 +97,7 @@ static luaL_reg dxircFunctions[] = {
     {"GetTab",      dxirc::OnLuaGetTab},
     {"GetTabInfo",  dxirc::OnLuaGetTabInfo},
     {"SetTab",      dxirc::OnLuaSetTab},
+    {"NewTab",      dxirc::OnLuaNewTab},
     {NULL,          NULL}
 };
 #endif
@@ -296,6 +300,31 @@ void dxirc::create()
     ReadServersConfig();
     pThis = this;
     AutoloadScripts();
+}
+
+// Flash the window to get user's attention
+// Taken from fox development version 1.7
+void dxirc::flash(FXbool yes)
+{
+    if(xid)
+    {
+#ifdef WIN32
+        FlashWindow((HWND)xid, true);
+#else
+        XEvent se;
+        se.xclient.type=ClientMessage;
+        se.xclient.display=DISPLAY(app);
+        se.xclient.message_type=XInternAtom(DISPLAY(app), "_NET_WM_STATE", 0);;
+        se.xclient.format=32;
+        se.xclient.window=xid;
+        se.xclient.data.l[0]=yes;   // 0=_NET_WM_STATE_REMOVE, 1=_NET_WM_STATE_ADD, 2=_NET_WM_STATE_TOGGLE
+        se.xclient.data.l[1]=XInternAtom(DISPLAY(app), "_NET_WM_STATE_DEMANDS_ATTENTION", 0);
+        se.xclient.data.l[2]=0;
+        se.xclient.data.l[3]=0;
+        se.xclient.data.l[4]=0;
+        XSendEvent(DISPLAY(app),XDefaultRootWindow(DISPLAY(app)),False,SubstructureRedirectMask|SubstructureNotifyMask,&se);
+#endif
+    }
 }
 
 int CompareTabs(const void **a,const void **b)
@@ -1608,7 +1637,11 @@ void dxirc::OnIrcEndmotd()
 //handle IrcEvent IRC_PRIVMSG and IRC_ACTION
 void dxirc::OnIrcPrivmsgAndAction(IrcSocket *server, IrcEvent *ev)
 {
-    if(ev->param3.contains(server->GetNickName()) && ev->param1!=server->GetNickName()) UpdateStatus(FXStringFormat(_("New highlighted message on %s"), ev->param2 == server->GetNickName() ? ev->param1.text() : ev->param2.text()));
+    if(ev->param3.contains(server->GetNickName()) && ev->param1!=server->GetNickName())
+    {
+        UpdateStatus(FXStringFormat(_("New highlighted message on %s"), ev->param2 == server->GetNickName() ? ev->param1.text() : ev->param2.text()));
+        flash(TRUE);
+    }
 #ifdef HAVE_LUA
     if(!scripts.no() || !scriptEvents.no()) return;
     for(FXint i=0; i<scriptEvents.no(); i++)
@@ -1891,6 +1924,8 @@ long dxirc::OnTabBook(FXObject *, FXSelector, void *ptr)
         }
         if(currenttab->GetType() == SERVER)
             UpdateStatus(currenttab->GetServerName()+"-"+currenttab->GetNickName());
+        else if(currenttab->GetType() == OTHER)
+            UpdateStatus(currenttab->getText());
         else
             UpdateStatus(currenttab->getText()+"-"+currenttab->GetServerName()+"-"+currenttab->GetNickName());
     }    
@@ -3246,6 +3281,59 @@ int dxirc::OnLuaSetTab(lua_State *lua)
 #else
     return 0;
 #endif    
+}
+
+int dxirc::OnLuaNewTab(lua_State *lua)
+{
+#ifdef HAVE_LUA
+    FXString name;
+    if(lua_isstring(lua, 1)) name = lua_tostring(lua, 1);
+    else
+    {
+        lua_pushnil(lua);
+        return 0;
+    }
+    if(pThis->tabbook->numChildren())
+    {
+        for(FXint i = 0; i < pThis->tabbook->numChildren(); i+=2)
+        {
+            if(compare(pThis->tabbook->childAtIndex(i)->getClassName(), "IrcTabItem") == 0
+                    && comparecase(static_cast<FXTabItem*>(pThis->tabbook->childAtIndex(i))->getText(), name) == 0
+                    && static_cast<IrcTabItem*>(pThis->tabbook->childAtIndex(i))->GetType() == OTHER)
+            {
+                lua_pushnil(lua);
+                return 0;
+            }
+        }
+    }
+    IrcTabItem *tabitem = new IrcTabItem(pThis->tabbook, name, NULL, TAB_BOTTOM, OTHER, NULL, pThis->ownServerWindow, pThis->usersShown, FALSE, pThis->commandsList, pThis->logPath, pThis->maxAway, pThis->colors, pThis->nickCompletionChar, pThis->ircFont, pThis->sameCmd, pThis->sameList, pThis->coloredNick);
+    tabitem->create();
+    tabitem->CreateGeom();
+    pThis->UpdateTabPosition();
+    pThis->SortTabs();
+    pThis->UpdateMenus();
+    if(pThis->tabbook->numChildren())
+    {
+        for(FXint i = 0; i < pThis->tabbook->numChildren(); i+=2)
+        {
+            if(compare(pThis->tabbook->childAtIndex(i)->getClassName(), "IrcTabItem") == 0
+                    && comparecase(static_cast<FXTabItem*>(pThis->tabbook->childAtIndex(i))->getText(), name) == 0
+                    && static_cast<IrcTabItem*>(pThis->tabbook->childAtIndex(i))->GetType() == OTHER)
+            {
+                lua_pushnumber(lua, i/2);
+                return 1;
+            }
+        }
+    }
+    else
+    {
+        lua_pushnil(lua);
+        return 0;
+    }
+    return 1;
+#else
+    return 0;
+#endif
 }
 
 

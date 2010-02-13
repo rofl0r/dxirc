@@ -79,6 +79,7 @@ class dxirc: public FXMainWindow
         };
 
         void create();
+        void flash(FXbool yes);
 
         long OnCommandQuit(FXObject*, FXSelector, void*);
         long OnCommandAbout(FXObject*, FXSelector, void*);
@@ -124,6 +125,7 @@ class dxirc: public FXMainWindow
         static int OnLuaGetTab(lua_State*);
         static int OnLuaGetTabInfo(lua_State*);
         static int OnLuaSetTab(lua_State*);
+        static int OnLuaNewTab(lua_State*);
 
     private:
         dxirc(){}

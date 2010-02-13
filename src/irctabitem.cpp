@@ -261,6 +261,8 @@ IrcTabItem::IrcTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FX
 
     commandline = new FXTextField(mainframe, 25, this, ID_COMMANDLINE, TEXTFIELD_ENTER_ONLY|FRAME_SUNKEN|JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_BOTTOM, 0, 0, 0, 0, 1, 1, 1, 1);
     if(sameCmd) commandline->setFont(fnt);
+    if(type == OTHER)
+        commandline->hide();
 
     for(int i=0; i<17; i++)
     {
@@ -550,17 +552,17 @@ void IrcTabItem::AppendText(FXString msg, FXbool highlight)
 void IrcTabItem::AppendIrcText(FXString msg, FXTime time)
 {
     if(!time) time = FXSystem::now();
-    text->appendText("["+FXSystem::time("%H:%M:%S", time) +"] ");
+    if(type != OTHER) text->appendText("["+FXSystem::time("%H:%M:%S", time) +"] ");
     AppendLinkText(StripColors(msg, FALSE), 0);
     MakeLastRowVisible(FALSE);
     this->LogLine(StripColors(msg, TRUE), time);
 }
 
-void IrcTabItem::AppendIrcNickText(FXString nick, FXString msg, FXint color, FXTime time)
+void IrcTabItem::AppendIrcNickText(FXString nick, FXString msg, FXint style, FXTime time)
 {
     if(!time) time = FXSystem::now();
-    text->appendText("["+FXSystem::time("%H:%M:%S", time) +"] ");
-    text->appendStyledText(nick+": ", color);
+    if(type != OTHER) text->appendText("["+FXSystem::time("%H:%M:%S", time) +"] ");
+    text->appendStyledText(nick+": ", style);
     AppendLinkText(StripColors(msg, FALSE), 0);
     MakeLastRowVisible(FALSE);
     this->LogLine(StripColors("<"+nick+"> "+msg, TRUE), time);
@@ -572,7 +574,7 @@ void IrcTabItem::AppendStyledText(FXString text, FXint style, FXbool highlight)
     AppendIrcStyledText(text, style, 0);
     if(highlight && FXRGB(255,0,0) != this->getTextColor() && parent->getCurrent()*2 != parent->indexOfChild(this))
     {
-        if(text.contains(server->GetNickName()))
+        if(type != OTHER && text.contains(server->GetNickName()))
         {
             this->setTextColor(FXRGB(255,0,0));
             if(type == CHANNEL) this->setIcon(chnewm);
@@ -585,7 +587,7 @@ void IrcTabItem::AppendStyledText(FXString text, FXint style, FXbool highlight)
 void IrcTabItem::AppendIrcStyledText(FXString styled, FXint stylenum, FXTime time)
 {
     if(!time) time = FXSystem::now();
-    text->appendText("["+FXSystem::time("%H:%M:%S", time) +"] ");
+    if(type != OTHER) text->appendText("["+FXSystem::time("%H:%M:%S", time) +"] ");
     AppendLinkText(StripColors(styled, TRUE), stylenum);
     MakeLastRowVisible(FALSE);
     this->LogLine(StripColors(styled, TRUE), time);
@@ -879,13 +881,13 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
             if(command == "say")
             {
                 if(coloredNick) AppendIrcNickText(server->GetNickName(), commandtext.after(' '), GetNickColor(server->GetNickName()), FXSystem::now());
-                else AppendIrcText("<"+server->GetNickName()+"> "+commandtext.after(' '), FXSystem::now());
+                else AppendIrcNickText(server->GetNickName(), commandtext.after(' '), 5, FXSystem::now());
                 return server->SendDccChatText(commandtext.after(' '));
             }
             if(commandtext[0] != '/')
             {
                 if(coloredNick) AppendIrcNickText(server->GetNickName(), commandtext, GetNickColor(server->GetNickName()), FXSystem::now());
-                else AppendIrcText("<"+server->GetNickName()+"> "+commandtext, FXSystem::now());
+                else AppendIrcNickText(server->GetNickName(), commandtext, 5, FXSystem::now());
                 return server->SendDccChatText(commandtext);
             }
         }
@@ -1648,7 +1650,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                     if(to == getText())
                     {
                         if(coloredNick) AppendIrcNickText(server->GetNickName(), message, GetNickColor(server->GetNickName()), FXSystem::now());
-                        else AppendIrcText("<"+server->GetNickName()+"> "+message, FXSystem::now());
+                        else AppendIrcNickText(server->GetNickName(), message, 5, FXSystem::now());
                         IrcEvent ev;
                         ev.eventType = IRC_PRIVMSG;
                         ev.param1 = server->GetNickName();
@@ -1926,7 +1928,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                 if (type != SERVER && !commandtext.after(' ').empty())
                 {
                     if(coloredNick) AppendIrcNickText(server->GetNickName(), commandtext.after(' '), GetNickColor(server->GetNickName()), FXSystem::now());
-                    else AppendIrcText("<"+server->GetNickName()+"> "+commandtext.after(' '), FXSystem::now());
+                    else AppendIrcNickText(server->GetNickName(), commandtext.after(' '), 5, FXSystem::now());
                     IrcEvent ev;
                     ev.eventType = IRC_PRIVMSG;
                     ev.param1 = server->GetNickName();
@@ -2198,7 +2200,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
         if (command.empty() && type != SERVER && !commandtext.empty() && server->GetConnected())
         {
             if(coloredNick) AppendIrcNickText(server->GetNickName(), commandtext, GetNickColor(server->GetNickName()), FXSystem::now());
-            else AppendIrcText("<"+server->GetNickName()+"> "+commandtext, FXSystem::now());
+            else AppendIrcNickText(server->GetNickName(), commandtext, 5, FXSystem::now());
             IrcEvent ev;
             ev.eventType = IRC_PRIVMSG;
             ev.param1 = server->GetNickName();
@@ -2929,8 +2931,8 @@ void IrcTabItem::OnIrcPrivmsg(IrcEvent* ev)
         }
         else
         {
-            if(ev->param3.contains(server->GetNickName())) AppendIrcStyledText("<"+ev->param1+"> "+ev->param3, 8, ev->time);
-            else AppendIrcText("<"+ev->param1+"> "+ev->param3, ev->time);
+            if(ev->param3.contains(server->GetNickName())) AppendIrcStyledText(ev->param1+": "+ev->param3, 8, ev->time);
+            else AppendIrcNickText(ev->param1, ev->param3, 5, ev->time);
         }
         if(FXRGB(255,0,0) != this->getTextColor() && parent->getCurrent()*2 != parent->indexOfChild(this))
         {
@@ -3007,8 +3009,8 @@ void IrcTabItem::OnIrcDccMsg(IrcEvent* ev)
     }
     else
     {
-        if(ev->param1.contains(server->GetNickName())) AppendIrcStyledText("<"+getText()+"> "+ev->param1, 8, ev->time);
-        else AppendIrcText("<"+getText()+"> "+ev->param1, ev->time);
+        if(ev->param1.contains(server->GetNickName())) AppendIrcStyledText(getText()+": "+ev->param1, 8, ev->time);
+        else AppendIrcNickText(getText(), ev->param1, 5, ev->time);
     }
     if(FXRGB(255,0,0) != this->getTextColor() && parent->getCurrent()*2 != parent->indexOfChild(this))
     {
@@ -3703,14 +3705,14 @@ long IrcTabItem::OnPipeTimeout(FXObject*, FXSelector, void*)
                 for(FXint i=0; i<messages.no(); i++)
                 {
                     if(coloredNick) AppendIrcNickText(server->GetNickName(), messages[i], GetNickColor(server->GetNickName()), FXSystem::now());
-                    else AppendIrcText("<"+server->GetNickName()+"> "+messages[i], FXSystem::now());
+                    else AppendIrcNickText(server->GetNickName(), messages[i], 5, FXSystem::now());
                     server->SendMsg(getText(), messages[i]);
                 }
             }
             else
             {
                 if(coloredNick) AppendIrcNickText(server->GetNickName(), pipeStrings[0], GetNickColor(server->GetNickName()), FXSystem::now());
-                else AppendIrcText("<"+server->GetNickName()+"> "+pipeStrings[0], FXSystem::now());
+                else AppendIrcNickText(server->GetNickName(), pipeStrings[0], 5, FXSystem::now());
                 server->SendMsg(getText(), pipeStrings[0]);
             }
             pipeStrings.erase(0);
@@ -3726,14 +3728,14 @@ long IrcTabItem::OnPipeTimeout(FXObject*, FXSelector, void*)
                     for(FXint i=0; i<messages.no(); i++)
                     {
                         if(coloredNick) AppendIrcNickText(server->GetNickName(), messages[i], GetNickColor(server->GetNickName()), FXSystem::now());
-                        else AppendIrcText("<"+server->GetNickName()+"> "+messages[i], FXSystem::now());
+                        else AppendIrcNickText(server->GetNickName(), messages[i], 5, FXSystem::now());
                         server->SendMsg(getText(), messages[i]);
                     }
                 }
                 else
                 {
                     if(coloredNick) AppendIrcNickText(server->GetNickName(), pipeStrings[0], GetNickColor(server->GetNickName()), FXSystem::now());
-                    else AppendIrcText("<"+server->GetNickName()+"> "+pipeStrings[0], FXSystem::now());
+                    else AppendIrcNickText(server->GetNickName(), pipeStrings[0], 5, FXSystem::now());
                     server->SendMsg(getText(), pipeStrings[0]);
                 }
                 pipeStrings.erase(0);
