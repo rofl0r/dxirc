@@ -1,3 +1,7 @@
+Version 0.40.1 (13-02-2010)
+- small issues in tabs, trayicon, mainicon fixed
+- new startup option -i [PATH] for location program icons (usefull mainly on Windows)
+
 Version 0.40.0 (released 07-02-2010)
 - improved GUI (alias dialog, tabs etc.)
 - added Lua scripting support
