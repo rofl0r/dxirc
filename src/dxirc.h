@@ -126,6 +126,7 @@ class dxirc: public FXMainWindow
         static int OnLuaGetTabInfo(lua_State*);
         static int OnLuaSetTab(lua_State*);
         static int OnLuaNewTab(lua_State*);
+        static int OnLuaGetTabCount(lua_State*);
 
     private:
         dxirc(){}

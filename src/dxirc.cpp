@@ -98,6 +98,7 @@ static luaL_reg dxircFunctions[] = {
     {"GetTabInfo",  dxirc::OnLuaGetTabInfo},
     {"SetTab",      dxirc::OnLuaSetTab},
     {"NewTab",      dxirc::OnLuaNewTab},
+    {"GetTabCount", dxirc::OnLuaGetTabCount},
     {NULL,          NULL}
 };
 #endif
@@ -2038,6 +2039,19 @@ long dxirc::OnCommandCloseTab(FXObject *, FXSelector, void *)
         if(compare(tabbook->childAtIndex(index)->getClassName(), "IrcTabItem") == 0)
         {
             IrcTabItem *currenttab = static_cast<IrcTabItem*>(tabbook->childAtIndex(index));
+            if(currenttab->GetType() == OTHER)
+            {
+                delete tabbook->childAtIndex(index);
+                delete tabbook->childAtIndex(index);
+                tabbook->recalc();
+                if(tabbook->numChildren())
+                {
+                    tabbook->setCurrent(FXMAX(0,index/2-1), TRUE);
+                }
+                SortTabs();
+                UpdateMenus();
+                return 1;
+            }
             IrcSocket *currentserver = NULL;
             for(FXint i=0; i < servers.no(); i++)
             {
@@ -3330,6 +3344,16 @@ int dxirc::OnLuaNewTab(lua_State *lua)
         lua_pushnil(lua);
         return 0;
     }
+    return 1;
+#else
+    return 0;
+#endif
+}
+
+int dxirc::OnLuaGetTabCount(lua_State *lua)
+{
+#ifdef HAVE_LUA
+    lua_pushnumber(lua, pThis->tabbook->numChildren()/2);
     return 1;
 #else
     return 0;

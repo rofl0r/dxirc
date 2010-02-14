@@ -1,0 +1,378 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="author" content="Unknown">
+  <meta name="Description" content="dxirc Lua scripting reference">
+  <meta name="date" content="2010-02-14T17:16:06+0100">
+  <meta name="Keywords" content="dxirc,lua,scripting,irc">
+  <link rel="stylesheet" href="doclua.css" type="text/css">
+  <link rel="icon" href="favicon.png" type="image/png">
+  <title>dxirc Lua Scripting Reference</title>
+</head><body>
+
+<h1>dxirc Lua Scripting Reference<br>since version 0.50.svn</h1>
+
+<h2>Contents</h2>
+
+<ol>
+  <li><a href="#section_1">Introduction</a></li>
+  <li><a href="#section_2">Available Functions</a>
+    <ol>
+      <li><a href="#section_2_1">Obligatory Functions</a></li>
+      <li><a href="#section_2_2">Optional Functions</a></li>
+    </ol>
+  </li>
+  <li><a href="#section_3">Complex Example</a></li>
+  <li><a href="#section_4">Available Scripts</a></li>
+  <li><a href="#section_5">Copyright and Licence</a></li>	
+</ol>
+
+<h2 id="section_1">1&nbsp;&nbsp;Introduction</h2>
+
+<p>Since version 0.40.0, <a href="http://dxirc.org/">dxirc</a> supports scripting using <a href="http://lua.org/">Lua programming language</a>. This document tries to provide thorough description of the available functions.</p>
+
+<p>Note that in order to support Lua scripts, dxirc has to be built
+with Lua scripting enabled — you can check this in the About dialog.</p>
+
+<h2 id="section_2">2&nbsp;&nbsp;Available Functions</h2>
+
+<h3 id="section_2_1">2.1&nbsp;&nbsp;Obligatory Functions</h3>
+
+<dl>
+  <dt>dxirc_Register()</dt>
+  <dd>
+    <p>It has to return exactly three values: the <em>script name</em>, its <em>version</em> and short <em>description</em>. When this function is missing, the script will not be loaded.</p>
+
+    <p class="caption">Example:</p>
+
+    <pre><span class="keyword">function</span> <span class="name">dxirc_Register</span>()
+  <span class="keyword">local</span> <span class="name">name</span> = <span class="string">"test"</span>
+  <span class="keyword">local</span> <span class="name">version</span> = <span class="string">"0.1"</span>
+  <span class="keyword">local</span> <span class="name">description</span> = <span class="string">"Testing script"</span>
+
+  <span class="keyword">return</span> <span class="name">name</span>, <span class="name">version</span>, <span class="name">description</span>
+<span class="keyword">end</span></pre>
+  </dd><dd>
+
+  </dd><dt>dxirc_Init()</dt>
+  <dd>
+    <p>The function to be called when the script is loaded.</p>
+
+    <p class="caption">Example:</p>
+
+    <pre><span class="keyword">function</span> <span class="name">dxirc_Init</span>()
+&nbsp;&nbsp;<span class="function">dxirc.AddCommand</span>(<span class="string">"test"</span>, <span class="string">"OnTest"</span>, <span class="string">"testing command"</span>)
+<span class="keyword">end</span></pre>
+  </dd>
+</dl>
+
+<h3 id="section_2_2">2.2&nbsp;&nbsp;Optional Functions</h3>
+
+<dl>
+  <dt>dxirc.AddCommand(<span>name</span>, <span>funcname</span>, <span>helptext</span>)</dt>
+  <dd>
+    <p>Binds specified function to selected command. It accepts following arguments:</p>
+
+    <ul>
+      <li><code class="value">name</code> — command name,</li>
+      <li><code class="value">funcname</code> — name of the function to be called when the command is invoked,</li>
+      <li><code class="value">helptext</code> — command description for the help.</li>
+    </ul>
+
+    <p>The function <code>funcname</code> is then invoked as <code><span class="function">funcname</span>(<span class="value">text</span>, <span class="value">id</span>)</code>, where:</p>
+
+    <ul>
+      <li><code class="value">text</code> — command argument, i.e. <code class="string">"first second"</code> when invoked as <code>/test first second</code>,</li>
+      <li><code class="value">id</code> — id of tab from which the command was invoked (indexed from zero).</li>
+    </ul>
+
+    <p class="caption">Example:</p>
+
+    <pre><span class="function">dxirc.AddCommand</span>(<span class="string">"test"</span>, <span class="string">"OnTest"</span>, <span class="string">"testing command"</span>)</pre>
+  </dd>
+
+  <dt>dxirc.AddEvent(<span>name</span>, <span>funcname</span>)</dt>
+  <dd>
+    <p>Binds specified function to selected event. It accepts following arguments:</p>
+
+    <ul>
+      <li><code class="value">name</code> — name of the event to be caught; currently supported events are <code class="string">"privmsg"</code> and <code class="string">"join"</code>.</li>
+      <li><code class="value">funcname</code> — name of the function to be called when the event is caught.</li>
+    </ul>
+
+    <p>For <code>PRIVMSG</code> event, the <code>funcname</code> is then invoked as <code><span class="function">funcname</span>(<span class="value">from</span>, <span class="value">text</span>, <span class="value">id</span>)</code>, where:</p>
+
+    <ul>
+      <li><code class="value">from</code> — nickname of the message author,</li>
+      <li><code class="value">text</code> — message text,</li>
+      <li><code class="value">id</code> — id of the tab from which the message was received (indexed from zero).</li>
+    </ul>
+
+    <p>For <code>JOIN</code> event, the <code>funcname</code> is then invoked as <code><span class="function">funcname</span>(<span class="value">nick</span>, <span class="value">id</span>)</code>, where:</p>
+
+    <ul>
+      <li><code class="value">nick</code> — nickname of the joined person,</li>
+      <li><code class="value">id</code> — id of the tab from which the event was received (indexed from zero).</li>
+    </ul>
+
+    <p class="caption">Example:</p>
+
+    <pre><span class="function">dxirc.AddEvent</span>(<span class="string">"JOIN"</span>, <span class="string">"SayHello"</span>)</pre>
+  </dd>
+  
+  <dt>dxirc.AddMyMsg(<span>funcname</span>)</dt>
+  <dd>
+    <p>Binds specified function to the user input (unless it is a command). It accepts following argument:</p>
+
+    <ul>
+      <li><code class="value">funcname</code> — name of the function to be called on user input.</li>
+    </ul>
+
+    <p>The function <code>funcname</code> is then invoked as <code><span class="function">funcname</span>(<span class="value">text</span>, <span class="value">id</span>)</code>, where:</p>
+
+    <ul>
+      <li><code class="value">text</code> — entered text,</li>
+      <li><code class="value">id</code> — id of tab from which the message was entered (indexed from zero).</li>
+    </ul>
+
+    <p class="caption">Example:</p>
+
+    <pre><span class="function">dxirc.AddMyMsg</span>(<span class="string">"OnMyMsg"</span>)</pre>
+  </dd>  
+
+  <dt>dxirc.AddAll(<span>funcname</span>)</dt>
+  <dd>
+    <p>Binds specified function to every command. It accepts following argument:</p>
+
+    <ul>
+      <li><code class="value">funcname</code> — name of the function to be called on every user's input.</li>
+    </ul>
+
+    <p>The function <code>funcname</code> is then invoked as <code><span class="function">funcname</span>(<span class="value">command</span>, <span class="value">text</span>, <span class="value">id</span>)</code>, where:</p>
+
+    <ul>
+      <li><code class="value">command</code> — command name, i.e. <code class="string">"test"</code> when invoked as <code>/test first second</code>, <code class="value">nil</code> when invoked as <code>Hello, World!</code></li>
+      <li><code class="value">text</code> — command argument, i.e. <code class="string">"first second"</code> when invoked as <code>/test first second</code>, <code class="string">"Hello, World!"</code> when invoked as <code>Hello, World!</code></li>
+      <li><code class="value">id</code> — id of tab from which the command was invoked (indexed from zero).</li>
+    </ul>
+
+    <p class="caption">Example:</p>
+
+    <pre><span class="function">dxirc.AddAll</span>(<span class="string">"OnAll"</span>)</pre>
+  </dd>
+
+  <dt>dxirc.RemoveName(<span>name</span>)</dt>
+  <dd>
+    <p>Removes command or event binding previously added using <code><span class="function">dxirc.AddCommand</span>()</code>, <code><span class="function">dxirc.AddEvent</span>()</code> or <code><span class="function">dxirc.AddAll</span>()</code>. It accepts following argument:</p>
+
+    <ul>
+      <li><code class="value">name</code> — command/event name, <code class="string">"mymsg"</code> in case of <code><span class="function">dxirc.AddMyMsg</span>()</code> or <code class="string">"all"</code> in case of <code><span class="function">dxirc.AddAll</span>()</code>.</li>
+    </ul>
+
+    <p class="caption">Example:</p>
+
+    <pre><span class="function">dxirc.RemoveName</span>(<span class="string">"test"</span>)
+<span class="function">dxirc.RemoveName</span>(<span class="string">"join"</span>)</pre>
+  </dd>
+
+  <dt>dxirc.Command(<span>command</span>, [<span>id</span>])</dt>
+  <dd>
+    <p>Runs selected command as if it was invoked manually. It accepts following arguments:</p>
+
+    <ul>
+      <li><code class="value">command</code> — command to be executed,</li>
+      <li><code class="value">id</code> — optional tab id (indexed from zero); unless specified, the command is executed in the current tab.</li>
+    </ul>
+
+    <p class="caption">Example:</p>
+
+    <pre><span class="function">dxirc.Command</span>(<span class="string">"/join #test"</span>, <span class="value">0</span>)
+<span class="function">dxirc.Command</span>(<span class="string">"Lua scripting rocks!"</span>)</pre>
+  </dd>
+
+  <dt>dxirc.Print(<span>text</span>, [<span>id</span>], [<span>style</span>])</dt>
+  <dd>
+    <p>Prints text to the dxirc window. It accepts following arguments:</p>
+
+    <ul>
+      <li><code class="value">text</code> — text to be displayed.</li>
+      <li><code class="value">id</code> — optional tab id (indexed from zero); unless specified, the message is printed to the current tab window.</li>
+      <li><code class="value">style</code> — optional style number; unless specified, the message is formatted as ordinary text. Available styles are as follows:
+        <ul>
+          <li><code>1</code> — user message,</li>
+          <li><code>2</code> — action message,</li>
+          <li><code>3</code> — notice,</li>
+          <li><code>4</code> — error,</li>
+          <li><code>5</code> — bold text,</li>
+          <li><code>6</code> — underlined text,</li>
+          <li><code>7</code> — bold and underlined text,</li>
+          <li><code>8</code> — highlighted message.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <p class="caption">Example:</p>
+
+    <pre><span class="function">dxirc.Print</span>(<span class="string">"The script is running and ready."</span>, <span class="value">0</span>, <span class="value">4</span>)</pre>
+  </dd>
+
+  <dt>dxirc.GetServers()</dt>
+  <dd>
+    <p>Returns the list of currently connected servers. The resulting table contains tables with following items:</p>
+
+    <ul>
+      <li><code class="string">"server"</code> — server name,</li>
+      <li><code class="string">"port"</code> — port number,</li>
+      <li><code class="string">"nick"</code> — user's nick name.</li>
+    </ul>
+
+    <p>If there is no connected server, the values are <code class="value">nil</code>.</p>
+
+    <p class="caption">Example:</p>
+
+    <pre><span class="keyword">local</span> <span class="name">servers</span> = <span class="function">dxirc.GetServers</span>()</pre>
+  </dd>
+
+  <dt>dxirc.GetTab(<span>name</span>, <span>server</span>)</dt>
+  <dd>
+    <p>Returns the id of the tab that matches selected <code class="value">name</code> and <code class="value">server</code>. It accepts following arguments:</p>
+
+    <ul>
+      <li><code class="value">name</code> — channel/query name,</li>
+      <li><code class="value">server</code> — server name or its id.</li>
+    </ul>
+
+    <p>If
+no matching tab can be found, the function returns the id of the
+current tab instead. When there are no tabs at all, it returns <code class="value">-1</code>.</p>
+
+    <p class="caption">Example:</p>
+
+    <pre><span class="keyword">local</span> <span class="name">tab_id</span> = <span class="function">dxirc.GetTab</span>(<span class="string">"#test"</span>, <span class="string">"irc.freenode.net"</span>)</pre>
+  </dd>
+
+  <dt>dxirc.GetTabInfo(<span>id</span>)</dt>
+  <dd>
+    <p>Returns information about the tab with selected <code class="value">id</code> (indexed from zero). The resulting table contains following keywords:</p>
+
+    <ul>
+      <li><code class="string">"name"</code> — tab name,</li>
+      <li><code class="string">"type"</code> — tab type, i.e. <code>server</code>, <code>channel</code>, <code>query</code> or <code>other</code>,</li>
+      <li><code class="string">"servername"</code> — server name,</li>
+      <li><code class="string">"port"</code> — port number,</li>
+      <li><code class="string">"nick"</code> — user's nick name on the corresponding server.</li>
+    </ul>
+
+    <p>If there is no tab with specified <code class="value">id</code>, the values are <code class="value">nil</code>.</p>
+
+    <p class="caption">Example:</p>
+
+    <pre><span class="keyword">local</span> <span class="name">tab_info</span> = <span class="function">dxirc.GetTabInfo</span>(<span class="value">1</span>)
+<span class="keyword">local</span> <span class="name">channel</span> = <span class="function">dxirc.GetTabInfo</span>(<span class="name">id</span>)[<span class="string">"name"</span>]</pre>
+  </dd>
+
+  <dt>dxirc.GetTabCount()</dt>
+  <dd>
+    <p>Returns the number of the tabs.</p>
+
+    <p class="caption">Example:</p>
+
+    <pre><span class="keyword">local</span> <span class="name">tab_number</span> = <span class="function">dxirc.GetTabCount</span>()</pre>
+  </dd>
+ 
+  <dt>dxirc.SetTab(<span>id</span>)</dt>
+  <dd>
+    <p>Changes focus to the selected tab. It accepts following argument:</p>
+
+    <ul>
+      <li><code class="value">id</code> — desired tab id (indexed from zero).</li>
+    </ul>
+
+    <p class="caption">Example:</p>
+
+    <pre><span class="function">dxirc.SetTab</span>(<span class="value">0</span>)</pre>
+  </dd>
+  
+  <dt>dxirc.NewTab(<span>name</span>)</dt>
+  <dd>
+    <p>Creates the new tab with type <code>other</code>. It accepts following argument:</p>
+
+    <ul>
+      <li><code class="value">name</code> — name for the new tab.</li>
+    </ul>
+
+    <p class="caption">Example:</p>
+
+    <pre><span class="function">dxirc.NewTab</span>(<span class="value">"test"</span>)</pre>
+  </dd>
+</dl>
+
+<h2 id="section_3">3&nbsp;&nbsp;Complex Example</h2>
+
+<pre><span class="comment">-- test.lua, a dxirc Lua scripting sandbox
+-- Copyright (C) 2009 David Vachulka</span>
+
+<span class="keyword">function</span> <span class="function">dxirc_Register</span>()
+  <span class="keyword">return</span> <span class="string">"test"</span>, <span class="string">"0.1"</span>, <span class="string">"testing script"</span>
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> <span class="function">dxirc_Init</span>()
+  <span class="function">dxirc.AddCommand</span>(<span class="string">"foo"</span>, <span class="string">"OnFoo"</span>, <span class="string">"yet another testing command"</span>)
+  <span class="function">dxirc.AddEvent</span>(<span class="string">"privmsg"</span>, <span class="string">"OnPrivmsg"</span>)
+  <span class="function">dxirc.AddEvent</span>(<span class="string">"join"</span>, <span class="string">"OnJoin"</span>)
+  <span class="function">dxirc.AddAll</span>(<span class="string">"OnAll"</span>)
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> <span class="function">OnFoo</span>(<span class="name">text</span>, <span class="name">id</span>)
+  <span class="function">dxirc.Print</span>(<span class="string">"text:"</span>..<span class="name">text</span>, <span class="name">id</span>, <span class="function">math.random</span>(<span class="value">0</span>, <span class="value">8</span>))
+  <span class="function">dxirc.RemoveName</span>(<span class="name">text</span>)
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> <span class="function">OnPrivmsg</span>(<span class="name">from</span>, <span class="name">text</span>, <span class="name">id</span>)
+  <span class="function">dxirc.Print</span>(<span class="name">from</span>..<span class="string">" says: "</span>..<span class="name">text</span>..<span class="string">" on "</span>..<span class="function">dxirc.GetTabInfo</span>(<span class="name">id</span>)[<span class="string">"name"</span>])
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> <span class="function">OnJoin</span>(<span class="name">nick</span>, <span class="name">id</span>)
+  <span class="function">dxirc.Print</span>(<span class="name">nick</span>..<span class="string">" has joined on "</span>..<span class="function">dxirc.GetTabInfo</span>(<span class="name">id</span>)[<span class="string">"name"</span>])
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> <span class="function">OnAll</span>(<span class="name">command</span>, <span class="name">text</span>, <span class="name">id</span>)
+  <span class="keyword">if</span> <span class="name">command</span> == <span class="value">nil</span> <span class="keyword">then</span>
+    <span class="function">dxirc.Print</span>(<span class="string">"text: "</span>..<span class="name">text</span>)
+    <span class="function">dxirc.Command</span>(<span class="name">text</span>, <span class="name">id</span>)
+  <span class="keyword">else</span>
+    <span class="function">dxirc.Print</span>(<span class="string">"command: "</span>..<span class="name">command</span>..<span class="string">", text: "</span>..<span class="name">text</span>)
+    <span class="function">dxirc.Command</span>(<span class="string">"/"</span>..<span class="name">command</span>..<span class="string">" "</span>..<span class="name">text</span>, <span class="name">id</span>)
+  <span class="keyword">end</span>
+<span class="keyword">end</span></pre>
+
+<h2 id="section_4">4&nbsp;&nbsp;Available Scripts</h2>
+
+<table>
+  <tr>
+    <th>Script</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td><a href="scripts/exaile.lua">exaile</a></td>
+    <td>Control the <a href="http://exaile.org/">Exaile</a> music player directly from dxirc and/or send the currently playing track to the channel/query. Make sure the Exaile is already running before using this script.</td>
+  </tr>
+  <tr>
+    <td><a href="scripts/mpc.lua">mpc</a></td>
+    <td>Control the <a href="http://mpd.wikia.com/">Music Player Daemon</a> directly from dxirc and/or send the currently playing track to the channel/query. Note that <code>mpc</code> has to be installed in order to run this script.</td>
+  </tr>
+</table>
+
+<h2 id="section_5">5&nbsp;&nbsp;Copyright and Licence</h2>
+
+<p>Copyright © 2009, 2010 David Vachulka<br>Translation © 2010 Jaromír Hradílek</p>
+
+<p>Permission is granted to copy, distribute and/or modify this
+document under the terms of the GNU Free Documentation License, Version
+1.3 or any later version published by the Free Software Foundation;
+with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
+Texts.</p>
+
+<p>For more information, see &lt;<a href="http://www.gnu.org/licenses/fdl.html">http://www.gnu.org/licenses/fdl.html</a>&gt;.</p>
+
+</body></html>

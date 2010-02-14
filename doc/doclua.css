@@ -1,0 +1,105 @@
+/* documentation.css, a style sheet for dxirc documentation
+ * Copyright (C) 2010 Jaromír Hradílek
+ 
+ * This program is free software:  you can redistribute it and/or modify it
+ * under  the terms of the  GNU General Public License  as published by the
+ * Free Software Foundation, version 3 of the License.
+ *
+ * This program is  distributed  in the hope  that it will  be useful,  but
+ * WITHOUT ANY WARRANTY;  without  even the implied  warranty of MERCHANTA-
+ * BILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the  GNU General Public
+ * License for more details.
+ *
+ * You should have received a copy of the  GNU General Public License along
+ * with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/* Page Layout: */
+body {
+  background-color: #ffffff;
+  color: #000000;
+  font-family: sans-serif;
+}
+
+a {
+  color: #3465a4;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code {
+  background-color: #f8f8f8;
+  border: 1px solid #f0f0f0;
+  padding: 1px 1px 1px 1px;
+}
+
+dt {
+  font-weight: bold;
+}
+
+dt span {
+  color: #75507b;
+}
+
+pre {
+  background-color: #f8f8f8;
+  border: 1px solid #f0f0f0;
+  color: #8f5902;
+  display: block;
+  overflow: auto;
+  padding: 10px;
+}
+
+table {
+  border-collapse: collapse;
+  border: 1px solid #3465a4;
+  width: 100%;
+}
+
+td {
+  border: 1px solid #3465a4;
+  padding: 4px;
+  text-align: left;
+}
+
+th {
+  padding: 4px;
+  border: 1px solid #3465a4;
+  background-color: #729fcf;
+  text-align: left;
+  font-weight: normal;
+}
+
+.caption {
+  font-weight: bold;
+  font-size: small;
+}
+
+/* Syntax Highlighting: */
+.comment {
+  color: #555753;
+}
+
+.function {
+  color: #000000;
+}
+
+.name {
+  color: #000000;
+}
+
+.keyword {
+  color: #ce5c00;
+  font-weight: bold;
+}
+
+.string {
+  color: #cc0000;
+}
+
+.value {
+  color: #75507b;
+}
