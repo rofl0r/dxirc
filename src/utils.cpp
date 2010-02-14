@@ -990,6 +990,26 @@ namespace utils
         return FALSE;
     }
 
+    FXString AvailableCommands()
+    {
+        FXString commandstr = _("Available commnads: ");
+        for(FXint i=0; i < commands.no(); i++)
+        {
+            if(commands[i] != "commands") commandstr += commands[i].upper()+(i != commands.no() - 1? ", " : "");
+        }
+        return commandstr;
+    }
+
+    FXString AvailableScriptCommands()
+    {
+        FXString commandstr = _("Available commnads: ");
+        for(FXint i=0; i < scriptCommands.no(); i++)
+        {
+            commandstr += scriptCommands[i].name.upper()+(i != scriptCommands.no() - 1? ", " : "");
+        }
+        return commandstr;
+    }
+
     FXString GetHelpText(const FXString &command)
     {
         for(FXint i=0; i<scriptCommands.no(); i++)

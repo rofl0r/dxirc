@@ -261,8 +261,6 @@ IrcTabItem::IrcTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FX
 
     commandline = new FXTextField(mainframe, 25, this, ID_COMMANDLINE, TEXTFIELD_ENTER_ONLY|FRAME_SUNKEN|JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_BOTTOM, 0, 0, 0, 0, 1, 1, 1, 1);
     if(sameCmd) commandline->setFont(fnt);
-    if(type == OTHER)
-        commandline->hide();
 
     for(int i=0; i<17; i++)
     {
@@ -895,6 +893,42 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
             AppendIrcStyledText(_("You aren't connected"), 4, FXSystem::now());
         return TRUE;
     }
+    if(type == OTHER)
+    {
+        if(utils::IsScriptCommand(command))
+        {
+            LuaRequest lua;
+            lua.type = LUA_COMMAND;
+            lua.text = commandtext.after('/');
+            parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_LUA), &lua);
+            return TRUE;
+        }
+        if(command == "commands")
+        {
+            AppendIrcStyledText(utils::AvailableScriptCommands(), 3, FXSystem::now());
+            return TRUE;
+        }
+        if(command == "egg")
+        {
+            text->removeText(0, text->getLength());
+            text->layout();
+            text->appendStyledText(FXString("ahoj sem pan Vajíčko,\n"), 3);
+            text->appendStyledText(FXString("a dnes Vám přináším killer feature VODOTRYSK!!!\n"), 3);
+            getApp()->addTimeout(this, ID_ETIME, 1000);
+            pics = 0;
+            return TRUE;
+        }
+        if(command == "help")
+        {
+            return ShowHelp(commandtext.after(' ').lower().trim());
+        }
+        if(command == "tetris")
+        {
+            parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_NEWTETRIS), NULL);
+            return TRUE;
+        }
+        return TRUE;
+    }
     if(commandtext[0] == '/')
     {
         if(utils::IsScriptCommand(command))
@@ -976,12 +1010,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
         }
         if(command == "commands")
         {
-            FXString commandstr = _("Available commnads: ");
-            for(FXint i=0; i < utils::CommandsNo(); i++)
-            {
-                if(utils::CommandsAt(i) != "commands") commandstr += utils::CommandsAt(i).upper()+(i != utils::CommandsNo() - 1? ", " : "");
-            }
-            AppendIrcStyledText(commandstr, 3, FXSystem::now());
+            AppendIrcStyledText(utils::AvailableCommands(), 3, FXSystem::now());
             return TRUE;
         }
         if(command == "ctcp")

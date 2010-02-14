@@ -93,6 +93,8 @@ namespace utils
     FXbool RemoveScriptCommand(const FXString &command);
     FXbool RemoveScriptCommands(const FXString &script);
     FXbool IsScriptCommand(const FXString &command);
+    FXString AvailableCommands();
+    FXString AvailableScriptCommands();
     FXString GetHelpText(const FXString &command);
     FXString GetFuncname(const FXString &command);
     FXString GetScriptName(const FXString &command);
