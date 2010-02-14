@@ -3,7 +3,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="author" content="Unknown">
   <meta name="Description" content="dxirc Lua scripting reference">
-  <meta name="date" content="2010-02-14T17:16:06+0100">
+  <meta name="date" content="2010-02-14T19:01:51+0100">
   <meta name="Keywords" content="dxirc,lua,scripting,irc">
   <link rel="stylesheet" href="doclua.css" type="text/css">
   <link rel="icon" href="favicon.png" type="image/png">
@@ -138,6 +138,30 @@ with Lua scripting enabled — you can check this in the About dialog.</p>
     <p class="caption">Example:</p>
 
     <pre><span class="function">dxirc.AddMyMsg</span>(<span class="string">"OnMyMsg"</span>)</pre>
+  </dd>
+  
+  <dt>dxirc.AddNewTab(<span>funcname</span>)</dt>
+  <dd>
+    <p>Binds specified function to new tab created. It accepts following argument:</p>
+
+    <ul>
+      <li><code class="value">funcname</code> — name of the function to be called on user input.</li>
+    </ul>
+
+    <p>The function <code>funcname</code> is then invoked as <code><span class="function">funcname</span>(<span class="value">tab</span>)</code>, where the resulting <code class="value">tab</code> table contains following keywords:</p>
+
+    <ul>
+      <li><code class="string">"id"</code> — id of tab (indexed from zero).</li>
+      <li><code class="string">"name"</code> — tab name,</li>
+      <li><code class="string">"type"</code> — tab type, i.e. <code>server</code>, <code>channel</code>, <code>query</code>, <code>dccchat</code> or <code>other</code>,</li>
+      <li><code class="string">"servername"</code> — server name,</li>
+      <li><code class="string">"port"</code> — port number,</li>
+      <li><code class="string">"nick"</code> — user's nick name on the corresponding server.</li>
+    </ul>
+
+    <p class="caption">Example:</p>
+
+    <pre><span class="function">dxirc.AddMyMsg</span>(<span class="string">"OnNewTab"</span>)</pre>
   </dd>  
 
   <dt>dxirc.AddAll(<span>funcname</span>)</dt>
@@ -166,7 +190,7 @@ with Lua scripting enabled — you can check this in the About dialog.</p>
     <p>Removes command or event binding previously added using <code><span class="function">dxirc.AddCommand</span>()</code>, <code><span class="function">dxirc.AddEvent</span>()</code> or <code><span class="function">dxirc.AddAll</span>()</code>. It accepts following argument:</p>
 
     <ul>
-      <li><code class="value">name</code> — command/event name, <code class="string">"mymsg"</code> in case of <code><span class="function">dxirc.AddMyMsg</span>()</code> or <code class="string">"all"</code> in case of <code><span class="function">dxirc.AddAll</span>()</code>.</li>
+      <li><code class="value">name</code> — command/event name, <code class="string">"mymsg"</code> in case of <code><span class="function">dxirc.AddMyMsg</span>()</code>, <code class="string">"newtab"</code> in case of <code><span class="function">dxirc.AddNewTab</span>()</code> or <code class="string">"all"</code> in case of <code><span class="function">dxirc.AddAll</span>()</code>.</li>
     </ul>
 
     <p class="caption">Example:</p>
@@ -257,7 +281,7 @@ current tab instead. When there are no tabs at all, it returns <code class="valu
 
     <ul>
       <li><code class="string">"name"</code> — tab name,</li>
-      <li><code class="string">"type"</code> — tab type, i.e. <code>server</code>, <code>channel</code>, <code>query</code> or <code>other</code>,</li>
+      <li><code class="string">"type"</code> — tab type, i.e. <code>server</code>, <code>channel</code>, <code>query</code>, <code>dccchat</code> or <code>other</code>,</li>
       <li><code class="string">"servername"</code> — server name,</li>
       <li><code class="string">"port"</code> — port number,</li>
       <li><code class="string">"nick"</code> — user's nick name on the corresponding server.</li>
@@ -293,7 +317,7 @@ current tab instead. When there are no tabs at all, it returns <code class="valu
     <pre><span class="function">dxirc.SetTab</span>(<span class="value">0</span>)</pre>
   </dd>
   
-  <dt>dxirc.NewTab(<span>name</span>)</dt>
+  <dt>dxirc.CreateTab(<span>name</span>)</dt>
   <dd>
     <p>Creates the new tab with type <code>other</code>. It accepts following argument:</p>
 
@@ -303,7 +327,7 @@ current tab instead. When there are no tabs at all, it returns <code class="valu
 
     <p class="caption">Example:</p>
 
-    <pre><span class="function">dxirc.NewTab</span>(<span class="value">"test"</span>)</pre>
+    <pre><span class="function">dxirc.CreateTab</span>(<span class="value">"test"</span>)</pre>
   </dd>
 </dl>
 

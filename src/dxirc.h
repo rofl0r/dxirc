@@ -117,6 +117,7 @@ class dxirc: public FXMainWindow
         static int OnLuaAddCommand(lua_State*);
         static int OnLuaAddEvent(lua_State*);
         static int OnLuaAddMyMsg(lua_State*);
+        static int OnLuaAddNewTab(lua_State*);
         static int OnLuaAddAll(lua_State*);
         static int OnLuaRemoveName(lua_State*);
         static int OnLuaCommand(lua_State*);
@@ -125,7 +126,7 @@ class dxirc: public FXMainWindow
         static int OnLuaGetTab(lua_State*);
         static int OnLuaGetTabInfo(lua_State*);
         static int OnLuaSetTab(lua_State*);
-        static int OnLuaNewTab(lua_State*);
+        static int OnLuaCreateTab(lua_State*);
         static int OnLuaGetTabCount(lua_State*);
 
     private:
@@ -187,6 +188,7 @@ class dxirc: public FXMainWindow
         FXbool HasAllCommand();
         FXbool HasMyMsg();
         void AutoloadScripts();
+        void SendNewTab(IrcSocket*, const FXString&, FXint, FXbool, TYPE);
 
     protected:
         FXMenuBar *menubar;

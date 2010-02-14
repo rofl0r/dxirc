@@ -89,6 +89,7 @@ static luaL_reg dxircFunctions[] = {
     {"AddCommand",  dxirc::OnLuaAddCommand},
     {"AddEvent",    dxirc::OnLuaAddEvent},
     {"AddMyMsg",    dxirc::OnLuaAddMyMsg},
+    {"AddNewTab",   dxirc::OnLuaAddNewTab},
     {"AddAll",      dxirc::OnLuaAddAll},
     {"RemoveName",  dxirc::OnLuaRemoveName},
     {"Command",     dxirc::OnLuaCommand},
@@ -97,7 +98,7 @@ static luaL_reg dxircFunctions[] = {
     {"GetTab",      dxirc::OnLuaGetTab},
     {"GetTabInfo",  dxirc::OnLuaGetTabInfo},
     {"SetTab",      dxirc::OnLuaSetTab},
-    {"NewTab",      dxirc::OnLuaNewTab},
+    {"CreateTab",   dxirc::OnLuaCreateTab},
     {"GetTabCount", dxirc::OnLuaGetTabCount},
     {NULL,          NULL}
 };
@@ -1239,13 +1240,15 @@ void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString
                 tabitem->CreateGeom();
                 servers[0]->AppendTarget(tabitem);
                 UpdateTabPosition();
+                SortTabs();
+                SendNewTab(servers[0], dcc ? dccNick : hostname, GetTabId(servers[0], dcc ? dccNick : hostname), FALSE, dcc ? DCCCHAT : SERVER);
             }
             if(compare(tabbook->childAtIndex(0)->getClassName(), "IrcTabItem") == 0)
             {
                 static_cast<IrcTabItem*>(tabbook->childAtIndex(0))->SetType(SERVER, hostname);
                 tabbook->setCurrent(0, TRUE);
+                SortTabs();
             }
-            SortTabs();
             if(dcc)
             {
                 for(FXint i = 0; i < tabbook->numChildren(); i+=2)
@@ -1288,6 +1291,7 @@ void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString
             servers[0]->AppendTarget(tabitem);
             UpdateTabPosition();
             SortTabs();
+            SendNewTab(servers[0], dcc ? dccNick : hostname, GetTabId(servers[0], dcc ? dccNick : hostname), FALSE, dcc ? DCCCHAT : SERVER);
             if(dcc)
             {
                 for(FXint i = 0; i < tabbook->numChildren(); i+=2)
@@ -1472,6 +1476,7 @@ void dxirc::OnIrcNewchannel(IrcSocket *server, IrcEvent *ev)
     {
         static_cast<IrcTabItem*>(tabbook->childAtIndex(serverTabIndex))->SetType(CHANNEL, ev->param1);
         tabbook->setCurrent(FXMAX(0,serverTabIndex/2-1), TRUE);
+        SortTabs();
     }
     else
     {
@@ -1480,8 +1485,9 @@ void dxirc::OnIrcNewchannel(IrcSocket *server, IrcEvent *ev)
         tabitem->create();
         tabitem->CreateGeom();
         UpdateTabPosition();
+        SortTabs();
+        SendNewTab(server, ev->param1, GetTabId(server, ev->param1), FALSE, CHANNEL);
     }
-    SortTabs();
     UpdateMenus();
 }
 
@@ -1495,6 +1501,7 @@ void dxirc::OnIrcQuery(IrcSocket *server, IrcEvent *ev)
     {
         static_cast<IrcTabItem*>(tabbook->childAtIndex(serverTabIndex))->SetType(QUERY, ev->param1);
         tabbook->setCurrent(FXMAX(0,serverTabIndex/2-1), TRUE);
+        SortTabs();
     }
     else
     {
@@ -1503,8 +1510,9 @@ void dxirc::OnIrcQuery(IrcSocket *server, IrcEvent *ev)
         tabitem->create();
         tabitem->CreateGeom();
         UpdateTabPosition();
+        SortTabs();
+        SendNewTab(server, ev->param1, GetTabId(server, ev->param1), FALSE, QUERY);
     }
-    SortTabs();
     if(ev->param2 == server->GetNickName())
     {
         for(FXint i = 0; i < tabbook->numChildren(); i+=2)
@@ -2271,6 +2279,7 @@ long dxirc::OnNewTetris(FXObject*, FXSelector, void*)
     tab->SetColor(colors);   
     UpdateTabPosition();
     SortTabs();
+    SendNewTab(NULL, "tetris", GetTabId("tetris"), TRUE, OTHER);
     UpdateMenus();
     tabbook->setCurrent(tabbook->numChildren()/2-1, TRUE);
     return 1;
@@ -2482,6 +2491,95 @@ long dxirc::OnIrcMyMsg(FXObject *sender, FXSelector, void *data)
     return 1;
 }
 
+//send event to script for new created tab
+void dxirc::SendNewTab(IrcSocket *server, const FXString &name, FXint id, FXbool isTetris, TYPE type)
+{
+#ifdef HAVE_LUA
+    if(!scripts.no() || !scriptEvents.no())
+        return;
+    for(FXint i=0; i<scriptEvents.no(); i++)
+    {
+        if(comparecase("newtab", scriptEvents[i].name) == 0)
+        {
+            for(FXint j=0; j<scripts.no(); j++)
+            {
+                if(comparecase(scriptEvents[i].script, scripts[j].name) == 0)
+                {
+                    lua_pushstring(scripts[j].L, scriptEvents[i].funcname.text());
+                    lua_gettable(scripts[j].L, LUA_GLOBALSINDEX);
+                    if (lua_type(scripts[j].L, -1) != LUA_TFUNCTION) lua_pop(scripts[j].L, 1);
+                    else
+                    {
+                        lua_newtable(scripts[j].L);
+                        lua_pushstring(scripts[j].L, "id");
+                        lua_pushinteger(scripts[j].L, id);
+                        lua_settable(scripts[j].L, -3);
+                        lua_pushstring(scripts[j].L, "name");
+                        lua_pushstring(scripts[j].L, name.text());
+                        lua_settable(scripts[j].L, -3);
+                        if(isTetris)
+                        {
+                            lua_pushstring(scripts[j].L, "type");
+                            lua_pushstring(scripts[j].L, "tetris");
+                            lua_settable(scripts[j].L, -3);
+                        }
+                        else
+                        {
+                            switch(type) {
+                                case SERVER:
+                                {
+                                    lua_pushstring(scripts[j].L, "type");
+                                    lua_pushstring(scripts[j].L, "server");
+                                    lua_settable(scripts[j].L, -3);
+                                }break;
+                                case CHANNEL:
+                                {
+                                    lua_pushstring(scripts[j].L, "type");
+                                    lua_pushstring(scripts[j].L, "channel");
+                                    lua_settable(scripts[j].L, -3);
+                                }break;
+                                case QUERY:
+                                {
+                                    lua_pushstring(scripts[j].L, "type");
+                                    lua_pushstring(scripts[j].L, "query");
+                                    lua_settable(scripts[j].L, -3);
+                                }break;
+                                case DCCCHAT:
+                                {
+                                    lua_pushstring(scripts[j].L, "type");
+                                    lua_pushstring(scripts[j].L, "dccchat");
+                                    lua_settable(scripts[j].L, -3);
+                                }break;
+                                case OTHER:
+                                {
+                                    lua_pushstring(scripts[j].L, "type");
+                                    lua_pushstring(scripts[j].L, "other");
+                                    lua_settable(scripts[j].L, -3);
+                                }break;
+                            }
+                        }
+                        lua_pushstring(scripts[j].L, "servername");
+                        lua_pushstring(scripts[j].L, server ? server->GetServerName().text() : "");
+                        lua_settable(scripts[j].L, -3);
+                        lua_pushstring(scripts[j].L, "port");
+                        lua_pushinteger(scripts[j].L, server ? server->GetServerPort() : 0);
+                        lua_settable(scripts[j].L, -3);
+                        lua_pushstring(scripts[j].L, "nick");
+                        lua_pushstring(scripts[j].L, server ? server->GetNickName().text() : "");
+                        lua_settable(scripts[j].L, -3);
+                        if (lua_pcall(scripts[j].L, 1, 0, 0))
+                        {
+                            AppendIrcStyledText(FXStringFormat(_("Lua plugin: error calling %s %s"), scriptEvents[i].funcname.text(), lua_tostring(scripts[j].L, -1)), 4);
+                            lua_pop(scripts[j].L, 1);
+                        }
+                    }
+                }
+            }
+        }
+    }
+#endif
+}
+
 //Handle for entered command in IrcTab for all in lua scripting
 long dxirc::OnIrcCommand(FXObject *sender, FXSelector, void *data)
 {
@@ -2573,7 +2671,7 @@ FXint dxirc::GetTabId(IrcSocket *server, FXString name)
     return -1;
 }
 
-//usefull mainly for tetristab
+//usefull mainly for tetristab, othertab
 FXint dxirc::GetTabId(FXString name)
 {
     for(FXint i = 0; i < tabbook->numChildren(); i+=2)
@@ -3010,6 +3108,31 @@ int dxirc::OnLuaAddMyMsg(lua_State *lua)
 #endif
 }
 
+int dxirc::OnLuaAddNewTab(lua_State *lua)
+{
+#ifdef HAVE_LUA
+    FXString funcname, script;
+    if(lua_isstring(lua, 1)) funcname = lua_tostring(lua,1);
+    if(funcname.empty()) return 0;
+    if(pThis->scripts.no())
+    {
+        for(FXint i=0; i<pThis->scripts.no(); i++)
+        {
+            if(lua == pThis->scripts[i].L) script = pThis->scripts[i].name;
+        }
+    }
+    if(script.empty()) return 0;
+    LuaScriptEvent event;
+    event.name = "newtab";
+    event.funcname = funcname;
+    event.script = script;
+    pThis->scriptEvents.append(event);
+    return  1;
+#else
+    return 0;
+#endif
+}
+
 int dxirc::OnLuaAddAll(lua_State *lua)
 {
 #ifdef HAVE_LUA
@@ -3297,7 +3420,7 @@ int dxirc::OnLuaSetTab(lua_State *lua)
 #endif    
 }
 
-int dxirc::OnLuaNewTab(lua_State *lua)
+int dxirc::OnLuaCreateTab(lua_State *lua)
 {
 #ifdef HAVE_LUA
     FXString name;
@@ -3335,6 +3458,7 @@ int dxirc::OnLuaNewTab(lua_State *lua)
                     && static_cast<IrcTabItem*>(pThis->tabbook->childAtIndex(i))->GetType() == OTHER)
             {
                 lua_pushnumber(lua, i/2);
+                pThis->SendNewTab(NULL, name, pThis->GetTabId(name), FALSE, OTHER);
                 return 1;
             }
         }

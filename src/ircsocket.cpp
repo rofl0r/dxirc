@@ -143,6 +143,16 @@ long IrcSocket::OnCloseTimeout(FXObject*, FXSelector, void*)
     }
     if(!connected)
     {
+#ifdef WIN32
+        shutdown(serverid, SD_BOTH);
+        closesocket(serverid);
+#else
+#ifndef SHUT_RDWR
+#define SHUT_RDWR 2
+#endif
+        shutdown(serverid, SHUT_RDWR);
+        close(serverid);
+#endif
         SendEvent(IRC_DISCONNECT, _("Connection closed. Client didn't connect in given timeout"));
         CloseConnection(TRUE);
     }
@@ -601,6 +611,9 @@ FXint IrcSocket::Listen()
     shutdown(serverid, SD_BOTH);
     closesocket(serverid);
 #else
+#ifndef SHUT_RDWR
+#define SHUT_RDWR 2
+#endif
     shutdown(serverid, SHUT_RDWR);
     close(serverid);
 #endif
