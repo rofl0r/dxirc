@@ -81,9 +81,9 @@ LogViewer::LogViewer(FXApp *app, const FXString &lpath, FXFont *fnt)
     searchfield = new FXTextField(searchframe, 15, this, ID_SEARCH, TEXTFIELD_ENTER_ONLY|FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     searchfield->setTipText(_("F3 for next"));
     searchfield->disable();
-    buttonSearch = new FXButton(searchframe, _("&Search"), NULL, this, ID_SEARCH, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X);
+    buttonSearch = new FXButton(searchframe, _("&Search"), NULL, this, ID_SEARCH, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
     buttonSearch->disable();
-    buttonReset = new FXButton(searchframe, _("&Reset"), NULL, this, ID_RESET, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X);
+    buttonReset = new FXButton(searchframe, _("&Reset"), NULL, this, ID_RESET, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
     buttonReset->disable();
     group = new FXGroupBox(listframe, _("Search options"), LAYOUT_SIDE_TOP|FRAME_GROOVE|LAYOUT_FILL_X, 0,0,0,0);
     buttonIcase = new FXCheckButton(group, _("&Ignore case"), &targetIcase, FXDataTarget::ID_VALUE);

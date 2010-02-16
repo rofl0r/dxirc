@@ -72,9 +72,9 @@ DccDialog::DccDialog(FXApp *app, dxirc *win)
     port = new FXLabel(matrix, "", NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN);
 
     buttonframe = new FXHorizontalFrame(contents, LAYOUT_FILL_X);
-    buttonCanceled = new FXButton(buttonframe, _("Clear &canceled"), NULL, this, ID_CANCELED, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
-    buttonClear = new FXButton(buttonframe, _("Clear &finished"), NULL, this, ID_CLEAR, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
-    buttonClose = new FXButton(buttonframe, _("C&lose"), NULL, this, ID_CLOSE, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
+    buttonClose = new FXButton(buttonframe, _("C&lose"), NULL, this, ID_CLOSE, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    buttonClear = new FXButton(buttonframe, _("Clear &finished"), NULL, this, ID_CLEAR, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    buttonCanceled = new FXButton(buttonframe, _("Clear &canceled"), NULL, this, ID_CANCELED, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
 }
 
 DccDialog::~DccDialog()

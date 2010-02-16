@@ -345,19 +345,19 @@ void dxirc::ReadConfig()
     FXint yy=set.readIntEntry("SETTINGS","y",50);
     FXint ww=set.readIntEntry("SETTINGS","w",400);
     FXint hh=set.readIntEntry("SETTINGS","h",300);
-    appTheme.base = set.readColorEntry("SETTINGS", "basecolor", getApp()->getBaseColor());
-    appTheme.back = set.readColorEntry("SETTINGS", "backcolor", getApp()->getBackColor());
-    appTheme.border = set.readColorEntry("SETTINGS", "bordercolor", getApp()->getBorderColor());
-    appTheme.fore = set.readColorEntry("SETTINGS", "forecolor", getApp()->getForeColor());
-    appTheme.menuback = set.readColorEntry("SETTINGS", "selmenubackcolor", getApp()->getSelMenuBackColor());
-    appTheme.menufore = set.readColorEntry("SETTINGS", "selmenutextcolor", getApp()->getSelMenuTextColor());
-    appTheme.selback = set.readColorEntry("SETTINGS", "selbackcolor", getApp()->getSelbackColor());
-    appTheme.selfore = set.readColorEntry("SETTINGS", "selforecolor", getApp()->getSelforeColor());
-    appTheme.tipback = set.readColorEntry("SETTINGS", "tipbackcolor", getApp()->getTipbackColor());
-    appTheme.tipfore = set.readColorEntry("SETTINGS", "tipforecolor", getApp()->getTipforeColor());
-    appTheme.hilite = set.readColorEntry("SETTINGS", "hilitecolor", getApp()->getHiliteColor());
-    appTheme.shadow = set.readColorEntry("SETTINGS", "shadowcolor", getApp()->getShadowColor());
-    fontSpec = set.readStringEntry("SETTINGS", "normalfont", getApp()->getNormalFont()->getFont().text());
+    appTheme.base = set.readColorEntry("SETTINGS", "basecolor", app->getBaseColor());
+    appTheme.back = set.readColorEntry("SETTINGS", "backcolor", app->getBackColor());
+    appTheme.border = set.readColorEntry("SETTINGS", "bordercolor", app->getBorderColor());
+    appTheme.fore = set.readColorEntry("SETTINGS", "forecolor", app->getForeColor());
+    appTheme.menuback = set.readColorEntry("SETTINGS", "selmenubackcolor", app->getSelMenuBackColor());
+    appTheme.menufore = set.readColorEntry("SETTINGS", "selmenutextcolor", app->getSelMenuTextColor());
+    appTheme.selback = set.readColorEntry("SETTINGS", "selbackcolor", app->getSelbackColor());
+    appTheme.selfore = set.readColorEntry("SETTINGS", "selforecolor", app->getSelforeColor());
+    appTheme.tipback = set.readColorEntry("SETTINGS", "tipbackcolor", app->getTipbackColor());
+    appTheme.tipfore = set.readColorEntry("SETTINGS", "tipforecolor", app->getTipforeColor());
+    appTheme.hilite = set.readColorEntry("SETTINGS", "hilitecolor", app->getHiliteColor());
+    appTheme.shadow = set.readColorEntry("SETTINGS", "shadowcolor", app->getShadowColor());
+    fontSpec = set.readStringEntry("SETTINGS", "normalfont", app->getNormalFont()->getFont().text());
     usersShown = set.readBoolEntry("SETTINGS", "usersShown", TRUE);
     statusShown = set.readBoolEntry("SETTINGS", "statusShown", TRUE);
     tabPosition = set.readIntEntry("SETTINGS", "tabPosition", 0);
@@ -378,15 +378,15 @@ void dxirc::ReadConfig()
     coloredNick = set.readBoolEntry("SETTINGS", "coloredNick", FALSE);
     if(!ircfontspec.empty())
     {
-        ircFont = new FXFont(getApp(), ircfontspec);
+        ircFont = new FXFont(app, ircfontspec);
         ircFont->create();
     }
     else
     {
-        getApp()->getNormalFont()->create();
+        app->getNormalFont()->create();
         FXFontDesc fontdescription;
-        getApp()->getNormalFont()->getFontDesc(fontdescription);
-        ircFont = new FXFont(getApp(),fontdescription);
+        app->getNormalFont()->getFontDesc(fontdescription);
+        ircFont = new FXFont(app,fontdescription);
         ircFont->create();
     }
     maxAway = set.readIntEntry("SETTINGS", "maxAway", 200);
@@ -475,7 +475,7 @@ void dxirc::ReadServersConfig()
 
 void dxirc::SaveConfig()
 {
-    getApp()->reg().setModified(FALSE);
+    app->reg().setModified(FALSE);
     FXSettings set;
     //set.clear();
     set.writeIntEntry("SERVERS", "number", serverList.no());
@@ -551,7 +551,7 @@ void dxirc::SaveConfig()
     set.writeColorEntry("SETTINGS", "tipbackcolor", appTheme.tipback);
     set.writeColorEntry("SETTINGS", "selmenutextcolor", appTheme.menufore);
     set.writeColorEntry("SETTINGS", "selmenubackcolor", appTheme.menuback);
-    set.writeStringEntry("SETTINGS", "normalfont", getApp()->getNormalFont()->getFont().text());
+    set.writeStringEntry("SETTINGS", "normalfont", app->getNormalFont()->getFont().text());
     dxStringMap aliases = utils::GetAliases();
     set.writeIntEntry("ALIASES", "number", (FXint)aliases.size());
     if((FXint)aliases.size())
@@ -593,7 +593,7 @@ long dxirc::OnCommandQuit(FXObject*, FXSelector, void*)
     }
 #endif
     SaveConfig();
-    getApp()->exit(0);
+    app->exit(0);
     return 1;
 }
 
@@ -621,7 +621,7 @@ long dxirc::OnCommandHelp(FXObject*, FXSelector, void*)
     text->setVisibleColumns(90);
     text->setText(HELP_TEXT);
 
-    new FXButton(contents, _("C&lose"), NULL, &helpDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
+    new FXButton(contents, _("C&lose"), NULL, &helpDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
 
     helpDialog.execute(PLACEMENT_CURSOR);
     return 1;
@@ -737,18 +737,69 @@ void dxirc::UpdateTheme()
     FXToolTip * tooltip;
     FXImageFrame * imageframe;
 
-    getApp()->setBaseColor(appTheme.base);
-    getApp()->setBackColor(appTheme.back);
-    getApp()->setBorderColor(appTheme.border);
-    getApp()->setForeColor(appTheme.fore);
-    getApp()->setSelMenuBackColor(appTheme.menuback);
-    getApp()->setSelMenuTextColor(appTheme.menufore);
-    getApp()->setSelbackColor(appTheme.selback);
-    getApp()->setSelforeColor(appTheme.selfore);
-    getApp()->setTipbackColor(appTheme.tipback);
-    getApp()->setTipforeColor(appTheme.tipfore);
-    getApp()->setHiliteColor(appTheme.hilite);
-    getApp()->setShadowColor(appTheme.shadow);
+    FXbool update = FALSE;
+    if(app->getBaseColor() != appTheme.base)
+    {
+        update = TRUE;
+        app->setBaseColor(appTheme.base);
+    }
+    if(app->getBackColor() != appTheme.back)
+    {
+        update = TRUE;
+        app->setBackColor(appTheme.back);
+    }
+    if(app->getBorderColor() != appTheme.border)
+    {
+        update = TRUE;
+        app->setBorderColor(appTheme.border);
+    }
+    if(app->getForeColor() != appTheme.fore)
+    {
+        update = TRUE;
+        app->setForeColor(appTheme.fore);
+    }
+    if(app->getSelMenuBackColor() != appTheme.menuback)
+    {
+        update = TRUE;
+        app->setSelMenuBackColor(appTheme.menuback);
+    }
+    if(app->getSelMenuTextColor() != appTheme.menufore)
+    {
+        update = TRUE;
+        app->setSelMenuTextColor(appTheme.menufore);
+    }
+    if(app->getSelbackColor() != appTheme.selback)
+    {
+        update = TRUE;
+        app->setSelbackColor(appTheme.selback);
+    }
+    if(app->getSelforeColor() != appTheme.selfore)
+    {
+        update = TRUE;
+        app->setSelforeColor(appTheme.selfore);
+    }
+    if(app->getTipbackColor() != appTheme.tipback)
+    {
+        update = TRUE;
+        app->setTipbackColor(appTheme.tipback);
+    }
+    if(app->getTipforeColor() != appTheme.tipfore)
+    {
+        update = TRUE;
+        app->setTipforeColor(appTheme.tipfore);
+    }
+    if(app->getHiliteColor() != appTheme.hilite)
+    {
+        update = TRUE;
+        app->setHiliteColor(appTheme.hilite);
+    }
+    if(app->getShadowColor() != appTheme.shadow)
+    {
+        update = TRUE;
+        app->setShadowColor(appTheme.shadow);
+    }
+    if(!update)
+        return;
 
     while (w)
     {
@@ -974,9 +1025,9 @@ void dxirc::UpdateFont()
 
 void dxirc::UpdateFont(FXString fnt)
 {
-    getApp()->getNormalFont()->destroy();
-    getApp()->getNormalFont()->setFont(fnt);
-    getApp()->getNormalFont()->create();
+    app->getNormalFont()->destroy();
+    app->getNormalFont()->setFont(fnt);
+    app->getNormalFont()->create();
     register FXWindow *w = this;
     while(w)
     {
@@ -1098,7 +1149,7 @@ long dxirc::OnCommandAbout(FXObject*, FXSelector, void*)
     new FXLabel(content, FXStringFormat(_("This software was built with %s"), LUA_RELEASE), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
 #endif
     new FXLabel(content, _("This sofware uses http://www.famfamfam.com/lab/icons/"), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    FXButton *button = new FXButton(content, _("&OK"), 0, &about, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
+    FXButton *button = new FXButton(content, _("&OK"), 0, &about, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
     button->setFocus();
     about.execute(PLACEMENT_OWNER);
 
@@ -1186,8 +1237,8 @@ long dxirc::OnCommandConnect(FXObject*, FXSelector, void*)
     command->setVisibleColumns(25);
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    new FXButton(buttonframe, _("&OK"), NULL, &serverEdit, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
-    new FXButton(buttonframe, _("&Cancel"), NULL, &serverEdit, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
+    new FXButton(buttonframe, _("&Cancel"), NULL, &serverEdit, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    new FXButton(buttonframe, _("&OK"), NULL, &serverEdit, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
     if (serverEdit.execute(PLACEMENT_OWNER))
     {
 #ifdef HAVE_OPENSSL
@@ -1332,8 +1383,8 @@ long dxirc::OnCommandDisconnect(FXObject*, FXSelector, void*)
             FXVerticalFrame *contents = new FXVerticalFrame(&confirmDialog, LAYOUT_SIDE_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 10,10,10,10, 0,0);
             new FXLabel(contents, FXStringFormat(_("Disconnect server: %s\nPort: %d\nNick: %s"), currentserver->GetServerName().text(), currentserver->GetServerPort(), currentserver->GetNickName().text()), NULL, JUSTIFY_LEFT|ICON_BEFORE_TEXT);
             FXHorizontalFrame* buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y);
-            new FXButton(buttonframe, _("&Yes"), NULL, &confirmDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
-            new FXButton(buttonframe, _("&No"), NULL, &confirmDialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
+            new FXButton(buttonframe, _("&No"), NULL, &confirmDialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+            new FXButton(buttonframe, _("&Yes"), NULL, &confirmDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
             if (confirmDialog.execute(PLACEMENT_OWNER))
             {
                 currentserver->Disconnect();

@@ -128,8 +128,8 @@ DccSendDialog::DccSendDialog(FXMainWindow* owner, FXString nick)
     checkPassive = new FXCheckButton(passiveFrame, _("Send passive"), NULL, 0);
 
     buttonFrame = new FXHorizontalFrame(mainFrame, LAYOUT_FILL_X);
-    buttonSend = new FXButton(buttonFrame, _("&Send file"), NULL, this, ID_SEND, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
-    buttonCancel = new FXButton(buttonFrame, _("&Cancel"), NULL, this, ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
+    buttonCancel = new FXButton(buttonFrame, _("&Cancel"), NULL, this, ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    buttonSend = new FXButton(buttonFrame, _("&Send file"), NULL, this, ID_SEND, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
 }
 
 DccSendDialog::~DccSendDialog()
@@ -4000,8 +4000,8 @@ long IrcTabItem::OnKick(FXObject *, FXSelector, void *)
     FXTextField *reasonEdit = new FXTextField(kickframe, 25, NULL, 0, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents, LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    new FXButton(buttonframe, _("&OK"), NULL, &kickDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0, 0, 0, 0, 32, 32, 5, 5);
-    new FXButton(buttonframe, _("&Cancel"), NULL, &kickDialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0, 0, 0, 0, 32, 32, 5, 5);
+    new FXButton(buttonframe, _("&Cancel"), NULL, &kickDialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 5);
+    new FXButton(buttonframe, _("&OK"), NULL, &kickDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 5);
 
     if(kickDialog.execute(PLACEMENT_CURSOR))
     {
@@ -4021,8 +4021,8 @@ long IrcTabItem::OnBan(FXObject *, FXSelector, void *)
     banEdit->setText(nickOnRight.nick+"!"+nickOnRight.user+"@"+nickOnRight.host);
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents, LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    new FXButton(buttonframe, _("&OK"), NULL, &banDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0, 0, 0, 0, 32, 32, 5, 5);
-    new FXButton(buttonframe, _("&Cancel"), NULL, &banDialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0, 0, 0, 0, 32, 32, 5, 5);
+    new FXButton(buttonframe, _("&Cancel"), NULL, &banDialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 5);
+    new FXButton(buttonframe, _("&OK"), NULL, &banDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 5);
 
     if(banDialog.execute(PLACEMENT_CURSOR))
     {
@@ -4046,8 +4046,8 @@ long IrcTabItem::OnKickban(FXObject *, FXSelector, void *)
     banEdit->setText(nickOnRight.nick+"!"+nickOnRight.user+"@"+nickOnRight.host);
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents, LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    new FXButton(buttonframe, _("&OK"), NULL, &banDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0, 0, 0, 0, 32, 32, 5, 5);
-    new FXButton(buttonframe, _("&Cancel"), NULL, &banDialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0, 0, 0, 0, 32, 32, 5, 5);
+    new FXButton(buttonframe, _("&Cancel"), NULL, &banDialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 5);
+    new FXButton(buttonframe, _("&OK"), NULL, &banDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 5);
 
     if(banDialog.execute(PLACEMENT_CURSOR))
     {

@@ -74,15 +74,11 @@ ScriptDialog::ScriptDialog(dxirc *owner)
 
     buttonframe = new FXHorizontalFrame(contents, LAYOUT_FILL_X|LAYOUT_FILL_Y);    
 
-    buttonLoad = new FXButton(buttonframe, _("&Load"), NULL, this, ID_LOAD, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
-
-    buttonView = new FXButton(buttonframe, _("&View current"), NULL, this, ID_VIEW, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
-
-    buttonViewNew = new FXButton(buttonframe, _("View &script"), NULL, this, ID_VIEWNEW, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
-
-    buttonUnload = new FXButton(buttonframe, _("&Unload"), NULL, this, ID_UNLOAD, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
-
-    buttonClose = new FXButton(buttonframe, _("C&lose"), NULL, this, ID_CLOSE, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
+    buttonClose = new FXButton(buttonframe, _("C&lose"), NULL, this, ID_CLOSE, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    buttonUnload = new FXButton(buttonframe, _("&Unload"), NULL, this, ID_UNLOAD, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    buttonViewNew = new FXButton(buttonframe, _("View &script"), NULL, this, ID_VIEWNEW, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    buttonView = new FXButton(buttonframe, _("&View current"), NULL, this, ID_VIEW, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    buttonLoad = new FXButton(buttonframe, _("&Load"), NULL, this, ID_LOAD, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
 
     UpdateList();
     UpdateDetails();
@@ -217,7 +213,7 @@ void ScriptDialog::ViewFile(const FXString &file)
     text->setVisibleRows(35);
     text->setVisibleColumns(90);
 
-    new FXButton(contents, _("C&lose"), NULL, &dialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 32,32,5,5);
+    new FXButton(contents, _("C&lose"), NULL, &dialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
 
     FXFile textfile(file,FXFile::Reading);
     FXint size, n, c, i, j;
