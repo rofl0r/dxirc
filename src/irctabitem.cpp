@@ -127,7 +127,7 @@ DccSendDialog::DccSendDialog(FXMainWindow* owner, FXString nick)
     passiveFrame = new FXHorizontalFrame(mainFrame, LAYOUT_FILL_X);
     checkPassive = new FXCheckButton(passiveFrame, _("Send passive"), NULL, 0);
 
-    buttonFrame = new FXHorizontalFrame(mainFrame, LAYOUT_FILL_X);
+    buttonFrame = new FXHorizontalFrame(mainFrame, LAYOUT_FILL_X|PACK_UNIFORM_WIDTH);
     buttonCancel = new FXButton(buttonFrame, _("&Cancel"), NULL, this, ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
     buttonSend = new FXButton(buttonFrame, _("&Send file"), NULL, this, ID_SEND, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
 }
@@ -508,12 +508,36 @@ void IrcTabItem::SetNickCompletionChar(FXString nichr)
 
 void IrcTabItem::SetIrcFont(FXFont *fnt)
 {
-    text->setFont(fnt);
-    topicline->setFont(fnt);
-    if(sameCmd) commandline->setFont(fnt);
-    else commandline->setFont(getApp()->getNormalFont());
-    if(sameList) users->setFont(fnt);
-    else users->setFont(getApp()->getNormalFont());
+    if(text->getFont() != fnt)
+    {
+        text->setFont(fnt);
+        text->recalc();
+    }
+    if(topicline->getFont() != fnt)
+    {
+        topicline->setFont(fnt);
+        topicline->recalc();
+    }
+    if(sameCmd && commandline->getFont() != fnt)
+    {
+        commandline->setFont(fnt);
+        commandline->recalc();
+    }
+    else
+    {
+        commandline->setFont(getApp()->getNormalFont());
+        commandline->recalc();
+    }
+    if(sameList && users->getFont() != fnt)
+    {
+        users->setFont(fnt);
+        users->recalc();
+    }
+    else
+    {
+        users->setFont(getApp()->getNormalFont());
+        users->recalc();
+    }
 }
 
 void IrcTabItem::SetSameCmd(FXbool scmd)
@@ -3999,7 +4023,7 @@ long IrcTabItem::OnKick(FXObject *, FXSelector, void *)
     new FXLabel(kickframe, _("Kick reason:"), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     FXTextField *reasonEdit = new FXTextField(kickframe, 25, NULL, 0, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
 
-    FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents, LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents, LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
     new FXButton(buttonframe, _("&Cancel"), NULL, &kickDialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 5);
     new FXButton(buttonframe, _("&OK"), NULL, &kickDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 5);
 
@@ -4020,7 +4044,7 @@ long IrcTabItem::OnBan(FXObject *, FXSelector, void *)
     FXTextField *banEdit = new FXTextField(banframe, 25, NULL, 0, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     banEdit->setText(nickOnRight.nick+"!"+nickOnRight.user+"@"+nickOnRight.host);
 
-    FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents, LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents, LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
     new FXButton(buttonframe, _("&Cancel"), NULL, &banDialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 5);
     new FXButton(buttonframe, _("&OK"), NULL, &banDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 5);
 
@@ -4045,7 +4069,7 @@ long IrcTabItem::OnKickban(FXObject *, FXSelector, void *)
     FXTextField *banEdit = new FXTextField(banframe, 25, NULL, 0, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     banEdit->setText(nickOnRight.nick+"!"+nickOnRight.user+"@"+nickOnRight.host);
 
-    FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents, LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents, LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
     new FXButton(buttonframe, _("&Cancel"), NULL, &banDialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 5);
     new FXButton(buttonframe, _("&OK"), NULL, &banDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 5);
 

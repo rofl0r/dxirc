@@ -1032,7 +1032,6 @@ void dxirc::UpdateFont(FXString fnt)
     while(w)
     {
         w->recalc();
-        w->update();
         if(w->getFirst())
         {
             w = w->getFirst();
@@ -1236,7 +1235,7 @@ long dxirc::OnCommandConnect(FXObject*, FXSelector, void*)
     command->setVisibleRows(4);
     command->setVisibleColumns(25);
 
-    FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
     new FXButton(buttonframe, _("&Cancel"), NULL, &serverEdit, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
     new FXButton(buttonframe, _("&OK"), NULL, &serverEdit, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
     if (serverEdit.execute(PLACEMENT_OWNER))
@@ -1382,7 +1381,7 @@ long dxirc::OnCommandDisconnect(FXObject*, FXSelector, void*)
             FXDialogBox confirmDialog(this, _("Confirm disconnect"), DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0);
             FXVerticalFrame *contents = new FXVerticalFrame(&confirmDialog, LAYOUT_SIDE_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 10,10,10,10, 0,0);
             new FXLabel(contents, FXStringFormat(_("Disconnect server: %s\nPort: %d\nNick: %s"), currentserver->GetServerName().text(), currentserver->GetServerPort(), currentserver->GetNickName().text()), NULL, JUSTIFY_LEFT|ICON_BEFORE_TEXT);
-            FXHorizontalFrame* buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y);
+            FXHorizontalFrame* buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
             new FXButton(buttonframe, _("&No"), NULL, &confirmDialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
             new FXButton(buttonframe, _("&Yes"), NULL, &confirmDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
             if (confirmDialog.execute(PLACEMENT_OWNER))
@@ -1396,6 +1395,12 @@ long dxirc::OnCommandDisconnect(FXObject*, FXSelector, void*)
                         delete tabbook->childAtIndex(i);
                         delete tabbook->childAtIndex(i);                        
                     }
+                }
+                tabbook->recalc();
+                if(tabbook->numChildren())
+                {
+                    SortTabs();
+                    tabbook->setCurrent(tabbook->numChildren()/2-1, TRUE);
                 }
             }
         }
@@ -1411,12 +1416,12 @@ long dxirc::OnCommandDisconnect(FXObject*, FXSelector, void*)
                     delete tabbook->childAtIndex(i);
                 }
             }
-        }
-        tabbook->recalc();
-        if(tabbook->numChildren())
-        {
-            tabbook->setCurrent(tabbook->numChildren()/2-1, TRUE);
-            SortTabs();
+            tabbook->recalc();
+            if(tabbook->numChildren())
+            {
+                SortTabs();
+                tabbook->setCurrent(tabbook->numChildren()/2-1, TRUE);
+            }
         }
     }
     UpdateMenus();
