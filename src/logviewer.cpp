@@ -339,8 +339,8 @@ long LogViewer::OnTree(FXObject*, FXSelector, void *ptr)
         if(!LoadFile(GetItemPathname(item)))
         {
             LogItem *parent = (LogItem*)item->getParent();
-            treeHistory->removeItem(item, TRUE);
             treeHistory->setCurrentItem(parent, TRUE);
+            Scan();
             text->removeText(0, text->getLength());
             buttonIcase->enable();
             buttonFile->disable();
@@ -462,7 +462,7 @@ long LogViewer::OnDelete(FXObject*, FXSelector, void*)
         if(FXMessageBox::question(this, MBOX_YES_NO, _("Question"), message.text()) == 1)
         {
             FXFile::removeFiles(GetItemPathname(itemOnRight), TRUE);
-            treeHistory->removeItem(itemOnRight, TRUE);
+            Scan();
         }
         else
             return 1;
