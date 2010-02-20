@@ -32,6 +32,7 @@ FXDEFMAP(LogViewer) LogViewerMap[] = {
     FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_CLOSE,      LogViewer::OnClose),
     FXMAPFUNC(SEL_CLOSE,    0,                        LogViewer::OnClose),
     FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_TREE,       LogViewer::OnTree),
+    FXMAPFUNC(SEL_EXPANDED, LogViewer::ID_TREE,       LogViewer::OnTree),
     FXMAPFUNC(SEL_RIGHTBUTTONRELEASE,   LogViewer::ID_TREE, LogViewer::OnRightTree),
     FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_RESET,      LogViewer::OnReset),
     FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_SEARCH,     LogViewer::OnSearch),
@@ -374,6 +375,7 @@ long LogViewer::OnTree(FXObject*, FXSelector, void *ptr)
     else
     {
         text->removeText(0, text->getLength());
+        Scan();
         buttonIcase->enable();
         buttonFile->disable();
         file = FALSE;
@@ -433,6 +435,7 @@ long LogViewer::OnUnpack(FXObject*, FXSelector, void*)
 {
     if(itemOnRight)
     {
+        Scan();
         treeHistory->expandTree(itemOnRight, TRUE);
     }
     return 1;
@@ -626,42 +629,12 @@ FXbool LogViewer::IsChannelItem(const LogItem* item)
 
 void LogViewer::LoadTree()
 {
-    FXString pathname;
-    LogItem *item;
-    FXStat info;
-    //listHistory->appendItem(NULL, "Logs");
     LogItem *ritem = new LogItem(_("Logs"), NULL, NULL, NULL);
     ritem->setDraggable(FALSE);
     ritem->state = LogItem::FOLDER|LogItem::HASITEMS;
     treeHistory->appendItem(NULL, ritem, TRUE);
-    treeHistory->sortRootItems();
-    item=(LogItem*)treeHistory->getFirstItem();
-    while (item)
-    {
-        //if (item->isDirectory() && item->isExpanded())
-        if (item->isDirectory())
-        {
-            pathname = GetItemPathname(item);
-            FXStat::statFile(pathname, info);
-            FXTime newdate = info.touched();
-            /*if (force || (item->date != newdate) || (counter == 0))
-            {*/
-                ListChildItems(item);
-                treeHistory->sortChildItems(item);
-                item->date = newdate;
-            //}
-            if (item->first)
-            {
-                item = (LogItem*)item->first;
-                continue;
-            }
-        }
-        while (!item->next && item->parent)
-        {
-            item = (LogItem*) item->parent;
-        }
-        item = (LogItem*) item->next;
-    }
+    ListChildItems(ritem);
+    treeHistory->sortChildItems(ritem);
     treeHistory->expandTree(ritem, TRUE);
 }
 
@@ -692,6 +665,8 @@ void LogViewer::ListChildItems(LogItem *par)
 
     // Assume not a link
     islink = FALSE;
+
+    getApp()->beginWaitCursor();
 
     // Managed to open directory
     if (dir.open(directory))
@@ -734,7 +709,7 @@ void LogViewer::ListChildItems(LogItem *par)
 #endif
 
             // If it is not a directory, and not showing files and matching pattern skip it
-            if (!info.isDirectory() && !FXRex("^\\d\\d\\d\\d-\\d\\d-\\d\\d+$").match(name))continue;
+            if (!info.isDirectory() && !IsRightFile(pathname,name))continue;
 
             // Find it, and take it out from the old list if found
             for(pp = po; (item = *pp) != NULL; pp = &item->link)
@@ -872,7 +847,82 @@ fnd:
 
     // Need to layout
     treeHistory->recalc();
+
+    getApp()->endWaitCursor();
 }
 
+FXbool LogViewer::IsRightFile(const FXString& path, const FXString& name)
+{
+    if(FXRex("^\\d\\d\\d\\d-\\d\\d-\\d\\d+$").match(name))
+    {
+        FXFile textfile(path,FXFile::Reading);
+        FXint n;
+        FXchar *txt;
+        if(!textfile.isOpen()) return FALSE;
+        if(!FXMALLOC(&txt,FXchar,10)) return FALSE;
+        n = textfile.readBlock(txt,10);
+        if(n<0)
+        {
+            FXFREE(&txt);
+            return FALSE;
+        }
+        if(FXRex("[\\d\\d:\\d\\d:\\d\\d]").match(txt,10))
+        {
+            FXFREE(&txt);
+            return TRUE;
+        }
+        else
+        {
+            FXFREE(&txt);
+            return FALSE;
+        }
+    }
+    return FALSE;
+}
+
+//inspired by FXDirList
+void LogViewer::Scan()
+{
+    FXString pathname;
+    LogItem *item;
+    FXStat info;
+    if(!treeHistory->getFirstItem())
+        LoadTree();
+    item = (LogItem*)treeHistory->getFirstItem();
+    while(item)
+    {
+        if(item->isDirectory() /*&& item->isExpanded()*/)
+        {
+          // Get the full path of the item
+          pathname=GetItemPathname(item);
+          // Stat this directory; should not fail as parent has been scanned already
+          FXStat::statFile(pathname,info);
+          // Get the mod date of the item
+          FXTime newdate=info.touched();
+          // date was changed
+          if(item->date!=newdate || (!item->getNumChildren() && item->isExpanded()))
+          {
+              // And do the refresh
+              ListChildItems(item);
+              treeHistory->sortChildItems(item);
+              // Remember when we did this
+              item->date=newdate;
+          }
+          // Go deeper
+          if(item->first)
+          {
+              item=(LogItem*)item->first;
+              continue;
+          }
+        }
+        // Go up
+        while(!item->next && item->parent)
+        {
+            item=(LogItem*)item->parent;
+        }
+        // Go to next
+        item=(LogItem*)item->next;
+    }
+}
 
 

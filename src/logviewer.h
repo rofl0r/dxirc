@@ -190,6 +190,8 @@ private:
     FXString GetItemPathname(const FXTreeItem* item);
     void ListChildItems(LogItem *par);
     void EnableAllItems();
+    FXbool IsRightFile(const FXString &path, const FXString &name);
+    void Scan();
 
     FXVerticalFrame *listframe, *textframe, *treeframe;
     FXHorizontalFrame *content, *buttonframe, *searchframe;
