@@ -93,7 +93,8 @@ class IrcSocket: public FXObject
         void SetRealName(const FXString &rname) { realName = rname; }
         void SetStartChannels(const FXString &channels) { startChannels = utils::RemoveSpaces(channels); }
         void SetStartCommands(const FXString &commands) { startCommands = commands; }
-        void SetUsersList(const dxIgnoreUserArray &ulst) { usersList = ulst;}
+        void SetUsersList(const dxIgnoreUserArray &ulst) { usersList = ulst; }
+        dxIgnoreUserArray GetUsersList() { return usersList; }
         void SetUseSsl(const FXbool &ussl) { useSsl = ussl;}
         void SetReconnect(const FXbool &rcn) { reconnect = rcn; }
         void SetNumberAttempt(const FXint &na) { numberAttempt = na; }
@@ -155,6 +156,8 @@ class IrcSocket: public FXObject
         FXbool SendWhoami();
         FXbool SendWhois(const FXString &params);
         FXbool SendWhowas(const FXString &params);
+        FXbool IsUserIgnored(const FXString &nick, const FXString &user, const FXString &host, const FXString &on);
+        FXbool IsUserIgnored(const FXString &nick, const FXString &on);
 
         long OnIORead(FXObject*, FXSelector, void*);
         long OnIOWrite(FXObject*, FXSelector, void*);
@@ -226,7 +229,6 @@ class IrcSocket: public FXObject
         void Error(const FXString&);
         void Unknown(const FXString&, const FXString&);
         void ParseRplIsupport(FXString);
-        FXbool IsUserIgnored(const FXString &nick, const FXString &user, const FXString &host, const FXString &on);        
         void MakeStartChannels();
         void ClearChannelsCommands(FXbool);
         FXuint StringIPToBinary(const FXString &address);

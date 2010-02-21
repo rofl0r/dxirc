@@ -78,6 +78,10 @@ FXDEFMAP(dxirc) dxircMap[] = {
     FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_COMMAND,     dxirc::OnIrcCommand),
     FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_MYMSG,       dxirc::OnIrcMyMsg),
     FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_NEWTETRIS,   dxirc::OnNewTetris),
+    FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_ADDICOMMAND, dxirc::OnAddIgnoreCommand),
+    FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_RMICOMMAND,  dxirc::OnRemoveIgnoreCommand),
+    FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_ADDIUSER,    dxirc::OnAddIgnoreUser),
+    FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_RMIUSER,     dxirc::OnRemoveIgnoreUser),
     FXMAPFUNC(SEL_COMMAND,      DccDialog::ID_DCCCANCEL,    dxirc::OnCommandDccCancel)
 };
 
@@ -1742,6 +1746,7 @@ void dxirc::OnIrcPrivmsgAndAction(IrcSocket *server, IrcEvent *ev)
 void dxirc::OnIrcJoin(IrcSocket *server, IrcEvent *ev)
 {
 #ifdef HAVE_LUA
+    if(server->IsUserIgnored(ev->param1, ev->param2)) return;
     if(!scripts.no() || !scriptEvents.no()) return;
     for(FXint i=0; i<scriptEvents.no(); i++)
     {
@@ -2323,6 +2328,166 @@ long dxirc::OnNewMsg(FXObject *obj, FXSelector, void*)
     if(trayIcon && trayIcon->getIcon() == trayicon && (!shown() || static_cast<IrcTabItem*>(tabbook->childAtIndex(tabbook->getCurrent()*2)) != static_cast<IrcTabItem*>(obj)))
         trayIcon->setIcon(newm);
 #endif
+    return 1;
+}
+
+//handle for: /ignore addcmd
+long dxirc::OnAddIgnoreCommand(FXObject *sender, FXSelector, void *data)
+{
+    if(compare(sender->getClassName(), "IrcTabItem") != 0) return 0;
+    IrcTabItem *tab = static_cast<IrcTabItem*>(sender);
+    FXString text = static_cast<FXString*>(data)->text();
+    FXString available[10] = { "away", "ban", "ctcp", "join", "me", "nick", "notice", "mode", "part", "quit"};
+    FXbool canAdd = FALSE;
+    for(FXint i=0; i<10; i++)
+    {
+        if(comparecase(text,available[i])==0)
+        {
+            canAdd = TRUE;
+            break;
+        }
+    }
+    if(!canAdd)
+    {
+        tab->AppendStyledText(FXStringFormat(_("'%s' can't be added to ignored commands"), text.text()), 4, FALSE);
+        return 1;
+    }
+    else
+    {
+        for(FXint i=0; i<commandsList.contains(';'); i++)
+        {
+            if(comparecase(text,commandsList.section(';', i))==0)
+            {
+                tab->AppendStyledText(FXStringFormat(_("'%s' is already added in ignored commands"), text.text()), 4, FALSE);
+                return 1;
+            }
+        }
+        tab->AppendStyledText(FXStringFormat(_("'%s' was added to ignored commands"), text.text()), 3, FALSE);
+        commandsList.append(text+";");
+        SaveConfig();
+        for(FXint i = 0; i<tabbook->numChildren(); i+=2)
+        {
+            if(compare(tabbook->childAtIndex(i)->getClassName(), "IrcTabItem") == 0)
+            {
+                IrcTabItem *irctab = static_cast<IrcTabItem*>(tabbook->childAtIndex(i));
+                irctab->SetCommandsList(commandsList);
+            }
+        }
+    }
+    return 1;
+}
+
+//handle for: /ignore rmcmd
+long dxirc::OnRemoveIgnoreCommand(FXObject *sender, FXSelector, void *data)
+{
+    if(compare(sender->getClassName(), "IrcTabItem") != 0) return 0;
+    IrcTabItem *tab = static_cast<IrcTabItem*>(sender);
+    FXString text = static_cast<FXString*>(data)->text();
+    FXString tempList = "";
+    FXbool inCommands = FALSE;
+    for(FXint i=0; i<commandsList.contains(';'); i++)
+    {
+        if(comparecase(text,commandsList.section(';', i))==0)
+        {
+            tab->AppendStyledText(FXStringFormat(_("'%s' was removed from ignored commands"), text.text()), 3, FALSE);
+            inCommands = TRUE;
+        }
+        else
+            tempList.append(commandsList.section(';', i)+";");
+    }
+    if(!inCommands) tab->AppendStyledText(FXStringFormat(_("'%s' isn't in ignored commands"), text.text()), 4, FALSE);
+    commandsList = tempList;
+    SaveConfig();
+    for(FXint i = 0; i<tabbook->numChildren(); i+=2)
+    {
+        if(compare(tabbook->childAtIndex(i)->getClassName(), "IrcTabItem") == 0)
+        {
+            IrcTabItem *irctab = static_cast<IrcTabItem*>(tabbook->childAtIndex(i));
+            irctab->SetCommandsList(commandsList);
+        }
+    }
+    return 1;
+}
+
+//handle for: /ignore addusr
+long dxirc::OnAddIgnoreUser(FXObject *sender, FXSelector, void *data)
+{
+    if(compare(sender->getClassName(), "IrcTabItem") != 0) return 0;
+    IrcTabItem *tab = static_cast<IrcTabItem*>(sender);
+    FXString text = static_cast<FXString*>(data)->text();
+    FXString user = text.section(' ',0);
+    FXString channel = text.section(' ',1);
+    FXString server = utils::GetParam(text, 3, TRUE);
+    if(usersList.no())
+    {
+        FXbool updated = FALSE;
+        for(FXint i=0; i<usersList.no(); i++)
+        {
+            if(compare(user, usersList[i].nick)==0)
+            {
+                updated = TRUE;
+                channel.empty() ? usersList[i].channel = "all" : usersList[i].channel = channel;
+                server.empty() ? usersList[i].server = "all" : usersList[i].server = server;
+                tab->AppendStyledText(FXStringFormat(_("'%s' was updated in ignored users"), user.text()), 3, FALSE);
+                break;
+            }
+        }
+        if(!updated)
+        {
+            IgnoreUser iuser;
+            iuser.nick = user;
+            channel.empty() ? iuser.channel = "all" : iuser.channel = channel;
+            server.empty() ? iuser.server = "all" : iuser.server = server;
+            usersList.append(iuser);
+            tab->AppendStyledText(FXStringFormat(_("'%s' was added to ignored users"), user.text()), 3, FALSE);
+        }
+    }
+    else
+    {
+        IgnoreUser iuser;
+        iuser.nick = user;
+        channel.empty() ? iuser.channel = "all" : iuser.channel = channel;
+        server.empty() ? iuser.server = "all" : iuser.server = server;
+        usersList.append(iuser);
+        tab->AppendStyledText(FXStringFormat(_("'%s' was added to ignored users"), user.text()), 3, FALSE);
+    }
+    SaveConfig();
+    for(FXint i = 0; i<servers.no(); i++)
+    {
+        servers[i]->SetUsersList(usersList);
+    }
+    return 1;
+}
+
+//handle for: /ignore rmusr
+long dxirc::OnRemoveIgnoreUser(FXObject *sender, FXSelector, void *data)
+{
+    if(compare(sender->getClassName(), "IrcTabItem") != 0) return 0;
+    IrcTabItem *tab = static_cast<IrcTabItem*>(sender);
+    FXString text = static_cast<FXString*>(data)->text();
+    FXbool updated = FALSE;
+    if(usersList.no())
+    {
+        for(FXint i=usersList.no()-1; i>-1; i--)
+        {
+            if(compare(text, usersList[i].nick)==0)
+            {
+                updated = TRUE;
+                usersList.erase(i);
+                tab->AppendStyledText(FXStringFormat(_("'%s' was removed from ignored users"), text.text()), 3, FALSE);
+                break;
+            }
+        }
+        if(!updated)
+        {
+            tab->AppendStyledText(FXStringFormat(_("'%s' wasn't removed from ignored users"), text.text()), 3, FALSE);
+        }
+    }
+    SaveConfig();
+    for(FXint i = 0; i<servers.no(); i++)
+    {
+        servers[i]->SetUsersList(usersList);
+    }
     return 1;
 }
 

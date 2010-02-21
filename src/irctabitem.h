@@ -108,6 +108,10 @@ class IrcTabItem: public FXTabItem
             ID_NEWTETRIS,
             ID_DCCCHAT, //dcc chat on right click
             ID_DCCSEND, //dcc sending on right click
+            ID_ADDICOMMAND, //for handle /ignore addcmd
+            ID_RMICOMMAND, //for handle /ignore rmcmd
+            ID_ADDIUSER, //for handle /ignore addusr
+            ID_RMIUSER, //for handle /ignore rmusr
             ID_LAST
         };
 

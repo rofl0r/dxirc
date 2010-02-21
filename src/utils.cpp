@@ -51,6 +51,7 @@ namespace utils
         commands.append("EXEC");
 #endif
         commands.append("HELP");
+        commands.append("IGNORE");
         commands.append("INVITE");
         commands.append("JOIN");        
         commands.append("KICK");

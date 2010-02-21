@@ -1170,11 +1170,11 @@ void IrcSocket::Numeric(const FXint &command, const FXString &params)
         {
             //now nothing action
         }break;
-        case 331: //RPL_UNAWAY
+        case 331: //RPL_NOTOPIC
         {
             SendEvent(IRC_331, utils::GetParam(params, 2, FALSE), _("No topic is set"));
         }break;
-        case 332: //RPL_UNAWAY
+        case 332: //RPL_TOPIC
         {
             SendEvent(IRC_332, utils::GetParam(params, 2, FALSE), FXStringFormat(_("Topic for %s : %s"), utils::GetParam(params, 2, FALSE).text(), utils::GetParam(params, 3, TRUE).after(':').text()));
         }break;
@@ -1623,6 +1623,8 @@ void IrcSocket::Ctcp(const FXString &from, const FXString &params)
     FXString ctcpRest = msg.after(' ');
     if(ctcpCommand == "VERSION")
     {
+        if(IsUserIgnored(nick, from.after('!').before('@'), from.after('@'), to))
+            return;
         SendEvent(IRC_CTCPREQUEST, nick, ctcpCommand);
         SendVersion(nick);
     }
@@ -1633,6 +1635,8 @@ void IrcSocket::Ctcp(const FXString &from, const FXString &params)
     }
     else if(ctcpCommand == "PING")
     {
+        if(IsUserIgnored(nick, from.after('!').before('@'), from.after('@'), to))
+            return;
         SendEvent(IRC_CTCPREQUEST, nick, ctcpCommand);
         SendCtcpNotice(nick, ctcpCommand+" "+ctcpRest);
     }
@@ -1641,10 +1645,14 @@ void IrcSocket::Ctcp(const FXString &from, const FXString &params)
         FXString dccCommand = utils::GetParam(ctcpRest, 1, FALSE).upper();
         if(dccCommand == "CHAT")
         {
+            if(IsUserIgnored(nick, from.after('!').before('@'), from.after('@'), to))
+                return;
             SendEvent(IRC_DCCCHAT, nick, BinaryIPToString(utils::GetParam(ctcpRest, 3, FALSE)), utils::GetParam(ctcpRest, 4, FALSE));
         }
         if(dccCommand == "SEND")
         {
+            if(IsUserIgnored(nick, from.after('!').before('@'), from.after('@'), to))
+                return;
             if(utils::GetParam(ctcpRest, 5, FALSE) != utils::GetParam(ctcpRest, 6, FALSE)) //passive send
             {
                 if(FXIntVal(utils::GetParam(ctcpRest, 4, FALSE)))
@@ -1658,16 +1666,22 @@ void IrcSocket::Ctcp(const FXString &from, const FXString &params)
     }
     else if(ctcpCommand == "USERINFO")
     {
+        if(IsUserIgnored(nick, from.after('!').before('@'), from.after('@'), to))
+            return;
         SendEvent(IRC_CTCPREQUEST, nick, ctcpCommand);
         SendCtcpNotice(nick, ctcpCommand+" "+realName);
     }
     else if(ctcpCommand == "CLIENTINFO")
     {
+        if(IsUserIgnored(nick, from.after('!').before('@'), from.after('@'), to))
+            return;
         SendEvent(IRC_CTCPREQUEST, nick, ctcpCommand);
         SendCtcpNotice(nick, "CLIENTINFO ACTION CLIENTINFO PING TIME USERINFO VERSION");
     }
     else if(ctcpCommand == "TIME")
     {
+        if(IsUserIgnored(nick, from.after('!').before('@'), from.after('@'), to))
+            return;
         SendEvent(IRC_CTCPREQUEST, nick, ctcpCommand);
         SendCtcpNotice(nick, ctcpCommand+" "+FXSystem::time("%x %X", FXSystem::now()));
     }
@@ -1736,6 +1750,8 @@ void IrcSocket::Notice(const FXString &from, const FXString &params)
     FXString msg = utils::GetParam(params, 2, TRUE).after(':');
     if(msg[0] == '\001')
     {
+        if(IsUserIgnored(nick, from.after('!').before('@'), from.after('@'), to))
+            return;
         SendEvent(IRC_CTCPREPLY, nick, msg.after('\001').before('\001'));
     }
     else
@@ -1782,7 +1798,7 @@ void IrcSocket::Invite(const FXString &from, const FXString &params)
     FXString to = utils::GetParam(params, 1, FALSE);
     FXString channel = utils::GetParam(params, 2, FALSE);
     if (channel[0] == ':') channel = channel.after(':');
-    SendEvent(IRC_INVITE, nick, to, channel);
+    if(!IsUserIgnored(nick, from.after('!').before('@'), from.after('@'), channel)) SendEvent(IRC_INVITE, nick, to, channel);
 }
 
 void IrcSocket::Kick(const FXString &from, const FXString &params)
@@ -2575,6 +2591,54 @@ FXbool IrcSocket::IsUserIgnored(const FXString &nick, const FXString &user, cons
     FXbool bhost = FALSE;
     FXbool bchannel = FALSE;
     FXbool bserver = FALSE;
+    for(FXint i=0; i<usersList.no(); i++)
+    {
+        FXString inick, iuser, ihost;
+        inick = usersList[i].nick.before('!');
+        iuser = usersList[i].nick.after('!').before('@');
+        ihost = usersList[i].nick.after('@');
+        if(FXRex(FXString("\\<"+inick+"\\>").substitute("*","\\w*")).match(nick)) bnick = TRUE;
+        if(FXRex(FXString("\\<"+iuser+"\\>").substitute("*","\\w*")).match(user) || iuser.empty()) buser = TRUE;
+        if(FXRex(FXString("\\<"+ihost+"\\>").substitute("*","\\w*")).match(host) || ihost.empty()) bhost = TRUE;
+        if(usersList[i].channel == "all") bchannel = TRUE;
+        if(usersList[i].channel.contains(','))
+        {
+            for(FXint j=1; j<usersList[i].channel.contains(',')+2; j++)
+            {
+                if(FXRex(FXString(utils::GetParam(usersList[i].channel, j, FALSE, ',')+"\\>").substitute("*","\\w*")).match(on))
+                {
+                    bchannel = TRUE;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            if(FXRex(FXString(usersList[i].channel+"\\>").substitute("*","\\w*")).match(on)) bchannel = TRUE;
+        }
+        if(usersList[i].server == "all") bserver = TRUE;
+        if(FXRex(FXString("\\<"+usersList[i].server+"\\>").substitute("*","\\w*")).match(serverName)) bserver = TRUE;
+    }
+    return bnick && buser && bhost && bchannel && bserver;
+}
+
+FXbool IrcSocket::IsUserIgnored(const FXString &nick, const FXString &on)
+{
+    FXbool bnick = FALSE;
+    FXbool buser = FALSE;
+    FXbool bhost = FALSE;
+    FXbool bchannel = FALSE;
+    FXbool bserver = FALSE;
+    FXString user, host;
+    for(FXint i = 0; i < nicks.no(); i++)
+    {
+        if(nick == nicks[i].nick)
+        {
+            user = nicks[i].user;
+            host = nicks[i].host;
+            break;
+        }
+    }
     for(FXint i=0; i<usersList.no(); i++)
     {
         FXString inick, iuser, ihost;

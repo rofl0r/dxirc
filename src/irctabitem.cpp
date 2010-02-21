@@ -1392,6 +1392,46 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
         {
             return ShowHelp(commandtext.after(' ').lower().trim());
         }
+        if(command == "ignore")
+        {
+            FXString ignorecommand = commandtext.after(' ').before(' ');
+            FXString ignoretext = commandtext.after(' ').after(' ');
+            if(ignorecommand.empty())
+            {
+                AppendIrcStyledText(_("/ignore <list|addcmd|rmcmd|addusr|rmusr> [command|user] [channel] [server]"), 4, FXSystem::now());
+                return FALSE;
+            }
+            if(comparecase(ignorecommand, "list")==0)
+            {
+                AppendIrcStyledText(_("Ignored commands:"), 7, FXSystem::now());
+                if(commandsList.empty()) AppendIrcText(_("No ignored commands"), FXSystem::now());
+                else AppendIrcText(commandsList.rbefore(';'), FXSystem::now());
+                AppendIrcStyledText(_("Ignored users:"), 7, FXSystem::now());
+                dxIgnoreUserArray users = server->GetUsersList();
+                if(!users.no()) AppendIrcText(_("No ignored users"), FXSystem::now());
+                else
+                {
+                    for(FXint i=0; i<users.no(); i++)
+                    {
+                        AppendIrcText(FXStringFormat(_("%s on channel(s): %s and server(s): %s"), users[i].nick.text(), users[i].channel.text(), users[i].server.text()), FXSystem::now());
+                    }
+                }
+            }
+            else if(comparecase(ignorecommand, "addcmd")==0)
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_ADDICOMMAND), &ignoretext);
+            else if(comparecase(ignorecommand, "rmcmd")==0)
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_RMICOMMAND), &ignoretext);
+            else if(comparecase(ignorecommand, "addusr")==0)
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_ADDIUSER), &ignoretext);
+            else if(comparecase(ignorecommand, "rmusr")==0)
+                parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_RMIUSER), &ignoretext);
+            else
+            {
+                AppendIrcStyledText(FXStringFormat(_("'%s' isn't <list|addcmd|rmcmd|addusr|rmusr>"), ignorecommand.text()), 4, FXSystem::now());
+                return FALSE;
+            }
+            return TRUE;
+        }
         if(command == "invite")
         {
             if(server->GetConnected())
@@ -2355,6 +2395,15 @@ FXbool IrcTabItem::ShowHelp(FXString command)
         AppendIrcStyledText(_("HELP <command>, shows help for command."), 3, FXSystem::now());
         return TRUE;
     }
+    if(command == "ignore")
+    {
+        AppendIrcStyledText(_("IGNORE list, shows list ignored commands and users."), 3, FXSystem::now());
+        AppendIrcStyledText(_("IGNORE addcmd <command>, adds command to ignored commands."), 3, FXSystem::now());
+        AppendIrcStyledText(_("IGNORE rmcmd <command>, removes command from ignored commands."), 3, FXSystem::now());
+        AppendIrcStyledText(_("IGNORE addusr <user>, adds user to ignored users."), 3, FXSystem::now());
+        AppendIrcStyledText(_("IGNORE rmusr <user>, removes user from ignored users."), 3, FXSystem::now());
+        return TRUE;
+    }
     if(command == "invite")
     {
         AppendIrcStyledText(_("INVITE <nick> <channel>, invites someone to a channel."), 3, FXSystem::now());
@@ -3098,7 +3147,7 @@ void IrcTabItem::OnIrcJoin(IrcEvent* ev)
 {
     if(comparecase(ev->param2, getText()) == 0 && ev->param1 != server->GetNickName())
     {
-        if(!IsCommandIgnored("join")) AppendIrcStyledText(FXStringFormat(_("%s has joined to %s"), ev->param1.text(), ev->param2.text()), 1, ev->time);
+        if(!IsCommandIgnored("join") && !server->IsUserIgnored(ev->param1, getText())) AppendIrcStyledText(FXStringFormat(_("%s has joined to %s"), ev->param1.text(), ev->param2.text()), 1, ev->time);
         AddUser(ev->param1);
     }
 }
@@ -3111,11 +3160,11 @@ void IrcTabItem::OnIrcQuit(IrcEvent* ev)
         RemoveUser(ev->param1);
         if(ev->param2.empty())
         {
-            if(!IsCommandIgnored("quit")) AppendIrcStyledText(FXStringFormat(_("%s has quit"), ev->param1.text()), 1, ev->time);
+            if(!IsCommandIgnored("quit") && !server->IsUserIgnored(ev->param1, getText())) AppendIrcStyledText(FXStringFormat(_("%s has quit"), ev->param1.text()), 1, ev->time);
         }
         else
         {
-            if(!IsCommandIgnored("quit"))AppendIrcStyledText(FXStringFormat(_("%s has quit (%s)"), ev->param1.text(), +ev->param2.text()), 1, ev->time);
+            if(!IsCommandIgnored("quit") && !server->IsUserIgnored(ev->param1, getText()))AppendIrcStyledText(FXStringFormat(_("%s has quit (%s)"), ev->param1.text(), +ev->param2.text()), 1, ev->time);
         }
     }
     else if(type == QUERY && getText() == ev->param1)
@@ -3129,8 +3178,8 @@ void IrcTabItem::OnIrcPart(IrcEvent* ev)
 {
     if(comparecase(ev->param2, getText()) == 0)
     {
-        if(ev->param3.empty() && !IsCommandIgnored("part")) AppendIrcStyledText(FXStringFormat(_("%s has parted %s"), ev->param1.text(), ev->param2.text()), 1, ev->time);
-        else if(!IsCommandIgnored("part")) AppendIrcStyledText(FXStringFormat(_("%s has parted %s (%s)"), ev->param1.text(), ev->param2.text(), ev->param3.text()), 1, ev->time);
+        if(ev->param3.empty() && !IsCommandIgnored("part") && !server->IsUserIgnored(ev->param1, getText())) AppendIrcStyledText(FXStringFormat(_("%s has parted %s"), ev->param1.text(), ev->param2.text()), 1, ev->time);
+        else if(!IsCommandIgnored("part") && !server->IsUserIgnored(ev->param1, getText())) AppendIrcStyledText(FXStringFormat(_("%s has parted %s (%s)"), ev->param1.text(), ev->param2.text(), ev->param3.text()), 1, ev->time);
         RemoveUser(ev->param1);
     }
 }
@@ -3191,7 +3240,7 @@ void IrcTabItem::OnIrcNick(IrcEvent* ev)
     if(users->findItem(ev->param1) != -1)
     {
         if(ev->param2 == server->GetNickName() && !IsCommandIgnored("nick")) AppendIrcStyledText(FXStringFormat(_("You're now known as %s"), ev->param2.text()), 1, ev->time);
-        else if(!IsCommandIgnored("nick")) AppendIrcStyledText(FXStringFormat(_("%s is now known as %s"), ev->param1.text(), ev->param2.text()), 1, ev->time);
+        else if(!IsCommandIgnored("nick") && !server->IsUserIgnored(ev->param1, getText())) AppendIrcStyledText(FXStringFormat(_("%s is now known as %s"), ev->param1.text(), ev->param2.text()), 1, ev->time);
         ChangeNickUser(ev->param1, ev->param2);
     }
     if(type == QUERY && ev->param1 == getText())
@@ -3277,7 +3326,7 @@ void IrcTabItem::OnIrcUmode(IrcEvent* ev)
                     if(sign)
                     {
                         AddUser(server->GetAdminPrefix()+nick);
-                        if(!IsCommandIgnored("mode"))
+                        if(!IsCommandIgnored("mode") && !server->IsUserIgnored(nick, getText()))
                         {
                             if(nick == server->GetNickName()) AppendIrcStyledText(FXStringFormat(_("%s gave you admin"), moderator.text()), 1, ev->time);
                             else AppendIrcStyledText(FXStringFormat(_("%s gave %s admin"), moderator.text(), nick.text()), 1, ev->time);
@@ -3286,7 +3335,7 @@ void IrcTabItem::OnIrcUmode(IrcEvent* ev)
                     else
                     {
                         AddUser(nick);
-                        if(!IsCommandIgnored("mode"))
+                        if(!IsCommandIgnored("mode") && !server->IsUserIgnored(nick, getText()))
                         {
                             if(nick == server->GetNickName()) AppendIrcStyledText(FXStringFormat(_("%s removed you admin"), moderator.text()), 1, ev->time);
                             else AppendIrcStyledText(FXStringFormat(_("%s removed %s admin"), moderator.text(), nick.text()), 1, ev->time);
@@ -3301,7 +3350,7 @@ void IrcTabItem::OnIrcUmode(IrcEvent* ev)
                     if(sign)
                     {
                         AddUser(server->GetOpPrefix()+nick);
-                        if(!IsCommandIgnored("mode"))
+                        if(!IsCommandIgnored("mode") && !server->IsUserIgnored(nick, getText()))
                         {
                             if(nick == server->GetNickName()) AppendIrcStyledText(FXStringFormat(_("%s gave you op"), moderator.text()), 1, ev->time);
                             else AppendIrcStyledText(FXStringFormat(_("%s gave %s op"), moderator.text(), nick.text()), 1, ev->time);
@@ -3310,7 +3359,7 @@ void IrcTabItem::OnIrcUmode(IrcEvent* ev)
                     else
                     {
                         AddUser(nick);
-                        if(!IsCommandIgnored("mode"))
+                        if(!IsCommandIgnored("mode") && !server->IsUserIgnored(nick, getText()))
                         {
                             if(nick == server->GetNickName()) AppendIrcStyledText(FXStringFormat(_("%s removed you op"), moderator.text()), 1, ev->time);
                             else AppendIrcStyledText(FXStringFormat(_("%s removed %s op"), moderator.text(), nick.text()), 1, ev->time);
@@ -3326,7 +3375,7 @@ void IrcTabItem::OnIrcUmode(IrcEvent* ev)
                     if(sign)
                     {
                         AddUser(server->GetVoicePrefix()+nick);
-                        if(!IsCommandIgnored("mode"))
+                        if(!IsCommandIgnored("mode") && !server->IsUserIgnored(nick, getText()))
                         {
                             if(nick == server->GetNickName()) AppendIrcStyledText(FXStringFormat(_("%s gave you voice"), moderator.text()), 1, ev->time);
                             else AppendIrcStyledText(FXStringFormat(_("%s gave %s voice"), moderator.text(), nick.text()), 1, ev->time);
@@ -3335,7 +3384,7 @@ void IrcTabItem::OnIrcUmode(IrcEvent* ev)
                     else
                     {
                         AddUser(nick);
-                        if(!IsCommandIgnored("mode"))
+                        if(!IsCommandIgnored("mode") && !server->IsUserIgnored(nick, getText()))
                         {
                             if(nick == server->GetNickName()) AppendIrcStyledText(FXStringFormat(_("%s removed you voice"), moderator.text()), 1, ev->time);
                             else AppendIrcStyledText(FXStringFormat(_("%s removed %s voice"), moderator.text(), nick.text()), 1, ev->time);
@@ -3350,7 +3399,7 @@ void IrcTabItem::OnIrcUmode(IrcEvent* ev)
                     if(sign)
                     {
                         AddUser(server->GetHalfopPrefix()+nick);
-                        if(!IsCommandIgnored("mode"))
+                        if(!IsCommandIgnored("mode") && !server->IsUserIgnored(nick, getText()))
                         {
                             if(nick == server->GetNickName()) AppendIrcStyledText(FXStringFormat(_("%s gave you halfop"), moderator.text()), 1, ev->time);
                             else AppendIrcStyledText(FXStringFormat(_("%s gave %s halfop"), moderator.text(), nick.text()), 1, ev->time);
@@ -3359,7 +3408,7 @@ void IrcTabItem::OnIrcUmode(IrcEvent* ev)
                     else
                     {
                         AddUser(nick);
-                        if(!IsCommandIgnored("mode"))
+                        if(!IsCommandIgnored("mode") && !server->IsUserIgnored(nick, getText()))
                         {
                             if(nick == server->GetNickName()) AppendIrcStyledText(FXStringFormat(_("%s removed you halfop"), moderator.text()), 1, ev->time);
                             else AppendIrcStyledText(FXStringFormat(_("%s removed %s halfop"), moderator.text(), nick.text()), 1, ev->time);
@@ -3522,7 +3571,7 @@ void IrcTabItem::OnIrc301(IrcEvent* ev)
 {
     if(parent->getCurrent()*2 == parent->indexOfChild(this) || getText() == ev->param1)
     {
-        if(!IsCommandIgnored("away")) AppendIrcStyledText(FXStringFormat(_("%s is away: %s"),ev->param1.text(), ev->param2.text()), 1, ev->time);
+        if(!IsCommandIgnored("away") && !server->IsUserIgnored(ev->param1, getText())) AppendIrcStyledText(FXStringFormat(_("%s is away: %s"),ev->param1.text(), ev->param2.text()), 1, ev->time);
     }
 }
 
@@ -4112,7 +4161,7 @@ void IrcTabItem::OnBan(const FXString &banmask, const FXbool &sign, const FXStri
                     if(users->getItemText(i) == myNick) AppendIrcStyledText(FXStringFormat(_("You was banned by %s"), sender.text()), 1, time);
                     else
                     {
-                        if(!IsCommandIgnored("ban")) AppendIrcStyledText(FXStringFormat(_("%s was banned by %s"), users->getItemText(i).text(), sender.text()), 1, time);
+                        if(!IsCommandIgnored("ban") && !server->IsUserIgnored(users->getItemText(i), getText())) AppendIrcStyledText(FXStringFormat(_("%s was banned by %s"), users->getItemText(i).text(), sender.text()), 1, time);
                         //RemoveUser(users->getItemText(i));
                     }
                 }

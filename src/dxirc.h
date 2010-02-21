@@ -114,6 +114,10 @@ class dxirc: public FXMainWindow
         long OnIrcCommand(FXObject*, FXSelector, void*);
         long OnIrcMyMsg(FXObject*, FXSelector, void*);
         long OnStatusTimeout(FXObject*, FXSelector, void*);
+        long OnAddIgnoreCommand(FXObject*, FXSelector, void*);
+        long OnRemoveIgnoreCommand(FXObject*, FXSelector, void*);
+        long OnAddIgnoreUser(FXObject*, FXSelector, void*);
+        long OnRemoveIgnoreUser(FXObject*, FXSelector, void*);
         static int OnLuaAddCommand(lua_State*);
         static int OnLuaAddEvent(lua_State*);
         static int OnLuaAddMyMsg(lua_State*);
