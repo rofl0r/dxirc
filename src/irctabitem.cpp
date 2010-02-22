@@ -1416,21 +1416,53 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                         AppendIrcText(FXStringFormat(_("%s on channel(s): %s and server(s): %s"), users[i].nick.text(), users[i].channel.text(), users[i].server.text()), FXSystem::now());
                     }
                 }
+                return TRUE;
             }
             else if(comparecase(ignorecommand, "addcmd")==0)
+            {
+                if(ignoretext.empty())
+                {
+                    AppendIrcStyledText(_("/ignore addcmd <command>, adds command to ignored commands."), 4, FXSystem::now());
+                    return FALSE;
+                }
                 parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_ADDICOMMAND), &ignoretext);
+                return TRUE;
+            }
             else if(comparecase(ignorecommand, "rmcmd")==0)
+            {
+                if(ignoretext.empty())
+                {
+                    AppendIrcStyledText(_("/ignore rmcmd <command>, removes command from ignored commands."), 4, FXSystem::now());
+                    return FALSE;
+                }
                 parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_RMICOMMAND), &ignoretext);
+                return TRUE;
+            }
             else if(comparecase(ignorecommand, "addusr")==0)
+            {
+                if(ignoretext.empty())
+                {
+                    AppendIrcStyledText(_("/ignore addusr <user> [channel] [server], adds user to ignored users."), 4, FXSystem::now());
+                    return FALSE;
+                }
                 parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_ADDIUSER), &ignoretext);
+                return TRUE;
+            }
             else if(comparecase(ignorecommand, "rmusr")==0)
+            {
+                if(ignoretext.empty())
+                {
+                    AppendIrcStyledText(_("/ignore rmusr <user>, removes user from ignored users."), 4, FXSystem::now());
+                    return FALSE;
+                }
                 parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_RMIUSER), &ignoretext);
+                return TRUE;
+            }
             else
             {
                 AppendIrcStyledText(FXStringFormat(_("'%s' isn't <list|addcmd|rmcmd|addusr|rmusr>"), ignorecommand.text()), 4, FXSystem::now());
                 return FALSE;
             }
-            return TRUE;
         }
         if(command == "invite")
         {
@@ -2400,7 +2432,7 @@ FXbool IrcTabItem::ShowHelp(FXString command)
         AppendIrcStyledText(_("IGNORE list, shows list ignored commands and users."), 3, FXSystem::now());
         AppendIrcStyledText(_("IGNORE addcmd <command>, adds command to ignored commands."), 3, FXSystem::now());
         AppendIrcStyledText(_("IGNORE rmcmd <command>, removes command from ignored commands."), 3, FXSystem::now());
-        AppendIrcStyledText(_("IGNORE addusr <user>, adds user to ignored users."), 3, FXSystem::now());
+        AppendIrcStyledText(_("IGNORE addusr <user> [channel] [server], adds user to ignored users."), 3, FXSystem::now());
         AppendIrcStyledText(_("IGNORE rmusr <user>, removes user from ignored users."), 3, FXSystem::now());
         return TRUE;
     }
