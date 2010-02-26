@@ -633,9 +633,11 @@ void LogViewer::LoadTree()
     ritem->setDraggable(FALSE);
     ritem->state = LogItem::FOLDER|LogItem::HASITEMS;
     treeHistory->appendItem(NULL, ritem, TRUE);
+    getApp()->beginWaitCursor();
     ListChildItems(ritem);
     treeHistory->sortChildItems(ritem);
     treeHistory->expandTree(ritem, TRUE);
+    getApp()->endWaitCursor();
 }
 
 // modified FXDirList::listChildItems(FXDirItem *par)
@@ -665,8 +667,6 @@ void LogViewer::ListChildItems(LogItem *par)
 
     // Assume not a link
     islink = FALSE;
-
-    getApp()->beginWaitCursor();
 
     // Managed to open directory
     if (dir.open(directory))
@@ -847,8 +847,6 @@ fnd:
 
     // Need to layout
     treeHistory->recalc();
-
-    getApp()->endWaitCursor();
 }
 
 FXbool LogViewer::IsRightFile(const FXString& path, const FXString& name)
@@ -889,6 +887,7 @@ void LogViewer::Scan()
     if(!treeHistory->getFirstItem())
         LoadTree();
     item = (LogItem*)treeHistory->getFirstItem();
+    getApp()->beginWaitCursor();
     while(item)
     {
         if(item->isDirectory() /*&& item->isExpanded()*/)
@@ -923,6 +922,7 @@ void LogViewer::Scan()
         // Go to next
         item=(LogItem*)item->next;
     }
+    getApp()->endWaitCursor();
 }
 
 
