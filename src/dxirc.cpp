@@ -2383,7 +2383,7 @@ long dxirc::OnNewMsg(FXObject *obj, FXSelector, void*)
     if(trayIcon && trayIcon->getIcon() == trayicon && (!shown() || static_cast<IrcTabItem*>(tabbook->childAtIndex(tabbook->getCurrent()*2)) != static_cast<IrcTabItem*>(obj)))
         trayIcon->setIcon(newm);
 #endif
-    if(static_cast<IrcTabItem*>(tabbook->childAtIndex(tabbook->getCurrent()*2)) != static_cast<IrcTabItem*>(obj))
+    if(!shown() || isMinimized() || static_cast<IrcTabItem*>(tabbook->childAtIndex(tabbook->getCurrent()*2)) != static_cast<IrcTabItem*>(obj))
         utils::PlayFile(pathMessage);
     return 1;
 }
