@@ -1203,4 +1203,27 @@ namespace utils
             return FXStringFormat("%02d:%02d:%02d", hours, mins, secs);
         }
     }
+
+    //play event sound
+    void PlayFile(const FXString &file)
+    {
+        if(!FXStat::exists(file))
+            return;
+#ifdef WIN32
+        PlaySoundA((LPCSTR)file.text(), NULL, SND_FILENAME | SND_ASYNC);
+#else
+        static const char * players[]={"aplay","play","esdplay","artsplay","ossplay",NULL};
+        FXString path = FXSystem::getExecPath();
+        FXString exec;
+        for(int i=0; players[i]!=NULL; i++)
+        {
+            exec = FXPath::search(path, players[i]);
+            if(!exec.empty()) break;
+        }
+        if(exec.empty()) return;
+        if(exec.contains("aplay")) exec += " -q";
+        exec += " "+FXPath::enquote(file)+" &";
+        system(exec.text());
+#endif
+    }
 }

@@ -1,12 +1,12 @@
-SUBDIRS = intl po m4 src icons
-DIST_SUBDIRS = intl po m4 src icons icons/default icons/flags
+SUBDIRS = intl po m4 src icons sounds
+DIST_SUBDIRS = intl po m4 src icons icons/default icons/flags sounds
 
 rcdir = $(prefix)/share/dxirc
 
 EXTRA_DIST = config.h\
              ABOUT-NLS TODO BUGS dxirc.spec.in dxirc.desktop *.png\
              $(top_srcdir)/win/* $(top_srcdir)/icons/*.png $(top_srcdir)/icons/default/*.png $(top_srcdir)/icons/flags/*.png\
-             $(top_srcdir)/debian/*
+             $(top_srcdir)/debian/* $(top_srcdir)/sounds/*.wav
 
 icondir = $(prefix)/share/pixmaps
 icon_DATA = dxirc.png

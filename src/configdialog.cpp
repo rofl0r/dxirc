@@ -36,6 +36,9 @@ FXDEFMAP(ConfigDialog) ConfigDialogMap[] = {
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_ADDUSER, ConfigDialog::OnAddUser),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_MODIFYUSER, ConfigDialog::OnModifyUser),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_DELETEUSER, ConfigDialog::OnDeleteUser),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_ADDFRIEND, ConfigDialog::OnAddFriend),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_MODIFYFRIEND, ConfigDialog::OnModifyFriend),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_DELETEFRIEND, ConfigDialog::OnDeleteFriend),
     FXMAPFUNC(SEL_CHANGED, ConfigDialog::ID_ICONS, ConfigDialog::OnIconsChanged),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_ADDICONS, ConfigDialog::OnAddIcons),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_DELETEICONS, ConfigDialog::OnDeleteIcons),
@@ -60,10 +63,19 @@ FXDEFMAP(ConfigDialog) ConfigDialogMap[] = {
     FXMAPFUNC(SEL_SELECTED, ConfigDialog::ID_USER, ConfigDialog::OnUsersSelected),
     FXMAPFUNC(SEL_DESELECTED, ConfigDialog::ID_USER, ConfigDialog::OnUsersDeselected),
     FXMAPFUNC(SEL_CHANGED, ConfigDialog::ID_USER, ConfigDialog::OnUsersChanged),
+    FXMAPFUNC(SEL_SELECTED, ConfigDialog::ID_FRIEND, ConfigDialog::OnFriendsSelected),
+    FXMAPFUNC(SEL_DESELECTED, ConfigDialog::ID_FRIEND, ConfigDialog::OnFriendsDeselected),
+    FXMAPFUNC(SEL_CHANGED, ConfigDialog::ID_FRIEND, ConfigDialog::OnFriendsChanged),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_DCCPORTD, ConfigDialog::OnDccPortD),
     FXMAPFUNC(SEL_CHANGED, ConfigDialog::ID_DCCPORTD, ConfigDialog::OnDccPortD),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_DCCPORTH, ConfigDialog::OnDccPortH),
-    FXMAPFUNC(SEL_CHANGED, ConfigDialog::ID_DCCPORTH, ConfigDialog::OnDccPortH)
+    FXMAPFUNC(SEL_CHANGED, ConfigDialog::ID_DCCPORTH, ConfigDialog::OnDccPortH),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_SOUNDS, ConfigDialog::OnSounds),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_SOUNDCONNECT, ConfigDialog::OnSoundConnect),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_SOUNDDISCONNECT, ConfigDialog::OnSoundDisconnect),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_SOUNDMESSAGE, ConfigDialog::OnSoundMessage),
+    FXMAPFUNCS(SEL_COMMAND, ConfigDialog::ID_PLAYCONNECT, ConfigDialog::ID_PLAYMESSAGE, ConfigDialog::OnPlay),
+    FXMAPFUNCS(SEL_COMMAND, ConfigDialog::ID_SELECTCONNECT, ConfigDialog::ID_SELECTMESSAGE, ConfigDialog::OnSelectPath)
 };
 
 FXIMPLEMENT(ConfigDialog, FXDialogBox, ConfigDialogMap, ARRAYNUMBER(ConfigDialogMap))
@@ -171,6 +183,22 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     targetDccPortH.setSelector(ID_DCCPORTH);
 
     targetDccTimeout.connect(dccTimeout);
+
+    targetSound.connect(sounds);
+    targetSound.setTarget(this);
+    targetSound.setSelector(ID_SOUNDS);
+    targetSoundConnect.connect(soundConnect);
+    targetSoundConnect.setTarget(this);
+    targetSoundConnect.setSelector(ID_SOUNDCONNECT);
+    targetSoundDisconnect.connect(soundDisconnect);
+    targetSoundDisconnect.setTarget(this);
+    targetSoundDisconnect.setSelector(ID_SOUNDDISCONNECT);
+    targetSoundMessage.connect(soundMessage);
+    targetSoundMessage.setTarget(this);
+    targetSoundMessage.setSelector(ID_SOUNDMESSAGE);
+    targetPathConnect.connect(pathConnect);
+    targetPathDisconnect.connect(pathDisconnect);
+    targetPathMessage.connect(pathMessage);
 
     getApp()->getNormalFont()->create();
     FXFontDesc fontdescription;
@@ -421,12 +449,90 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     FXHorizontalFrame *timeframe = new FXHorizontalFrame(dccpane, LAYOUT_FILL_X);
     new FXLabel(timeframe, _("Time for waiting for connection in seconds"), NULL, LAYOUT_LEFT);
     new FXSpinner(timeframe, 4, &targetDccTimeout, FXDataTarget::ID_VALUE, SPIN_NOMAX|SPIN_CYCLIC|FRAME_SUNKEN|FRAME_THICK);
+
+    FXVerticalFrame *soundpane = new FXVerticalFrame(switcher, LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    new FXLabel(soundpane, _("Sound settings"), NULL, LAYOUT_LEFT);
+    new FXHorizontalSeparator(soundpane, SEPARATOR_LINE|LAYOUT_FILL_X);
+    new FXCheckButton(soundpane, _("Use sounds"), &targetSound, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
+    FXGroupBox *eventsgroup = new FXGroupBox(soundpane, _("Events"), FRAME_GROOVE|LAYOUT_FILL_X|LAYOUT_FILL_Y|LAYOUT_SIDE_TOP);
+    FXVerticalFrame *eventsframe = new FXVerticalFrame(eventsgroup, LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    checkConnect = new FXCheckButton(eventsframe, _("Friend connected"), &targetSoundConnect, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
+    if(!sounds)
+        checkConnect->disable();
+    FXHorizontalFrame *connectframe = new FXHorizontalFrame(eventsframe, LAYOUT_FILL_X);
+    (new FXTextField(connectframe, 30, &targetPathConnect, FXDataTarget::ID_VALUE, TEXTFIELD_READONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X))->disable();
+    selectConnect = new FXButton(connectframe, "...", NULL, this, ID_SELECTCONNECT, FRAME_RAISED|FRAME_THICK);
+    playConnect = new FXButton(connectframe, _("Play"), NULL, this, ID_PLAYCONNECT, FRAME_RAISED|FRAME_THICK);
+    if(!soundConnect || !sounds)
+    {
+        selectConnect->disable();
+        playConnect->disable();
+    }
+    if(!FXStat::exists(pathConnect))
+        playConnect->disable();
+    checkDisconnect = new FXCheckButton(eventsframe, _("Friend disconnected"), &targetSoundDisconnect, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
+    if(!sounds)
+        checkDisconnect->disable();
+    FXHorizontalFrame *disconnectframe = new FXHorizontalFrame(eventsframe, LAYOUT_FILL_X);
+    (new FXTextField(disconnectframe, 30, &targetPathDisconnect, FXDataTarget::ID_VALUE, TEXTFIELD_READONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X))->disable();
+    selectDisconnect = new FXButton(disconnectframe, "...", NULL, this, ID_SELECTDISCONNECT, FRAME_RAISED|FRAME_THICK);
+    playDisconnect = new FXButton(disconnectframe, _("Play"), NULL, this, ID_PLAYDISCONNECT, FRAME_RAISED|FRAME_THICK);
+    if(!soundDisconnect || !sounds)
+    {
+        selectDisconnect->disable();
+        playDisconnect->disable();
+    }
+    if(!FXStat::exists(pathDisconnect))
+        playDisconnect->disable();
+    FXGroupBox *friendsgroup = new FXGroupBox(eventsframe, _("Friends"), FRAME_GROOVE|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    FXVerticalFrame *friendsbuttons = new FXVerticalFrame(friendsgroup, LAYOUT_SIDE_RIGHT|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
+    addFriend = new FXButton(friendsbuttons, _("Add"), NULL, this, ID_ADDFRIEND, FRAME_RAISED|FRAME_THICK);
+    modifyFriend = new FXButton(friendsbuttons, _("Modify"), NULL, this, ID_MODIFYFRIEND, FRAME_RAISED|FRAME_THICK);
+    deleteFriend = new FXButton(friendsbuttons, _("Delete"), NULL, this, ID_DELETEFRIEND, FRAME_RAISED|FRAME_THICK);
+    FXVerticalFrame *friendspane = new FXVerticalFrame(friendsgroup, LAYOUT_FILL_X|LAYOUT_FILL_Y|FRAME_SUNKEN|FRAME_THICK);
+    FXHorizontalFrame *friendsframe = new FXHorizontalFrame(friendspane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    friends = new FXIconList(friendsframe, this, ID_FRIEND, ICONLIST_AUTOSIZE|ICONLIST_DETAILED|ICONLIST_BROWSESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    friends->appendHeader(_("Friend"), NULL, 150);
+    friends->appendHeader(_("Channel(s)"), NULL, 150);
+    friends->appendHeader(_("Server(s)"), NULL, 150);
+    FillFriends();
+    if(friendsList.no())
+    {
+        deleteFriend->enable();
+        modifyFriend->enable();
+    }
+    else
+    {
+        deleteFriend->disable();
+        modifyFriend->disable();
+    }
+    if(!sounds)
+    {
+        addFriend->disable();
+        deleteFriend->disable();
+        modifyFriend->disable();
+    }
+    checkMessage = new FXCheckButton(eventsframe, _("Highlighted message or query message"), &targetSoundMessage, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
+    if(!sounds)
+        checkMessage->disable();
+    FXHorizontalFrame *messageframe = new FXHorizontalFrame(eventsframe, LAYOUT_FILL_X);
+    (new FXTextField(messageframe, 30, &targetPathMessage, FXDataTarget::ID_VALUE, TEXTFIELD_READONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X))->disable();
+    selectMessage = new FXButton(messageframe, "...", NULL, this, ID_SELECTMESSAGE, FRAME_RAISED|FRAME_THICK);
+    playMessage = new FXButton(messageframe, _("Play"), NULL, this, ID_PLAYMESSAGE, FRAME_RAISED|FRAME_THICK);
+    if(!soundMessage || !sounds)
+    {
+        selectMessage->disable();
+        playMessage->disable();
+    }
+    if(!FXStat::exists(pathMessage))
+        playMessage->disable();
     
     new FXButton(buttonframe, _("&General"), NULL, switcher, FXSwitcher::ID_OPEN_THIRD, FRAME_RAISED);
     new FXButton(buttonframe, _("&Look"), NULL, switcher, FXSwitcher::ID_OPEN_FOURTH, FRAME_RAISED);
     new FXButton(buttonframe, _("&Irc Text"), NULL, switcher, FXSwitcher::ID_OPEN_FIRST, FRAME_RAISED);
     new FXButton(buttonframe, _("I&gnore"), NULL, switcher, FXSwitcher::ID_OPEN_SECOND, FRAME_RAISED);
     new FXButton(buttonframe, _("&DCC"), NULL, switcher, FXSwitcher::ID_OPEN_FIFTH, FRAME_RAISED);
+    new FXButton(buttonframe, _("&Sounds"), NULL, switcher, FXSwitcher::ID_OPEN_SIXTH, FRAME_RAISED);
     switcher->setCurrent(2);
 
     for(int i=0; i<6; i++)
@@ -515,6 +621,27 @@ long ConfigDialog::OnUsersChanged(FXObject*, FXSelector, void *ptr)
 {
     FXint i = (FXint)(FXival)ptr;
     users->selectItem(i);
+    return 1;
+}
+
+long ConfigDialog::OnFriendsSelected(FXObject*, FXSelector, void *ptr)
+{
+    FXint i = (FXint)(FXival)ptr;
+    friends->selectItem(i);
+    deleteFriend->enable();
+    return 1;
+}
+
+long ConfigDialog::OnFriendsDeselected(FXObject*, FXSelector, void*)
+{
+    deleteFriend->disable();
+    return 1;
+}
+
+long ConfigDialog::OnFriendsChanged(FXObject*, FXSelector, void *ptr)
+{
+    FXint i = (FXint)(FXival)ptr;
+    friends->selectItem(i);
     return 1;
 }
 
@@ -688,6 +815,98 @@ long ConfigDialog::OnDeleteUser(FXObject*, FXSelector, void*)
     {
         deleteUser->disable();
         modifyUser->disable();
+    }
+    return 1;
+}
+
+long ConfigDialog::OnAddFriend(FXObject*, FXSelector, void*)
+{
+    FXDialogBox dialog(this, _("Add friend"), DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0);
+    FXVerticalFrame *contents = new FXVerticalFrame(&dialog, LAYOUT_SIDE_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 10,10,10,10, 0,0);
+    FXMatrix *matrix = new FXMatrix(contents,2,MATRIX_BY_COLUMNS|LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+
+    new FXLabel(matrix, _("Nick:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    FXTextField *nick = new FXTextField(matrix, 25, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    nick->setText("example");
+    new FXLabel(matrix, _("Channel(s):\tChannels need to be comma separated"), NULL,JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    FXTextField *channel = new FXTextField(matrix, 25, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    channel->setText("all");
+    channel->setTipText(_("Channels need to be comma separated"));
+    new FXLabel(matrix, _("Server:"), NULL,JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    FXTextField *server = new FXTextField(matrix, 25, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    server->setText("all");
+
+    FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
+    new FXButton(buttonframe, _("&Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    new FXButton(buttonframe, _("&OK"), NULL, &dialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+
+    if(dialog.execute(PLACEMENT_CURSOR))
+    {
+        if(!nick->getText().empty() && !NickExist(nick->getText(), FALSE))
+        {
+            IgnoreUser user;
+            user.nick = nick->getText();
+            channel->getText().empty() ? user.channel = "all" : user.channel = channel->getText();
+            server->getText().empty() ? user.server = "all" : user.server = server->getText();
+            friendsList.append(user);
+            friends->appendItem(user.nick+"\t"+user.channel+"\t"+user.server);
+            if(!deleteFriend->isEnabled()) deleteFriend->enable();
+            if(!modifyFriend->isEnabled()) modifyFriend->enable();
+        }
+    }
+    return 1;
+}
+
+long ConfigDialog::OnModifyFriend(FXObject*, FXSelector, void*)
+{
+    FXint i = friends->getCurrentItem();
+    FXString oldnick = friendsList[i].nick;
+
+    FXDialogBox dialog(this, _("Modify friend"), DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0);
+    FXVerticalFrame *contents = new FXVerticalFrame(&dialog, LAYOUT_SIDE_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 10,10,10,10, 0,0);
+    FXMatrix *matrix = new FXMatrix(contents,2,MATRIX_BY_COLUMNS|LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+
+    new FXLabel(matrix, _("Nick:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    FXTextField *nick = new FXTextField(matrix, 25, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    nick->setText(oldnick);
+    new FXLabel(matrix, _("Channel(s):\tChannels need to be comma separated"), NULL,JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    FXTextField *channel = new FXTextField(matrix, 25, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    channel->setText(friendsList[i].channel);
+    new FXLabel(matrix, _("Server:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    FXTextField *server = new FXTextField(matrix, 25, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    server->setText(friendsList[i].server);
+
+    FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
+    new FXButton(buttonframe, _("&Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    new FXButton(buttonframe, _("&OK"), NULL, &dialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+
+    if(dialog.execute(PLACEMENT_CURSOR))
+    {
+        if(!nick->getText().empty() && (!NickExist(nick->getText(), FALSE) || oldnick == nick->getText()))
+        {
+            friendsList[i].nick = nick->getText();
+            channel->getText().empty() ? friendsList[i].channel = "all" : friendsList[i].channel = channel->getText();
+            server->getText().empty() ? friendsList[i].server = "all" : friendsList[i].server = server->getText();
+            friends->setItemText(i, friendsList[i].nick+"\t"+friendsList[i].channel+"\t"+friendsList[i].server);
+        }
+    }
+    return 1;
+}
+
+long ConfigDialog::OnDeleteFriend(FXObject*, FXSelector, void*)
+{
+    FXint i = friends->getCurrentItem();
+    friends->removeItem(i);
+    friendsList.erase(i);
+    if(friendsList.no())
+    {
+        deleteFriend->enable();
+        modifyFriend->enable();
+    }
+    else
+    {
+        deleteFriend->disable();
+        modifyFriend->disable();
     }
     return 1;
 }
@@ -1082,6 +1301,135 @@ long ConfigDialog::OnDccPortH(FXObject*, FXSelector, void*)
     return 1;
 }
 
+long ConfigDialog::OnSounds(FXObject*, FXSelector, void*)
+{
+    if(sounds)
+    {
+        checkConnect->enable();
+        selectConnect->enable();
+        if(FXStat::exists(pathConnect)) playConnect->enable();
+        checkDisconnect->enable();
+        selectDisconnect->enable();
+        if(FXStat::exists(pathDisconnect)) playDisconnect->enable();
+        checkMessage->enable();
+        selectMessage->enable();
+        if(FXStat::exists(pathMessage)) playMessage->enable();
+        addFriend->enable();
+        if(friendsList.no())
+        {
+            deleteFriend->enable();
+            modifyFriend->enable();
+        }
+    }
+    else
+    {
+        checkConnect->disable();
+        selectConnect->disable();
+        playConnect->disable();
+        checkDisconnect->disable();
+        selectDisconnect->disable();
+        playDisconnect->disable();
+        checkMessage->disable();
+        selectMessage->disable();
+        playMessage->disable();
+        addFriend->disable();
+        modifyFriend->disable();
+        deleteFriend->disable();
+    }
+    return 1;
+}
+
+long ConfigDialog::OnSoundConnect(FXObject*, FXSelector, void*)
+{
+    if(soundConnect)
+    {
+        selectConnect->enable();
+        if(FXStat::exists(pathConnect)) playConnect->enable();
+    }
+    else
+    {
+        selectConnect->disable();
+        playConnect->enable();
+    }
+    return 1;
+}
+
+long ConfigDialog::OnSoundDisconnect(FXObject*, FXSelector, void*)
+{
+    if(soundDisconnect)
+    {
+        selectDisconnect->enable();
+        if(FXStat::exists(pathDisconnect)) playDisconnect->enable();
+    }
+    else
+    {
+        selectDisconnect->disable();
+        playDisconnect->enable();
+    }
+    return 1;
+}
+
+long ConfigDialog::OnSoundMessage(FXObject*, FXSelector, void*)
+{
+    if(soundMessage)
+    {
+        selectMessage->enable();
+        if(FXStat::exists(pathMessage)) playMessage->enable();
+    }
+    else
+    {
+        selectMessage->disable();
+        playMessage->enable();
+    }
+    return 1;
+}
+
+long ConfigDialog::OnPlay(FXObject*, FXSelector sel, void*)
+{
+    switch(FXSELID(sel)) {
+        case ID_PLAYCONNECT:
+            utils::PlayFile(pathConnect);
+            return 1;
+        case ID_PLAYDISCONNECT:
+            utils::PlayFile(pathDisconnect);
+            return 1;
+        case ID_PLAYMESSAGE:
+            utils::PlayFile(pathMessage);
+            return 1;
+    }
+    return 1;
+}
+
+long ConfigDialog::OnSelectPath(FXObject*, FXSelector sel, void*)
+{
+    FXFileDialog file(this, _("Select file"));
+    file.setPatternList(_("Sound file (*.wav)"));
+    switch(FXSELID(sel)) {
+        case ID_SELECTCONNECT:
+            if(file.execute(PLACEMENT_CURSOR))
+            {
+                pathConnect = file.getFilename();
+                playConnect->enable();
+            }
+            return 1;
+        case ID_SELECTDISCONNECT:
+            if(file.execute(PLACEMENT_CURSOR))
+            {
+                pathDisconnect = file.getFilename();
+                playDisconnect->enable();
+            }
+            return 1;
+        case ID_SELECTMESSAGE:
+            if(file.execute(PLACEMENT_CURSOR))
+            {
+                pathMessage = file.getFilename();
+                playMessage->enable();
+            }
+            return 1;
+    }
+    return 1;
+}
+
 void ConfigDialog::FillCommnads()
 {
     if(!commandsList.empty())
@@ -1180,6 +1528,17 @@ void ConfigDialog::FillUsers()
     }
 }
 
+void ConfigDialog::FillFriends()
+{
+    if(friendsList.no())
+    {
+        for(FXint i=0; i<friendsList.no(); i++)
+        {
+            friends->appendItem(friendsList[i].nick+"\t"+friendsList[i].channel+"\t"+friendsList[i].server);
+        }
+    }
+}
+
 void ConfigDialog::UpdateCommands()
 {
     commandsList.clear();
@@ -1215,11 +1574,11 @@ FXbool ConfigDialog::ThemeExist(const FXString &ckdTheme)
     return FALSE;
 }
 
-FXbool ConfigDialog::NickExist(const FXString &ckdNick)
+FXbool ConfigDialog::NickExist(const FXString &ckdNick, FXbool user)
 {
-    for(FXint i=0; i<users->getNumItems(); i++)
+    for(FXint i=0; i<(user ? users->getNumItems() : friends->getNumItems()); i++)
     {
-        if(users->getItemText(i) == ckdNick) return TRUE;
+        if((user ? users->getItemText(i) : friends->getItemText(i)) == ckdNick) return TRUE;
     }
     return FALSE;
 }
@@ -1305,6 +1664,19 @@ void ConfigDialog::ReadConfig()
             usersList.append(user);
         }
     }
+    FXint friendsNum = set.readIntEntry("FRIENDS", "number", 0);
+    if(friendsNum)
+    {
+
+        for(FXint i=0; i<friendsNum; i++)
+        {
+            IgnoreUser user;
+            user.nick = set.readStringEntry(FXStringFormat("FRIEND%d", i).text(), "nick", FXStringFormat("xxx%d", i).text());
+            user.channel = set.readStringEntry(FXStringFormat("FRIEND%d", i).text(), "channel", "");
+            user.server = set.readStringEntry(FXStringFormat("FRIEND%d", i).text(), "server", "");
+            friendsList.append(user);
+        }
+    }
     FXint serversNum = set.readIntEntry("SERVERS", "number", 0);
     if(serversNum)
     {
@@ -1352,6 +1724,13 @@ void ConfigDialog::ReadConfig()
     if(dccPortH<0 || dccPortH>65536) dccPortH = 0;
     if(dccPortH<dccPortD) dccPortH = dccPortD;
     dccTimeout = set.readIntEntry("SETTINGS", "dccTimeout", 66);
+    sounds = set.readBoolEntry("SETTINGS", "sounds", FALSE);
+    soundConnect = set.readBoolEntry("SETTINGS", "soundConnect", FALSE);
+    soundDisconnect = set.readBoolEntry("SETTINGS", "soundDisconnect", FALSE);
+    soundMessage = set.readBoolEntry("SETTINGS", "soundMessage", FALSE);
+    pathConnect = set.readStringEntry("SETTINGS", "pathConnect", DXIRC_DATADIR PATHSEPSTRING "sounds" PATHSEPSTRING "connected.wav");
+    pathDisconnect = set.readStringEntry("SETTINGS", "pathDisconnect", DXIRC_DATADIR PATHSEPSTRING "sounds" PATHSEPSTRING "disconnected.wav");
+    pathMessage = set.readStringEntry("SETTINGS", "pathMessage", DXIRC_DATADIR PATHSEPSTRING "sounds" PATHSEPSTRING "message.wav");
 }
 
 void ConfigDialog::SaveConfig()
@@ -1414,6 +1793,17 @@ void ConfigDialog::SaveConfig()
             set.writeStringEntry(FXStringFormat("USER%d", i).text(), "server", usersList[i].server.text());
         }
     }
+    set.writeIntEntry("FRIENDS", "number", friendsList.no());
+    if(friendsList.no())
+    {
+
+        for(FXint i=0; i<friendsList.no(); i++)
+        {
+            set.writeStringEntry(FXStringFormat("FRIEND%d", i).text(), "nick", friendsList[i].nick.text());
+            set.writeStringEntry(FXStringFormat("FRIEND%d", i).text(), "channel", friendsList[i].channel.text());
+            set.writeStringEntry(FXStringFormat("FRIEND%d", i).text(), "server", friendsList[i].server.text());
+        }
+    }
     set.writeIntEntry("SETTINGS","x", owner->getX());
     set.writeIntEntry("SETTINGS","y", owner->getY());
     set.writeIntEntry("SETTINGS","w", owner->getWidth());
@@ -1452,6 +1842,13 @@ void ConfigDialog::SaveConfig()
     set.writeIntEntry("SETTINGS", "dccPortD", dccPortD);
     set.writeIntEntry("SETTINGS", "dccPortH", dccPortH);
     set.writeIntEntry("SETTINGS", "dccTimeout", dccTimeout);
+    set.writeBoolEntry("SETTINGS", "sounds", sounds);
+    set.writeBoolEntry("SETTINGS", "soundConnect", soundConnect);
+    set.writeBoolEntry("SETTINGS", "soundDisconnect", soundDisconnect);
+    set.writeBoolEntry("SETTINGS", "soundMessage", soundMessage);
+    set.writeStringEntry("SETTINGS", "pathConnect", pathConnect.text());
+    set.writeStringEntry("SETTINGS", "pathDisconnect", pathDisconnect.text());
+    set.writeStringEntry("SETTINGS", "pathMessage", pathMessage.text());
     set.setModified();
     set.unparseFile(utils::GetIniFile());
 }

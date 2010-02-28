@@ -91,10 +91,14 @@ class ConfigDialog: public FXDialogBox
             ID_ADDUSER,
             ID_MODIFYUSER,
             ID_DELETEUSER,
+            ID_ADDFRIEND,
+            ID_MODIFYFRIEND,
+            ID_DELETEFRIEND,
             ID_ADDICONS,
             ID_DELETEICONS,
             ID_COMMAND,
             ID_USER,
+            ID_FRIEND,
             ID_IRCCOLORS,
             ID_IRCFONT,
             ID_COLORS,
@@ -116,6 +120,16 @@ class ConfigDialog: public FXDialogBox
             ID_DCCPORTD,
             ID_DCCPORTH,
             ID_DCCTIMEOUT,
+            ID_SOUNDS,
+            ID_SOUNDCONNECT,
+            ID_SOUNDDISCONNECT,
+            ID_SOUNDMESSAGE,
+            ID_PLAYCONNECT,
+            ID_PLAYDISCONNECT,
+            ID_PLAYMESSAGE,
+            ID_SELECTCONNECT,
+            ID_SELECTDISCONNECT,
+            ID_SELECTMESSAGE,
             ID_LAST
         };
 
@@ -124,11 +138,17 @@ class ConfigDialog: public FXDialogBox
         long OnUsersSelected(FXObject*,FXSelector,void*);
         long OnUsersDeselected(FXObject*,FXSelector,void*);
         long OnUsersChanged(FXObject*,FXSelector,void*);
+        long OnFriendsSelected(FXObject*,FXSelector,void*);
+        long OnFriendsDeselected(FXObject*,FXSelector,void*);
+        long OnFriendsChanged(FXObject*,FXSelector,void*);
         long OnAddCommand(FXObject*,FXSelector,void*);
         long OnDeleteCommand(FXObject*,FXSelector,void*);
         long OnAddUser(FXObject*,FXSelector,void*);
         long OnModifyUser(FXObject*,FXSelector,void*);
         long OnDeleteUser(FXObject*,FXSelector,void*);
+        long OnAddFriend(FXObject*,FXSelector,void*);
+        long OnModifyFriend(FXObject*,FXSelector,void*);
+        long OnDeleteFriend(FXObject*,FXSelector,void*);
         long OnColor(FXObject*,FXSelector,void*);
         long OnAccept(FXObject*,FXSelector,void*);
         long OnCancel(FXObject*,FXSelector,void*);
@@ -152,25 +172,31 @@ class ConfigDialog: public FXDialogBox
         long OnDccPathSelect(FXObject*,FXSelector,void*);
         long OnDccPortD(FXObject*,FXSelector,void*);
         long OnDccPortH(FXObject*,FXSelector,void*);
+        long OnSounds(FXObject*,FXSelector,void*);
+        long OnSoundConnect(FXObject*,FXSelector,void*);
+        long OnSoundDisconnect(FXObject*,FXSelector,void*);
+        long OnSoundMessage(FXObject*,FXSelector,void*);
+        long OnPlay(FXObject*,FXSelector,void*);
+        long OnSelectPath(FXObject*,FXSelector,void*);
 
     private:
         ConfigDialog() {}
         ConfigDialog(const ConfigDialog&);
 
         FXList *commands, *icons;
-        FXIconList *users;
+        FXIconList *users, *friends;
         FXButton *addCommand, *deleteCommand, *addUser, *modifyUser, *deleteUser;
         FXButton *addTheme, *deleteTheme, *selectPath, *selectAutoloadPath;
         FXButton *icon1, *icon2, *icon3, *icon4, *icon5, *icon6, *icon7;
-        FXButton *fontButton, *ircfontButton;
-        FXCheckButton *closeToTrayButton;
+        FXButton *fontButton, *ircfontButton, *addFriend, *modifyFriend, *deleteFriend;
+        FXCheckButton *closeToTrayButton, *checkConnect, *checkDisconnect, *checkMessage;
         FXTextField *textTest, *nickCharField;
         FXString commandsList, themePath, themesList, logPath, autoloadPath, dccPath;
         FXString dccIP1, dccIP2, dccIP3, dccIP4;
         FXbool logging, serverWindow, sameCmd, sameList, useTray, coloredNick, closeToTray, reconnect;
-        FXbool usersShown, statusShown, autoload;
+        FXbool usersShown, statusShown, autoload, sounds, soundConnect, soundDisconnect, soundMessage;
         dxServerInfoArray serverList;
-        dxIgnoreUserArray usersList;
+        dxIgnoreUserArray usersList, friendsList;
         FXToolBar *iconsBar;
         IrcColor colors;
         FXint maxAway, numberAttempt, delayAttempt, tabPosition, dccPortD, dccPortH, dccTimeout;
@@ -188,6 +214,10 @@ class ConfigDialog: public FXDialogBox
         FXDataTarget targetMaxAway, targetReconnect, targetNumberAttempt, targetDelayAttempt;
         FXDataTarget targetDccPath, targetLogPath, targetAutoloadPath;
         FXDataTarget targetDccIP1, targetDccIP2, targetDccIP3, targetDccIP4, targetDccPortD, targetDccPortH, targetDccTimeout;
+        FXDataTarget targetSound, targetSoundConnect, targetSoundDisconnect, targetSoundMessage;
+        FXDataTarget targetPathConnect, targetPathDisconnect, targetPathMessage;
+        FXButton *selectConnect, *selectDisconnect, *selectMessage, *playConnect, *playDisconnect, *playMessage;
+        FXString pathConnect, pathDisconnect, pathMessage;
         FXLabel *labelSelected, *labelNocurrent, *labelTip, *label;
         FXVerticalFrame *vframe2, *menuFrame;
         FXLabel *menuLabels[3];
@@ -202,6 +232,7 @@ class ConfigDialog: public FXDialogBox
         FXString FillCommandsCombo();
         void FillIcons();
         void FillUsers();
+        void FillFriends();
         void FillThemes();
         void UpdateCommands();
         void UpdateIcons();
@@ -210,7 +241,7 @@ class ConfigDialog: public FXDialogBox
         void UpdateIrcFont();
         void ShowMessage();
         FXbool ThemeExist(const FXString &ckdTheme);
-        FXbool NickExist(const FXString &ckdNick);
+        FXbool NickExist(const FXString &ckdNick, FXbool user=TRUE);
         void ReadConfig();
         void SaveConfig();
 };

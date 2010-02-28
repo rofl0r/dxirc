@@ -25,6 +25,7 @@
 #ifdef WIN32
  #define WIN32_LEAN_AND_MEAN
  #include <windows.h>
+ #include <mmsystem.h>
 #endif
 #include "defs.h"
 #include <FX885910Codec.h>
@@ -108,6 +109,7 @@ namespace utils
     FXString GetFileSize(const FXString&);
     FXString GetSpeed(FXlong);
     FXString GetRemaining(FXlong, FXlong);
+    void PlayFile(const FXString&);
 }
 
 

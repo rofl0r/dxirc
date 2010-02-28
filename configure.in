@@ -143,7 +143,7 @@ fi
 
 dnl Output
 AC_OUTPUT(Makefile intl/Makefile m4/Makefile po/Makefile.in dxirc.spec src/Makefile
-          icons/Makefile icons/default/Makefile icons/flags/Makefile)
+          icons/Makefile icons/default/Makefile icons/flags/Makefile sounds/Makefile)
 
 echo ""
 echo "Configure finished!"

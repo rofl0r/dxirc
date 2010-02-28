@@ -137,13 +137,14 @@ class dxirc: public FXMainWindow
         dxirc(){}
         FXApp *app;
         dxServerInfoArray serverList;
-        dxIgnoreUserArray usersList;
+        dxIgnoreUserArray usersList, friendsList;
         FXbool usersShown, statusShown, logging, ownServerWindow, tempServerWindow, sameCmd;
         FXbool sameList, useTray, coloredNick, closeToTray, reconnect, autoload;
+        FXbool sounds, soundConnect, soundDisconnect, soundMessage;
         IrcColor colors;
         FXString commandsList, themesList, themePath, logPath, autoloadPath;
         FXint maxAway, numberAttempt, delayAttempt, tabPosition, dccPortD, dccPortH, dccTimeout;
-        FXString nickCompletionChar, fontSpec, dccPath, dccIP;
+        FXString nickCompletionChar, fontSpec, dccPath, dccIP, pathConnect, pathDisconnect, pathMessage;;
         FXFont *ircFont;
         ColorTheme appTheme;
         FXPopup *traymenu;
@@ -159,6 +160,7 @@ class dxirc: public FXMainWindow
         void OnIrcEndmotd();
         void OnIrcPrivmsgAndAction(IrcSocket*, IrcEvent*);
         void OnIrcJoin(IrcSocket*, IrcEvent*);
+        void OnIrcQuit(IrcSocket*, IrcEvent*);
         void OnIrcDccChat(IrcSocket*, IrcEvent*);
         void OnIrcDccServer(IrcSocket*, IrcEvent*);
         void OnIrcDccIn(IrcSocket*, IrcEvent*);
@@ -173,6 +175,7 @@ class dxirc: public FXMainWindow
         FXint GetTabId(IrcSocket*, FXString);
         FXint GetTabId(FXString);
         FXbool IsLastTab(IrcSocket*);
+        FXbool IsFriend(const FXString &nick, const FXString &on, const FXString &server);
         void ConnectServer(FXString hostname, FXint port, FXString pass, FXString nick, FXString rname, FXString channels, FXString commands, FXbool ssl, DCCTYPE dccType=DCC_NONE, FXString dccNick="", IrcSocket *dccParent=0, DccFile dccFile=DccFile());
         void ReadServersConfig();
         void ReadConfig();

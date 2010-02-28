@@ -115,6 +115,7 @@ struct NickInfo {
     FXbool away;
 };
 
+//used for ignoreuser, tracking friends
 struct IgnoreUser {
     FXString nick;
     FXString channel;

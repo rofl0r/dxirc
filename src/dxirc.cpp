@@ -428,6 +428,20 @@ void dxirc::ReadConfig()
             usersList.append(user);
         }
     }
+    FXint friendsNum = set.readIntEntry("FRIENDS", "number", 0);
+    friendsList.clear();
+    if(friendsNum)
+    {
+
+        for(FXint i=0; i<friendsNum; i++)
+        {
+            IgnoreUser user;
+            user.nick = set.readStringEntry(FXStringFormat("FRIEND%d", i).text(), "nick", FXStringFormat("xxx%d", i).text());
+            user.channel = set.readStringEntry(FXStringFormat("FRIEND%d", i).text(), "channel", "");
+            user.server = set.readStringEntry(FXStringFormat("FRIEND%d", i).text(), "server", "");
+            friendsList.append(user);
+        }
+    }
 #ifdef HAVE_LUA
     autoload = set.readBoolEntry("SETTINGS", "autoload", FALSE);
 #else
@@ -442,6 +456,13 @@ void dxirc::ReadConfig()
     dccPortD = set.readIntEntry("SETTINGS", "dccPortD");
     dccPortH = set.readIntEntry("SETTINGS", "dccPortH");
     dccTimeout = set.readIntEntry("SETTINGS", "dccTimeout", 66);
+    sounds = set.readBoolEntry("SETTINGS", "sounds", FALSE);
+    soundConnect = set.readBoolEntry("SETTINGS", "soundConnect", FALSE);
+    soundDisconnect = set.readBoolEntry("SETTINGS", "soundDisconnect", FALSE);
+    soundMessage = set.readBoolEntry("SETTINGS", "soundMessage", FALSE);
+    pathConnect = set.readStringEntry("SETTINGS", "pathConnect", DXIRC_DATADIR PATHSEPSTRING "sounds" PATHSEPSTRING "connected.wav");
+    pathDisconnect = set.readStringEntry("SETTINGS", "pathDisconnect", DXIRC_DATADIR PATHSEPSTRING "sounds" PATHSEPSTRING "disconnected.wav");
+    pathMessage = set.readStringEntry("SETTINGS", "pathMessage", DXIRC_DATADIR PATHSEPSTRING "sounds" PATHSEPSTRING "message.wav");
     setX(xx);
     setY(yy);
     setWidth(ww);
@@ -538,6 +559,17 @@ void dxirc::SaveConfig()
             set.writeStringEntry(FXStringFormat("USER%d", i).text(), "server", usersList[i].server.text());
         }
     }
+    set.writeIntEntry("FRIENDS", "number", friendsList.no());
+    if(friendsList.no())
+    {
+
+        for(FXint i=0; i<friendsList.no(); i++)
+        {
+            set.writeStringEntry(FXStringFormat("FRIEND%d", i).text(), "nick", friendsList[i].nick.text());
+            set.writeStringEntry(FXStringFormat("FRIEND%d", i).text(), "channel", friendsList[i].channel.text());
+            set.writeStringEntry(FXStringFormat("FRIEND%d", i).text(), "server", friendsList[i].server.text());
+        }
+    }
     set.writeIntEntry("SETTINGS","x",getX());
     set.writeIntEntry("SETTINGS","y",getY());
     set.writeIntEntry("SETTINGS","w",getWidth());
@@ -574,6 +606,13 @@ void dxirc::SaveConfig()
     set.writeIntEntry("SETTINGS", "dccPortD", dccPortD);
     set.writeIntEntry("SETTINGS", "dccPortH", dccPortH);
     set.writeIntEntry("SETTINGS", "dccTimeout", dccTimeout);
+    set.writeBoolEntry("SETTINGS", "sounds", sounds);
+    set.writeBoolEntry("SETTINGS", "soundConnect", soundConnect);
+    set.writeBoolEntry("SETTINGS", "soundDisconnect", soundDisconnect);
+    set.writeBoolEntry("SETTINGS", "soundMessage", soundMessage);
+    set.writeStringEntry("SETTINGS", "pathConnect", pathConnect.text());
+    set.writeStringEntry("SETTINGS", "pathDisconnect", pathDisconnect.text());
+    set.writeStringEntry("SETTINGS", "pathMessage", pathMessage.text());
     set.setModified();
     set.unparseFile(utils::GetIniFile());
 }
@@ -1481,6 +1520,11 @@ long dxirc::OnIrcEvent(FXObject *obj, FXSelector, void *data)
         OnIrcJoin(server, ev);
         return 1;
     }
+    if(ev->eventType == IRC_QUIT)
+    {
+        OnIrcQuit(server, ev);
+        return 1;
+    }
     if(ev->eventType == IRC_DCCCHAT)
     {
         OnIrcDccChat(server, ev);
@@ -1586,6 +1630,8 @@ void dxirc::OnIrcQuery(IrcSocket *server, IrcEvent *ev)
 //handle IrcEvent IRC_PART
 void dxirc::OnIrcPart(IrcSocket *server, IrcEvent *ev)
 {
+    if(IsFriend(ev->param1, ev->param2, server->GetServerName()))
+        utils::PlayFile(pathDisconnect);
     if(TabExist(server, ev->param2))
     {
         if(ev->param1 == server->GetNickName())
@@ -1745,6 +1791,8 @@ void dxirc::OnIrcPrivmsgAndAction(IrcSocket *server, IrcEvent *ev)
 //handle IrcEvent IRC_JOIN
 void dxirc::OnIrcJoin(IrcSocket *server, IrcEvent *ev)
 {
+    if(IsFriend(ev->param1, ev->param2, server->GetServerName()))
+        utils::PlayFile(pathConnect);
 #ifdef HAVE_LUA
     if(server->IsUserIgnored(ev->param1, ev->param2)) return;
     if(!scripts.no() || !scriptEvents.no()) return;
@@ -1775,6 +1823,13 @@ void dxirc::OnIrcJoin(IrcSocket *server, IrcEvent *ev)
         }
     }
 #endif    
+}
+
+//handle IrcEvent IRC_QUIT
+void dxirc::OnIrcQuit(IrcSocket *server, IrcEvent *ev)
+{
+    if(IsFriend(ev->param1, "all", server->GetServerName()))
+        utils::PlayFile(pathDisconnect);
 }
 
 //handle IrcEvent IRC_DCCCHAT
@@ -2328,6 +2383,8 @@ long dxirc::OnNewMsg(FXObject *obj, FXSelector, void*)
     if(trayIcon && trayIcon->getIcon() == trayicon && (!shown() || static_cast<IrcTabItem*>(tabbook->childAtIndex(tabbook->getCurrent()*2)) != static_cast<IrcTabItem*>(obj)))
         trayIcon->setIcon(newm);
 #endif
+    if(static_cast<IrcTabItem*>(tabbook->childAtIndex(tabbook->getCurrent()*2)) != static_cast<IrcTabItem*>(obj))
+        utils::PlayFile(pathMessage);
     return 1;
 }
 
@@ -2900,6 +2957,38 @@ FXint dxirc::GetTabId(FXString name)
         if(comparecase(name, static_cast<FXTabItem*>(tabbook->childAtIndex(i))->getText()) == 0) return i/2;
     }
     return -1;
+}
+
+FXbool dxirc::IsFriend(const FXString &nick, const FXString &on, const FXString &server)
+{
+    FXbool bnick = FALSE;
+    FXbool bchannel = FALSE;
+    FXbool bserver = FALSE;
+    for(FXint i=0; i<friendsList.no(); i++)
+    {
+        FXString inick;
+        inick = friendsList[i].nick;
+        if(FXRex(FXString("\\<"+inick+"\\>").substitute("*","\\w*")).match(nick)) bnick = TRUE;
+        if(friendsList[i].channel == "all") bchannel = TRUE;
+        if(friendsList[i].channel.contains(','))
+        {
+            for(FXint j=1; j<friendsList[i].channel.contains(',')+2; j++)
+            {
+                if(FXRex(FXString(utils::GetParam(friendsList[i].channel, j, FALSE, ',')+"\\>").substitute("*","\\w*")).match(on))
+                {
+                    bchannel = TRUE;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            if(FXRex(FXString(friendsList[i].channel+"\\>").substitute("*","\\w*")).match(on)) bchannel = TRUE;
+        }
+        if(friendsList[i].server == "all") bserver = TRUE;
+        if(FXRex(FXString("\\<"+friendsList[i].server+"\\>").substitute("*","\\w*")).match(server)) bserver = TRUE;
+    }
+    return bnick && bchannel && bserver;
 }
 
 FXbool dxirc::IsLastTab(IrcSocket *server)

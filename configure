@@ -12103,7 +12103,7 @@ if test "x$enable_release" = "xyes" ; then
     fi
 fi
 
-ac_config_files="$ac_config_files Makefile intl/Makefile m4/Makefile po/Makefile.in dxirc.spec src/Makefile icons/Makefile icons/default/Makefile icons/flags/Makefile"
+ac_config_files="$ac_config_files Makefile intl/Makefile m4/Makefile po/Makefile.in dxirc.spec src/Makefile icons/Makefile icons/default/Makefile icons/flags/Makefile sounds/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -12850,6 +12850,7 @@ do
     "icons/Makefile") CONFIG_FILES="$CONFIG_FILES icons/Makefile" ;;
     "icons/default/Makefile") CONFIG_FILES="$CONFIG_FILES icons/default/Makefile" ;;
     "icons/flags/Makefile") CONFIG_FILES="$CONFIG_FILES icons/flags/Makefile" ;;
+    "sounds/Makefile") CONFIG_FILES="$CONFIG_FILES sounds/Makefile" ;;
 
   *) as_fn_error "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
