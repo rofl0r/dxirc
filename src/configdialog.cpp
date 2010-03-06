@@ -200,6 +200,8 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     targetPathDisconnect.connect(pathDisconnect);
     targetPathMessage.connect(pathMessage);
 
+    targetStripColors.connect(stripColors);
+
     getApp()->getNormalFont()->create();
     FXFontDesc fontdescription;
     getApp()->getNormalFont()->getFontDesc(fontdescription);
@@ -242,6 +244,7 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     new FXCheckButton(cframe, _("Use same font for commandline"), &targetSameCmd, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
     new FXCheckButton(cframe, _("Use same font for user list"), &targetSameList, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
     new FXCheckButton(cframe, _("Use colored nick"), &targetColoredNick, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
+    new FXCheckButton(cframe, _("Strip colors in text"), &targetStripColors, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
     FXVerticalFrame *tframe = new FXVerticalFrame(hframe, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     text = new FXText(tframe, NULL, 0, LAYOUT_FILL_X|LAYOUT_FILL_Y|TEXT_READONLY);
     text->setScrollStyle(HSCROLLING_OFF);
@@ -1731,6 +1734,7 @@ void ConfigDialog::ReadConfig()
     pathConnect = set.readStringEntry("SETTINGS", "pathConnect", DXIRC_DATADIR PATHSEPSTRING "sounds" PATHSEPSTRING "connected.wav");
     pathDisconnect = set.readStringEntry("SETTINGS", "pathDisconnect", DXIRC_DATADIR PATHSEPSTRING "sounds" PATHSEPSTRING "disconnected.wav");
     pathMessage = set.readStringEntry("SETTINGS", "pathMessage", DXIRC_DATADIR PATHSEPSTRING "sounds" PATHSEPSTRING "message.wav");
+    stripColors = set.readBoolEntry("SETTINGS", "stripColors", TRUE);
 }
 
 void ConfigDialog::SaveConfig()
@@ -1849,6 +1853,7 @@ void ConfigDialog::SaveConfig()
     set.writeStringEntry("SETTINGS", "pathConnect", pathConnect.text());
     set.writeStringEntry("SETTINGS", "pathDisconnect", pathDisconnect.text());
     set.writeStringEntry("SETTINGS", "pathMessage", pathMessage.text());
+    set.writeBoolEntry("SETTINGS", "stripColors", stripColors);
     set.setModified();
     set.unparseFile(utils::GetIniFile());
 }

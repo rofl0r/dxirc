@@ -1,9 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html><head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <meta name="author" content="Unknown">
+  <meta name="author" content="Unknown" >
   <meta name="Description" content="dxirc Lua scripting reference">
-  <meta name="date" content="2010-02-14T19:01:51+0100">
+  <meta name="date" content="2010-03-06T01:53:34+0100" >
   <meta name="Keywords" content="dxirc,lua,scripting,irc">
   <link rel="stylesheet" href="doclua.css" type="text/css">
   <link rel="icon" href="favicon.png" type="image/png">
@@ -24,7 +24,7 @@
   </li>
   <li><a href="#section_3">Complex Example</a></li>
   <li><a href="#section_4">Available Scripts</a></li>
-  <li><a href="#section_5">Copyright and Licence</a></li>	
+  <li><a href="#section_5">Copyright and Licence</a></li>   
 </ol>
 
 <h2 id="section_1">1&nbsp;&nbsp;Introduction</h2>
@@ -233,6 +233,15 @@ with Lua scripting enabled — you can check this in the About dialog.</p>
           <li><code>8</code> — highlighted message.</li>
         </ul>
       </li>
+      <p>You can also use following sequence in <code class="value">text</code> for styled text in dxirc:</p>
+      <ul>
+        <li><code>\2</code> - bold text</li>
+        <li><code>\31</code> - underline text</li>
+        <li><code>\3#......[,#......]</code> - colors</li>
+        <li><code>\15</code> - reset style</li>
+        <p class="caption">Example:</p>
+          <pre><span class="function">dxirc.Print</span>(<span class="string">"\3#ffffff,#ff0000Color with backround\2 bold \31underline+bold\15 reset"</span>)</pre> prints: <span style="background-color:#FF0000;color:#FFFFFF">Color with backround<b> bold <u>underline+bold</u></b></span> reset
+      </ul>
     </ul>
 
     <p class="caption">Example:</p>

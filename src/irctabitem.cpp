@@ -211,9 +211,9 @@ FXDEFMAP(IrcTabItem) IrcTabItemMap[] = {
 
 FXIMPLEMENT(IrcTabItem, FXTabItem, IrcTabItemMap, ARRAYNUMBER(IrcTabItemMap))
 
-IrcTabItem::IrcTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FXuint opts=TAB_TOP_NORMAL, TYPE typ=CHANNEL, IrcSocket *sock=NULL, FXbool oswnd=FALSE, FXbool uswn=TRUE, FXbool logg=FALSE, FXString cmdlst="", FXString lpth="", FXint maxa=200, IrcColor clrs=IrcColor(), FXString nichar=":", FXFont *fnt=NULL, FXbool scmd=FALSE, FXbool slst=FALSE, FXbool cnick=FALSE)
-    : FXTabItem(tab, tabtext, ic, opts), parent(tab), server(sock), type(typ), usersShown(uswn), logging(logg), ownServerWindow(oswnd), sameCmd(scmd), sameList(slst), coloredNick(cnick), colors(clrs),
-    commandsList(cmdlst), logPath(lpth), maxAway(maxa), nickCompletionChar(nichar), logstream(NULL)
+IrcTabItem::IrcTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *ic, FXuint opts, TYPE typ, IrcSocket *sock, FXbool oswnd, FXbool uswn, FXbool logg, FXString cmdlst, FXString lpth, FXint maxa, IrcColor clrs, FXString nichar, FXFont *fnt, FXbool scmd, FXbool slst, FXbool cnick, FXbool sclr)
+    : FXTabItem(tab, tabtext, ic, opts), parent(tab), server(sock), type(typ), usersShown(uswn), logging(logg), ownServerWindow(oswnd), sameCmd(scmd), sameList(slst), coloredNick(cnick), stripColors(sclr),
+        colors(clrs), commandsList(cmdlst), logPath(lpth), maxAway(maxa), nickCompletionChar(nichar), logstream(NULL)
 {
     currentPosition = 0;
     historyMax = 25;
@@ -262,16 +262,10 @@ IrcTabItem::IrcTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FX
     commandline = new FXTextField(mainframe, 25, this, ID_COMMANDLINE, TEXTFIELD_ENTER_ONLY|FRAME_SUNKEN|JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_BOTTOM, 0, 0, 0, 0, 1, 1, 1, 1);
     if(sameCmd) commandline->setFont(fnt);
 
+    FXHiliteStyle style = {colors.text,colors.back,getApp()->getSelforeColor(),getApp()->getSelbackColor(),getApp()->getHiliteColor(),FXRGB(255, 128, 128),colors.back,0};
     for(int i=0; i<17; i++)
     {
-        textStyleList[i].normalForeColor = colors.text;
-        textStyleList[i].normalBackColor = colors.back;
-        textStyleList[i].selectForeColor = getApp()->getSelforeColor();
-        textStyleList[i].selectBackColor = getApp()->getSelbackColor();
-        textStyleList[i].hiliteForeColor = getApp()->getHiliteColor();
-        textStyleList[i].hiliteBackColor = FXRGB(255, 128, 128); // from FXText.cpp
-        textStyleList[i].activeBackColor = colors.back;
-        textStyleList[i].style = 0;
+        textStyleList.append(style);
     }
     //gray text - user commands
     textStyleList[0].normalForeColor = colors.user;
@@ -304,7 +298,7 @@ IrcTabItem::IrcTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FX
     textStyleList[16].normalForeColor = FXRGB(85, 87, 83);
 
     text->setStyled(TRUE);
-    text->setHiliteStyles(textStyleList);
+    text->setHiliteStyles(textStyleList.data());
 
     text->setBackColor(colors.back);
     text->setActiveBackColor(colors.back);
@@ -425,7 +419,7 @@ void IrcTabItem::SetColor(IrcColor clrs)
 
 void IrcTabItem::SetTextBackColor(FXColor clr)
 {
-    for(int i=0; i<17; i++)
+    for(FXint i=0; i<textStyleList.no(); i++)
     {
         textStyleList[i].normalBackColor = clr;
         textStyleList[i].activeBackColor = clr;
@@ -555,6 +549,11 @@ void IrcTabItem::SetColoredNick(FXbool cnick)
     coloredNick = cnick;
 }
 
+void IrcTabItem::SetStripColors(FXbool sclr)
+{
+    stripColors = sclr;
+}
+
 //if highlight==TRUE, highlight tab
 void IrcTabItem::AppendText(FXString msg, FXbool highlight)
 {
@@ -575,7 +574,7 @@ void IrcTabItem::AppendIrcText(FXString msg, FXTime time)
 {
     if(!time) time = FXSystem::now();
     if(type != OTHER) text->appendText("["+FXSystem::time("%H:%M:%S", time) +"] ");
-    AppendLinkText(StripColors(msg, FALSE), 0);
+    AppendLinkText(stripColors ? StripColors(msg, FALSE) : msg, 0);
     MakeLastRowVisible(FALSE);
     this->LogLine(StripColors(msg, TRUE), time);
 }
@@ -585,7 +584,7 @@ void IrcTabItem::AppendIrcNickText(FXString nick, FXString msg, FXint style, FXT
     if(!time) time = FXSystem::now();
     if(type != OTHER) text->appendText("["+FXSystem::time("%H:%M:%S", time) +"] ");
     text->appendStyledText(nick+": ", style);
-    AppendLinkText(StripColors(msg, FALSE), 0);
+    AppendLinkText(stripColors ? StripColors(msg, FALSE) : msg, 0);
     MakeLastRowVisible(FALSE);
     this->LogLine(StripColors("<"+nick+"> "+msg, TRUE), time);
 }
@@ -593,7 +592,8 @@ void IrcTabItem::AppendIrcNickText(FXString nick, FXString msg, FXint style, FXT
 //if highlight==TRUE, highlight tab
 void IrcTabItem::AppendStyledText(FXString text, FXint style, FXbool highlight)
 {
-    AppendIrcStyledText(text, style, 0);
+    if(style) AppendIrcStyledText(text, style, 0);
+    else AppendIrcText(text, 0);
     if(highlight && FXRGB(255,0,0) != this->getTextColor() && parent->getCurrent()*2 != parent->indexOfChild(this))
     {
         if(type != OTHER && text.contains(server->GetNickName()))
@@ -633,12 +633,15 @@ static FXbool Badchar(FXchar c)
     }
 }
 
-void IrcTabItem::AppendLinkText(const FXString &txt, FXint style)
+void IrcTabItem::AppendLinkText(const FXString &txt, FXint stylenum)
 {
-    FXint i=0;
-    FXint linkLength=0;
+    FXint i = 0;
+    FXint linkLength = 0;
     FXbool bold = FALSE;
     FXbool under = FALSE;
+    FXint lastStyle = stylenum;
+    FXColor foreColor = colors.text;
+    FXColor backColor = colors.back;
     FXString normalText = "";
     FXint length = txt.length();
     while(i<length)
@@ -647,10 +650,7 @@ void IrcTabItem::AppendLinkText(const FXString &txt, FXint style)
         {
             if(!normalText.empty())
             {
-                if(bold && under) text->appendStyledText(normalText, 7);
-                else if(bold && !under) text->appendStyledText(normalText, 5);
-                else if(!bold && under) text->appendStyledText(normalText, 6);
-                else text->appendStyledText(normalText, style);
+                text->appendStyledText(normalText, lastStyle);
                 normalText.clear();
             }
             for(FXint j=i; j<length; j++)
@@ -661,7 +661,7 @@ void IrcTabItem::AppendLinkText(const FXString &txt, FXint style)
                 }
                 linkLength++;
             }
-            text->appendStyledText(txt.mid(i, linkLength), linkLength>7 ? 9 : style);
+            text->appendStyledText(txt.mid(i, linkLength), linkLength>7 ? 9 : stylenum);
             i+=linkLength-1;
             linkLength=0;
         }
@@ -669,10 +669,7 @@ void IrcTabItem::AppendLinkText(const FXString &txt, FXint style)
         {
             if(!normalText.empty())
             {
-                if(bold && under) text->appendStyledText(normalText, 7);
-                else if(bold && !under) text->appendStyledText(normalText, 5);
-                else if(!bold && under) text->appendStyledText(normalText, 6);
-                else text->appendStyledText(normalText, style);
+                text->appendStyledText(normalText, lastStyle);
                 normalText.clear();
             }
             for(FXint j=i; j<length; j++)
@@ -683,7 +680,7 @@ void IrcTabItem::AppendLinkText(const FXString &txt, FXint style)
                 }
                 linkLength++;
             }
-            text->appendStyledText(txt.mid(i, linkLength), linkLength>8 ? 9 : style);
+            text->appendStyledText(txt.mid(i, linkLength), linkLength>8 ? 9 : stylenum);
             i+=linkLength-1;
             linkLength=0;
         }
@@ -691,10 +688,7 @@ void IrcTabItem::AppendLinkText(const FXString &txt, FXint style)
         {
             if(!normalText.empty())
             {
-                if(bold && under) text->appendStyledText(normalText, 7);
-                else if(bold && !under) text->appendStyledText(normalText, 5);
-                else if(!bold && under) text->appendStyledText(normalText, 6);
-                else text->appendStyledText(normalText, style);
+                text->appendStyledText(normalText, lastStyle);
                 normalText.clear();
             }
             for(FXint j=i; j<length; j++)
@@ -705,7 +699,7 @@ void IrcTabItem::AppendLinkText(const FXString &txt, FXint style)
                 }
                 linkLength++;
             }
-            text->appendStyledText(txt.mid(i, linkLength), linkLength>6 ? 9 : style);
+            text->appendStyledText(txt.mid(i, linkLength), linkLength>6 ? 9 : stylenum);
             i+=linkLength-1;
             linkLength=0;
         }
@@ -713,10 +707,7 @@ void IrcTabItem::AppendLinkText(const FXString &txt, FXint style)
         {
             if(!normalText.empty())
             {
-                if(bold && under) text->appendStyledText(normalText, 7);
-                else if(bold && !under) text->appendStyledText(normalText, 5);
-                else if(!bold && under) text->appendStyledText(normalText, 6);
-                else text->appendStyledText(normalText, style);
+                text->appendStyledText(normalText, lastStyle);
                 normalText.clear();
             }
             for(FXint j=i; j<length; j++)
@@ -727,35 +718,98 @@ void IrcTabItem::AppendLinkText(const FXString &txt, FXint style)
                 }
                 linkLength++;
             }
-            text->appendStyledText(txt.mid(i, linkLength), linkLength>4 ? 9 : style);
+            text->appendStyledText(txt.mid(i, linkLength), linkLength>4 ? 9 : stylenum);
             i+=linkLength-1;
             linkLength=0;
         }
         else
         {
-            if(txt[i] == '\002')
+            if(txt[i] == '\002') //bold
             {
                 if(!normalText.empty())
                 {
-                    if(bold && under) text->appendStyledText(normalText, 7);
-                    else if(bold && !under) text->appendStyledText(normalText, 5);
-                    else if(!bold && under) text->appendStyledText(normalText, 6);
-                    else text->appendStyledText(normalText, style);
+                    text->appendStyledText(normalText, lastStyle);
                     normalText.clear();
                 }
                 bold = !bold;
+                FXuint style;
+                if(bold && under) style = FXText::STYLE_BOLD|FXText::STYLE_UNDERLINE;
+                else if(bold && !under) style = FXText::STYLE_BOLD;
+                else if(!bold && under) style = FXText::STYLE_UNDERLINE;
+                lastStyle = HiliteStyleExist(foreColor, backColor, style);
+                if(lastStyle == -1)
+                {
+                    CreateHiliteStyle(foreColor, backColor, style);
+                    lastStyle = textStyleList.no();
+                }
             }
-            else if(txt[i] == '\037')
+            else if(txt[i] == '\037') //underline
             {
                 if(!normalText.empty())
                 {
-                    if(bold && under) text->appendStyledText(normalText, 7);
-                    else if(bold && !under) text->appendStyledText(normalText, 5);
-                    else if(!bold && under) text->appendStyledText(normalText, 6);
-                    else text->appendStyledText(normalText, style);
+                    text->appendStyledText(normalText, lastStyle);
                     normalText.clear();
                 }
                 under = !under;
+                FXuint style;
+                if(bold && under) style = FXText::STYLE_BOLD|FXText::STYLE_UNDERLINE;
+                else if(bold && !under) style = FXText::STYLE_BOLD;
+                else if(!bold && under) style = FXText::STYLE_UNDERLINE;
+                lastStyle = HiliteStyleExist(foreColor, backColor, style);
+                if(lastStyle == -1)
+                {
+                    CreateHiliteStyle(foreColor, backColor, style);
+                    lastStyle = textStyleList.no();
+                }
+            }
+            else if(txt[i] == '\003') //color
+            {
+                if(!normalText.empty())
+                {
+                    text->appendStyledText(normalText, lastStyle);
+                    normalText.clear();
+                }
+                FXbool isHexColor = FALSE;
+                if(i+1<length)
+                {
+                    if(txt[i+1] == '#') isHexColor = TRUE;
+                }
+                FXbool back = FALSE;
+                backColor = colors.back;
+                if(isHexColor?i+8:i+3<length)
+                {
+                    if(txt[isHexColor?i+8:i+3] == ',')
+                    {
+                        back = TRUE;
+                        backColor = isHexColor ? FXRGB(FXIntVal(txt.mid(i+10,2),16),FXIntVal(txt.mid(i+12,2),16),FXIntVal(txt.mid(i+14,2),16)) : GetIrcColor(FXIntVal(txt.mid(i+4,2)));
+                    }
+                }
+                FXuint style = 0;
+                if(bold && under) style = FXText::STYLE_BOLD|FXText::STYLE_UNDERLINE;
+                else if(bold && !under) style = FXText::STYLE_BOLD;
+                else if(!bold && under) style = FXText::STYLE_UNDERLINE;
+                foreColor = isHexColor ? FXRGB(FXIntVal(txt.mid(i+2,2),16),FXIntVal(txt.mid(i+4,2),16),FXIntVal(txt.mid(i+6,2),16)) : GetIrcColor(FXIntVal(txt.mid(i+1,2)));
+                lastStyle = HiliteStyleExist(foreColor, backColor, style);
+                if(lastStyle == -1)
+                {
+                    CreateHiliteStyle(foreColor, backColor, style);
+                    lastStyle = textStyleList.no();
+                };
+                if(back) isHexColor ? i+=15 : i+=5;
+                else isHexColor ? i+=7 : i+=2;
+            }
+            else if(txt[i] == '\017') //reset
+            {
+                if(!normalText.empty())
+                {
+                    text->appendStyledText(normalText, lastStyle);
+                    normalText.clear();
+                }
+                bold = FALSE;
+                under = FALSE;
+                foreColor = colors.text;
+                backColor = colors.back;
+                lastStyle = stylenum;
             }
             else
             {
@@ -766,11 +820,7 @@ void IrcTabItem::AppendLinkText(const FXString &txt, FXint style)
     }
     if(!normalText.empty())
     {
-        if(bold && under) text->appendStyledText(normalText, 7);
-        else if(bold && !under) text->appendStyledText(normalText, 5);
-        else if(!bold && under) text->appendStyledText(normalText, 6);
-        else text->appendStyledText(normalText, style);
-        normalText.clear();
+        text->appendStyledText(normalText, lastStyle);
     }
     text->appendText("\n");
 }
@@ -4293,6 +4343,65 @@ FXint IrcTabItem::GetNickColor(const FXString &nick)
 {
     //10 is first colored nick style
     return 10+nick.hash()%8;
+}
+
+FXColor IrcTabItem::GetIrcColor(FXint code)
+{
+    switch(code){
+        case 0:
+            return fxcolorfromname("white");
+        case 1:
+            return fxcolorfromname("black");
+        case 2:
+            return FXRGB(0,0,128); //blue
+        case 3:
+            return FXRGB(0,128,0); //green
+        case 4:
+            return FXRGB(255,0,0); //lightred
+        case 5:
+            return FXRGB(128,0,64); //brown
+        case 6:
+            return FXRGB(128,0,128); //purple
+        case 7:
+            return FXRGB(255,128,64); //orange
+        case 8:
+            return FXRGB(255,255,0); //yellow
+        case 9:
+            return FXRGB(128,255,0); //lightgreen
+        case 10:
+            return FXRGB(0,128,128); //cyan
+        case 11:
+            return FXRGB(0,255,255); //lightcyan
+        case 12:
+            return FXRGB(0,0,255); //lightblue
+        case 13:
+            return FXRGB(255,0,255); //pink
+        case 14:
+            return FXRGB(128,128,128); //grey
+        case 15:
+            return FXRGB(192,192,192); //lightgrey
+        default:
+            return colors.text;
+    }
+}
+
+FXint IrcTabItem::HiliteStyleExist(FXColor foreColor, FXColor backColor, FXuint style)
+{
+    for(FXint i=0; i<textStyleList.no(); i++)
+    {
+        if(textStyleList[i].normalForeColor == foreColor
+                && textStyleList[i].normalBackColor == backColor
+                && textStyleList[i].style == style)
+            return i+1;
+    }
+    return -1;
+}
+
+void IrcTabItem::CreateHiliteStyle(FXColor foreColor, FXColor backColor, FXuint style)
+{
+    FXHiliteStyle nstyle = {foreColor,backColor,getApp()->getSelforeColor(),getApp()->getSelbackColor(),getApp()->getHiliteColor(),FXRGB(255, 128, 128),colors.back,style};
+    textStyleList.append(nstyle);
+    text->setHiliteStyles(textStyleList.data());
 }
 
 dxStringArray IrcTabItem::CutText(FXString text, FXint len)

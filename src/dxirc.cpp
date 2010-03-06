@@ -177,7 +177,7 @@ dxirc::dxirc(FXApp *app)
     server->SetDelayAttempt(delayAttempt);
     servers.append(server);
 
-    IrcTabItem *tabitem = new IrcTabItem(tabbook, "(server)", servericon, TAB_BOTTOM, SERVER, server, ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList, coloredNick);
+    IrcTabItem *tabitem = new IrcTabItem(tabbook, "(server)", servericon, TAB_BOTTOM, SERVER, server, ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList, coloredNick, stripColors);
     server->AppendTarget(tabitem);
 
     statusbar = new FXHorizontalFrame(mainframe, LAYOUT_LEFT|JUSTIFY_LEFT|LAYOUT_FILL_X|FRAME_NONE, 0,0,0,0, 1,1,1,1);
@@ -463,6 +463,7 @@ void dxirc::ReadConfig()
     pathConnect = set.readStringEntry("SETTINGS", "pathConnect", DXIRC_DATADIR PATHSEPSTRING "sounds" PATHSEPSTRING "connected.wav");
     pathDisconnect = set.readStringEntry("SETTINGS", "pathDisconnect", DXIRC_DATADIR PATHSEPSTRING "sounds" PATHSEPSTRING "disconnected.wav");
     pathMessage = set.readStringEntry("SETTINGS", "pathMessage", DXIRC_DATADIR PATHSEPSTRING "sounds" PATHSEPSTRING "message.wav");
+    stripColors = set.readBoolEntry("SETTINGS", "stripColors", TRUE);
     setX(xx);
     setY(yy);
     setWidth(ww);
@@ -613,6 +614,7 @@ void dxirc::SaveConfig()
     set.writeStringEntry("SETTINGS", "pathConnect", pathConnect.text());
     set.writeStringEntry("SETTINGS", "pathDisconnect", pathDisconnect.text());
     set.writeStringEntry("SETTINGS", "pathMessage", pathMessage.text());
+    set.writeBoolEntry("SETTINGS", "stripColors", stripColors);
     set.setModified();
     set.unparseFile(utils::GetIniFile());
 }
@@ -1105,6 +1107,7 @@ void dxirc::UpdateTabs()
             irctab->SetSameList(sameList);
             irctab->SetIrcFont(ircFont);
             irctab->SetColoredNick(coloredNick);
+            irctab->SetStripColors(stripColors);
         }        
         if(compare(tabbook->childAtIndex(i)->getClassName(), "TetrisTabItem") == 0)
         {
@@ -1328,7 +1331,7 @@ void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString
         {
             if (!tabbook->numChildren())
             {
-                IrcTabItem *tabitem = new IrcTabItem(tabbook, dcc ? dccNick : hostname, dcc ? dccicon : servericon, TAB_BOTTOM, dcc ? DCCCHAT : SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList, coloredNick);
+                IrcTabItem *tabitem = new IrcTabItem(tabbook, dcc ? dccNick : hostname, dcc ? dccicon : servericon, TAB_BOTTOM, dcc ? DCCCHAT : SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList, coloredNick, stripColors);
                 tabitem->create();
                 tabitem->CreateGeom();
                 servers[0]->AppendTarget(tabitem);
@@ -1378,7 +1381,7 @@ void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString
         servers[0]->SetDccFile(dccFile);
         if(dccType != DCC_IN && dccType != DCC_OUT && dccType != DCC_PIN && dccType != DCC_POUT)
         {
-            IrcTabItem *tabitem = new IrcTabItem(tabbook, dcc ? dccNick : hostname, dcc ? dccicon : servericon, TAB_BOTTOM, dcc ? DCCCHAT : SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList, coloredNick);
+            IrcTabItem *tabitem = new IrcTabItem(tabbook, dcc ? dccNick : hostname, dcc ? dccicon : servericon, TAB_BOTTOM, dcc ? DCCCHAT : SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList, coloredNick, stripColors);
             tabitem->create();
             tabitem->CreateGeom();
             servers[0]->AppendTarget(tabitem);
@@ -1584,7 +1587,7 @@ void dxirc::OnIrcNewchannel(IrcSocket *server, IrcEvent *ev)
     }
     else
     {
-        IrcTabItem* tabitem = new IrcTabItem(tabbook, ev->param1, channelicon, TAB_BOTTOM, CHANNEL, server, ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList, coloredNick);
+        IrcTabItem* tabitem = new IrcTabItem(tabbook, ev->param1, channelicon, TAB_BOTTOM, CHANNEL, server, ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList, coloredNick, stripColors);
         server->AppendTarget(tabitem);
         tabitem->create();
         tabitem->CreateGeom();
@@ -1609,7 +1612,7 @@ void dxirc::OnIrcQuery(IrcSocket *server, IrcEvent *ev)
     }
     else
     {
-        IrcTabItem* tabitem = new IrcTabItem(tabbook, ev->param1, queryicon, TAB_BOTTOM, QUERY, server, ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList, coloredNick);
+        IrcTabItem* tabitem = new IrcTabItem(tabbook, ev->param1, queryicon, TAB_BOTTOM, QUERY, server, ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList, coloredNick, stripColors);
         server->AppendTarget(tabitem);
         tabitem->create();
         tabitem->CreateGeom();
@@ -3753,7 +3756,7 @@ int dxirc::OnLuaCreateTab(lua_State *lua)
             }
         }
     }
-    IrcTabItem *tabitem = new IrcTabItem(pThis->tabbook, name, NULL, TAB_BOTTOM, OTHER, NULL, pThis->ownServerWindow, pThis->usersShown, FALSE, pThis->commandsList, pThis->logPath, pThis->maxAway, pThis->colors, pThis->nickCompletionChar, pThis->ircFont, pThis->sameCmd, pThis->sameList, pThis->coloredNick);
+    IrcTabItem *tabitem = new IrcTabItem(pThis->tabbook, name, NULL, TAB_BOTTOM, OTHER, NULL, pThis->ownServerWindow, pThis->usersShown, FALSE, pThis->commandsList, pThis->logPath, pThis->maxAway, pThis->colors, pThis->nickCompletionChar, pThis->ircFont, pThis->sameCmd, pThis->sameList, pThis->coloredNick, pThis->stripColors);
     tabitem->create();
     tabitem->CreateGeom();
     pThis->UpdateTabPosition();

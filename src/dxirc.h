@@ -140,7 +140,7 @@ class dxirc: public FXMainWindow
         dxIgnoreUserArray usersList, friendsList;
         FXbool usersShown, statusShown, logging, ownServerWindow, tempServerWindow, sameCmd;
         FXbool sameList, useTray, coloredNick, closeToTray, reconnect, autoload;
-        FXbool sounds, soundConnect, soundDisconnect, soundMessage;
+        FXbool sounds, soundConnect, soundDisconnect, soundMessage, stripColors;
         IrcColor colors;
         FXString commandsList, themesList, themePath, logPath, autoloadPath;
         FXint maxAway, numberAttempt, delayAttempt, tabPosition, dccPortD, dccPortH, dccTimeout;

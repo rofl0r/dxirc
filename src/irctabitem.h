@@ -78,7 +78,7 @@ class IrcTabItem: public FXTabItem
     FXDECLARE(IrcTabItem)
     friend class dxirc;
     public:
-        IrcTabItem(dxTabBook*, const FXString&, FXIcon*, FXuint, TYPE, IrcSocket*, FXbool, FXbool, FXbool, FXString, FXString, FXint, IrcColor, FXString, FXFont*, FXbool, FXbool, FXbool);
+        IrcTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FXuint opts=TAB_TOP_NORMAL, TYPE typ=CHANNEL, IrcSocket *sock=NULL, FXbool oswnd=FALSE, FXbool uswn=TRUE, FXbool logg=FALSE, FXString cmdlst="", FXString lpth="", FXint maxa=200, IrcColor clrs=IrcColor(), FXString nichar=":", FXFont *fnt=NULL, FXbool scmd=FALSE, FXbool slst=FALSE, FXbool cnick=FALSE, FXbool sclr=TRUE);
         virtual ~IrcTabItem();
         enum {
             ID_COMMANDLINE = FXMainWindow::ID_LAST+25,
@@ -135,6 +135,7 @@ class IrcTabItem: public FXTabItem
         void SetSameCmd(FXbool);
         void SetSameList(FXbool);
         void SetColoredNick(FXbool);
+        void SetStripColors(FXbool);
         void SetCommandFocus();        
 
         long OnCommandline(FXObject *, FXSelector, void*);
@@ -183,9 +184,9 @@ class IrcTabItem: public FXTabItem
         FXint currentPosition, historyMax, numberUsers, pics;
         FXbool checkAway, iamOp, usersShown, logging, ownServerWindow;
         FXbool sameCmd, sameList, coloredNick, editableTopic, sendPipe;
-        FXbool scriptHasAll, scriptHasMyMsg;
+        FXbool scriptHasAll, scriptHasMyMsg, stripColors;
         dxStringArray commandsHistory, pipeStrings;
-        FXHiliteStyle textStyleList[17];
+        dxHiliteArray textStyleList;
         IrcColor colors;
         NickInfo nickOnRight;
         FXString commandsList, logPath, topic;
@@ -257,6 +258,9 @@ class IrcTabItem: public FXTabItem
         FXbool ShowHelp(FXString);
         FXint LaunchLink(const FXString &);
         FXint GetNickColor(const FXString &);
+        FXColor GetIrcColor(FXint code);
+        FXint HiliteStyleExist(FXColor foreColor, FXColor backColor, FXuint style);
+        void CreateHiliteStyle(FXColor foreColor, FXColor backColor, FXuint style);
         dxStringArray CutText(FXString, FXint);
 };
 
