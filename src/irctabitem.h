@@ -163,7 +163,7 @@ class IrcTabItem: public FXTabItem
 
     protected:        
         void AppendText(FXString, FXbool);
-        void AppendStyledText(FXString, FXint, FXbool);
+        void AppendStyledText(FXString text, FXint style, FXbool highlight, FXbool disableStrip=FALSE);
         FXbool ProcessLine(const FXString &);
         void MakeLastRowVisible(FXbool);
         void HasAllCommand(FXbool);
@@ -230,8 +230,8 @@ class IrcTabItem: public FXTabItem
         void OnIrcAway(IrcEvent *ev);
         void OnIrcEndMotd();
         FXString StripColors(const FXString &text, const FXbool stripOther);
-        void AppendIrcText(FXString, FXTime);
-        void AppendIrcStyledText(FXString, FXint, FXTime);
+        void AppendIrcText(FXString msg, FXTime time, FXbool disableStrip=FALSE);
+        void AppendIrcStyledText(FXString styled, FXint stylenum, FXTime time, FXbool disableStrip=FALSE);
         void AppendIrcNickText(FXString, FXString, FXint, FXTime);
         void AppendLinkText(const FXString &, FXint);
         FXString GetNick(int);

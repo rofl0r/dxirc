@@ -3554,7 +3554,7 @@ int dxirc::OnLuaPrint(lua_State *lua)
             {
                 if(compare(pThis->tabbook->childAtIndex(i)->getClassName(), "IrcTabItem") != 0) return 0;
                 IrcTabItem *tab = static_cast<IrcTabItem*>(pThis->tabbook->childAtIndex(i));
-                tab->AppendStyledText(text, style, TRUE);
+                tab->AppendStyledText(text, style, TRUE, TRUE);
                 tab->MakeLastRowVisible(TRUE);
                 return 1;
             }

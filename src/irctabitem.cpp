@@ -419,7 +419,7 @@ void IrcTabItem::SetColor(IrcColor clrs)
 
 void IrcTabItem::SetTextBackColor(FXColor clr)
 {
-    for(FXint i=0; i<textStyleList.no(); i++)
+    for(FXint i=0; i<FXMIN(17,textStyleList.no()); i++)
     {
         textStyleList[i].normalBackColor = clr;
         textStyleList[i].activeBackColor = clr;
@@ -570,11 +570,11 @@ void IrcTabItem::AppendText(FXString msg, FXbool highlight)
     }
 }
 
-void IrcTabItem::AppendIrcText(FXString msg, FXTime time)
+void IrcTabItem::AppendIrcText(FXString msg, FXTime time, FXbool disableStrip)
 {
     if(!time) time = FXSystem::now();
     if(type != OTHER) text->appendText("["+FXSystem::time("%H:%M:%S", time) +"] ");
-    AppendLinkText(stripColors ? StripColors(msg, FALSE) : msg, 0);
+    AppendLinkText(stripColors && !disableStrip ? StripColors(msg, FALSE) : msg, 0);
     MakeLastRowVisible(FALSE);
     this->LogLine(StripColors(msg, TRUE), time);
 }
@@ -589,11 +589,13 @@ void IrcTabItem::AppendIrcNickText(FXString nick, FXString msg, FXint style, FXT
     this->LogLine(StripColors("<"+nick+"> "+msg, TRUE), time);
 }
 
-//if highlight==TRUE, highlight tab
-void IrcTabItem::AppendStyledText(FXString text, FXint style, FXbool highlight)
+/* if highlight==TRUE, highlight tab
+ * disableStrip is for dxirc.Print
+*/
+void IrcTabItem::AppendStyledText(FXString text, FXint style, FXbool highlight, FXbool disableStrip)
 {
-    if(style) AppendIrcStyledText(text, style, 0);
-    else AppendIrcText(text, 0);
+    if(style) AppendIrcStyledText(text, style, 0, disableStrip);
+    else AppendIrcText(text, 0, disableStrip);
     if(highlight && FXRGB(255,0,0) != this->getTextColor() && parent->getCurrent()*2 != parent->indexOfChild(this))
     {
         if(type != OTHER && text.contains(server->GetNickName()))
@@ -606,11 +608,11 @@ void IrcTabItem::AppendStyledText(FXString text, FXint style, FXbool highlight)
     }
 }
 
-void IrcTabItem::AppendIrcStyledText(FXString styled, FXint stylenum, FXTime time)
+void IrcTabItem::AppendIrcStyledText(FXString styled, FXint stylenum, FXTime time, FXbool disableStrip)
 {
     if(!time) time = FXSystem::now();
     if(type != OTHER) text->appendText("["+FXSystem::time("%H:%M:%S", time) +"] ");
-    AppendLinkText(StripColors(styled, TRUE), stylenum);
+    AppendLinkText(stripColors && !disableStrip ? StripColors(styled, TRUE) : styled, stylenum);
     MakeLastRowVisible(FALSE);
     this->LogLine(StripColors(styled, TRUE), time);
 }
