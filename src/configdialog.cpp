@@ -465,7 +465,7 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     FXHorizontalFrame *connectframe = new FXHorizontalFrame(eventsframe, LAYOUT_FILL_X);
     (new FXTextField(connectframe, 30, &targetPathConnect, FXDataTarget::ID_VALUE, TEXTFIELD_READONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X))->disable();
     selectConnect = new FXButton(connectframe, "...", NULL, this, ID_SELECTCONNECT, FRAME_RAISED|FRAME_THICK);
-    playConnect = new FXButton(connectframe, _("Play"), NULL, this, ID_PLAYCONNECT, FRAME_RAISED|FRAME_THICK);
+    playConnect = new FXButton(connectframe, _("\tPlay"), playicon, this, ID_PLAYCONNECT, FRAME_RAISED|FRAME_THICK);
     if(!soundConnect || !sounds)
     {
         selectConnect->disable();
@@ -479,7 +479,7 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     FXHorizontalFrame *disconnectframe = new FXHorizontalFrame(eventsframe, LAYOUT_FILL_X);
     (new FXTextField(disconnectframe, 30, &targetPathDisconnect, FXDataTarget::ID_VALUE, TEXTFIELD_READONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X))->disable();
     selectDisconnect = new FXButton(disconnectframe, "...", NULL, this, ID_SELECTDISCONNECT, FRAME_RAISED|FRAME_THICK);
-    playDisconnect = new FXButton(disconnectframe, _("Play"), NULL, this, ID_PLAYDISCONNECT, FRAME_RAISED|FRAME_THICK);
+    playDisconnect = new FXButton(disconnectframe, _("\tPlay"), playicon, this, ID_PLAYDISCONNECT, FRAME_RAISED|FRAME_THICK);
     if(!soundDisconnect || !sounds)
     {
         selectDisconnect->disable();
@@ -521,7 +521,7 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     FXHorizontalFrame *messageframe = new FXHorizontalFrame(eventsframe, LAYOUT_FILL_X);
     (new FXTextField(messageframe, 30, &targetPathMessage, FXDataTarget::ID_VALUE, TEXTFIELD_READONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X))->disable();
     selectMessage = new FXButton(messageframe, "...", NULL, this, ID_SELECTMESSAGE, FRAME_RAISED|FRAME_THICK);
-    playMessage = new FXButton(messageframe, _("Play"), NULL, this, ID_PLAYMESSAGE, FRAME_RAISED|FRAME_THICK);
+    playMessage = new FXButton(messageframe, _("\tPlay"), playicon, this, ID_PLAYMESSAGE, FRAME_RAISED|FRAME_THICK);
     if(!soundMessage || !sounds)
     {
         selectMessage->disable();

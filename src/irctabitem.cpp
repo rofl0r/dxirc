@@ -4316,27 +4316,8 @@ FXint IrcTabItem::LaunchLink(const FXString &link)
         if(!exec.empty()) break;
     }
     if(exec.empty()) return 0;
-    exec += " "+FXPath::enquote(link);
-    pid_t pid = fork();
-    if (pid == -1)
-    { //Failure delivered to Parent Process
-        return 0;
-    }
-    else if (pid == 0)
-    { //Child Process
-        int i = sysconf(_SC_OPEN_MAX);
-        while (--i >= 3)
-        {
-            close(i);
-        }
-
-        execlp("/bin/sh", "sh", "-c", exec.text(), (char *) 0);
-        exit(EXIT_FAILURE);
-    }
-    else
-    { //Parent Process
-        return 1;
-    }
+    exec += " "+FXPath::enquote(link)+" &";
+    system(exec.text());
     return 1;
 #endif
 }

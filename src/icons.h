@@ -70,6 +70,7 @@ extern FXIcon *dccnewm;
 extern FXIcon *logsicon;
 extern FXIcon *scripticon;
 extern FXIcon *transfericon;
+extern FXIcon *playicon;
 
 extern const unsigned char empty[];
 extern const unsigned char admin[];

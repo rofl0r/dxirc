@@ -31,7 +31,7 @@ FXIcon *irc_away_owner_icon, *irc_away_admin_icon, *irc_away_op_icon, *irc_away_
 FXIcon *serverlisticon, *connecticon, *disconnecticon, *quiticon, *closeicon, *optionicon, *helpicon;
 FXIcon *servericon, *channelicon, *queryicon, *clearicon, *flagicon, *trayicon, *newm, *unewm, *chnewm, *foldericon, *ofoldericon, *fileicon;
 FXIcon *cancelicon, *finishicon, *downicon, *upicon;
-FXIcon *dccicon, *dccnewm, *logsicon, *scripticon, *transfericon;
+FXIcon *dccicon, *dccnewm, *logsicon, *scripticon, *transfericon, *playicon;
 FXColor menuColor, textBackColor;
 
 /* created by reswrap from file empty.png */
@@ -545,6 +545,7 @@ FXbool MakeAllIcons(FXApp *app, const FXString &iniFile, const FXString &datadir
     success = ((logsicon = MakeIcon(app, mainpath, "logs.png", TRUE)) != NULL) &success;
     success = ((scripticon = MakeIcon(app, mainpath, "script.png", TRUE)) != NULL) &success;
     success = ((transfericon = MakeIcon(app, mainpath, "file.png", TRUE)) != NULL) &success;
+    success = ((playicon = MakeIcon(app, mainpath, "play.png", TRUE)) != NULL) &success;
 
     return success;
 }

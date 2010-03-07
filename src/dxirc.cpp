@@ -273,6 +273,7 @@ dxirc::~dxirc()
     delete logsicon;
     delete scripticon;
     delete transfericon;
+    delete playicon;
     delete servermenu;
     delete editmenu;
     delete helpmenu;
