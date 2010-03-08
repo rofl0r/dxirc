@@ -126,7 +126,7 @@ dxirc::dxirc(FXApp *app)
 
     servermenu = new FXMenuPane(this);
     new FXMenuCommand(servermenu, _("&Server list\tF2"), serverlisticon, this, ID_SERVERS);
-    new FXMenuCommand(servermenu, _("Quick &connect\tCtrl-K"), connecticon, this, ID_CONNECT);
+    new FXMenuCommand(servermenu, _("Quick &connect\tF7"), connecticon, this, ID_CONNECT);
     disconnect = new FXMenuCommand(servermenu, _("&Disconnect\tCtrl-D"), disconnecticon, this, ID_DISCONNECT);
     disconnect->disable();
     new FXMenuSeparator(servermenu);

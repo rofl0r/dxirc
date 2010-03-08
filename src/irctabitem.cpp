@@ -771,34 +771,79 @@ void IrcTabItem::AppendLinkText(const FXString &txt, FXint stylenum)
                     text->appendStyledText(normalText, lastStyle);
                     normalText.clear();
                 }
+                FXuint style=0;
+                if(bold && under) style = FXText::STYLE_BOLD|FXText::STYLE_UNDERLINE;
+                else if(bold && !under) style = FXText::STYLE_BOLD;
+                else if(!bold && under) style = FXText::STYLE_UNDERLINE;
                 FXbool isHexColor = FALSE;
+                FXint colorLength = 0;
+                foreColor = colors.text;
+                backColor = colors.back;
                 if(i+1<length)
                 {
                     if(txt[i+1] == '#') isHexColor = TRUE;
                 }
-                FXbool back = FALSE;
-                backColor = colors.back;
-                if(isHexColor?i+8:i+3<length)
+                if(isHexColor)
                 {
-                    if(txt[isHexColor?i+8:i+3] == ',')
+                    if(FXRex("^\\h\\h\\h\\h\\h\\h+$").match(txt.mid(i+2,6)))
                     {
-                        back = TRUE;
-                        backColor = isHexColor ? FXRGB(FXIntVal(txt.mid(i+10,2),16),FXIntVal(txt.mid(i+12,2),16),FXIntVal(txt.mid(i+14,2),16)) : GetIrcColor(FXIntVal(txt.mid(i+4,2)));
+                        foreColor = FXRGB(FXIntVal(txt.mid(i+2,2),16),FXIntVal(txt.mid(i+4,2),16),FXIntVal(txt.mid(i+6,2),16));
+                        colorLength +=7;
+                    }
+                    if(i+8 < length && txt[i+8] == ',' && FXRex("^\\h\\h\\h\\h\\h\\h+$").match(txt.mid(i+10,6)))
+                    {
+                        backColor = FXRGB(FXIntVal(txt.mid(i+10,2),16),FXIntVal(txt.mid(i+12,2),16),FXIntVal(txt.mid(i+14,2),16));
+                        colorLength +=8;
                     }
                 }
-                FXuint style = 0;
-                if(bold && under) style = FXText::STYLE_BOLD|FXText::STYLE_UNDERLINE;
-                else if(bold && !under) style = FXText::STYLE_BOLD;
-                else if(!bold && under) style = FXText::STYLE_UNDERLINE;
-                foreColor = isHexColor ? FXRGB(FXIntVal(txt.mid(i+2,2),16),FXIntVal(txt.mid(i+4,2),16),FXIntVal(txt.mid(i+6,2),16)) : GetIrcColor(FXIntVal(txt.mid(i+1,2)));
+                else
+                {
+                    if(i+2<length)
+                    {
+                        FXint code = -1;
+                        if(isdigit(txt[i+1]))
+                        {
+                            if(isdigit(txt[i+2]))
+                            {
+                                code = (txt[i+1]-48)*10+txt[i+2]-48;
+                                colorLength +=2;
+                            }
+                            else
+                            {
+                                code = txt[i+1]-48;
+                                colorLength ++;
+                            }
+                        }
+                        if(code!=-1)
+                            foreColor = GetIrcColor(code%16);
+                    }
+                    if(i+colorLength+1 < length && txt[i+colorLength+1] == ',')
+                    {
+                        FXint code = -1;
+                        if(isdigit(txt[i+colorLength+2]))
+                        {
+                            if(isdigit(txt[i+colorLength+3]))
+                            {
+                                code = (txt[i+colorLength+2]-48)*10+txt[i+colorLength+3]-48;
+                                colorLength +=3;
+                            }
+                            else
+                            {
+                                code = txt[i+colorLength+2]-48;
+                                colorLength +=2;
+                            }
+                        }
+                        if(code!=-1)
+                            backColor = GetIrcColor(code%16);
+                    }
+                }
                 lastStyle = HiliteStyleExist(foreColor, backColor, style);
                 if(lastStyle == -1)
                 {
                     CreateHiliteStyle(foreColor, backColor, style);
                     lastStyle = textStyleList.no();
                 };
-                if(back) isHexColor ? i+=15 : i+=5;
-                else isHexColor ? i+=7 : i+=2;
+                i +=colorLength;
             }
             else if(txt[i] == '\017') //reset
             {
@@ -891,6 +936,7 @@ long IrcTabItem::OnCommandline(FXObject *, FXSelector, void *)
         commandsHistory.erase(0);
     currentPosition = commandsHistory.no()-1;
     commandline->setText("");
+    if(comparecase(commandtext.left(4),"/say") != 0) commandtext.substitute("^B", "\002").substitute("^C", "\003").substitute("^O", "\017").substitute("^_", "\037");
     for(FXint i=0; i<=commandtext.contains('\n'); i++)
     {
         FXString text = commandtext.section('\n', i).before('\r');
@@ -2788,6 +2834,34 @@ long IrcTabItem::OnKeyPress(FXObject *, FXSelector, void *ptr)
                         commandline->setText("");
                 }
                 return 1;
+            case KEY_k:
+            case KEY_K:
+                if(event->state&CONTROLMASK)
+                {
+                    commandline->setText(commandline->getText().append("^C")); //color
+                    return 1;
+                }
+            case KEY_b:
+            case KEY_B:
+                if(event->state&CONTROLMASK)
+                {
+                    commandline->setText(commandline->getText().append("^B")); //bold
+                    return 1;
+                }
+            case KEY_u:
+            case KEY_U:
+                if(event->state&CONTROLMASK)
+                {
+                    commandline->setText(commandline->getText().append("^_")); //underline
+                    return 1;
+                }
+            case KEY_r:
+            case KEY_R:
+                if(event->state&CONTROLMASK)
+                {
+                    commandline->setText(commandline->getText().append("^O")); //reset
+                    return 1;
+                }
         }
     }
     return 0;
