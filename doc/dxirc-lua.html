@@ -239,6 +239,7 @@ with Lua scripting enabled — you can check this in the About dialog.</p>
         <li><code>\031</code> - underline text</li>
         <li><code>\003#......[,#......]</code> - colors</li>
         <li><code>\003xx,xx</code> - colors. Where xx is number 0~15 (mirc color)</li>
+        <li><code>\022</code> - reverse text</li>
         <li><code>\015</code> - reset style</li>
         <p class="caption">Example:</p>
           <pre><span class="function">dxirc.Print</span>(<span class="string">"\003#ffffff,#ff0000Color with backround\002 bold \031underline+bold\015 reset"</span>)</pre> prints: <span style="background-color:#FF0000;color:#FFFFFF">Color with backround<b> bold <u>underline+bold</u></b></span> reset

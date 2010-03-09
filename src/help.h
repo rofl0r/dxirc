@@ -45,7 +45,8 @@ dxirc is a simple IRC client for various os (linux, *bsd, windows), written usin
     o Insert bold control char - Ctrl-B\n \
     o Insert color control char - Ctrl-K\n \
     o Insert underline control char - Ctrl-U\n \
-    o Insert reset control char - Ctrl-R\n \
+    o Insert reverse control char - Ctrl-R\n \
+    o Insert reset control char - Ctrl-O\n \
 \n \
 \n \
   Configuration\n \

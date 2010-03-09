@@ -623,6 +623,13 @@ static FXbool Badchar(FXchar c)
         case ' ':
         case ',':
         case '\0':
+        case '\02':
+        case '\03':
+        case '\017':
+        case '\021':
+        case '\026':
+        case '\035':
+        case '\037':
         case '\n':
         case '\r':
         case '<':
@@ -734,10 +741,31 @@ void IrcTabItem::AppendLinkText(const FXString &txt, FXint stylenum)
                     normalText.clear();
                 }
                 bold = !bold;
-                FXuint style;
+                FXuint style = 0;
                 if(bold && under) style = FXText::STYLE_BOLD|FXText::STYLE_UNDERLINE;
                 else if(bold && !under) style = FXText::STYLE_BOLD;
                 else if(!bold && under) style = FXText::STYLE_UNDERLINE;
+                lastStyle = HiliteStyleExist(foreColor, backColor, style);
+                if(lastStyle == -1)
+                {
+                    CreateHiliteStyle(foreColor, backColor, style);
+                    lastStyle = textStyleList.no();
+                }
+            }
+            else if(txt[i] == '\026') //reverse
+            {
+                if(!normalText.empty())
+                {
+                    text->appendStyledText(normalText, lastStyle);
+                    normalText.clear();
+                }
+                FXuint style = 0;
+                if(bold && under) style = FXText::STYLE_BOLD|FXText::STYLE_UNDERLINE;
+                else if(bold && !under) style = FXText::STYLE_BOLD;
+                else if(!bold && under) style = FXText::STYLE_UNDERLINE;
+                FXColor tempColor = foreColor;
+                foreColor = backColor;
+                backColor = tempColor;
                 lastStyle = HiliteStyleExist(foreColor, backColor, style);
                 if(lastStyle == -1)
                 {
@@ -753,7 +781,7 @@ void IrcTabItem::AppendLinkText(const FXString &txt, FXint stylenum)
                     normalText.clear();
                 }
                 under = !under;
-                FXuint style;
+                FXuint style = 0;
                 if(bold && under) style = FXText::STYLE_BOLD|FXText::STYLE_UNDERLINE;
                 else if(bold && !under) style = FXText::STYLE_BOLD;
                 else if(!bold && under) style = FXText::STYLE_UNDERLINE;
@@ -763,6 +791,18 @@ void IrcTabItem::AppendLinkText(const FXString &txt, FXint stylenum)
                     CreateHiliteStyle(foreColor, backColor, style);
                     lastStyle = textStyleList.no();
                 }
+            }
+            else if(txt[i] == '\021') //fixed
+            {
+#ifdef DEBUG
+                fxmessage("Poslan fixed styl\n");
+#endif
+            }
+            else if(txt[i] == '\035') //italic
+            {
+#ifdef DEBUG
+                fxmessage("Poslan italic styl\n");
+#endif
             }
             else if(txt[i] == '\003') //color
             {
@@ -936,7 +976,8 @@ long IrcTabItem::OnCommandline(FXObject *, FXSelector, void *)
         commandsHistory.erase(0);
     currentPosition = commandsHistory.no()-1;
     commandline->setText("");
-    if(comparecase(commandtext.left(4),"/say") != 0) commandtext.substitute("^B", "\002").substitute("^C", "\003").substitute("^O", "\017").substitute("^_", "\037");
+    if(comparecase(commandtext.left(4),"/say") != 0)
+        commandtext.substitute("^B", "\002").substitute("^C", "\003").substitute("^O", "\017").substitute("^V", "\026").substitute("^_", "\037");
     for(FXint i=0; i<=commandtext.contains('\n'); i++)
     {
         FXString text = commandtext.section('\n', i).before('\r');
@@ -2838,28 +2879,45 @@ long IrcTabItem::OnKeyPress(FXObject *, FXSelector, void *ptr)
             case KEY_K:
                 if(event->state&CONTROLMASK)
                 {
-                    commandline->setText(commandline->getText().append("^C")); //color
+                    FXint pos = commandline->getCursorPos();
+                    commandline->setText(line.insert(pos, "^C")); //color
+                    commandline->setCursorPos(pos+2);
                     return 1;
                 }
             case KEY_b:
             case KEY_B:
                 if(event->state&CONTROLMASK)
                 {
-                    commandline->setText(commandline->getText().append("^B")); //bold
+                    FXint pos = commandline->getCursorPos();
+                    commandline->setText(line.insert(pos, "^B")); //bold
+                    commandline->setCursorPos(pos+2);
                     return 1;
                 }
             case KEY_u:
             case KEY_U:
                 if(event->state&CONTROLMASK)
                 {
-                    commandline->setText(commandline->getText().append("^_")); //underline
+                    FXint pos = commandline->getCursorPos();
+                    commandline->setText(line.insert(pos, "^_")); //underline
+                    commandline->setCursorPos(pos+2);
                     return 1;
                 }
             case KEY_r:
             case KEY_R:
                 if(event->state&CONTROLMASK)
                 {
-                    commandline->setText(commandline->getText().append("^O")); //reset
+                    FXint pos = commandline->getCursorPos();
+                    commandline->setText(line.insert(pos, "^V")); //reverse
+                    commandline->setCursorPos(pos+2);
+                    return 1;
+                }
+            case KEY_o:
+            case KEY_O:
+                if(event->state&CONTROLMASK)
+                {
+                    FXint pos = commandline->getCursorPos();
+                    commandline->setText(line.insert(commandline->getCursorPos(), "^O")); //reset
+                    commandline->setCursorPos(pos+2);
                     return 1;
                 }
         }
@@ -4347,6 +4405,18 @@ FXString IrcTabItem::StripColors(const FXString &text, const FXbool stripOther)
         else if(stripOther && text[i] == '\037')
         {
             //remove underline mark
+        }
+        else if(text[i] == '\035')
+        {
+            //remove italic mark
+        }
+        else if(text[i] == '\021')
+        {
+            //remove fixed mark
+        }
+        else if(text[i] == '\026')
+        {
+            //remove reverse mark
         }
         else if(text[i] == '\003') //color
         {
