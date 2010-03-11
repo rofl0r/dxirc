@@ -201,6 +201,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\dxtextfield.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\src\FXTrayApp.cpp"
 				>
 			</File>
@@ -276,6 +280,10 @@
 			</File>
 			<File
 				RelativePath="..\src\dxtabbook.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\dxtextfield.h"
 				>
 			</File>
 			<File

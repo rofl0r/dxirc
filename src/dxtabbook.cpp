@@ -1,6 +1,7 @@
 /*
  *      dxtabbook.cpp
  *
+ *      Copyright (C) 1997,2006 by Jeroen van der Zijp.   All Rights Reserved.
  *      Copyright 2009 David Vachulka <david@konstrukce-cad.com>
  *
  *      This program is free software; you can redistribute it and/or modify

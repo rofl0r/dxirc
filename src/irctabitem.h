@@ -27,6 +27,7 @@
 #include "ircsocket.h"
 #include "dxtabbook.h"
 #include "dxpipe.h"
+#include "dxtextfield.h"
 #include "defs.h"
 
 class dxirc;
@@ -157,6 +158,7 @@ class IrcTabItem: public FXTabItem
         long OnBan(FXObject *, FXSelector, void*);
         long OnKickban(FXObject *, FXSelector, void*);
         long OnTopic(FXObject *, FXSelector, void*);
+        long OnTopicLink(FXObject *, FXSelector, void*);
         long OnPipe(FXObject *, FXSelector, void*);
         long OnDccChat(FXObject *, FXSelector, void*);
         long OnDccSend(FXObject *, FXSelector, void*);
@@ -180,7 +182,8 @@ class IrcTabItem: public FXTabItem
         FXSplitter *splitter;
         dxText *text;
         FXList *users;
-        FXTextField *commandline, *topicline;
+        FXTextField *commandline;
+        dxTextField *topicline;
         FXint currentPosition, historyMax, numberUsers, pics;
         FXbool checkAway, iamOp, usersShown, logging, ownServerWindow;
         FXbool sameCmd, sameList, coloredNick, editableTopic, sendPipe;

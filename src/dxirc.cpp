@@ -1634,7 +1634,7 @@ void dxirc::OnIrcQuery(IrcSocket *server, IrcEvent *ev)
 //handle IrcEvent IRC_PART
 void dxirc::OnIrcPart(IrcSocket *server, IrcEvent *ev)
 {
-    if(IsFriend(ev->param1, ev->param2, server->GetServerName()))
+    if(IsFriend(ev->param1, ev->param2, server->GetServerName()) && sounds && soundDisconnect)
         utils::PlayFile(pathDisconnect);
     if(TabExist(server, ev->param2))
     {
@@ -1795,7 +1795,7 @@ void dxirc::OnIrcPrivmsgAndAction(IrcSocket *server, IrcEvent *ev)
 //handle IrcEvent IRC_JOIN
 void dxirc::OnIrcJoin(IrcSocket *server, IrcEvent *ev)
 {
-    if(IsFriend(ev->param1, ev->param2, server->GetServerName()))
+    if(IsFriend(ev->param1, ev->param2, server->GetServerName()) && sounds && soundConnect)
         utils::PlayFile(pathConnect);
 #ifdef HAVE_LUA
     if(server->IsUserIgnored(ev->param1, ev->param2)) return;
@@ -1832,7 +1832,7 @@ void dxirc::OnIrcJoin(IrcSocket *server, IrcEvent *ev)
 //handle IrcEvent IRC_QUIT
 void dxirc::OnIrcQuit(IrcSocket *server, IrcEvent *ev)
 {
-    if(IsFriend(ev->param1, "all", server->GetServerName()))
+    if(IsFriend(ev->param1, "all", server->GetServerName()) && sounds && soundDisconnect)
         utils::PlayFile(pathDisconnect);
 }
 
@@ -2387,7 +2387,7 @@ long dxirc::OnNewMsg(FXObject *obj, FXSelector, void*)
     if(trayIcon && trayIcon->getIcon() == trayicon && (!shown() || static_cast<IrcTabItem*>(tabbook->childAtIndex(tabbook->getCurrent()*2)) != static_cast<IrcTabItem*>(obj)))
         trayIcon->setIcon(newm);
 #endif
-    if(!shown() || isMinimized() || static_cast<IrcTabItem*>(tabbook->childAtIndex(tabbook->getCurrent()*2)) != static_cast<IrcTabItem*>(obj))
+    if(sounds && soundMessage && (!shown() || isMinimized() || static_cast<IrcTabItem*>(tabbook->childAtIndex(tabbook->getCurrent()*2)) != static_cast<IrcTabItem*>(obj)))
         utils::PlayFile(pathMessage);
     return 1;
 }

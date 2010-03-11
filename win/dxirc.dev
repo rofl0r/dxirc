@@ -1,7 +1,7 @@
 [Project]
 FileName=dxirc.dev
 Name=dxirc
-UnitCount=36
+UnitCount=38
 Type=0
 Ver=1
 ObjFiles=
@@ -399,6 +399,26 @@ BuildCmd=
 
 [Unit36]
 FileName=..\src\dxtabbook.cpp
+CompileCpp=1
+Folder=dxirc
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit37]
+FileName=..\src\dxtextfield.h
+CompileCpp=1
+Folder=dxirc
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit38]
+FileName=..\src\dxtextfield.cpp
 CompileCpp=1
 Folder=dxirc
 Compile=1
