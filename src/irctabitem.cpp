@@ -339,8 +339,13 @@ void IrcTabItem::CreateGeom()
 
 void IrcTabItem::ClearChat()
 {
-    text->removeText(0, text->getLength());
-    text->layout();
+    if(text->getLength())
+    {
+        text->removeText(0, text->getLength());
+        textStyleList.no(17);
+        text->setHiliteStyles(textStyleList.data());
+        text->layout();
+    }
 }
 
 void IrcTabItem::ReparentTab()

@@ -104,6 +104,7 @@ static luaL_reg dxircFunctions[] = {
     {"SetTab",      dxirc::OnLuaSetTab},
     {"CreateTab",   dxirc::OnLuaCreateTab},
     {"GetTabCount", dxirc::OnLuaGetTabCount},
+    {"Clear",       dxirc::OnLuaClear},
     {NULL,          NULL}
 };
 #endif
@@ -3793,6 +3794,31 @@ int dxirc::OnLuaGetTabCount(lua_State *lua)
 #ifdef HAVE_LUA
     lua_pushnumber(lua, pThis->tabbook->numChildren()/2);
     return 1;
+#else
+    return 0;
+#endif
+}
+
+int dxirc::OnLuaClear(lua_State *lua)
+{
+#ifdef HAVE_LUA
+    FXint id = -1;
+    if(lua_isnumber(lua, 1))  id = lua_tointeger(lua, 1);
+    else return 0;
+    if(pThis->tabbook->numChildren())
+    {
+        for(FXint i = 0; i<pThis->tabbook->numChildren(); i+=2)
+        {
+            if(id*2 == i)
+            {
+                if(compare(pThis->tabbook->childAtIndex(i)->getClassName(), "IrcTabItem") != 0) return 0;
+                IrcTabItem *tab = static_cast<IrcTabItem*>(pThis->tabbook->childAtIndex(i));
+                tab->ClearChat();
+                return 1;
+            }
+        }
+    }
+    return  1;
 #else
     return 0;
 #endif
