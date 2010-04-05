@@ -275,6 +275,11 @@ dxirc::~dxirc()
     delete scripticon;
     delete transfericon;
     delete playicon;
+    while(smileys.no())
+    {
+        delete smileys[0].icon;
+        smileys.erase(0);
+    }
     delete servermenu;
     delete editmenu;
     delete helpmenu;
@@ -466,6 +471,21 @@ void dxirc::ReadConfig()
     pathDisconnect = set.readStringEntry("SETTINGS", "pathDisconnect", DXIRC_DATADIR PATHSEPSTRING "sounds" PATHSEPSTRING "disconnected.wav");
     pathMessage = set.readStringEntry("SETTINGS", "pathMessage", DXIRC_DATADIR PATHSEPSTRING "sounds" PATHSEPSTRING "message.wav");
     stripColors = set.readBoolEntry("SETTINGS", "stripColors", TRUE);
+    useSmileys = set.readBoolEntry("SETTINGS", "useSmileys", FALSE);
+    FXint smileysNum = set.readIntEntry("SMILEYS", "number", 0);
+    smileysMap.clear();
+    if(smileysNum)
+    {
+
+        for(FXint i=0; i<smileysNum; i++)
+        {
+            FXString key, value;
+            key = set.readStringEntry("SMILEYS", FXStringFormat("smiley%d", i).text(), FXStringFormat("%d)", i).text());
+            value = set.readStringEntry("SMILEYS", FXStringFormat("path%d", i).text(), "");
+            if(!key.empty())
+                smileysMap.insert(StringPair(key, value));
+        }
+    }
     setX(xx);
     setY(yy);
     setWidth(ww);
@@ -617,6 +637,18 @@ void dxirc::SaveConfig()
     set.writeStringEntry("SETTINGS", "pathDisconnect", pathDisconnect.text());
     set.writeStringEntry("SETTINGS", "pathMessage", pathMessage.text());
     set.writeBoolEntry("SETTINGS", "stripColors", stripColors);
+    set.writeBoolEntry("SETTINGS", "useSmileys", useSmileys);
+    set.writeIntEntry("SMILEYS", "number", (FXint)smileysMap.size());
+    if((FXint)smileysMap.size())
+    {
+        StringIt it;
+        FXint i;
+        for(i=0, it=smileysMap.begin(); it!=smileysMap.end(); it++,i++)
+        {
+            set.writeStringEntry("SMILEYS", FXStringFormat("smiley%d", i).text(), (*it).first.text());
+            set.writeStringEntry("SMILEYS", FXStringFormat("path%d", i).text(), (*it).second.text());
+        }
+    }
     set.setModified();
     set.unparseFile(utils::GetIniFile());
 }
@@ -768,6 +800,7 @@ void dxirc::UpdateTheme()
     FXMenuCaption * menucaption;
     FXMenuSeparator * menuseparator;
     FXText * text;
+    dxText * dtext;
     FXFoldingList * foldinglist;
     FXMDIChild * mdichild;
     FXTable * table;
@@ -997,6 +1030,13 @@ void dxirc::UpdateTheme()
                 text->setSelTextColor(appTheme.selfore);
                 text->setSelBackColor(appTheme.selback);
             }
+            else if ((dtext = dynamic_cast<dxText*> (w)))
+            {
+                w->setBackColor(appTheme.back);
+                dtext->setTextColor(appTheme.fore);
+                dtext->setSelTextColor(appTheme.selfore);
+                dtext->setSelBackColor(appTheme.selback);
+            }
             else if ((list = dynamic_cast<FXList*> (w)))
             {
                 w->setBackColor(appTheme.back);
@@ -1094,6 +1134,8 @@ void dxirc::UpdateFont(FXString fnt)
 
 void dxirc::UpdateTabs()
 {
+    if(useSmileys && (FXint)smileysMap.size())
+        CreateSmileys();
     for(FXint i = 0; i<tabbook->numChildren(); i+=2)
     {        
         if(compare(tabbook->childAtIndex(i)->getClassName(), "IrcTabItem") == 0)
@@ -1110,6 +1152,8 @@ void dxirc::UpdateTabs()
             irctab->SetIrcFont(ircFont);
             irctab->SetColoredNick(coloredNick);
             irctab->SetStripColors(stripColors);
+            irctab->SetUseSmiley(useSmileys);
+            if(smileys.no()) irctab->SetSmileys(smileys);
         }        
         if(compare(tabbook->childAtIndex(i)->getClassName(), "TetrisTabItem") == 0)
         {
@@ -1180,6 +1224,29 @@ void dxirc::UpdateTabPosition()
                 tabbook->setPackingHints(packing);
             }
     }   
+}
+
+void dxirc::CreateSmileys()
+{
+    while(smileys.no())
+    {
+        delete smileys[0].icon;
+        smileys[0].icon = NULL;
+        smileys.erase(0);
+    }
+    if((FXint)smileysMap.size() && ircFont)
+    {
+        StringIt it;
+        FXint i;
+        for(i=0, it=smileysMap.begin(); it!=smileysMap.end(); it++,i++)
+        {
+            dxSmiley smiley;
+            smiley.text = (*it).first;
+            smiley.path = (*it).second;
+            smiley.icon = MakeIcon(app, smiley.path, ircFont->getFontHeight(), colors.back);
+            smileys.append(smiley);
+        }
+    }
 }
 
 long dxirc::OnCommandAbout(FXObject*, FXSelector, void*)
@@ -1336,6 +1403,8 @@ void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString
                 IrcTabItem *tabitem = new IrcTabItem(tabbook, dcc ? dccNick : hostname, dcc ? dccicon : servericon, TAB_BOTTOM, dcc ? DCCCHAT : SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList, coloredNick, stripColors);
                 tabitem->create();
                 tabitem->CreateGeom();
+                if(smileys.no()) tabitem->SetSmileys(smileys);
+                tabitem->SetUseSmiley(useSmileys);
                 servers[0]->AppendTarget(tabitem);
                 UpdateTabPosition();
                 SortTabs();
@@ -1386,6 +1455,8 @@ void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString
             IrcTabItem *tabitem = new IrcTabItem(tabbook, dcc ? dccNick : hostname, dcc ? dccicon : servericon, TAB_BOTTOM, dcc ? DCCCHAT : SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList, coloredNick, stripColors);
             tabitem->create();
             tabitem->CreateGeom();
+            if(smileys.no()) tabitem->SetSmileys(smileys);
+            tabitem->SetUseSmiley(useSmileys);
             servers[0]->AppendTarget(tabitem);
             UpdateTabPosition();
             SortTabs();
@@ -1593,6 +1664,8 @@ void dxirc::OnIrcNewchannel(IrcSocket *server, IrcEvent *ev)
         server->AppendTarget(tabitem);
         tabitem->create();
         tabitem->CreateGeom();
+        if(smileys.no()) tabitem->SetSmileys(smileys);
+        tabitem->SetUseSmiley(useSmileys);
         UpdateTabPosition();
         SortTabs();
         SendNewTab(server, ev->param1, GetTabId(server, ev->param1), FALSE, CHANNEL);
@@ -1618,6 +1691,8 @@ void dxirc::OnIrcQuery(IrcSocket *server, IrcEvent *ev)
         server->AppendTarget(tabitem);
         tabitem->create();
         tabitem->CreateGeom();
+        if(smileys.no()) tabitem->SetSmileys(smileys);
+        tabitem->SetUseSmiley(useSmileys);
         UpdateTabPosition();
         SortTabs();
         SendNewTab(server, ev->param1, GetTabId(server, ev->param1), FALSE, QUERY);
@@ -2047,6 +2122,7 @@ long dxirc::OnTabBook(FXObject *, FXSelector, void *ptr)
         }
         currenttab->setFocus();
         currenttab->SetCommandFocus();
+        currenttab->MakeLastRowVisible();
         if(HasTetrisTab())
         {
             TetrisTabItem *tetristab = static_cast<TetrisTabItem*>(tabbook->childAtIndex(GetTabId("tetris")*2));
@@ -3130,7 +3206,7 @@ void dxirc::AppendIrcText(FXString text)
         IrcTabItem *currenttab = static_cast<IrcTabItem*>(tabbook->childAtIndex(index));
         FXASSERT(currenttab != 0);
         currenttab->AppendText(text, TRUE);
-        currenttab->MakeLastRowVisible(TRUE);
+        currenttab->MakeLastRowVisible();
     }
 }
 
@@ -3153,7 +3229,7 @@ void dxirc::AppendIrcStyledText(FXString text, FXint style)
         IrcTabItem *currenttab = static_cast<IrcTabItem*>(tabbook->childAtIndex(index));
         FXASSERT(currenttab != 0);
         currenttab->AppendStyledText(text, style, TRUE);
-        currenttab->MakeLastRowVisible(TRUE);
+        currenttab->MakeLastRowVisible();
     }
 }
 
@@ -3557,7 +3633,7 @@ int dxirc::OnLuaPrint(lua_State *lua)
                 if(compare(pThis->tabbook->childAtIndex(i)->getClassName(), "IrcTabItem") != 0) return 0;
                 IrcTabItem *tab = static_cast<IrcTabItem*>(pThis->tabbook->childAtIndex(i));
                 tab->AppendStyledText(text, style, TRUE, TRUE);
-                tab->MakeLastRowVisible(TRUE);
+                tab->MakeLastRowVisible();
                 return 1;
             }
         }
@@ -3761,6 +3837,8 @@ int dxirc::OnLuaCreateTab(lua_State *lua)
     IrcTabItem *tabitem = new IrcTabItem(pThis->tabbook, name, NULL, TAB_BOTTOM, OTHER, NULL, pThis->ownServerWindow, pThis->usersShown, FALSE, pThis->commandsList, pThis->logPath, pThis->maxAway, pThis->colors, pThis->nickCompletionChar, pThis->ircFont, pThis->sameCmd, pThis->sameList, pThis->coloredNick, pThis->stripColors);
     tabitem->create();
     tabitem->CreateGeom();
+    if(pThis->smileys.no()) tabitem->SetSmileys(pThis->smileys);
+    tabitem->SetUseSmiley(pThis->useSmileys);
     pThis->UpdateTabPosition();
     pThis->SortTabs();
     pThis->UpdateMenus();

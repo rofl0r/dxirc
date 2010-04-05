@@ -141,7 +141,7 @@ class dxirc: public FXMainWindow
         dxIgnoreUserArray usersList, friendsList;
         FXbool usersShown, statusShown, logging, ownServerWindow, tempServerWindow, sameCmd;
         FXbool sameList, useTray, coloredNick, closeToTray, reconnect, autoload;
-        FXbool sounds, soundConnect, soundDisconnect, soundMessage, stripColors;
+        FXbool sounds, soundConnect, soundDisconnect, soundMessage, stripColors, useSmileys;
         IrcColor colors;
         FXString commandsList, themesList, themePath, logPath, autoloadPath;
         FXint maxAway, numberAttempt, delayAttempt, tabPosition, dccPortD, dccPortH, dccTimeout;
@@ -151,6 +151,8 @@ class dxirc: public FXMainWindow
         FXPopup *traymenu;
         FXTrayIcon *trayIcon;
         FXint lastToken;
+        dxStringMap smileysMap;
+        dxSmileyArray smileys;
 
         void OnIrcNewchannel(IrcSocket*, IrcEvent*);
         void OnIrcQuery(IrcSocket*, IrcEvent*);
@@ -197,6 +199,7 @@ class dxirc: public FXMainWindow
         FXbool HasMyMsg();
         void AutoloadScripts();
         void SendNewTab(IrcSocket*, const FXString&, FXint, FXbool, TYPE);
+        void CreateSmileys();
 
     protected:
         FXMenuBar *menubar;

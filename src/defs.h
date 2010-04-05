@@ -28,6 +28,9 @@
 #include <new>
 #include <iostream>
 #include <map>
+#ifndef DXTEXT_H
+#include "dxtext.h"
+#endif
 
 class IrcSocket;
 struct lua_State;
@@ -222,7 +225,7 @@ typedef FXArray<LuaScriptCommand> dxScriptCommandsArray;
 typedef FXArray<LuaScriptEvent> dxScriptEventsArray;
 typedef FXArray<DccFile> dxDccFilesArray;
 typedef FXArray<IrcEvent> dxIrcEventArray;
-typedef FXArray<FXHiliteStyle> dxHiliteArray;
+typedef FXArray<dxHiliteStyle> dxHiliteArray;
 typedef std::map<FXString,FXString> dxStringMap;
 typedef std::pair<FXString,FXString> StringPair;
 typedef std::map<FXString, FXString>::iterator StringIt;

@@ -32,78 +32,6 @@
 
 #define LUA_HELP_PATH "http://www.dxirc.org/dxirc-lua.html"
 
-FXDEFMAP(dxText) dxTextMap[] = {
-    FXMAPFUNC(SEL_MOTION, 0, dxText::onMotion)
-};
-
-FXIMPLEMENT(dxText, FXText, dxTextMap, ARRAYNUMBER(dxTextMap))
-
-dxText::dxText(FXComposite *p, FXObject* tgt, FXSelector sel, FXuint opts)
-    : FXText(p, tgt, sel, opts)
-{
-
-}
-
-static inline FXint fxabs(FXint a) { return a<0?-a:a; }
-
-long dxText::onMotion(FXObject*, FXSelector, void*ptr)
-{
-    FXEvent* event = (FXEvent*) ptr;
-    FXint pos;
-    FXint style = getStyle(getPosAt(event->win_x, event->win_y));
-    if (style == 9)
-        setDefaultCursor(getApp()->getDefaultCursor(DEF_HAND_CURSOR));
-    else
-        setDefaultCursor(getApp()->getDefaultCursor(DEF_TEXT_CURSOR));
-    switch (mode)
-    {
-    case MOUSE_CHARS:
-        if (startAutoScroll(event, FALSE)) return 1;
-        if ((fxabs(event->win_x - event->click_x) > getApp()->getDragDelta()) || (fxabs(event->win_y - event->click_y) > getApp()->getDragDelta()))
-        {
-            pos = getPosAt(event->win_x, event->win_y);
-            setCursorPos(pos, TRUE);
-            extendSelection(cursorpos, SELECT_CHARS, TRUE);
-        }
-        return 1;
-    case MOUSE_WORDS:
-        if (startAutoScroll(event, FALSE)) return 1;
-        if ((fxabs(event->win_x - event->click_x) > getApp()->getDragDelta()) || (fxabs(event->win_y - event->click_y) > getApp()->getDragDelta()))
-        {
-            pos = getPosAt(event->win_x, event->win_y);
-            setCursorPos(pos, TRUE);
-            extendSelection(cursorpos, SELECT_WORDS, TRUE);
-        }
-        return 1;
-    case MOUSE_LINES:
-        if (startAutoScroll(event, FALSE)) return 1;
-        if ((fxabs(event->win_x - event->click_x) > getApp()->getDragDelta()) || (fxabs(event->win_y - event->click_y) > getApp()->getDragDelta()))
-        {
-            pos = getPosAt(event->win_x, event->win_y);
-            setCursorPos(pos, TRUE);
-            extendSelection(cursorpos, SELECT_LINES, TRUE);
-        }
-        return 1;
-    case MOUSE_SCROLL:
-        setPosition(event->win_x - grabx, event->win_y - graby);
-        return 1;
-    case MOUSE_DRAG:
-        handle(this, FXSEL(SEL_DRAGGED, 0), ptr);
-        return 1;
-    case MOUSE_TRYDRAG:
-        if (event->moved)
-        {
-            mode = MOUSE_NONE;
-            if (handle(this, FXSEL(SEL_BEGINDRAG, 0), ptr))
-            {
-                mode = MOUSE_DRAG;
-            }
-        }
-        return 1;
-    }
-    return 0;
-}
-
 FXDEFMAP(DccSendDialog) DccSendDialogMap[] = {
     FXMAPFUNC(SEL_COMMAND,  DccSendDialog::ID_FILE,     DccSendDialog::OnFile),
     FXMAPFUNC(SEL_COMMAND,  DccSendDialog::ID_SEND,     DccSendDialog::OnSend),
@@ -191,7 +119,7 @@ FXDEFMAP(IrcTabItem) IrcTabItemMap[] = {
     FXMAPFUNC(SEL_TIMEOUT,              IrcTabItem::ID_TIME,            IrcTabItem::OnTimeout),
     FXMAPFUNC(SEL_TIMEOUT,              IrcTabItem::ID_PTIME,           IrcTabItem::OnPipeTimeout),
     FXMAPFUNC(SEL_TIMEOUT,              IrcTabItem::ID_ETIME,           IrcTabItem::OnEggTimeout),
-    FXMAPFUNC(SEL_LEFTBUTTONRELEASE,    IrcTabItem::ID_TEXT,            IrcTabItem::OnLeftMouse),
+    FXMAPFUNC(SEL_TEXTLINK,             IrcTabItem::ID_TEXT,            IrcTabItem::OnTextLink),
     FXMAPFUNC(SEL_RIGHTBUTTONRELEASE,   IrcTabItem::ID_USERS,           IrcTabItem::OnRightMouse),
     FXMAPFUNC(SEL_DOUBLECLICKED,        IrcTabItem::ID_USERS,           IrcTabItem::OnDoubleclick),
     FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_NEWQUERY,        IrcTabItem::OnNewQuery),
@@ -249,6 +177,8 @@ IrcTabItem::IrcTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *ic, FXui
     topicline->setLinkColor(colors.link);
     text = new dxText(textframe, this, ID_TEXT, FRAME_SUNKEN|LAYOUT_FILL_X|LAYOUT_FILL_Y|TEXT_READONLY|TEXT_WORDWRAP|TEXT_SHOWACTIVE|TEXT_AUTOSCROLL);
     text->setFont(fnt);
+    text->setSelTextColor(getApp()->getSelforeColor());
+    text->setSelBackColor(getApp()->getSelbackColor());
 
     usersframe = new FXVerticalFrame(splitter, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y|LAYOUT_FIX_WIDTH);
     users = new FXList(usersframe, this, ID_USERS, LAYOUT_FILL_X|LAYOUT_FILL_Y);
@@ -264,7 +194,7 @@ IrcTabItem::IrcTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *ic, FXui
     commandline = new FXTextField(mainframe, 25, this, ID_COMMANDLINE, TEXTFIELD_ENTER_ONLY|FRAME_SUNKEN|JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_BOTTOM, 0, 0, 0, 0, 1, 1, 1, 1);
     if(sameCmd) commandline->setFont(fnt);
 
-    FXHiliteStyle style = {colors.text,colors.back,getApp()->getSelforeColor(),getApp()->getSelbackColor(),getApp()->getHiliteColor(),FXRGB(255, 128, 128),colors.back,0};
+    dxHiliteStyle style = {colors.text,colors.back,getApp()->getSelforeColor(),getApp()->getSelbackColor(),0,FALSE};
     for(int i=0; i<17; i++)
     {
         textStyleList.append(style);
@@ -288,7 +218,7 @@ IrcTabItem::IrcTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *ic, FXui
     textStyleList[7].normalForeColor = colors.hilight;
     //link style
     textStyleList[8].normalForeColor = colors.link;
-    textStyleList[8].style = FXText::STYLE_UNDERLINE;
+    textStyleList[8].link = TRUE;
     //next styles for colored nicks
     textStyleList[9].normalForeColor = FXRGB(196, 160, 0);
     textStyleList[10].normalForeColor = FXRGB(206, 92, 0);
@@ -299,11 +229,10 @@ IrcTabItem::IrcTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *ic, FXui
     textStyleList[15].normalForeColor = FXRGB(164, 0, 0);
     textStyleList[16].normalForeColor = FXRGB(85, 87, 83);
 
-    text->setStyled(TRUE);
+    //text->setStyled(TRUE);
     text->setHiliteStyles(textStyleList.data());
 
     text->setBackColor(colors.back);
-    text->setActiveBackColor(colors.back);
     commandline->setBackColor(colors.back);
     topicline->setBackColor(colors.back);
     users->setBackColor(colors.back);
@@ -339,13 +268,15 @@ void IrcTabItem::CreateGeom()
 
 void IrcTabItem::ClearChat()
 {
-    if(text->getLength())
-    {
-        text->removeText(0, text->getLength());
-        textStyleList.no(17);
-        text->setHiliteStyles(textStyleList.data());
-        text->layout();
-    }
+    textStyleList.no(17);
+    text->setHiliteStyles(textStyleList.data());
+    text->clearText();
+}
+
+//usefull for set tab current
+void IrcTabItem::MakeLastRowVisible()
+{
+    text->makeLastRowVisible(TRUE);
 }
 
 void IrcTabItem::ReparentTab()
@@ -429,10 +360,8 @@ void IrcTabItem::SetTextBackColor(FXColor clr)
     for(FXint i=0; i<FXMIN(17,textStyleList.no()); i++)
     {
         textStyleList[i].normalBackColor = clr;
-        textStyleList[i].activeBackColor = clr;
     }
     text->setBackColor(clr);
-    text->setActiveBackColor(clr);
     commandline->setBackColor(clr);
     topicline->setBackColor(clr);
     users->setBackColor(clr);
@@ -479,6 +408,7 @@ void IrcTabItem::SetHilightColor(FXColor clr)
 void IrcTabItem::SetLinkColor(FXColor clr)
 {
     textStyleList[8].normalForeColor = clr;
+    topicline->setLinkColor(clr);
 }
 
 void IrcTabItem::SetCommandsList(FXString clst)
@@ -561,6 +491,16 @@ void IrcTabItem::SetStripColors(FXbool sclr)
     stripColors = sclr;
 }
 
+void IrcTabItem::SetUseSmiley(FXbool smiley)
+{
+    text->setUseSmiley(smiley);
+}
+
+void IrcTabItem::SetSmileys(dxSmileyArray nsmileys)
+{
+    text->setSmileys(nsmileys);
+}
+
 //if highlight==TRUE, highlight tab
 void IrcTabItem::AppendText(FXString msg, FXbool highlight)
 {
@@ -582,7 +522,6 @@ void IrcTabItem::AppendIrcText(FXString msg, FXTime time, FXbool disableStrip)
     if(!time) time = FXSystem::now();
     if(type != OTHER) text->appendText("["+FXSystem::time("%H:%M:%S", time) +"] ");
     AppendLinkText(stripColors && !disableStrip ? StripColors(msg, FALSE) : msg, 0);
-    MakeLastRowVisible(FALSE);
     this->LogLine(StripColors(msg, TRUE), time);
 }
 
@@ -592,7 +531,6 @@ void IrcTabItem::AppendIrcNickText(FXString nick, FXString msg, FXint style, FXT
     if(type != OTHER) text->appendText("["+FXSystem::time("%H:%M:%S", time) +"] ");
     text->appendStyledText(nick+": ", style);
     AppendLinkText(stripColors ? StripColors(msg, FALSE) : msg, 0);
-    MakeLastRowVisible(FALSE);
     this->LogLine(StripColors("<"+nick+"> "+msg, TRUE), time);
 }
 
@@ -620,7 +558,6 @@ void IrcTabItem::AppendIrcStyledText(FXString styled, FXint stylenum, FXTime tim
     if(!time) time = FXSystem::now();
     if(type != OTHER) text->appendText("["+FXSystem::time("%H:%M:%S", time) +"] ");
     AppendLinkText(stripColors && !disableStrip ? StripColors(styled, TRUE) : styled, stylenum);
-    MakeLastRowVisible(FALSE);
     this->LogLine(StripColors(styled, TRUE), time);
 }
 
@@ -956,23 +893,6 @@ FXbool IrcTabItem::IsChannel(const FXString &text)
     return FALSE;
 }
 
-void IrcTabItem::MakeLastRowVisible(FXbool force)
-{
-    if(force) text->makePositionVisible(text->rowStart(text->getLength()));
-    else
-    {
-        FXScrollBar *textScrollbar = text->verticalScrollBar();
-        if(parent->getCurrent()*2 == parent->indexOfChild(this))
-        {
-            if((textScrollbar->getPosition()+textScrollbar->getHeight()+textScrollbar->getLine())*100 > textScrollbar->getRange()*95)
-            {
-                text->makePositionVisible(text->rowStart(text->getLength()));
-            }
-        }
-        else text->makePositionVisible(text->rowStart(text->getLength()));
-    }
-}
-
 long IrcTabItem::OnCommandline(FXObject *, FXSelector, void *)
 {
     FXString commandtext = commandline->getText();
@@ -1080,8 +1000,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
         }
         if(command == "egg")
         {
-            text->removeText(0, text->getLength());
-            text->layout();
+            text->clearText();
             text->appendStyledText(FXString("ahoj sem pan Vajíčko,\n"), 3);
             text->appendStyledText(FXString("a dnes Vám přináším killer feature VODOTRYSK!!!\n"), 3);
             getApp()->addTimeout(this, ID_ETIME, 1000);
@@ -1495,8 +1414,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
         }
         if(command == "egg")
         {
-            text->removeText(0, text->getLength());
-            text->layout();
+            text->clearText();
             text->appendStyledText(FXString("ahoj sem pan Vajíčko,\n"), 3);
             text->appendStyledText(FXString("a dnes Vám přináším killer feature VODOTRYSK!!!\n"), 3);
             getApp()->addTimeout(this, ID_ETIME, 1000);
@@ -3976,7 +3894,7 @@ void IrcTabItem::OnIrcAway(IrcEvent* ev)
 //handle IrcEvent IRC_ENDMOTD
 void IrcTabItem::OnIrcEndMotd()
 {
-    MakeLastRowVisible(TRUE);
+    text->makeLastRowVisible(TRUE);
 }
 
 long IrcTabItem::OnPipe(FXObject*, FXSelector, void *ptr)
@@ -4079,8 +3997,7 @@ long IrcTabItem::OnEggTimeout(FXObject*, FXSelector, void*)
     {
         
         getApp()->addTimeout(this, ID_ETIME, 222);
-        text->removeText(0, text->getLength());
-        text->layout();
+        text->clearText();
         if((pics)%3==0)
         {
             text->appendStyledText(pic1, 3);
@@ -4140,28 +4057,9 @@ void IrcTabItem::OnAway()
     }
 }
 
-long IrcTabItem::OnLeftMouse(FXObject *, FXSelector, void *ptr)
+long IrcTabItem::OnTextLink(FXObject *, FXSelector, void *data)
 {
-    FXEvent* event = (FXEvent*)ptr;
-    if(event->moved) return 1;
-    FXint pos = text->getPosAt(event->win_x,event->win_y);
-    FXint style = text->getStyle(pos);
-#ifdef DEBUG
-    fxmessage("Style:%d\n", style);
-#endif
-    if(style == 9)
-    {
-        text->setDelimiters(" ");
-        FXString word;
-        FXString link = "";
-        text->extractText(word, text->wordStart(pos), text->wordEnd(pos)-text->wordStart(pos));
-        for(FXint i=text->wordStart(pos); i<text->wordEnd(pos); i++)
-        {
-            if(text->getStyle(i) == 9) link.append(word[i-text->wordStart(pos)]);
-        }
-        LaunchLink(link);
-        text->setDelimiters(FXText::textDelimiters);
-    }
+    LaunchLink(static_cast<FXchar*>(data));
     return 1;
 }
 
@@ -4539,7 +4437,7 @@ FXint IrcTabItem::HiliteStyleExist(FXColor foreColor, FXColor backColor, FXuint 
 
 void IrcTabItem::CreateHiliteStyle(FXColor foreColor, FXColor backColor, FXuint style)
 {
-    FXHiliteStyle nstyle = {foreColor,backColor,getApp()->getSelforeColor(),getApp()->getSelbackColor(),getApp()->getHiliteColor(),FXRGB(255, 128, 128),colors.back,style};
+    dxHiliteStyle nstyle = {foreColor,backColor,getApp()->getSelforeColor(),getApp()->getSelbackColor(),style,FALSE};
     textStyleList.append(nstyle);
     text->setHiliteStyles(textStyleList.data());
 }

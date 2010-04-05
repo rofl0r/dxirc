@@ -587,10 +587,8 @@ long dxTextField::onLeftBtnPress(FXObject*,FXSelector,void* ptr){
       FXString link="";
       for(FXint i=start; i>=0; i--)
       {
-          if(!getStyle(i)) {
-              start = i+1;
-            break;
-          }
+          if(getStyle(i)) start = i;
+          else break;
       }
       for(FXint i=start; i<contents.length(); i++)
       {

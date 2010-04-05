@@ -25,6 +25,7 @@
 
 FXIcon* MakeIcon(FXApp *app, const FXString path, const FXString name, const FXbool menu);
 FXIcon* MakeIcon(FXApp *app, const FXString path, const FXString name);
+FXIcon* MakeIcon(FXApp* app, const FXString& path, FXint size=16, FXColor color=FXRGB(0,0,0));
 FXIcon* MakeAwayIcon(FXApp *app, const FXString path, const FXString name);
 FXbool MakeAllIcons(FXApp *app, const FXString &iniFile, const FXString &datadir);
 

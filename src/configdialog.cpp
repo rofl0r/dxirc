@@ -26,6 +26,110 @@
 #include "icons.h"
 #include "utils.h"
 
+static FXIcon *createIconFromName(FXApp *app, const FXString& path)
+{
+    FXIconSource iconsource(app);
+    FXIcon *icon = NULL;
+    if(!FXStat::exists(path))
+        return NULL;
+    icon = iconsource.loadScaledIconFile(path,16);
+    if(icon)
+    {
+        icon->blend(app->getBaseColor());
+        icon->create();
+        return icon;
+    }
+    return NULL;
+}
+
+static void updateLabelIcon(FXApp* app, FXLabel* label, const FXString& path)
+{
+    FXIconSource iconsource(app);
+    FXIcon *icon = NULL;
+    if(label->getIcon())
+    {
+        icon = label->getIcon();
+        label->setIcon(NULL);
+        delete icon;
+        icon = NULL;
+    }
+    icon = iconsource.loadScaledIconFile(path,16);
+    if(icon)
+    {
+        icon->blend(app->getBaseColor());
+        icon->create();
+        label->setIcon(icon);
+    }
+}
+
+FXDEFMAP(SmileyDialog) SmileyDialogMap[] = {
+    FXMAPFUNC(SEL_COMMAND, SmileyDialog::ID_ACCEPT, SmileyDialog::OnAccept),
+    FXMAPFUNC(SEL_COMMAND, SmileyDialog::ID_CANCEL, SmileyDialog::OnCancel),
+    FXMAPFUNC(SEL_COMMAND, SmileyDialog::ID_PATH, SmileyDialog::OnPath)
+};
+
+FXIMPLEMENT(SmileyDialog, FXDialogBox, SmileyDialogMap, ARRAYNUMBER(SmileyDialogMap))
+
+SmileyDialog::SmileyDialog(FXWindow* owner, FXString title, FXString smiley, FXString path)
+        : FXDialogBox(owner, title, DECOR_RESIZE|DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0)
+{
+    FXHorizontalFrame *closeframe = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X|PACK_UNIFORM_WIDTH);
+    new FXButton(closeframe, _("&Cancel"), NULL, this, ID_CANCEL, LAYOUT_RIGHT|FRAME_RAISED|FRAME_THICK, 0,0,0,0, 10,10,2,5);
+    FXButton *ok = new FXButton(closeframe, _("&OK"), NULL, this, ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|LAYOUT_RIGHT|FRAME_RAISED|FRAME_THICK, 0,0,0,0, 10,10,2,5);
+    ok->addHotKey(KEY_Return);
+
+    FXMatrix *matrix = new FXMatrix(this,2,MATRIX_BY_COLUMNS|LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    new FXLabel(matrix, _("Smiley:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    smileyText = new FXTextField(matrix, 25, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    if(!smiley.empty()) smileyText->setText(smiley);
+    new FXLabel(matrix, _("Path:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    FXHorizontalFrame *pathframe = new FXHorizontalFrame(matrix, LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW, 0,0,0,0, 0,0,0,0);
+    pathText = new FXTextField(pathframe, 25, NULL, 0, TEXTFIELD_READONLY|FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_X);
+    pathText->setBackColor(getApp()->getBaseColor());
+    if(!path.empty()) pathText->setText(path);
+    pathButton = new FXButton(pathframe, "...", NULL, this, ID_PATH, FRAME_RAISED|FRAME_THICK);
+    new FXLabel(matrix, _("Preview:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    previewLabel = new FXLabel(matrix, "", path.empty() ? NULL : createIconFromName(getApp(), path), JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+}
+
+SmileyDialog::~SmileyDialog()
+{
+
+}
+
+long SmileyDialog::OnAccept(FXObject*, FXSelector, void*)
+{
+    getApp()->stopModal(this,TRUE);
+    hide();
+    return 1;
+}
+
+long SmileyDialog::OnCancel(FXObject*, FXSelector, void*)
+{
+    getApp()->stopModal(this,FALSE);
+    hide();
+    return 1;
+}
+
+long SmileyDialog::OnPath(FXObject*, FXSelector, void*)
+{
+    FXFileDialog dialog(this, _("Select file"));
+    if(!pathText->getText().empty()) dialog.setFilename(pathText->getText());
+    else dialog.setFilename((FXString)DXIRC_DATADIR+PATHSEPSTRING+"icons"+PATHSEPSTRING+"smileys"+PATHSEPSTRING);
+    if(dialog.execute())
+    {
+        pathText->setText(dialog.getFilename());
+        updateLabelIcon(getApp(), previewLabel, dialog.getFilename());
+    }
+    return 1;
+}
+
+FXbool SmileyDialog::IconExist()
+{
+    if(previewLabel->getIcon()) return TRUE;
+    return FALSE;
+}
+
 FXDEFMAP(ConfigDialog) ConfigDialogMap[] = {
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_ACCEPT, ConfigDialog::OnAccept),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_CANCEL, ConfigDialog::OnCancel),
@@ -75,7 +179,11 @@ FXDEFMAP(ConfigDialog) ConfigDialogMap[] = {
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_SOUNDDISCONNECT, ConfigDialog::OnSoundDisconnect),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_SOUNDMESSAGE, ConfigDialog::OnSoundMessage),
     FXMAPFUNCS(SEL_COMMAND, ConfigDialog::ID_PLAYCONNECT, ConfigDialog::ID_PLAYMESSAGE, ConfigDialog::OnPlay),
-    FXMAPFUNCS(SEL_COMMAND, ConfigDialog::ID_SELECTCONNECT, ConfigDialog::ID_SELECTMESSAGE, ConfigDialog::OnSelectPath)
+    FXMAPFUNCS(SEL_COMMAND, ConfigDialog::ID_SELECTCONNECT, ConfigDialog::ID_SELECTMESSAGE, ConfigDialog::OnSelectPath),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_USESMILEYS, ConfigDialog::OnUseSmileys),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_ADDSMILEY, ConfigDialog::OnAddSmiley),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_MODIFYSMILEY, ConfigDialog::OnModifySmiley),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_DELETESMILEY, ConfigDialog::OnDeleteSmiley)
 };
 
 FXIMPLEMENT(ConfigDialog, FXDialogBox, ConfigDialogMap, ARRAYNUMBER(ConfigDialogMap))
@@ -202,6 +310,10 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
 
     targetStripColors.connect(stripColors);
 
+    targetUseSmileys.connect(useSmileys);
+    targetUseSmileys.setTarget(this);
+    targetUseSmileys.setSelector(ID_USESMILEYS);
+
     getApp()->getNormalFont()->create();
     FXFontDesc fontdescription;
     getApp()->getNormalFont()->getFontDesc(fontdescription);
@@ -209,7 +321,7 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     font->create();
 
     FXHorizontalFrame *closeframe = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X|PACK_UNIFORM_WIDTH);
-    FXButton *ok = new FXButton(closeframe, _("C&lose"), NULL, this, ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|LAYOUT_RIGHT|FRAME_RAISED|FRAME_THICK, 0,0,0,0, 10,10,2,5);
+    FXButton *ok = new FXButton(closeframe, _("&Save&&Close"), NULL, this, ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|LAYOUT_RIGHT|FRAME_RAISED|FRAME_THICK, 0,0,0,0, 10,10,2,5);
     ok->addHotKey(KEY_Return);
     new FXButton(closeframe, _("&Cancel"), NULL, this, ID_CANCEL, LAYOUT_RIGHT|FRAME_RAISED|FRAME_THICK, 0,0,0,0, 10,10,2,5);
 
@@ -529,6 +641,40 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     }
     if(!FXStat::exists(pathMessage))
         playMessage->disable();
+
+    FXVerticalFrame *smileypane = new FXVerticalFrame(switcher, LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    new FXLabel(smileypane, _("Smileys settings"), NULL, LAYOUT_LEFT);
+    new FXHorizontalSeparator(smileypane, SEPARATOR_LINE|LAYOUT_FILL_X);
+    new FXCheckButton(smileypane, _("Use smileys"), &targetUseSmileys, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
+    FXGroupBox *smileysgroup = new FXGroupBox(smileypane, _("Smileys"), FRAME_GROOVE|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    FXVerticalFrame *smileysbuttons = new FXVerticalFrame(smileysgroup, LAYOUT_SIDE_RIGHT|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
+    addSmiley = new FXButton(smileysbuttons, _("Add"), NULL, this, ID_ADDSMILEY, FRAME_RAISED|FRAME_THICK);
+    modifySmiley = new FXButton(smileysbuttons, _("Modify"), NULL, this, ID_MODIFYSMILEY, FRAME_RAISED|FRAME_THICK);
+    deleteSmiley = new FXButton(smileysbuttons, _("Delete"), NULL, this, ID_DELETESMILEY, FRAME_RAISED|FRAME_THICK);
+    if(useSmileys)
+    {
+        addSmiley->enable();
+        if((FXint)smileysMap.size())
+        {
+            modifySmiley->enable();
+            deleteSmiley->enable();
+        }
+        else
+        {
+            modifySmiley->disable();
+            deleteSmiley->disable();
+        }
+    }
+    else
+    {
+        addSmiley->disable();
+        modifySmiley->disable();
+        deleteSmiley->disable();
+    }
+    FXVerticalFrame *smileyspane = new FXVerticalFrame(smileysgroup, LAYOUT_FILL_X|LAYOUT_FILL_Y|FRAME_SUNKEN|FRAME_THICK);
+    FXHorizontalFrame *smileysframe = new FXHorizontalFrame(smileyspane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    smileys = new FXList(smileysframe, NULL, 0, LIST_BROWSESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    FillSmileys();
     
     new FXButton(buttonframe, _("&General"), NULL, switcher, FXSwitcher::ID_OPEN_THIRD, FRAME_RAISED);
     new FXButton(buttonframe, _("&Look"), NULL, switcher, FXSwitcher::ID_OPEN_FOURTH, FRAME_RAISED);
@@ -536,6 +682,7 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     new FXButton(buttonframe, _("I&gnore"), NULL, switcher, FXSwitcher::ID_OPEN_SECOND, FRAME_RAISED);
     new FXButton(buttonframe, _("&DCC"), NULL, switcher, FXSwitcher::ID_OPEN_FIFTH, FRAME_RAISED);
     new FXButton(buttonframe, _("&Sounds"), NULL, switcher, FXSwitcher::ID_OPEN_SIXTH, FRAME_RAISED);
+    new FXButton(buttonframe, _("S&mileys"), NULL, switcher, FXSwitcher::ID_OPEN_SEVENTH, FRAME_RAISED);
     switcher->setCurrent(2);
 
     for(int i=0; i<6; i++)
@@ -1433,6 +1580,107 @@ long ConfigDialog::OnSelectPath(FXObject*, FXSelector sel, void*)
     return 1;
 }
 
+long ConfigDialog::OnUseSmileys(FXObject*, FXSelector, void*)
+{
+    if(useSmileys)
+    {
+        addSmiley->enable();
+        if((FXint)smileysMap.size())
+        {
+            modifySmiley->enable();
+            deleteSmiley->enable();
+        }
+        else
+        {
+            modifySmiley->disable();
+            deleteSmiley->disable();
+        }
+    }
+    else
+    {
+        addSmiley->disable();
+        modifySmiley->disable();
+        deleteSmiley->disable();
+    }
+    return 1;
+}
+
+long ConfigDialog::OnAddSmiley(FXObject*, FXSelector, void*)
+{
+    if((FXint)smileysMap.size()>=256)
+    {
+        FXMessageBox::information(this, MBOX_OK, _("Information"), _("Maximum number of 256 smileys is reached"));
+        return 1;
+    }
+    SmileyDialog dialog(this, _("Add smiley"), "", "");
+    if(dialog.execute())
+    {
+        if(!dialog.IconExist())
+        {
+            FXMessageBox::information(this, MBOX_OK, _("Information"), _("Icon file '%s' doesn't exist or isn't image file"), dialog.GetPath().text());
+            return 1;
+        }
+        if(dialog.GetSmiley().empty())
+        {
+            FXMessageBox::information(this, MBOX_OK, _("Information"), _("Smiley text is empty"));
+            return 1;
+        }
+        if(SmileyExist(dialog.GetSmiley()))
+        {
+            FXMessageBox::information(this, MBOX_OK, _("Information"), _("Smiley '%s' already exist"), dialog.GetSmiley().text());
+            return 1;
+        }
+        smileysMap.insert(StringPair(dialog.GetSmiley(), dialog.GetPath()));
+        smileys->appendItem(new FXListItem(dialog.GetSmiley(), dialog.GetIcon()));
+        modifySmiley->enable();
+        deleteSmiley->enable();
+    }
+    return 1;
+}
+
+long ConfigDialog::OnModifySmiley(FXObject*, FXSelector, void*)
+{
+    FXint index = smileys->getCurrentItem();
+    FXString oldkey = smileys->getItemText(index);
+    SmileyDialog dialog(this, _("Modify smiley"), oldkey, smileysMap[oldkey]);
+    if(dialog.execute())
+    {
+        if(!dialog.IconExist())
+        {
+            FXMessageBox::information(this, MBOX_OK, _("Information"), _("Icon file '%s' doesn't exist or isn't image file"), dialog.GetPath().text());
+            return 1;
+        }
+        if(dialog.GetSmiley().empty())
+        {
+            FXMessageBox::information(this, MBOX_OK, _("Information"), _("Smiley text is empty"));
+            return 1;
+        }
+        if(SmileyExist(dialog.GetSmiley()) && dialog.GetSmiley()!=oldkey)
+        {
+            FXMessageBox::information(this, MBOX_OK, _("Information"), _("Smiley '%s' already exist"), dialog.GetSmiley().text());
+            return 1;
+        }
+        smileysMap.erase(oldkey);
+        smileys->removeItem(index, TRUE);
+        smileysMap.insert(StringPair(dialog.GetSmiley(), dialog.GetPath()));
+        smileys->insertItem(index, new FXListItem(dialog.GetSmiley(), dialog.GetIcon()), TRUE);
+        smileys->setCurrentItem(index, TRUE);
+    }
+    return 1;
+}
+
+long ConfigDialog::OnDeleteSmiley(FXObject*, FXSelector, void*)
+{
+    smileysMap.erase(smileys->getItemText(smileys->getCurrentItem()));
+    smileys->removeItem(smileys->getCurrentItem(), TRUE);
+    if(!(FXint)smileysMap.size())
+    {
+        modifySmiley->disable();
+        deleteSmiley->disable();
+    }
+    return 1;
+}
+
 void ConfigDialog::FillCommnads()
 {
     if(!commandsList.empty())
@@ -1542,6 +1790,18 @@ void ConfigDialog::FillFriends()
     }
 }
 
+void ConfigDialog::FillSmileys()
+{
+    if((FXint)smileysMap.size())
+    {
+        StringIt it;
+        for(it=smileysMap.begin(); it!=smileysMap.end(); it++)
+        {
+            smileys->appendItem(new FXListItem((*it).first, createIconFromName(getApp(), (*it).second)));
+        }
+    }
+}
+
 void ConfigDialog::UpdateCommands()
 {
     commandsList.clear();
@@ -1582,6 +1842,16 @@ FXbool ConfigDialog::NickExist(const FXString &ckdNick, FXbool user)
     for(FXint i=0; i<(user ? users->getNumItems() : friends->getNumItems()); i++)
     {
         if((user ? users->getItemText(i) : friends->getItemText(i)) == ckdNick) return TRUE;
+    }
+    return FALSE;
+}
+
+FXbool ConfigDialog::SmileyExist(const FXString& ckdSmiley)
+{
+    StringIt it;
+    for(it=smileysMap.begin(); it!=smileysMap.end(); it++)
+    {
+        if(!comparecase((*it).first, ckdSmiley)) return TRUE;
     }
     return FALSE;
 }
@@ -1735,6 +2005,20 @@ void ConfigDialog::ReadConfig()
     pathDisconnect = set.readStringEntry("SETTINGS", "pathDisconnect", DXIRC_DATADIR PATHSEPSTRING "sounds" PATHSEPSTRING "disconnected.wav");
     pathMessage = set.readStringEntry("SETTINGS", "pathMessage", DXIRC_DATADIR PATHSEPSTRING "sounds" PATHSEPSTRING "message.wav");
     stripColors = set.readBoolEntry("SETTINGS", "stripColors", TRUE);
+    useSmileys = set.readBoolEntry("SETTINGS", "useSmileys", FALSE);
+    FXint smileysNum = set.readIntEntry("SMILEYS", "number", 0);
+    if(smileysNum)
+    {
+
+        for(FXint i=0; i<smileysNum; i++)
+        {
+            FXString key, value;
+            key = set.readStringEntry("SMILEYS", FXStringFormat("smiley%d", i).text(), FXStringFormat("%d)", i).text());
+            value = set.readStringEntry("SMILEYS", FXStringFormat("path%d", i).text(), "");
+            if(!key.empty())
+                smileysMap.insert(StringPair(key, value));
+        }
+    }
 }
 
 void ConfigDialog::SaveConfig()
@@ -1836,7 +2120,6 @@ void ConfigDialog::SaveConfig()
         {
             set.writeStringEntry("ALIASES", FXStringFormat("key%d", i).text(), (*it).first.text());
             set.writeStringEntry("ALIASES", FXStringFormat("value%d", i).text(), (*it).second.text());
-            i++;
         }
     }
     set.writeBoolEntry("SETTINGS", "autoload", autoload);
@@ -1854,6 +2137,18 @@ void ConfigDialog::SaveConfig()
     set.writeStringEntry("SETTINGS", "pathDisconnect", pathDisconnect.text());
     set.writeStringEntry("SETTINGS", "pathMessage", pathMessage.text());
     set.writeBoolEntry("SETTINGS", "stripColors", stripColors);
+    set.writeBoolEntry("SETTINGS", "useSmileys", useSmileys);
+    set.writeIntEntry("SMILEYS", "number", (FXint)smileysMap.size());
+    if((FXint)smileysMap.size())
+    {
+        StringIt it;
+        FXint i;
+        for(i=0, it=smileysMap.begin(); it!=smileysMap.end(); it++,i++)
+        {
+            set.writeStringEntry("SMILEYS", FXStringFormat("smiley%d", i).text(), (*it).first.text());
+            set.writeStringEntry("SMILEYS", FXStringFormat("path%d", i).text(), (*it).second.text());
+        }
+    }
     set.setModified();
     set.unparseFile(utils::GetIniFile());
 }

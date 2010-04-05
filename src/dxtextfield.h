@@ -20,8 +20,8 @@
  *      MA 02110-1301, USA.
  */
 
-#ifndef _DXTEXTFIELD_H
-#define	_DXTEXTFIELD_H
+#ifndef DXTEXTFIELD_H
+#define	DXTEXTFIELD_H
 
 #ifndef FXTEXTFIELD_H
 #include "FXTextField.h"
@@ -359,5 +359,5 @@ public:
   virtual ~dxTextField();
   };
 
-#endif	/* _DXTEXTFIELD_H */
+#endif	/* DXTEXTFIELD_H */
 

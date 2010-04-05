@@ -29,18 +29,11 @@
 #include "dxpipe.h"
 #include "dxtextfield.h"
 #include "defs.h"
+#ifndef DXTEXT_H
+#include "dxtext.h"
+#endif
 
 class dxirc;
-
-class dxText: public FXText
-{
-    FXDECLARE(dxText)
-public:
-    dxText(FXComposite *p, FXObject *tgt, FXSelector sel, FXuint opts);
-    long onMotion(FXObject*, FXSelector, void*);
-private:
-    dxText() {}
-};
 
 class DccSendDialog: public FXDialogBox
 {
@@ -137,7 +130,10 @@ class IrcTabItem: public FXTabItem
         void SetSameList(FXbool);
         void SetColoredNick(FXbool);
         void SetStripColors(FXbool);
-        void SetCommandFocus();        
+        void SetCommandFocus();
+        void SetUseSmiley(FXbool smiley);
+        void SetSmileys(dxSmileyArray nsmileys);
+        void MakeLastRowVisible();
 
         long OnCommandline(FXObject *, FXSelector, void*);
         long OnKeyPress(FXObject *, FXSelector, void*);
@@ -147,7 +143,7 @@ class IrcTabItem: public FXTabItem
         long OnPipeTimeout(FXObject *, FXSelector, void*);
         long OnRightMouse(FXObject *, FXSelector, void*);
         long OnDoubleclick(FXObject *, FXSelector, void*);
-        long OnLeftMouse(FXObject *, FXSelector, void *);
+        long OnTextLink(FXObject *, FXSelector, void *);
         long OnNewQuery(FXObject *, FXSelector, void*);
         long OnWhois(FXObject *, FXSelector, void*);
         long OnOp(FXObject *, FXSelector, void*);
@@ -167,7 +163,6 @@ class IrcTabItem: public FXTabItem
         void AppendText(FXString, FXbool);
         void AppendStyledText(FXString text, FXint style, FXbool highlight, FXbool disableStrip=FALSE);
         FXbool ProcessLine(const FXString &);
-        void MakeLastRowVisible(FXbool);
         void HasAllCommand(FXbool);
         void HasMyMsg(FXbool);
 

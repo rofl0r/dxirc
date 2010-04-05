@@ -130,6 +130,10 @@ class ConfigDialog: public FXDialogBox
             ID_SELECTCONNECT,
             ID_SELECTDISCONNECT,
             ID_SELECTMESSAGE,
+            ID_USESMILEYS,
+            ID_ADDSMILEY,
+            ID_MODIFYSMILEY,
+            ID_DELETESMILEY,
             ID_LAST
         };
 
@@ -178,15 +182,20 @@ class ConfigDialog: public FXDialogBox
         long OnSoundMessage(FXObject*,FXSelector,void*);
         long OnPlay(FXObject*,FXSelector,void*);
         long OnSelectPath(FXObject*,FXSelector,void*);
+        long OnUseSmileys(FXObject*,FXSelector,void*);
+        long OnAddSmiley(FXObject*,FXSelector,void*);
+        long OnModifySmiley(FXObject*,FXSelector,void*);
+        long OnDeleteSmiley(FXObject*,FXSelector,void*);
 
     private:
         ConfigDialog() {}
         ConfigDialog(const ConfigDialog&);
 
-        FXList *commands, *icons;
+        FXList *commands, *icons, *smileys;
         FXIconList *users, *friends;
         FXButton *addCommand, *deleteCommand, *addUser, *modifyUser, *deleteUser;
         FXButton *addTheme, *deleteTheme, *selectPath, *selectAutoloadPath;
+        FXButton *addSmiley, *modifySmiley, *deleteSmiley;
         FXButton *icon1, *icon2, *icon3, *icon4, *icon5, *icon6, *icon7;
         FXButton *fontButton, *ircfontButton, *addFriend, *modifyFriend, *deleteFriend;
         FXCheckButton *closeToTrayButton, *checkConnect, *checkDisconnect, *checkMessage;
@@ -195,7 +204,7 @@ class ConfigDialog: public FXDialogBox
         FXString dccIP1, dccIP2, dccIP3, dccIP4;
         FXbool logging, serverWindow, sameCmd, sameList, useTray, coloredNick, closeToTray, reconnect;
         FXbool usersShown, statusShown, autoload, sounds, soundConnect, soundDisconnect, soundMessage;
-        FXbool stripColors;
+        FXbool stripColors, useSmileys;
         dxServerInfoArray serverList;
         dxIgnoreUserArray usersList, friendsList;
         FXToolBar *iconsBar;
@@ -217,6 +226,7 @@ class ConfigDialog: public FXDialogBox
         FXDataTarget targetDccIP1, targetDccIP2, targetDccIP3, targetDccIP4, targetDccPortD, targetDccPortH, targetDccTimeout;
         FXDataTarget targetSound, targetSoundConnect, targetSoundDisconnect, targetSoundMessage;
         FXDataTarget targetPathConnect, targetPathDisconnect, targetPathMessage, targetStripColors;
+        FXDataTarget targetUseSmileys;
         FXButton *selectConnect, *selectDisconnect, *selectMessage, *playConnect, *playDisconnect, *playMessage;
         FXString pathConnect, pathDisconnect, pathMessage;
         FXLabel *labelSelected, *labelNocurrent, *labelTip, *label;
@@ -228,6 +238,7 @@ class ConfigDialog: public FXDialogBox
         FXFont *font, *ircFont;
         FXListBox *listTabs;
         FXMainWindow *owner;
+        dxStringMap smileysMap;
 
         void FillCommnads();
         FXString FillCommandsCombo();
@@ -235,6 +246,7 @@ class ConfigDialog: public FXDialogBox
         void FillUsers();
         void FillFriends();
         void FillThemes();
+        void FillSmileys();
         void UpdateCommands();
         void UpdateIcons();
         void UpdateColors();
@@ -243,8 +255,38 @@ class ConfigDialog: public FXDialogBox
         void ShowMessage();
         FXbool ThemeExist(const FXString &ckdTheme);
         FXbool NickExist(const FXString &ckdNick, FXbool user=TRUE);
+        FXbool SmileyExist(const FXString &ckdSmiley);
         void ReadConfig();
         void SaveConfig();
+};
+
+class SmileyDialog: public FXDialogBox
+{
+    FXDECLARE(SmileyDialog)
+public:
+    SmileyDialog(FXWindow *owner, FXString title, FXString smiley, FXString path);
+    virtual ~SmileyDialog();
+    enum {
+        ID_ACCEPT = ConfigDialog::ID_LAST,
+        ID_CANCEL,
+        ID_PATH
+    };
+
+    long OnAccept(FXObject*,FXSelector,void*);
+    long OnCancel(FXObject*,FXSelector,void*);
+    long OnPath(FXObject*,FXSelector,void*);
+
+    FXString GetSmiley() { return smileyText->getText(); }
+    FXString GetPath() { return pathText->getText(); }
+    FXbool IconExist();
+    FXIcon* GetIcon() const { return previewLabel->getIcon(); }
+private:
+    SmileyDialog() {}
+    SmileyDialog(const SmileyDialog&);
+
+    FXTextField *smileyText, *pathText;
+    FXButton *pathButton;
+    FXLabel *previewLabel;
 };
 
 #endif /* CONFIGDIALOG_H */

@@ -431,6 +431,26 @@ FXIcon* MakeIcon(FXApp *app, const FXString path, const FXString name, const FXb
     return NULL;
 }
 
+FXIcon* MakeIcon(FXApp* app, const FXString& path, FXint size, FXColor color)
+{
+    FXIconSource iconsource(app);
+    FXIcon *icon = NULL;
+    icon = iconsource.loadScaledIconFile(path, size);
+    if(icon)
+    {
+        icon->blend(color);
+        icon->create();
+        return icon;
+    }
+    else
+    {
+        icon = new FXPNGIcon(app, empty);
+        icon->create();
+        return icon;
+    }
+    return NULL;
+}
+
 FXIcon* MakeAwayIcon(FXApp *app, const FXString path, const FXString name)
 {
     FXIcon *iconAway = NULL;
