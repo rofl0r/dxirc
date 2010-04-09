@@ -593,8 +593,8 @@ void IrcTabItem::AppendLinkText(const FXString &txt, FXint stylenum)
     FXbool bold = FALSE;
     FXbool under = FALSE;
     FXint lastStyle = stylenum;
-    FXColor foreColor = colors.text;
-    FXColor backColor = colors.back;
+    FXColor foreColor = stylenum && stylenum<=textStyleList.no() ? textStyleList[stylenum-1].normalForeColor : colors.text;
+    FXColor backColor = stylenum && stylenum<=textStyleList.no() ? textStyleList[stylenum-1].normalBackColor : colors.back;
     FXString normalText = "";
     FXint length = txt.length();
     while(i<length)

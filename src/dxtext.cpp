@@ -161,8 +161,7 @@ void dxText::layout()
     FXint fw=font->getFontWidth();
     FXint oww=wrapwidth;
     // Compute new wrap width; needed to reflow text
-    wrapwidth = width - marginleft - marginright;
-    if(vertical->shown()) wrapwidth-=vertical->getDefaultWidth();
+    wrapwidth = width - marginleft - marginright - vertical->getDefaultWidth();
     // Wrap width changed, so reflow
     if(wrapwidth!=oww && wrapwidth/fw!=oww/fw) flags|=FLAG_RECALC;
     // Scrollbars adjusted
@@ -341,8 +340,9 @@ void dxText::appendStyledText(FXString text, FXint style)
     {
         lines.append(lineCount(last));
         nlines+=lines[last];
-        layout();
+        FXScrollArea::layout();
         makeLastRowVisible();
+        updateRange(last, last);
     }
 }
 
@@ -573,7 +573,6 @@ void dxText::setSelection(FXint index, FXint pos)
         updateRange(oldstartindex, selstartindex);
         updateRange(oldendindex, selendindex);
     }
-    //updateRange(FXMIN(oldstartindex,selstartindex),FXMAX(oldendindex,selendindex));
 }
 
 // Extend selection
@@ -1385,7 +1384,7 @@ long dxText::onCmdDeselectAll(FXObject*, FXSelector, void*)
 void dxText::makeLastRowVisible(FXbool force)
 {
     register FXfloat pos = vertical->getPosition()*1.0;
-    register FXfloat max = (font->getFontHeight()*(nlines-1)-viewport_h)*0.95;
+    register FXfloat max = (font->getFontHeight()*(nlines-1)-viewport_h)*0.9;
     if(pos>max || force)
         setPosition(0, viewport_h-margintop-marginbottom-font->getFontHeight()*nlines);
 }
