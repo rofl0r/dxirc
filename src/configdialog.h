@@ -134,6 +134,9 @@ class ConfigDialog: public FXDialogBox
             ID_ADDSMILEY,
             ID_MODIFYSMILEY,
             ID_DELETESMILEY,
+            ID_SMILEY,
+            ID_IMPORTSMILEY,
+            ID_EXPORTSMILEY,
             ID_LAST
         };
 
@@ -186,6 +189,8 @@ class ConfigDialog: public FXDialogBox
         long OnAddSmiley(FXObject*,FXSelector,void*);
         long OnModifySmiley(FXObject*,FXSelector,void*);
         long OnDeleteSmiley(FXObject*,FXSelector,void*);
+        long OnImportSmiley(FXObject*,FXSelector,void*);
+        long OnExportSmiley(FXObject*,FXSelector,void*);
 
     private:
         ConfigDialog() {}
@@ -195,7 +200,7 @@ class ConfigDialog: public FXDialogBox
         FXIconList *users, *friends;
         FXButton *addCommand, *deleteCommand, *addUser, *modifyUser, *deleteUser;
         FXButton *addTheme, *deleteTheme, *selectPath, *selectAutoloadPath;
-        FXButton *addSmiley, *modifySmiley, *deleteSmiley;
+        FXButton *addSmiley, *modifySmiley, *deleteSmiley, *importSmiley, *exportSmiley;
         FXButton *icon1, *icon2, *icon3, *icon4, *icon5, *icon6, *icon7;
         FXButton *fontButton, *ircfontButton, *addFriend, *modifyFriend, *deleteFriend;
         FXCheckButton *closeToTrayButton, *checkConnect, *checkDisconnect, *checkMessage;
@@ -204,7 +209,7 @@ class ConfigDialog: public FXDialogBox
         FXString dccIP1, dccIP2, dccIP3, dccIP4;
         FXbool logging, serverWindow, sameCmd, sameList, useTray, coloredNick, closeToTray, reconnect;
         FXbool usersShown, statusShown, autoload, sounds, soundConnect, soundDisconnect, soundMessage;
-        FXbool stripColors, useSmileys;
+        FXbool stripColors, useSmileys, showImportwarning;
         dxServerInfoArray serverList;
         dxIgnoreUserArray usersList, friendsList;
         FXToolBar *iconsBar;
@@ -258,6 +263,8 @@ class ConfigDialog: public FXDialogBox
         FXbool SmileyExist(const FXString &ckdSmiley);
         void ReadConfig();
         void SaveConfig();
+        FXchar* Enquote(FXchar* result, const FXchar* text);
+        FXchar* Dequote(FXchar* text) const;
 };
 
 class SmileyDialog: public FXDialogBox

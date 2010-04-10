@@ -1,0 +1,13 @@
+# dxirc smiley settings
+# path is relative to file
+# Example: /home/xxx/smile.png=:)
+cry.png=":\'("
+cry.png=":\'-("
+unhappy.png=:(
+unhappy.png=:-(
+smile.png=:)
+smile.png=:-)
+biggrin.png=:D
+biggrin.png=:-D
+tongue.png=:P
+tongue.png=:-P

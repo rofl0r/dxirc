@@ -26,6 +26,10 @@
 #include "icons.h"
 #include "utils.h"
 
+#define MAXBUFFER 2000
+#define MAXVALUE  2000
+#define HEADER "# dxirc smiley settings\n# path is relative to file\n# Example: /home/xxx/smile.png=:)\n"
+
 static FXIcon *createIconFromName(FXApp *app, const FXString& path)
 {
     FXIconSource iconsource(app);
@@ -60,6 +64,48 @@ static void updateLabelIcon(FXApp* app, FXLabel* label, const FXString& path)
         icon->create();
         label->setIcon(icon);
     }
+}
+
+// Check if quotes are needed
+static bool needquotes(const FXchar* text)
+{
+    register const FXchar *ptr=text;
+    register FXuchar c;
+    while((c=*ptr++)!='\0')
+    {
+        if(0x7f<=c || c<0x20 || c=='"' || c=='\'' || c=='\\' || (c==' ' && (ptr==(text+1) || *ptr=='\0'))) return true;
+    }
+    return false;
+}
+
+// Read string
+static bool readString(FXFile& file, FXchar *buffer, FXint& bol, FXint& eol, FXint& end)
+{
+    register FXint n;
+    do
+    {
+        if(eol >= end)
+        {
+            if(bol < end)
+            {
+                memmove(buffer, buffer + bol, end - bol);
+            }
+            end = end - bol;
+            bol = 0;
+            eol = end;
+            n = file.readBlock(buffer + end, MAXBUFFER - end);
+            if(n < 0) return false;
+            end += n;
+        }
+    } while (eol < end && buffer[eol++] != '\n');
+    return bol<eol;
+}
+
+// Write string
+static bool writeString(FXFile& file, const FXchar* string)
+{
+    register FXint len = strlen(string);
+    return file.writeBlock(string, len) == len;
 }
 
 FXDEFMAP(SmileyDialog) SmileyDialogMap[] = {
@@ -183,7 +229,10 @@ FXDEFMAP(ConfigDialog) ConfigDialogMap[] = {
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_USESMILEYS, ConfigDialog::OnUseSmileys),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_ADDSMILEY, ConfigDialog::OnAddSmiley),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_MODIFYSMILEY, ConfigDialog::OnModifySmiley),
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_DELETESMILEY, ConfigDialog::OnDeleteSmiley)
+    FXMAPFUNC(SEL_DOUBLECLICKED, ConfigDialog::ID_SMILEY, ConfigDialog::OnModifySmiley),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_DELETESMILEY, ConfigDialog::OnDeleteSmiley),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_IMPORTSMILEY, ConfigDialog::OnImportSmiley),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_EXPORTSMILEY, ConfigDialog::OnExportSmiley)
 };
 
 FXIMPLEMENT(ConfigDialog, FXDialogBox, ConfigDialogMap, ARRAYNUMBER(ConfigDialogMap))
@@ -192,6 +241,7 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     : FXDialogBox(owner, _("Preferences"), DECOR_RESIZE|DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0), owner(owner)
 {
     ReadConfig();
+    showImportwarning = TRUE;
 
     textTarget.connect(colors.text);
     textTarget.setTarget(this);
@@ -651,18 +701,23 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     addSmiley = new FXButton(smileysbuttons, _("Add"), NULL, this, ID_ADDSMILEY, FRAME_RAISED|FRAME_THICK);
     modifySmiley = new FXButton(smileysbuttons, _("Modify"), NULL, this, ID_MODIFYSMILEY, FRAME_RAISED|FRAME_THICK);
     deleteSmiley = new FXButton(smileysbuttons, _("Delete"), NULL, this, ID_DELETESMILEY, FRAME_RAISED|FRAME_THICK);
+    importSmiley = new FXButton(smileysbuttons, _("Import"), NULL, this, ID_IMPORTSMILEY, FRAME_RAISED|FRAME_THICK);
+    exportSmiley = new FXButton(smileysbuttons, _("Export"), NULL, this, ID_EXPORTSMILEY, FRAME_RAISED|FRAME_THICK);
     if(useSmileys)
     {
         addSmiley->enable();
+        importSmiley->enable();
         if((FXint)smileysMap.size())
         {
             modifySmiley->enable();
             deleteSmiley->enable();
+            exportSmiley->enable();
         }
         else
         {
             modifySmiley->disable();
             deleteSmiley->disable();
+            exportSmiley->disable();
         }
     }
     else
@@ -670,10 +725,12 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
         addSmiley->disable();
         modifySmiley->disable();
         deleteSmiley->disable();
+        importSmiley->disable();
+        exportSmiley->disable();
     }
     FXVerticalFrame *smileyspane = new FXVerticalFrame(smileysgroup, LAYOUT_FILL_X|LAYOUT_FILL_Y|FRAME_SUNKEN|FRAME_THICK);
     FXHorizontalFrame *smileysframe = new FXHorizontalFrame(smileyspane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    smileys = new FXList(smileysframe, NULL, 0, LIST_BROWSESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    smileys = new FXList(smileysframe, this, ID_SMILEY, LIST_BROWSESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     FillSmileys();
     
     new FXButton(buttonframe, _("&General"), NULL, switcher, FXSwitcher::ID_OPEN_THIRD, FRAME_RAISED);
@@ -967,6 +1024,260 @@ long ConfigDialog::OnDeleteUser(FXObject*, FXSelector, void*)
         modifyUser->disable();
     }
     return 1;
+}
+
+long ConfigDialog::OnImportSmiley(FXObject*, FXSelector, void*)
+{
+    if(showImportwarning && smileysMap.size())
+        if(FXMessageBox::warning(this, MBOX_OK_CANCEL, _("Warning"), _("File import overwrites current settings"))==4) {showImportwarning=FALSE; return 1;}
+    smileys->clearItems();
+    smileysMap.clear();
+    FXFileDialog dialog(this, _("Select file"));
+    if(showImportwarning) dialog.setFilename((FXString)DXIRC_DATADIR+PATHSEPSTRING+"icons"+PATHSEPSTRING+"smileys"+PATHSEPSTRING+"dxirc.smiley");
+    if(dialog.execute())
+    {
+        FXFile file(dialog.getFilename(), FXIO::Reading);
+        if(file.isOpen())
+        {
+            FXchar line[MAXBUFFER];
+            FXint bol,eol,end,path,smiley,p,lineno;
+            FXString pathstr, smileystr;
+            lineno=bol=eol=end=0;
+            // Read lines
+            while(readString(file,line,bol,eol,end))
+            {
+                lineno++;
+                // Skip leading spaces
+                while(bol<eol && Ascii::isBlank(line[bol])) bol++;
+                // Skip comment lines and empty lines
+                if(bol>=eol || line[bol]=='#' || line[bol]==';' || line[bol]=='\n' || line[bol]=='\r') goto next;
+                // Scan key path
+                for(path=bol; bol<eol && line[bol]!='=' && !Ascii::isControl(line[bol]); bol++);
+                // Check errors
+                if(bol>=eol || line[bol]!='='){ fxwarning("%s:%d: expected '=' to follow key.\n",dialog.getFilename().text(),lineno); goto next; }
+                // Remove trailing spaces after path
+                for(p=bol; path<p && Ascii::isBlank(line[p-1]); p--);
+                // Terminate path
+                line[p]='\0';
+                // Skip leading spaces
+                for(bol++; bol<eol && Ascii::isBlank(line[bol]); bol++);
+                // Scan smiley
+                for(smiley=bol; bol<eol && !Ascii::isControl(line[bol]); bol++);
+                // Remove trailing spaces after smiley
+                for(p=bol; smiley<p && Ascii::isBlank(line[p-1]); p--);
+                // Terminate smiley
+                line[p]='\0';
+                //Fill smiley map
+                pathstr = Dequote(line+path);
+                if(pathstr.empty()) goto next;
+                smileystr = Dequote(line+smiley);
+                if(smileystr.empty()) goto next;
+                pathstr = FXPath::absolute(FXPath::directory(dialog.getFilename()), pathstr);
+                smileysMap.insert(StringPair(smileystr,pathstr));
+
+next:           bol=eol;
+            }
+        }
+    }
+    showImportwarning=FALSE;
+    FillSmileys();
+    if(smileysMap.size())
+    {
+        modifySmiley->enable();
+        deleteSmiley->enable();
+        exportSmiley->enable();
+    }
+    return 1;
+}
+
+long ConfigDialog::OnExportSmiley(FXObject*, FXSelector, void*)
+{
+    FXFileDialog dialog(this, _("Save smiley settings as"));
+    if(dialog.execute())
+    {
+        FXFile file(dialog.getFilename(), FXIO::Writing);
+        FXchar line[MAXVALUE];
+        if(file.isOpen())
+        {
+            writeString(file, HEADER);
+            if((FXint)smileysMap.size())
+            {
+                StringIt it;
+                FXint i;
+                for(i=0, it=smileysMap.begin(); it!=smileysMap.end(); it++,i++)
+                {
+                    writeString(file, Enquote(line, FXPath::relative(FXPath::directory(dialog.getFilename()),(*it).second).text()));
+                    writeString(file, "=");
+                    writeString(file, Enquote(line, (*it).first.text()));
+                    writeString(file, ENDLINE);
+                }
+            }
+        }
+    }
+    return 1;
+}
+
+// Enquote a value
+FXchar* ConfigDialog::Enquote(FXchar* result, const FXchar* text)
+{
+    register FXchar *end = result + MAXVALUE - 6;
+    register FXchar *ptr = result;
+    register FXuchar c;
+    if (needquotes(text))
+    {
+        *ptr++ = '"';
+        while((c = *text++) != '\0' && ptr < end)
+        {
+            switch (c) {
+                case '\n':
+                    *ptr++ = '\\';
+                    *ptr++ = 'n';
+                    break;
+                case '\r':
+                    *ptr++ = '\\';
+                            *ptr++ = 'r';
+                    break;
+                case '\b':
+                    *ptr++ = '\\';
+                            *ptr++ = 'b';
+                    break;
+                case '\v':
+                    *ptr++ = '\\';
+                    *ptr++ = 'v';
+                    break;
+                case '\a':
+                    *ptr++ = '\\';
+                    *ptr++ = 'a';
+                    break;
+                case '\f':
+                    *ptr++ = '\\';
+                    *ptr++ = 'f';
+                    break;
+                case '\t':
+                    *ptr++ = '\\';
+                    *ptr++ = 't';
+                    break;
+                case '\\':
+                    *ptr++ = '\\';
+                    *ptr++ = '\\';
+                    break;
+                case '"':
+                    *ptr++ = '\\';
+                    *ptr++ = '"';
+                    break;
+                case '\'':
+                    *ptr++ = '\\';
+                    *ptr++ = '\'';
+                    break;
+                default:
+                    if(c < 0x20 || 0x7f < c)
+                    {
+                        *ptr++ = '\\';
+                        *ptr++ = 'x';
+                        *ptr++ = FXString::HEX[c >> 4];
+                        *ptr++ = FXString::HEX[c & 15];
+                    }
+                    else
+                    {
+                        *ptr++ = c;
+                    }
+                    break;
+            }
+        }
+        *ptr++ = '"';
+    }
+    else
+    {
+        while ((c = *text++) != '\0' && ptr < end)
+        {
+            *ptr++ = c;
+        }
+    }
+    *ptr = '\0';
+    return result;
+}
+
+// Dequote a value, in situ
+FXchar* ConfigDialog::Dequote(FXchar* text) const
+{
+    register FXchar *result = text;
+    register FXchar *ptr = text;
+    register FXuint v;
+    if(*text == '"')
+    {
+        text++;
+        while((v = *text++) != '\0' && v != '\n' && v != '"')
+        {
+            if(v == '\\')
+            {
+                v = *text++;
+                switch (v) {
+                    case 'n':
+                        v = '\n';
+                        break;
+                    case 'r':
+                        v = '\r';
+                        break;
+                    case 'b':
+                        v = '\b';
+                        break;
+                    case 'v':
+                        v = '\v';
+                        break;
+                    case 'a':
+                        v = '\a';
+                        break;
+                    case 'f':
+                        v = '\f';
+                        break;
+                    case 't':
+                        v = '\t';
+                        break;
+                    case '\\':
+                        v = '\\';
+                        break;
+                    case '"':
+                        v = '"';
+                        break;
+                    case '\'':
+                        v = '\'';
+                        break;
+                    case 'x':
+                        v = 'x';
+                        if(Ascii::isHexDigit(*text))
+                        {
+                            v = Ascii::digitValue(*text++);
+                            if(Ascii::isHexDigit(*text))
+                            {
+                                v = (v << 4) + Ascii::digitValue(*text++);
+                            }
+                        }
+                        break;
+                    case '0':
+                    case '1':
+                    case '2':
+                    case '3':
+                    case '4':
+                    case '5':
+                    case '6':
+                    case '7':
+                        v = v - '0';
+                        if('0' <= *text && *text <= '7')
+                        {
+                            v = (v << 3)+*text++-'0';
+                            if('0' <= *text && *text <= '7')
+                            {
+                                v = (v << 3)+*text++-'0';
+                            }
+                        }
+                        break;
+                }
+            }
+            *ptr++ = v;
+        }
+        *ptr = '\0';
+    }
+    return result;
 }
 
 long ConfigDialog::OnAddFriend(FXObject*, FXSelector, void*)
@@ -1585,15 +1896,18 @@ long ConfigDialog::OnUseSmileys(FXObject*, FXSelector, void*)
     if(useSmileys)
     {
         addSmiley->enable();
+        importSmiley->enable();
         if((FXint)smileysMap.size())
         {
             modifySmiley->enable();
             deleteSmiley->enable();
+            exportSmiley->enable();
         }
         else
         {
             modifySmiley->disable();
             deleteSmiley->disable();
+            exportSmiley->disable();
         }
     }
     else
@@ -1601,6 +1915,8 @@ long ConfigDialog::OnUseSmileys(FXObject*, FXSelector, void*)
         addSmiley->disable();
         modifySmiley->disable();
         deleteSmiley->disable();
+        importSmiley->disable();
+        exportSmiley->disable();
     }
     return 1;
 }
@@ -1634,6 +1950,7 @@ long ConfigDialog::OnAddSmiley(FXObject*, FXSelector, void*)
         smileys->appendItem(new FXListItem(dialog.GetSmiley(), dialog.GetIcon()));
         modifySmiley->enable();
         deleteSmiley->enable();
+        exportSmiley->enable();
     }
     return 1;
 }
@@ -1677,6 +1994,7 @@ long ConfigDialog::OnDeleteSmiley(FXObject*, FXSelector, void*)
     {
         modifySmiley->disable();
         deleteSmiley->disable();
+        exportSmiley->disable();
     }
     return 1;
 }

@@ -234,7 +234,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 icondir = $(datadir)/dxirc/icons/smileys
-icon_DATA = *.png
+icon_DATA = *.png dxirc.smiley
 all: all-am
 
 .SUFFIXES:
