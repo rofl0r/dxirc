@@ -1030,12 +1030,12 @@ long ConfigDialog::OnImportSmiley(FXObject*, FXSelector, void*)
 {
     if(showImportwarning && smileysMap.size())
         if(FXMessageBox::warning(this, MBOX_OK_CANCEL, _("Warning"), _("File import overwrites current settings"))==4) {showImportwarning=FALSE; return 1;}
-    smileys->clearItems();
-    smileysMap.clear();
     FXFileDialog dialog(this, _("Select file"));
     if(showImportwarning) dialog.setFilename((FXString)DXIRC_DATADIR+PATHSEPSTRING+"icons"+PATHSEPSTRING+"smileys"+PATHSEPSTRING+"dxirc.smiley");
     if(dialog.execute())
     {
+        smileys->clearItems();
+        smileysMap.clear();
         FXFile file(dialog.getFilename(), FXIO::Reading);
         if(file.isOpen())
         {
@@ -1078,15 +1078,15 @@ long ConfigDialog::OnImportSmiley(FXObject*, FXSelector, void*)
 next:           bol=eol;
             }
         }
+        FillSmileys();
+        if(smileysMap.size())
+        {
+            modifySmiley->enable();
+            deleteSmiley->enable();
+            exportSmiley->enable();
+        }
     }
-    showImportwarning=FALSE;
-    FillSmileys();
-    if(smileysMap.size())
-    {
-        modifySmiley->enable();
-        deleteSmiley->enable();
-        exportSmiley->enable();
-    }
+    showImportwarning=FALSE;    
     return 1;
 }
 
