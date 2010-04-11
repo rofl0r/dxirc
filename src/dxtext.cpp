@@ -1104,11 +1104,18 @@ long dxText::onLeftBtnPress(FXObject*, FXSelector, void* ptr)
                 }
                 for(FXint i=start; i<contents[line].length(); i++)
                 {
-                    if(!(styleOf(line, i)&STYLE_MASK)) break;
-                    if(hilitestyles[(styleOf(line, i)&STYLE_MASK)-1].link) length++;
+                    if(!(styleOf(line, i)&STYLE_MASK))
+                    {
+                        if(styleOf(line, i)&STYLE_SMILEY)
+                        {
+                            if(i+1<contents[line].length() && hilitestyles[(styleOf(line, i+1)&STYLE_MASK)-1].link) length++;
+                        }
+                        else break;
+                    }
+                    else if(hilitestyles[(styleOf(line, i)&STYLE_MASK)-1].link) length++;
                     else break;
                 }
-                link = contents[line].mid(start,length);
+                link = clearSmiley(line, start, length);
                 if(target && target->tryHandle(this, FXSEL(SEL_TEXTLINK,message), (void*)link.text())) return 1;
             }
             else
