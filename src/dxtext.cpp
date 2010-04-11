@@ -1347,7 +1347,7 @@ long dxText::onKeyRelease(FXObject*, FXSelector, void* ptr)
 // Copy
 long dxText::onCmdCopySel(FXObject*,FXSelector,void*)
 {
-  if((selstartindex==selendindex && selstartpos<selendpos) || selstartindex<selendpos)
+  if((selstartindex==selendindex && selstartpos<selendpos) || selstartindex<selendindex)
   {
     FXDragType types[4];
     types[0]=stringType;
