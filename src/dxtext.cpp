@@ -1060,11 +1060,15 @@ long dxText::onPaint(FXObject*, FXSelector, void *ptr)
 long dxText::onMotion(FXObject*,FXSelector,void* ptr)
 {
     FXEvent* event=(FXEvent*)ptr;
-    FXuint index=styleOfXY(event->win_x, event->win_y)&STYLE_MASK;
-    if(hilitestyles && index)
+    FXuint index=styleOfXY(event->win_x, event->win_y);
+    if(hilitestyles && index&STYLE_MASK)
     {
-        if(hilitestyles[index-1].link) setDefaultCursor(getApp()->getDefaultCursor(DEF_HAND_CURSOR));
-        else setDefaultCursor(getApp()->getDefaultCursor(DEF_TEXT_CURSOR));
+        if(index&STYLE_SMILEY) setDefaultCursor(getApp()->getDefaultCursor(DEF_TEXT_CURSOR));
+        else
+        {
+            if(hilitestyles[(index&STYLE_MASK)-1].link) setDefaultCursor(getApp()->getDefaultCursor(DEF_HAND_CURSOR));
+            else setDefaultCursor(getApp()->getDefaultCursor(DEF_TEXT_CURSOR));
+        }
     }
     else setDefaultCursor(getApp()->getDefaultCursor(DEF_TEXT_CURSOR));
     if(mode==MOUSE_CHARS)
