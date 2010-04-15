@@ -2169,7 +2169,7 @@ FXbool ConfigDialog::SmileyExist(const FXString& ckdSmiley)
     StringIt it;
     for(it=smileysMap.begin(); it!=smileysMap.end(); it++)
     {
-        if(!comparecase((*it).first, ckdSmiley)) return TRUE;
+        if(!compare((*it).first, ckdSmiley)) return TRUE;
     }
     return FALSE;
 }
