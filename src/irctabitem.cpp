@@ -586,6 +586,33 @@ static FXbool Badchar(FXchar c)
     }
 }
 
+// checks is char nick/word delimiter
+static FXbool Delimiter(FXchar c)
+{
+    switch(c) {
+        case ' ':
+        case '.':
+        case ',':
+        case '/':
+        case '\\':
+        case '!':
+        case '(':
+        case ')':
+        case '{':
+        case '}':
+        case '[':
+        case ']':
+        case ':':
+        case ';':
+        case '<':
+        case '>':
+        case '?':
+            return TRUE;
+        default:
+            return FALSE;
+    }
+}
+
 void IrcTabItem::AppendLinkText(const FXString &txt, FXint stylenum)
 {
     FXint i = 0;
@@ -3169,17 +3196,17 @@ void IrcTabItem::OnIrcPrivmsg(IrcEvent* ev)
     {
         if(coloredNick)
         {
-            if(ev->param3.contains(server->GetNickName())) AppendIrcStyledText(ev->param1+": "+ev->param3, 8, ev->time);
+            if(ev->param3.contains(server->GetNickName()) && NeedHighlight(ev->param3)) AppendIrcStyledText(ev->param1+": "+ev->param3, 8, ev->time);
             else AppendIrcNickText(ev->param1, ev->param3, GetNickColor(ev->param1), ev->time);
         }
         else
         {
-            if(ev->param3.contains(server->GetNickName())) AppendIrcStyledText(ev->param1+": "+ev->param3, 8, ev->time);
+            if(ev->param3.contains(server->GetNickName()) && NeedHighlight(ev->param3)) AppendIrcStyledText(ev->param1+": "+ev->param3, 8, ev->time);
             else AppendIrcNickText(ev->param1, ev->param3, 5, ev->time);
         }
         if(FXRGB(255,0,0) != this->getTextColor() && parent->getCurrent()*2 != parent->indexOfChild(this))
         {
-            if(ev->param3.contains(server->GetNickName()))
+            if(ev->param3.contains(server->GetNickName()) && NeedHighlight(ev->param3))
             {
                 this->setTextColor(FXRGB(255,0,0));
                 if(type == CHANNEL) this->setIcon(chnewm);
@@ -3187,7 +3214,7 @@ void IrcTabItem::OnIrcPrivmsg(IrcEvent* ev)
             else this->setTextColor(FXRGB(0,0,255));
             if(type == QUERY) this->setIcon(unewm);
         }
-        if((type == CHANNEL && ev->param3.contains(server->GetNickName())) || type == QUERY)
+        if((type == CHANNEL && ev->param3.contains(server->GetNickName()) && NeedHighlight(ev->param3)) || type == QUERY)
             parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_NEWMSG), NULL);
     }
 }
@@ -3202,7 +3229,7 @@ void IrcTabItem::OnIrcAction(IrcEvent* ev)
             AppendIrcStyledText(ev->param1+" "+ev->param3, 2, ev->time);
             if(FXRGB(255,0,0) != this->getTextColor() && parent->getCurrent()*2 != parent->indexOfChild(this))
             {
-                if(ev->param3.contains(server->GetNickName()))
+                if(ev->param3.contains(server->GetNickName()) && NeedHighlight(ev->param3))
                 {
                     this->setTextColor(FXRGB(255,0,0));
                     if(type == CHANNEL) this->setIcon(chnewm);
@@ -3210,7 +3237,7 @@ void IrcTabItem::OnIrcAction(IrcEvent* ev)
                 else this->setTextColor(FXRGB(0,0,255));
                 if(type == QUERY) this->setIcon(unewm);
             }
-            if((type == CHANNEL && ev->param3.contains(server->GetNickName())) || type == QUERY)
+            if((type == CHANNEL && ev->param3.contains(server->GetNickName()) && NeedHighlight(ev->param3)) || type == QUERY)
                 parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_NEWMSG), NULL);
         }
     }
@@ -3257,7 +3284,7 @@ void IrcTabItem::OnIrcDccMsg(IrcEvent* ev)
     }
     if(FXRGB(255,0,0) != this->getTextColor() && parent->getCurrent()*2 != parent->indexOfChild(this))
     {
-        if(ev->param1.contains(server->GetNickName()))
+        if(ev->param1.contains(server->GetNickName()) && NeedHighlight(ev->param1))
         {
             this->setTextColor(FXRGB(255,0,0));
         }
@@ -3273,7 +3300,7 @@ void IrcTabItem::OnIrcDccAction(IrcEvent* ev)
     AppendIrcStyledText(getText()+" "+ev->param1, 2, ev->time);
     if(FXRGB(255,0,0) != this->getTextColor() && parent->getCurrent()*2 != parent->indexOfChild(this))
     {
-        if(ev->param1.contains(server->GetNickName()))
+        if(ev->param1.contains(server->GetNickName()) && NeedHighlight(ev->param1))
         {
             this->setTextColor(FXRGB(255,0,0));
         }
@@ -3335,7 +3362,7 @@ void IrcTabItem::OnIrcChnotice(IrcEvent* ev)
             AppendIrcStyledText(FXStringFormat(_("%s's NOTICE: %s"), ev->param1.text(), ev->param3.text()), 2, ev->time);
             if(FXRGB(255,0,0) != this->getTextColor() && parent->getCurrent()*2 != parent->indexOfChild(this))
             {
-                if(ev->param3.contains(server->GetNickName()))
+                if(ev->param3.contains(server->GetNickName()) && NeedHighlight(ev->param3))
                 {
                     this->setTextColor(FXRGB(255,0,0));
                     if(type == CHANNEL) this->setIcon(chnewm);
@@ -3343,7 +3370,7 @@ void IrcTabItem::OnIrcChnotice(IrcEvent* ev)
                 else this->setTextColor(FXRGB(0,0,255));
                 if(type == QUERY) this->setIcon(unewm);
             }
-            if((type == CHANNEL && ev->param3.contains(server->GetNickName())) || type == QUERY)
+            if((type == CHANNEL && ev->param3.contains(server->GetNickName()) && NeedHighlight(ev->param3)) || type == QUERY)
                 parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_NEWMSG), NULL);
         }
     }
@@ -4472,4 +4499,17 @@ void IrcTabItem::HasAllCommand(FXbool result)
 void IrcTabItem::HasMyMsg(FXbool result)
 {
     scriptHasMyMsg = result;
+}
+
+//check needs of highlight in msg
+FXbool IrcTabItem::NeedHighlight(const FXString &msg)
+{
+    FXint pos = msg.find(GetNickName());
+    if(pos==-1) return FALSE;
+    FXbool before = TRUE;
+    FXbool after = FALSE;
+    if(pos) before = Delimiter(msg[pos-1]);
+    if(pos+GetNickName().length() == msg.length()) after = TRUE;
+    if(pos+GetNickName().length() < msg.length()) after = Delimiter(msg[pos+GetNickName().length()]);
+    return before && after;
 }

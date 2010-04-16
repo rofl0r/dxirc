@@ -1832,11 +1832,6 @@ void dxirc::OnIrcEndmotd()
 //handle IrcEvent IRC_PRIVMSG and IRC_ACTION
 void dxirc::OnIrcPrivmsgAndAction(IrcSocket *server, IrcEvent *ev)
 {
-    if(ev->param3.contains(server->GetNickName()) && ev->param1!=server->GetNickName())
-    {
-        UpdateStatus(FXStringFormat(_("New highlighted message on %s"), ev->param2 == server->GetNickName() ? ev->param1.text() : ev->param2.text()));
-        flash(TRUE);
-    }
 #ifdef HAVE_LUA
     if(!scripts.no() || !scriptEvents.no()) return;
     for(FXint i=0; i<scriptEvents.no(); i++)
@@ -2458,6 +2453,7 @@ long dxirc::OnTrayClicked(FXObject*, FXSelector, void*)
     return 1;
 }
 
+//handle highlighted msg from IrcTabITem::ID_NEWMSG
 long dxirc::OnNewMsg(FXObject *obj, FXSelector, void*)
 {
 #ifdef HAVE_TRAY
@@ -2466,6 +2462,9 @@ long dxirc::OnNewMsg(FXObject *obj, FXSelector, void*)
 #endif
     if(sounds && soundMessage && (!shown() || isMinimized() || static_cast<IrcTabItem*>(tabbook->childAtIndex(tabbook->getCurrent()*2)) != static_cast<IrcTabItem*>(obj)))
         utils::PlayFile(pathMessage);
+    if(static_cast<IrcTabItem*>(obj)->GetType() == CHANNEL) UpdateStatus(FXStringFormat(_("New highlighted message on %s"), static_cast<IrcTabItem*>(obj)->getText().text()));
+    else UpdateStatus(FXStringFormat(_("New message on %s"), static_cast<IrcTabItem*>(obj)->getText().text()));
+    flash(TRUE);
     return 1;
 }
 

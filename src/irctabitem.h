@@ -260,6 +260,7 @@ class IrcTabItem: public FXTabItem
         FXint HiliteStyleExist(FXColor foreColor, FXColor backColor, FXuint style);
         void CreateHiliteStyle(FXColor foreColor, FXColor backColor, FXuint style);
         dxStringArray CutText(FXString, FXint);
+        FXbool NeedHighlight(const FXString &);
 };
 
 #endif // IRCTABITEM_H
