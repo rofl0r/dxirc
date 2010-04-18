@@ -3194,19 +3194,22 @@ void IrcTabItem::OnIrcPrivmsg(IrcEvent* ev)
 {
     if((comparecase(ev->param2, getText()) == 0 && type == CHANNEL) || (ev->param1 == getText() && type == QUERY && ev->param2 == server->GetNickName()))
     {
+        FXbool needHighlight = FALSE;
+        if(ev->param3.contains(GetNickName()))
+            needHighlight = NeedHighlight(ev->param3);
         if(coloredNick)
         {
-            if(ev->param3.contains(server->GetNickName()) && NeedHighlight(ev->param3)) AppendIrcStyledText(ev->param1+": "+ev->param3, 8, ev->time);
+            if(needHighlight) AppendIrcStyledText(ev->param1+": "+ev->param3, 8, ev->time);
             else AppendIrcNickText(ev->param1, ev->param3, GetNickColor(ev->param1), ev->time);
         }
         else
         {
-            if(ev->param3.contains(server->GetNickName()) && NeedHighlight(ev->param3)) AppendIrcStyledText(ev->param1+": "+ev->param3, 8, ev->time);
+            if(needHighlight) AppendIrcStyledText(ev->param1+": "+ev->param3, 8, ev->time);
             else AppendIrcNickText(ev->param1, ev->param3, 5, ev->time);
         }
         if(FXRGB(255,0,0) != this->getTextColor() && parent->getCurrent()*2 != parent->indexOfChild(this))
         {
-            if(ev->param3.contains(server->GetNickName()) && NeedHighlight(ev->param3))
+            if(needHighlight)
             {
                 this->setTextColor(FXRGB(255,0,0));
                 if(type == CHANNEL) this->setIcon(chnewm);
@@ -3214,7 +3217,7 @@ void IrcTabItem::OnIrcPrivmsg(IrcEvent* ev)
             else this->setTextColor(FXRGB(0,0,255));
             if(type == QUERY) this->setIcon(unewm);
         }
-        if((type == CHANNEL && ev->param3.contains(server->GetNickName()) && NeedHighlight(ev->param3)) || type == QUERY)
+        if((type == CHANNEL && needHighlight) || type == QUERY)
             parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_NEWMSG), NULL);
     }
 }
@@ -3226,10 +3229,13 @@ void IrcTabItem::OnIrcAction(IrcEvent* ev)
     {
         if(!IsCommandIgnored("me"))
         {
+            FXbool needHighlight = FALSE;
+            if(ev->param3.contains(GetNickName()))
+                needHighlight = NeedHighlight(ev->param3);
             AppendIrcStyledText(ev->param1+" "+ev->param3, 2, ev->time);
             if(FXRGB(255,0,0) != this->getTextColor() && parent->getCurrent()*2 != parent->indexOfChild(this))
             {
-                if(ev->param3.contains(server->GetNickName()) && NeedHighlight(ev->param3))
+                if(needHighlight)
                 {
                     this->setTextColor(FXRGB(255,0,0));
                     if(type == CHANNEL) this->setIcon(chnewm);
@@ -3237,7 +3243,7 @@ void IrcTabItem::OnIrcAction(IrcEvent* ev)
                 else this->setTextColor(FXRGB(0,0,255));
                 if(type == QUERY) this->setIcon(unewm);
             }
-            if((type == CHANNEL && ev->param3.contains(server->GetNickName()) && NeedHighlight(ev->param3)) || type == QUERY)
+            if((type == CHANNEL && needHighlight) || type == QUERY)
                 parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_NEWMSG), NULL);
         }
     }
@@ -3272,19 +3278,22 @@ void IrcTabItem::OnIrcCtcpRequest(IrcEvent* ev)
 //handle IrcEvent IRC_DCCMSG
 void IrcTabItem::OnIrcDccMsg(IrcEvent* ev)
 {
+    FXbool needHighlight = FALSE;
+    if(ev->param1.contains(GetNickName()))
+        needHighlight = NeedHighlight(ev->param1);
     if(coloredNick)
     {
-        if(ev->param1.contains(server->GetNickName())) AppendIrcStyledText(getText()+": "+ev->param1, 8, ev->time);
+        if(needHighlight) AppendIrcStyledText(getText()+": "+ev->param1, 8, ev->time);
         else AppendIrcNickText(getText(), ev->param1, GetNickColor(getText()), ev->time);
     }
     else
     {
-        if(ev->param1.contains(server->GetNickName())) AppendIrcStyledText(getText()+": "+ev->param1, 8, ev->time);
+        if(needHighlight) AppendIrcStyledText(getText()+": "+ev->param1, 8, ev->time);
         else AppendIrcNickText(getText(), ev->param1, 5, ev->time);
     }
     if(FXRGB(255,0,0) != this->getTextColor() && parent->getCurrent()*2 != parent->indexOfChild(this))
     {
-        if(ev->param1.contains(server->GetNickName()) && NeedHighlight(ev->param1))
+        if(needHighlight)
         {
             this->setTextColor(FXRGB(255,0,0));
         }
@@ -3359,10 +3368,13 @@ void IrcTabItem::OnIrcChnotice(IrcEvent* ev)
     {
         if(!IsCommandIgnored("notice"))
         {
+            FXbool needHighlight = FALSE;
+            if(ev->param3.contains(GetNickName()))
+                needHighlight = NeedHighlight(ev->param3);
             AppendIrcStyledText(FXStringFormat(_("%s's NOTICE: %s"), ev->param1.text(), ev->param3.text()), 2, ev->time);
             if(FXRGB(255,0,0) != this->getTextColor() && parent->getCurrent()*2 != parent->indexOfChild(this))
             {
-                if(ev->param3.contains(server->GetNickName()) && NeedHighlight(ev->param3))
+                if(needHighlight)
                 {
                     this->setTextColor(FXRGB(255,0,0));
                     if(type == CHANNEL) this->setIcon(chnewm);
@@ -3370,7 +3382,7 @@ void IrcTabItem::OnIrcChnotice(IrcEvent* ev)
                 else this->setTextColor(FXRGB(0,0,255));
                 if(type == QUERY) this->setIcon(unewm);
             }
-            if((type == CHANNEL && ev->param3.contains(server->GetNickName()) && NeedHighlight(ev->param3)) || type == QUERY)
+            if((type == CHANNEL && needHighlight) || type == QUERY)
                 parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_NEWMSG), NULL);
         }
     }
@@ -4501,7 +4513,7 @@ void IrcTabItem::HasMyMsg(FXbool result)
     scriptHasMyMsg = result;
 }
 
-//check needs of highlight in msg
+//check need of highlight in msg
 FXbool IrcTabItem::NeedHighlight(const FXString &msg)
 {
     FXint pos = msg.find(GetNickName());

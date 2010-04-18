@@ -743,6 +743,7 @@ void dxText::drawTextLine(FXDCWindow& dc, FXint line, FXint left, FXint right) c
     register FXint w = 0;
     register FXuint curstyle;
     register FXuint newstyle;
+    register FXint numberSmiley = 0; //smiley number for one drawIcon
     register FXint cw, sp, ep, sc, ec;
     FXint wrapstart,wrapend;
     wrapIndex(index, wrap, wrapstart, wrapend);
@@ -772,7 +773,13 @@ void dxText::drawTextLine(FXDCWindow& dc, FXint line, FXint left, FXint right) c
         if (newstyle != curstyle)
         {
             if(curstyle&STYLE_SMILEY)
-                drawIcon(dc, edge+x, y, curstyle&=~STYLE_SMILEY);
+            {
+                style = curstyle&=~STYLE_SMILEY;
+                for(i=0; i<numberSmiley; i++)
+                {
+                    drawIcon(dc, edge+x+i*smileyWidth(style), y, style);
+                }
+            }
             else
             {
                 fillBufferRect(dc,edge+x,y,w,h,curstyle);
@@ -783,15 +790,26 @@ void dxText::drawTextLine(FXDCWindow& dc, FXint line, FXint left, FXint right) c
             sp = ep;
             x += w;
             w = 0;
+            numberSmiley = 0;
         }
-        if(newstyle&STYLE_SMILEY) cw = smileyWidth(newstyle&=~STYLE_SMILEY);
+        if(newstyle&STYLE_SMILEY)
+        {
+            cw = smileyWidth(newstyle&=~STYLE_SMILEY);
+            numberSmiley++;
+        }
         else cw = charWidth(contents[index].wc(ep), ec);
         if (x + edge + w >= right) break;
         w += cw;
     }
     // Draw unfinished fragment
     if(curstyle&STYLE_SMILEY)
-        drawIcon(dc, edge+x, y, curstyle&=~STYLE_SMILEY);
+    {
+        style = curstyle&=~STYLE_SMILEY;
+        for(i=0; i<numberSmiley; i++)
+        {
+            drawIcon(dc, edge+x+i*smileyWidth(style), y, style);
+        }
+    }
     else
     {
         fillBufferRect(dc,edge+x,y,w,h,curstyle);
@@ -800,10 +818,11 @@ void dxText::drawTextLine(FXDCWindow& dc, FXint line, FXint left, FXint right) c
     }
     x += w;
     // Fill any left-overs outside of text
-    if (x + edge < right) {
-        curstyle = styleOf(index, ep);
-        //fillBufferRect(dc,edge+x,y,right-edge-x,h,curstyle);
-    }
+//    if (x + edge < right)
+//    {
+//        curstyle = styleOf(index, ep);
+//        fillBufferRect(dc,edge+x,y,right-edge-x,h,curstyle);
+//    }
 }
 
 // Repaint lines of text
