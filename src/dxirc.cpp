@@ -90,22 +90,25 @@ FXIMPLEMENT(dxirc, FXMainWindow, dxircMap, ARRAYNUMBER(dxircMap))
 dxirc *dxirc::pThis = NULL;
 #ifdef HAVE_LUA
 static luaL_reg dxircFunctions[] = {
-    {"AddCommand",  dxirc::OnLuaAddCommand},
-    {"AddEvent",    dxirc::OnLuaAddEvent},
-    {"AddMyMsg",    dxirc::OnLuaAddMyMsg},
-    {"AddNewTab",   dxirc::OnLuaAddNewTab},
-    {"AddAll",      dxirc::OnLuaAddAll},
-    {"RemoveName",  dxirc::OnLuaRemoveName},
-    {"Command",     dxirc::OnLuaCommand},
-    {"Print",       dxirc::OnLuaPrint},
-    {"GetServers",  dxirc::OnLuaGetServers},
-    {"GetTab",      dxirc::OnLuaGetTab},
-    {"GetTabInfo",  dxirc::OnLuaGetTabInfo},
-    {"SetTab",      dxirc::OnLuaSetTab},
-    {"CreateTab",   dxirc::OnLuaCreateTab},
-    {"GetTabCount", dxirc::OnLuaGetTabCount},
-    {"Clear",       dxirc::OnLuaClear},
-    {NULL,          NULL}
+    {"AddCommand",      dxirc::OnLuaAddCommand},
+    {"AddEvent",        dxirc::OnLuaAddEvent},
+    {"AddMyMsg",        dxirc::OnLuaAddMyMsg},
+    {"AddNewTab",       dxirc::OnLuaAddNewTab},
+    {"AddDxircQuit",    dxirc::OnLuaAddDxircQuit},
+    {"AddAll",          dxirc::OnLuaAddAll},
+    {"RemoveName",      dxirc::OnLuaRemoveName},
+    {"Command",         dxirc::OnLuaCommand},
+    {"Print",           dxirc::OnLuaPrint},
+    {"GetServers",      dxirc::OnLuaGetServers},
+    {"GetTab",          dxirc::OnLuaGetTab},
+    {"GetCurrentTab",   dxirc::OnLuaGetCurrentTab},
+    {"GetVersion",      dxirc::OnLuaGetVersion},
+    {"GetTabInfo",      dxirc::OnLuaGetTabInfo},
+    {"SetTab",          dxirc::OnLuaSetTab},
+    {"CreateTab",       dxirc::OnLuaCreateTab},
+    {"GetTabCount",     dxirc::OnLuaGetTabCount},
+    {"Clear",           dxirc::OnLuaClear},
+    {NULL,              NULL}
 };
 #endif
 
@@ -661,9 +664,32 @@ long dxirc::OnCommandQuit(FXObject*, FXSelector, void*)
         servers.erase(0);
     }
 #ifdef HAVE_LUA
+    for(FXint i=0; i<scriptEvents.no(); i++)
+    {
+        if(comparecase("quit", scriptEvents[i].name) == 0)
+        {
+            for(FXint j=0; j<scripts.no(); j++)
+            {
+                if(comparecase(scriptEvents[i].script, scripts[j].name) == 0)
+                {
+                    lua_pushstring(scripts[j].L, scriptEvents[i].funcname.text());
+                    lua_gettable(scripts[j].L, LUA_GLOBALSINDEX);
+                    if (lua_type(scripts[j].L, -1) != LUA_TFUNCTION) lua_pop(scripts[j].L, 1);
+                    else
+                    {
+                        if (lua_pcall(scripts[j].L, 0, 0, 0))
+                        {
+                            AppendIrcStyledText(FXStringFormat(_("Lua plugin: error calling %s %s"), scriptEvents[i].funcname.text(), lua_tostring(scripts[j].L, -1)), 4);
+                            lua_pop(scripts[j].L, 1);
+                        }
+                    }
+                }
+            }
+        }
+    }
     while(scripts.no())
     {
-        lua_close(scripts[0].L);
+        if(scripts[0].L != NULL) lua_close(scripts[0].L);
         scripts.erase(0);
     }
     while(scriptEvents.no())
@@ -3523,6 +3549,31 @@ int dxirc::OnLuaAddNewTab(lua_State *lua)
 #endif
 }
 
+int dxirc::OnLuaAddDxircQuit(lua_State *lua)
+{
+#ifdef HAVE_LUA
+    FXString funcname, script;
+    if(lua_isstring(lua, 1)) funcname = lua_tostring(lua,1);
+    if(funcname.empty()) return 0;
+    if(pThis->scripts.no())
+    {
+        for(FXint i=0; i<pThis->scripts.no(); i++)
+        {
+            if(lua == pThis->scripts[i].L) script = pThis->scripts[i].name;
+        }
+    }
+    if(script.empty()) return 0;
+    LuaScriptEvent event;
+    event.name = "quit";
+    event.funcname = funcname;
+    event.script = script;
+    pThis->scriptEvents.append(event);
+    return  1;
+#else
+    return 0;
+#endif
+}
+
 int dxirc::OnLuaAddAll(lua_State *lua)
 {
 #ifdef HAVE_LUA
@@ -3615,7 +3666,11 @@ int dxirc::OnLuaPrint(lua_State *lua)
     if(lua_isstring(lua, 1)) text = lua_tostring(lua, 1);
     if(text.empty()) return 0;
     FXint id, style;
-    if(lua_isnumber(lua, 2)) id = lua_tointeger(lua, 2);
+    if(lua_isnumber(lua, 2))
+    {
+        id = lua_tointeger(lua, 2);
+        if(id<0 || id>pThis->tabbook->numTabs()-1) id = pThis->tabbook->getCurrent();
+    }
     else id = pThis->tabbook->getCurrent();
     if(lua_isnumber(lua, 3))
     {
@@ -3713,6 +3768,26 @@ int dxirc::OnLuaGetTab(lua_State *lua)
 #else
     return 0;
 #endif    
+}
+
+int dxirc::OnLuaGetCurrentTab(lua_State *lua)
+{
+#ifdef HAVE_LUA
+    lua_pushnumber(lua, pThis->tabbook->getCurrent());
+    return 1;
+#else
+    return 0;
+#endif
+}
+
+int dxirc::OnLuaGetVersion(lua_State *lua)
+{
+#ifdef HAVE_LUA
+    lua_pushstring(lua, VERSION);
+    return 1;
+#else
+    return 0;
+#endif
 }
 
 int dxirc::OnLuaGetTabInfo(lua_State *lua)

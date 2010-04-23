@@ -122,12 +122,15 @@ class dxirc: public FXMainWindow
         static int OnLuaAddEvent(lua_State*);
         static int OnLuaAddMyMsg(lua_State*);
         static int OnLuaAddNewTab(lua_State*);
+        static int OnLuaAddDxircQuit(lua_State*);
         static int OnLuaAddAll(lua_State*);
         static int OnLuaRemoveName(lua_State*);
         static int OnLuaCommand(lua_State*);
         static int OnLuaPrint(lua_State*);
         static int OnLuaGetServers(lua_State*);
         static int OnLuaGetTab(lua_State*);
+        static int OnLuaGetCurrentTab(lua_State*);
+        static int OnLuaGetVersion(lua_State*);
         static int OnLuaGetTabInfo(lua_State*);
         static int OnLuaSetTab(lua_State*);
         static int OnLuaCreateTab(lua_State*);

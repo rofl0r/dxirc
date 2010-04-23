@@ -161,8 +161,21 @@ with Lua scripting enabled — you can check this in the About dialog.</p>
 
     <p class="caption">Example:</p>
 
-    <pre><span class="function">dxirc.AddMyMsg</span>(<span class="string">"OnNewTab"</span>)</pre>
-  </dd>  
+    <pre><span class="function">dxirc.AddNewTab</span>(<span class="string">"OnNewTab"</span>)</pre>
+  </dd>
+
+  <dt>dxirc.AddDxircQuit(<span>funcname</span>)</dt>
+  <dd>
+    <p>Binds specified function to dxirc quit. It accepts following argument:</p>
+
+    <ul>
+      <li><code class="value">funcname</code> — name of the function to be called on dxirc quit.</li>
+    </ul>
+
+    <p class="caption">Example:</p>
+
+    <pre><span class="function">dxirc.AddDxircQuit</span>(<span class="string">"OnDxircQuit"</span>)</pre>
+  </dd>
 
   <dt>dxirc.AddAll(<span>funcname</span>)</dt>
   <dd>
@@ -190,7 +203,7 @@ with Lua scripting enabled — you can check this in the About dialog.</p>
     <p>Removes command or event binding previously added using <code><span class="function">dxirc.AddCommand</span>()</code>, <code><span class="function">dxirc.AddEvent</span>()</code> or <code><span class="function">dxirc.AddAll</span>()</code>. It accepts following argument:</p>
 
     <ul>
-      <li><code class="value">name</code> — command/event name, <code class="string">"mymsg"</code> in case of <code><span class="function">dxirc.AddMyMsg</span>()</code>, <code class="string">"newtab"</code> in case of <code><span class="function">dxirc.AddNewTab</span>()</code> or <code class="string">"all"</code> in case of <code><span class="function">dxirc.AddAll</span>()</code>.</li>
+      <li><code class="value">name</code> — command/event name, <code class="string">"mymsg"</code> in case of <code><span class="function">dxirc.AddMyMsg</span>()</code>, <code class="string">"quit"</code> in case of <code><span class="function">dxirc.AddDxircQuit</span>()</code>, <code class="string">"newtab"</code> in case of <code><span class="function">dxirc.AddNewTab</span>()</code> or <code class="string">"all"</code> in case of <code><span class="function">dxirc.AddAll</span>()</code>.</li>
     </ul>
 
     <p class="caption">Example:</p>
@@ -284,6 +297,24 @@ current tab instead. When there are no tabs at all, it returns <code class="valu
     <p class="caption">Example:</p>
 
     <pre><span class="keyword">local</span> <span class="name">tab_id</span> = <span class="function">dxirc.GetTab</span>(<span class="string">"#test"</span>, <span class="string">"irc.freenode.net"</span>)</pre>
+  </dd>
+
+  <dt>dxirc.GetCurrentTab()</dt>
+  <dd>
+    <p>Returns the id of the current tab.</p>
+
+    <p class="caption">Example:</p>
+
+    <pre><span class="keyword">local</span> <span class="name">tab_id</span> = <span class="function">dxirc.GetCurrentTab</span>()</pre>
+  </dd>
+
+  <dt>dxirc.GetVersion()</dt>
+  <dd>
+    <p>Returns the version of dxirc.</p>
+
+    <p class="caption">Example:</p>
+
+    <pre><span class="keyword">local</span> <span class="name">version</span> = <span class="function">dxirc.GetVersion</span>()</pre>
   </dd>
 
   <dt>dxirc.GetTabInfo(<span>id</span>)</dt>

@@ -621,6 +621,21 @@ void dxText::updateRange(FXint beg, FXint end) const
     update(pos_x+marginleft, y, wrapwidth, h);
 }
 
+//set cursor type, index is of hilitestyle
+void dxText::setCursor(FXuint index)
+{
+    if(hilitestyles && index&STYLE_MASK)
+    {
+        if(index&STYLE_SMILEY) setDefaultCursor(getApp()->getDefaultCursor(DEF_TEXT_CURSOR));
+        else
+        {
+            if(hilitestyles[(index&STYLE_MASK)-1].link) setDefaultCursor(getApp()->getDefaultCursor(DEF_HAND_CURSOR));
+            else setDefaultCursor(getApp()->getDefaultCursor(DEF_TEXT_CURSOR));
+        }
+    }
+    else setDefaultCursor(getApp()->getDefaultCursor(DEF_TEXT_CURSOR));
+}
+
 // Get default width
 FXint dxText::getDefaultWidth()
 {
@@ -1080,16 +1095,7 @@ long dxText::onMotion(FXObject*,FXSelector,void* ptr)
 {
     FXEvent* event=(FXEvent*)ptr;
     FXuint index=styleOfXY(event->win_x, event->win_y);
-    if(hilitestyles && index&STYLE_MASK)
-    {
-        if(index&STYLE_SMILEY) setDefaultCursor(getApp()->getDefaultCursor(DEF_TEXT_CURSOR));
-        else
-        {
-            if(hilitestyles[(index&STYLE_MASK)-1].link) setDefaultCursor(getApp()->getDefaultCursor(DEF_HAND_CURSOR));
-            else setDefaultCursor(getApp()->getDefaultCursor(DEF_TEXT_CURSOR));
-        }
-    }
-    else setDefaultCursor(getApp()->getDefaultCursor(DEF_TEXT_CURSOR));
+    setCursor(index);
     if(mode==MOUSE_CHARS)
     {
         if(startAutoScroll(event,FALSE)) return 1;
@@ -1414,9 +1420,18 @@ long dxText::onCmdDeselectAll(FXObject*, FXSelector, void*)
 void dxText::makeLastRowVisible(FXbool force)
 {
     register FXfloat pos = vertical->getPosition()*1.0;
-    register FXfloat max = (font->getFontHeight()*(nlines-1)-viewport_h)*0.9;
+    register FXfloat max = (font->getFontHeight()*(nlines-1)-viewport_h)*0.95;
     if(pos>max || force)
+    {
         setPosition(0, viewport_h-margintop-marginbottom-font->getFontHeight()*nlines);
+        FXint x, y;
+        FXuint button;
+        getCursorPosition(x, y, button);
+        if(button==16 && x>=0 && x<=width && y>=0 && y<=height)
+        {
+            setCursor(styleOfXY(x,y));
+        }
+    }
 }
 
 

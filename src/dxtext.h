@@ -186,6 +186,7 @@ protected:
     void setSelection(FXint startindex, FXint startpos, FXint endindex, FXint endpos);
     void killSelection();
     void updateRange(FXint beg,FXint end) const;
+    void setCursor(FXuint index);
 private:
     dxText(const dxText&);
     dxText& operator=(const dxText&);

@@ -4113,6 +4113,8 @@ long IrcTabItem::OnRightMouse(FXObject *, FXSelector, void *ptr)
         NickInfo nick = server->GetNickInfo(users->getItemText(index));
         nickOnRight = nick;
         FXString flagpath = DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "flags";
+        delete flagicon;
+        flagicon = NULL;
         if(FXStat::exists(flagpath+PATHSEPSTRING+nick.host.rafter('.')+".png")) flagicon = MakeIcon(getApp(), flagpath, nick.host.rafter('.')+".png", TRUE);
         else flagicon = MakeIcon(getApp(), flagpath, "unknown.png", TRUE);
         FXMenuPane opmenu(this);
