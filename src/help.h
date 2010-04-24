@@ -42,11 +42,11 @@ dxirc is a simple IRC client for various os (linux, *bsd, windows), written usin
     o Switch between tabs - Alt-1~9 or Ctrl-tab\n \
     o Switch between unreaded tabs - Ctrl-n\n\
     o Quit - Alt-F4/Ctrl-Q\n \
-    o Insert bold control char - Ctrl-B\n \
-    o Insert color control char - Ctrl-K\n \
-    o Insert underline control char - Ctrl-U\n \
-    o Insert reverse control char - Ctrl-R\n \
-    o Insert reset control char - Ctrl-O\n \
+    o Insert bold control char - Ctrl-b\n \
+    o Insert color control char - Ctrl-k\n \
+    o Insert underline control char - Ctrl-i\n \
+    o Insert reverse control char - Ctrl-r\n \
+    o Insert reset control char - Ctrl-o\n \
 \n \
 \n \
   Configuration\n \

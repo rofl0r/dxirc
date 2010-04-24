@@ -2847,8 +2847,8 @@ long IrcTabItem::OnKeyPress(FXObject *, FXSelector, void *ptr)
                     commandline->setCursorPos(pos+2);
                     return 1;
                 }
-            case KEY_u:
-            case KEY_U:
+            case KEY_i:
+            case KEY_I:
                 if(event->state&CONTROLMASK)
                 {
                     FXint pos = commandline->getCursorPos();
