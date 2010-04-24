@@ -106,6 +106,8 @@ class IrcTabItem: public FXTabItem
             ID_RMICOMMAND, //for handle /ignore rmcmd
             ID_ADDIUSER, //for handle /ignore addusr
             ID_RMIUSER, //for handle /ignore rmusr
+            ID_AWAY, //set away on right click
+            ID_DEAWAY, //remove away on right click
             ID_LAST
         };
 
@@ -158,6 +160,8 @@ class IrcTabItem: public FXTabItem
         long OnPipe(FXObject *, FXSelector, void*);
         long OnDccChat(FXObject *, FXSelector, void*);
         long OnDccSend(FXObject *, FXSelector, void*);
+        long OnSetAway(FXObject *, FXSelector, void*);
+        long OnRemoveAway(FXObject *, FXSelector, void*);
 
     protected:        
         void AppendText(FXString, FXbool);

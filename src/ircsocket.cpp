@@ -1104,10 +1104,26 @@ void IrcSocket::Numeric(const FXint &command, const FXString &params)
         case 305: //RPL_UNAWAY
         {
             SendEvent(IRC_305, _("You are no longer marked as being away"));
+            for(FXint i=0; i < nicks.no(); i++)
+            {
+                if(nicks[i].nick == nickName)
+                {
+                    nicks[i].away = FALSE;
+                    break;
+                }
+            }
         }break;
         case 306: //RPL_NOWAWAY
         {
             SendEvent(IRC_306, _("You have been marked as being away"));
+            for(FXint i=0; i < nicks.no(); i++)
+            {
+                if(nicks[i].nick == nickName)
+                {
+                    nicks[i].away = TRUE;
+                    break;
+                }
+            }
         }break;
         case 311: //RPL_WHOISUSER
         {
@@ -2510,6 +2526,18 @@ FXString IrcSocket::GetBannedNick(const FXString &banmask)
         if(FXRex(FXString("\\<"+banNick+"\\>").substitute("*","\\w*")).match(nicks[i].nick) && FXRex(FXString(banUser+"\\>").substitute("*","\\w*")).match(nicks[i].user) && FXRex(FXString("\\<"+banHost+"\\>").substitute("*","\\w*")).match(nicks[i].host)) nick += nicks[i].nick+";";
     }
     return nick;
+}
+
+FXbool IrcSocket::IsAway(const FXString& nick)
+{
+    for(FXint i=0; i < nicks.no(); i++)
+    {
+        if(nicks[i].nick == nick)
+        {
+            return nicks[i].away;
+        }
+    }
+    return FALSE;
 }
 
 //ipaddr in byte order

@@ -158,6 +158,7 @@ class IrcSocket: public FXObject
         FXbool SendWhowas(const FXString &params);
         FXbool IsUserIgnored(const FXString &nick, const FXString &user, const FXString &host, const FXString &on);
         FXbool IsUserIgnored(const FXString &nick, const FXString &on);
+        FXbool IsAway(const FXString &nick);
 
         long OnIORead(FXObject*, FXSelector, void*);
         long OnIOWrite(FXObject*, FXSelector, void*);
