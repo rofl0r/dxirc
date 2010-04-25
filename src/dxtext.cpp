@@ -1427,7 +1427,7 @@ void dxText::makeLastRowVisible(FXbool force)
         FXint x, y;
         FXuint button;
         getCursorPosition(x, y, button);
-        if(button==16 && x>=0 && x<=width && y>=0 && y<=height)
+        if((button==0||button==16) && x>=0 && x<=width && y>=0 && y<=height)
         {
             setCursor(styleOfXY(x,y));
         }

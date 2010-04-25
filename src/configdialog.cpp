@@ -242,6 +242,7 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
 {
     ReadConfig();
     showImportwarning = TRUE;
+    showWarning = TRUE;
 
     textTarget.connect(colors.text);
     textTarget.setTarget(this);
@@ -1413,6 +1414,7 @@ long ConfigDialog::OnIconsChanged(FXObject*, FXSelector, void *ptr)
     icon5->setIcon(MakeIcon(getApp(), themePath, "irc_voice.png", TRUE));
     icon6->setIcon(MakeIcon(getApp(), themePath, "irc_normal.png", TRUE));
     icon7->setIcon(MakeAwayIcon(getApp(), themePath, "irc_normal.png"));
+    ShowMessage();
     return 1;
 }
 
@@ -2140,7 +2142,11 @@ void ConfigDialog::UpdateIcons()
 
 void ConfigDialog::ShowMessage()
 {
-    FXMessageBox::information(this, FX::MBOX_OK, _("Information"), _("Some changes need restart application"));
+    if(showWarning)
+    {
+        FXMessageBox::information(this, FX::MBOX_OK, _("Information"), _("Some changes need restart application"));
+        showWarning = FALSE;
+    }
 }
 
 FXbool ConfigDialog::ThemeExist(const FXString &ckdTheme)

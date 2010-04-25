@@ -209,7 +209,7 @@ class ConfigDialog: public FXDialogBox
         FXString dccIP1, dccIP2, dccIP3, dccIP4;
         FXbool logging, serverWindow, sameCmd, sameList, useTray, coloredNick, closeToTray, reconnect;
         FXbool usersShown, statusShown, autoload, sounds, soundConnect, soundDisconnect, soundMessage;
-        FXbool stripColors, useSmileys, showImportwarning;
+        FXbool stripColors, useSmileys, showImportwarning, showWarning;
         dxServerInfoArray serverList;
         dxIgnoreUserArray usersList, friendsList;
         FXToolBar *iconsBar;

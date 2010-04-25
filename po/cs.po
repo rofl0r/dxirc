@@ -3,8 +3,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.01\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-24 16:54+0200\n"
-"PO-Revision-Date: 2010-04-24 16:55+0100\n"
+"POT-Creation-Date: 2010-04-25 17:09+0200\n"
+"PO-Revision-Date: 2010-04-25 17:10+0100\n"
 "Last-Translator: David Vachulka <david@konstrukce-cad.com>\n"
 "Language-Team: dvx-alone <david@konstrukce-cad.com>\n"
 "MIME-Version: 1.0\n"
@@ -15,12 +15,12 @@ msgstr ""
 "X-Poedit-Bookmarks: -1,-1,-1,-1,-1,-1,-1,55,-1,-1\n"
 
 #: src/configdialog.cpp:123
-#: src/configdialog.cpp:376
-#: src/configdialog.cpp:917
-#: src/configdialog.cpp:955
-#: src/configdialog.cpp:995
-#: src/configdialog.cpp:1301
-#: src/configdialog.cpp:1341
+#: src/configdialog.cpp:377
+#: src/configdialog.cpp:918
+#: src/configdialog.cpp:956
+#: src/configdialog.cpp:996
+#: src/configdialog.cpp:1302
+#: src/configdialog.cpp:1342
 #: src/dxirc.cpp:1380
 #: src/irctabitem.cpp:59
 #: src/irctabitem.cpp:4246
@@ -38,11 +38,11 @@ msgid "&Cancel"
 msgstr "&Zrušit"
 
 #: src/configdialog.cpp:124
-#: src/configdialog.cpp:918
-#: src/configdialog.cpp:956
-#: src/configdialog.cpp:996
-#: src/configdialog.cpp:1302
-#: src/configdialog.cpp:1342
+#: src/configdialog.cpp:919
+#: src/configdialog.cpp:957
+#: src/configdialog.cpp:997
+#: src/configdialog.cpp:1303
+#: src/configdialog.cpp:1343
 #: src/dxirc.cpp:1292
 #: src/dxirc.cpp:1381
 #: src/irctabitem.cpp:4247
@@ -71,8 +71,8 @@ msgid "Preview:"
 msgstr "Náhled:"
 
 #: src/configdialog.cpp:162
-#: src/configdialog.cpp:1033
-#: src/configdialog.cpp:1866
+#: src/configdialog.cpp:1034
+#: src/configdialog.cpp:1868
 #: src/irctabitem.cpp:72
 #: src/irctabitem.cpp:82
 msgid "Select file"
@@ -82,519 +82,519 @@ msgstr "Vyberte soubor"
 msgid "Preferences"
 msgstr "Nastavení"
 
-#: src/configdialog.cpp:374
+#: src/configdialog.cpp:375
 #: src/serverdialog.cpp:102
 #: src/aliasdialog.cpp:54
 msgid "&Save&&Close"
 msgstr "&Uložit&&Zavřít"
 
-#: src/configdialog.cpp:383
+#: src/configdialog.cpp:384
 msgid "Irc text settings"
 msgstr "Nastavení Irc textu"
 
-#: src/configdialog.cpp:389
+#: src/configdialog.cpp:390
 msgid "Text backround color"
 msgstr "Barva pozadí textu"
 
-#: src/configdialog.cpp:391
+#: src/configdialog.cpp:392
 msgid "Text color"
 msgstr "Barva textu"
 
-#: src/configdialog.cpp:393
+#: src/configdialog.cpp:394
 msgid "User events text color"
 msgstr "Barva uživatelských zpráv"
 
-#: src/configdialog.cpp:395
+#: src/configdialog.cpp:396
 msgid "Actions message text color"
 msgstr "Barva textu akční zprávy"
 
-#: src/configdialog.cpp:397
+#: src/configdialog.cpp:398
 msgid "Notice text color"
 msgstr "Barva textu poznámky"
 
-#: src/configdialog.cpp:399
+#: src/configdialog.cpp:400
 msgid "Error text color"
 msgstr "Barva textu chyby"
 
-#: src/configdialog.cpp:401
+#: src/configdialog.cpp:402
 msgid "Highlight message text color"
 msgstr "Barva textu zvýrazněné zprávy"
 
-#: src/configdialog.cpp:403
+#: src/configdialog.cpp:404
 msgid "Link color"
 msgstr "Barva odkazu"
 
-#: src/configdialog.cpp:404
-#: src/configdialog.cpp:585
+#: src/configdialog.cpp:405
+#: src/configdialog.cpp:586
 msgid "Font"
 msgstr "Font"
 
-#: src/configdialog.cpp:406
+#: src/configdialog.cpp:407
 msgid "Use same font for commandline"
 msgstr "Použít stejný font i pro příkazový řádek"
 
-#: src/configdialog.cpp:407
+#: src/configdialog.cpp:408
 msgid "Use same font for user list"
 msgstr "Použít stejný font i pro seznam uživatelů"
 
-#: src/configdialog.cpp:408
+#: src/configdialog.cpp:409
 msgid "Use colored nick"
 msgstr "Používat barevné nicky"
 
-#: src/configdialog.cpp:409
+#: src/configdialog.cpp:410
 msgid "Strip colors in text"
 msgstr "Odstranit barvy v textu"
 
-#: src/configdialog.cpp:415
+#: src/configdialog.cpp:416
 msgid "Ignore commands and users"
 msgstr "Ignorované příkazy a uživatelé"
 
-#: src/configdialog.cpp:417
+#: src/configdialog.cpp:418
 msgid "Commands"
 msgstr "Příkazy"
 
-#: src/configdialog.cpp:419
-#: src/configdialog.cpp:425
-#: src/configdialog.cpp:453
-#: src/configdialog.cpp:654
-#: src/configdialog.cpp:701
+#: src/configdialog.cpp:420
+#: src/configdialog.cpp:426
+#: src/configdialog.cpp:454
+#: src/configdialog.cpp:655
+#: src/configdialog.cpp:702
 msgid "Add"
 msgstr "Přidat"
 
-#: src/configdialog.cpp:420
-#: src/configdialog.cpp:427
-#: src/configdialog.cpp:454
-#: src/configdialog.cpp:656
-#: src/configdialog.cpp:703
+#: src/configdialog.cpp:421
+#: src/configdialog.cpp:428
+#: src/configdialog.cpp:455
+#: src/configdialog.cpp:657
+#: src/configdialog.cpp:704
 #: src/logviewer.cpp:417
 msgid "Delete"
 msgstr "Smazat"
 
-#: src/configdialog.cpp:423
+#: src/configdialog.cpp:424
 msgid "Users"
 msgstr "Uživatelé"
 
-#: src/configdialog.cpp:426
-#: src/configdialog.cpp:655
-#: src/configdialog.cpp:702
+#: src/configdialog.cpp:427
+#: src/configdialog.cpp:656
+#: src/configdialog.cpp:703
 msgid "Modify"
 msgstr "Upravit"
 
-#: src/configdialog.cpp:431
+#: src/configdialog.cpp:432
 msgid "User"
 msgstr "Uživatel"
 
-#: src/configdialog.cpp:432
-#: src/configdialog.cpp:661
+#: src/configdialog.cpp:433
+#: src/configdialog.cpp:662
 msgid "Channel(s)"
 msgstr "Kanál(y)"
 
-#: src/configdialog.cpp:433
-#: src/configdialog.cpp:662
+#: src/configdialog.cpp:434
+#: src/configdialog.cpp:663
 msgid "Server(s)"
 msgstr "Server(y)"
 
-#: src/configdialog.cpp:449
+#: src/configdialog.cpp:450
 msgid "General settings"
 msgstr "Obecné nastavení"
 
-#: src/configdialog.cpp:451
+#: src/configdialog.cpp:452
 msgid "Nick icons themes"
 msgstr "Téma ikon přezdívek"
 
-#: src/configdialog.cpp:468
+#: src/configdialog.cpp:469
 msgid "\tAdmin"
 msgstr "\tAdministrátor"
 
-#: src/configdialog.cpp:469
+#: src/configdialog.cpp:470
 msgid "\tOwner"
 msgstr "\tVlastník"
 
-#: src/configdialog.cpp:470
+#: src/configdialog.cpp:471
 msgid "\tOp"
 msgstr "\tOp"
 
-#: src/configdialog.cpp:471
+#: src/configdialog.cpp:472
 msgid "\tHalfop"
 msgstr "\tPoloviční op"
 
-#: src/configdialog.cpp:472
+#: src/configdialog.cpp:473
 msgid "\tVoice"
 msgstr "\tHlas"
 
-#: src/configdialog.cpp:473
+#: src/configdialog.cpp:474
 msgid "\tNormal"
 msgstr "\tUživatel"
 
-#: src/configdialog.cpp:474
+#: src/configdialog.cpp:475
 msgid "\tAway"
 msgstr "\tPryč"
 
-#: src/configdialog.cpp:475
+#: src/configdialog.cpp:476
 msgid "Reconnect after disconnection"
 msgstr "Znovu připojit po odpojení"
 
-#: src/configdialog.cpp:477
+#: src/configdialog.cpp:478
 msgid "Number of attempts"
 msgstr "Počet pokusů"
 
-#: src/configdialog.cpp:483
+#: src/configdialog.cpp:484
 msgid "Delay between two attempts in seconds"
 msgstr "Prodleva mezi dvěma pokusy v sekundách"
 
-#: src/configdialog.cpp:489
+#: src/configdialog.cpp:490
 msgid "Max. users number for checking away\tToo high number can be reason for ban"
 msgstr "Max. počet uživatelů pro kontrolu stavu pryč\tPříliš vysoké číslo může být důvodem k banu"
 
-#: src/configdialog.cpp:492
+#: src/configdialog.cpp:493
 msgid "Nick completion char"
 msgstr "Znak pro doplňování přezdívek"
 
-#: src/configdialog.cpp:496
+#: src/configdialog.cpp:497
 msgid "Use trayicon"
 msgstr "Použít trayicon"
 
-#: src/configdialog.cpp:497
+#: src/configdialog.cpp:498
 msgid "Close button hides application"
 msgstr "Kliknutí na tlačítko \"Zavřít\" skryje aplikaci"
 
-#: src/configdialog.cpp:499
+#: src/configdialog.cpp:500
 msgid "Special tab for server messages"
 msgstr "Zvláštní panel pro zprávy serveru"
 
-#: src/configdialog.cpp:500
+#: src/configdialog.cpp:501
 msgid "Logging chats"
 msgstr "Zaznamenávání chatů"
 
-#: src/configdialog.cpp:502
+#: src/configdialog.cpp:503
 msgid "Log path"
 msgstr "Cesta k záznamům"
 
-#: src/configdialog.cpp:509
+#: src/configdialog.cpp:510
 msgid "Automatically load scripts"
 msgstr "Automaticky načítat skripty"
 
-#: src/configdialog.cpp:511
+#: src/configdialog.cpp:512
 msgid "Path"
 msgstr "Cesta"
 
-#: src/configdialog.cpp:526
+#: src/configdialog.cpp:527
 msgid "Tab position"
 msgstr "Pozice záložek"
 
-#: src/configdialog.cpp:528
+#: src/configdialog.cpp:529
 msgid "Bottom"
 msgstr "Dole"
 
-#: src/configdialog.cpp:529
+#: src/configdialog.cpp:530
 msgid "Left"
 msgstr "Vlevo"
 
-#: src/configdialog.cpp:530
+#: src/configdialog.cpp:531
 msgid "Top"
 msgstr "Nahoře"
 
-#: src/configdialog.cpp:531
+#: src/configdialog.cpp:532
 msgid "Right"
 msgstr "Vpravo"
 
-#: src/configdialog.cpp:537
+#: src/configdialog.cpp:538
 msgid "FOX toolkit look for dxirc"
 msgstr "Vzhled FOX toolkit pro dxirc"
 
-#: src/configdialog.cpp:542
+#: src/configdialog.cpp:543
 msgid "Theme:"
 msgstr "Motiv:"
 
-#: src/configdialog.cpp:549
+#: src/configdialog.cpp:550
 msgid "Base Color"
 msgstr "Základní barva"
 
-#: src/configdialog.cpp:551
+#: src/configdialog.cpp:552
 msgid "Border Color"
 msgstr "Barva okraje"
 
-#: src/configdialog.cpp:553
+#: src/configdialog.cpp:554
 msgid "Text Color"
 msgstr "Barva textu"
 
-#: src/configdialog.cpp:555
+#: src/configdialog.cpp:556
 msgid "Background Color"
 msgstr "Barva pozadí"
 
-#: src/configdialog.cpp:557
+#: src/configdialog.cpp:558
 msgid "Selected Text Color"
 msgstr "Barva vybraného textu"
 
-#: src/configdialog.cpp:559
+#: src/configdialog.cpp:560
 msgid "Selected Background Color"
 msgstr "Barva pozadí vybraného textu"
 
-#: src/configdialog.cpp:561
+#: src/configdialog.cpp:562
 msgid "Selected Menu Text Color"
 msgstr "Barva textu vybrané položky menu"
 
-#: src/configdialog.cpp:563
+#: src/configdialog.cpp:564
 msgid "Selected Menu Background Color"
 msgstr "Barva textu pozadí vybrané položky menu"
 
-#: src/configdialog.cpp:565
+#: src/configdialog.cpp:566
 msgid "Tip Text Color"
 msgstr "Barva textu tipů"
 
-#: src/configdialog.cpp:567
+#: src/configdialog.cpp:568
 msgid "Tip Background Color"
 msgstr "Barva pozadí textu tipů"
 
-#: src/configdialog.cpp:571
+#: src/configdialog.cpp:572
 msgid "Select this text, to see the selected colors"
 msgstr "Vyberte text, abyste viděli barvy vybraného textu"
 
-#: src/configdialog.cpp:573
+#: src/configdialog.cpp:574
 msgid "Selected Text (with focus)"
 msgstr "Vybraný text (se zaměřením)"
 
-#: src/configdialog.cpp:575
+#: src/configdialog.cpp:576
 msgid "Selected Text (no focus)"
 msgstr "Vybraný text (bez zaměření)"
 
-#: src/configdialog.cpp:577
+#: src/configdialog.cpp:578
 msgid "Tooltip example"
 msgstr "Příklad tooltip"
 
-#: src/configdialog.cpp:578
+#: src/configdialog.cpp:579
 msgid "Menu example"
 msgstr "Příklad menu"
 
-#: src/configdialog.cpp:580
+#: src/configdialog.cpp:581
 msgid "&Server list"
 msgstr "&Seznam serverů"
 
-#: src/configdialog.cpp:581
+#: src/configdialog.cpp:582
 msgid "Selected Menu Entry"
 msgstr "Vybraná položka menu"
 
-#: src/configdialog.cpp:583
+#: src/configdialog.cpp:584
 #: src/dxirc.cpp:201
 msgid "&Quit"
 msgstr "&Ukončit"
 
-#: src/configdialog.cpp:589
+#: src/configdialog.cpp:590
 msgid "DCC settings"
 msgstr "Nastavení DCC"
 
-#: src/configdialog.cpp:591
+#: src/configdialog.cpp:592
 msgid "Directory for saving files:"
 msgstr "Adresář pro ukládání souborů:"
 
-#: src/configdialog.cpp:596
+#: src/configdialog.cpp:597
 msgid "DCC IP address:"
 msgstr "DCC IP adresa:"
 
-#: src/configdialog.cpp:604
+#: src/configdialog.cpp:605
 msgid "(Leave blank for use IP address from server)"
 msgstr "(Nechte prázdné pro použití IP adresy ze serveru)"
 
-#: src/configdialog.cpp:607
+#: src/configdialog.cpp:608
 msgid "DCC ports:"
 msgstr "DCC porty:"
 
-#: src/configdialog.cpp:613
+#: src/configdialog.cpp:614
 msgid "(Set 0 for use ports from OS)"
 msgstr "(Nechte nastavené na 0 pro použití portů z OS)"
 
-#: src/configdialog.cpp:615
+#: src/configdialog.cpp:616
 msgid "Time for waiting for connection in seconds"
 msgstr "Čas čekání na připojení v sekundách"
 
-#: src/configdialog.cpp:619
+#: src/configdialog.cpp:620
 msgid "Sound settings"
 msgstr "Nastavení zvuků"
 
-#: src/configdialog.cpp:621
+#: src/configdialog.cpp:622
 msgid "Use sounds"
 msgstr "Používat zvuky"
 
-#: src/configdialog.cpp:622
+#: src/configdialog.cpp:623
 msgid "Events"
 msgstr "Události"
 
-#: src/configdialog.cpp:624
+#: src/configdialog.cpp:625
 msgid "Friend connected"
 msgstr "Kamarád se připojil"
 
-#: src/configdialog.cpp:630
-#: src/configdialog.cpp:644
-#: src/configdialog.cpp:686
+#: src/configdialog.cpp:631
+#: src/configdialog.cpp:645
+#: src/configdialog.cpp:687
 msgid "\tPlay"
 msgstr "\tPřehrát"
 
-#: src/configdialog.cpp:638
+#: src/configdialog.cpp:639
 msgid "Friend disconnected"
 msgstr "Kamarád se odpojil"
 
-#: src/configdialog.cpp:652
+#: src/configdialog.cpp:653
 msgid "Friends"
 msgstr "Kamarádi"
 
-#: src/configdialog.cpp:660
+#: src/configdialog.cpp:661
 msgid "Friend"
 msgstr "Kamarád"
 
-#: src/configdialog.cpp:680
+#: src/configdialog.cpp:681
 msgid "Highlighted message or query message"
 msgstr "Zvýrazněná zpráva nebo zpráva v rozhovoru"
 
-#: src/configdialog.cpp:696
+#: src/configdialog.cpp:697
 msgid "Smileys settings"
 msgstr "Nastavení smajlíků"
 
-#: src/configdialog.cpp:698
+#: src/configdialog.cpp:699
 msgid "Use smileys"
 msgstr "Používat smajlíky"
 
-#: src/configdialog.cpp:699
+#: src/configdialog.cpp:700
 msgid "Smileys"
 msgstr "Smajlíci"
 
-#: src/configdialog.cpp:704
+#: src/configdialog.cpp:705
 msgid "Import"
 msgstr "Import"
 
-#: src/configdialog.cpp:705
+#: src/configdialog.cpp:706
 msgid "Export"
 msgstr "Export"
 
-#: src/configdialog.cpp:736
+#: src/configdialog.cpp:737
 msgid "&General"
 msgstr "&Obecné"
 
-#: src/configdialog.cpp:737
+#: src/configdialog.cpp:738
 msgid "&Look"
 msgstr "&Vzhled"
 
-#: src/configdialog.cpp:738
+#: src/configdialog.cpp:739
 msgid "&Irc Text"
 msgstr "&Irc Text"
 
-#: src/configdialog.cpp:739
+#: src/configdialog.cpp:740
 msgid "I&gnore"
 msgstr "I&gnorování"
 
-#: src/configdialog.cpp:740
+#: src/configdialog.cpp:741
 msgid "&DCC"
 msgstr "&DCC"
 
-#: src/configdialog.cpp:741
+#: src/configdialog.cpp:742
 msgid "&Sounds"
 msgstr "&Zvuky"
 
-#: src/configdialog.cpp:742
+#: src/configdialog.cpp:743
 msgid "S&mileys"
 msgstr "S&majlíci"
 
-#: src/configdialog.cpp:908
+#: src/configdialog.cpp:909
 msgid "Select ignore command"
 msgstr "Vyberte příkaz pro ignorování"
 
-#: src/configdialog.cpp:912
+#: src/configdialog.cpp:913
 #: src/aliasdialog.cpp:80
 #: src/aliasdialog.cpp:122
 msgid "Command:"
 msgstr "Příkaz:"
 
-#: src/configdialog.cpp:939
+#: src/configdialog.cpp:940
 msgid "Add ignore user"
 msgstr "Přidejte ignorovaného uživatele"
 
-#: src/configdialog.cpp:943
-#: src/configdialog.cpp:984
-#: src/configdialog.cpp:1289
-#: src/configdialog.cpp:1330
+#: src/configdialog.cpp:944
+#: src/configdialog.cpp:985
+#: src/configdialog.cpp:1290
+#: src/configdialog.cpp:1331
 msgid "Nick:"
 msgstr "Přezdívka:"
 
-#: src/configdialog.cpp:946
-#: src/configdialog.cpp:987
-#: src/configdialog.cpp:1292
-#: src/configdialog.cpp:1333
+#: src/configdialog.cpp:947
+#: src/configdialog.cpp:988
+#: src/configdialog.cpp:1293
+#: src/configdialog.cpp:1334
 #: src/dxirc.cpp:1364
 #: src/serverdialog.cpp:160
 #: src/serverdialog.cpp:244
 msgid "Channel(s):\tChannels need to be comma separated"
 msgstr "Kanál(y):\tKanály musí být odděleny čárkami"
 
-#: src/configdialog.cpp:949
-#: src/configdialog.cpp:1295
+#: src/configdialog.cpp:950
+#: src/configdialog.cpp:1296
 #: src/serverdialog.cpp:163
 #: src/serverdialog.cpp:247
 msgid "Channels need to be comma separated"
 msgstr "Kanály musí být odděleny čárkami"
 
-#: src/configdialog.cpp:950
-#: src/configdialog.cpp:990
-#: src/configdialog.cpp:1296
-#: src/configdialog.cpp:1336
+#: src/configdialog.cpp:951
+#: src/configdialog.cpp:991
+#: src/configdialog.cpp:1297
+#: src/configdialog.cpp:1337
 msgid "Server:"
 msgstr "Server: "
 
-#: src/configdialog.cpp:980
+#: src/configdialog.cpp:981
 msgid "Modify ignore user"
 msgstr "Upravte ignorovaného uživatele"
 
-#: src/configdialog.cpp:1032
+#: src/configdialog.cpp:1033
 msgid "Warning"
 msgstr "Varování"
 
-#: src/configdialog.cpp:1032
+#: src/configdialog.cpp:1033
 msgid "File import overwrites current settings"
 msgstr "Import souboru přepíše aktuální nastavení"
 
-#: src/configdialog.cpp:1095
+#: src/configdialog.cpp:1096
 msgid "Save smiley settings as"
 msgstr "Uložit nastavení smajlíků jako"
 
-#: src/configdialog.cpp:1285
+#: src/configdialog.cpp:1286
 msgid "Add friend"
 msgstr "Přidat kamaráda"
 
-#: src/configdialog.cpp:1326
+#: src/configdialog.cpp:1327
 msgid "Modify friend"
 msgstr "Upravit kamaráda"
 
-#: src/configdialog.cpp:1377
+#: src/configdialog.cpp:1378
 msgid "Select theme directory"
 msgstr "Vybrat adresář s tématem"
 
-#: src/configdialog.cpp:1442
-#: src/configdialog.cpp:1461
+#: src/configdialog.cpp:1444
+#: src/configdialog.cpp:1463
 msgid "Select font"
 msgstr "Vyberte font"
 
-#: src/configdialog.cpp:1720
+#: src/configdialog.cpp:1722
 msgid "Select log directory"
 msgstr "Vybrat adresář pro záznamy"
 
-#: src/configdialog.cpp:1731
+#: src/configdialog.cpp:1733
 msgid "Select autoload directory"
 msgstr "Vybrat adresář pro automaticky načítané skripty"
 
-#: src/configdialog.cpp:1742
+#: src/configdialog.cpp:1744
 msgid "Select directory"
 msgstr "Vyberte adresář"
 
-#: src/configdialog.cpp:1867
+#: src/configdialog.cpp:1869
 msgid "Sound file (*.wav)"
 msgstr "Zvukový soubor (*.wav)"
 
-#: src/configdialog.cpp:1928
-#: src/configdialog.cpp:1936
-#: src/configdialog.cpp:1941
-#: src/configdialog.cpp:1946
-#: src/configdialog.cpp:1967
-#: src/configdialog.cpp:1972
-#: src/configdialog.cpp:1977
-#: src/configdialog.cpp:2143
+#: src/configdialog.cpp:1930
+#: src/configdialog.cpp:1938
+#: src/configdialog.cpp:1943
+#: src/configdialog.cpp:1948
+#: src/configdialog.cpp:1969
+#: src/configdialog.cpp:1974
+#: src/configdialog.cpp:1979
+#: src/configdialog.cpp:2147
 #: src/aliasdialog.cpp:93
 #: src/aliasdialog.cpp:98
 #: src/aliasdialog.cpp:103
@@ -607,44 +607,44 @@ msgstr "Zvukový soubor (*.wav)"
 msgid "Information"
 msgstr "Informace"
 
-#: src/configdialog.cpp:1928
+#: src/configdialog.cpp:1930
 msgid "Maximum number of 256 smileys is reached"
 msgstr "Maximální počet 256 smajlíků byl dosažen"
 
-#: src/configdialog.cpp:1931
+#: src/configdialog.cpp:1933
 msgid "Add smiley"
 msgstr "Přidat smajlík"
 
-#: src/configdialog.cpp:1936
-#: src/configdialog.cpp:1967
+#: src/configdialog.cpp:1938
+#: src/configdialog.cpp:1969
 #, c-format
 msgid "Icon file '%s' doesn't exist or isn't image file"
 msgstr "Soubor ikony '%s' neexistuje nebo není souborem s obrázkem"
 
-#: src/configdialog.cpp:1941
-#: src/configdialog.cpp:1972
+#: src/configdialog.cpp:1943
+#: src/configdialog.cpp:1974
 msgid "Smiley text is empty"
 msgstr "Text smajlíku je prázdný"
 
-#: src/configdialog.cpp:1946
-#: src/configdialog.cpp:1977
+#: src/configdialog.cpp:1948
+#: src/configdialog.cpp:1979
 #, c-format
 msgid "Smiley '%s' already exist"
 msgstr "Smajlík '%s' už existuje"
 
-#: src/configdialog.cpp:1962
+#: src/configdialog.cpp:1964
 msgid "Modify smiley"
 msgstr "Upravit smajlík"
 
-#: src/configdialog.cpp:2058
+#: src/configdialog.cpp:2060
 msgid "Current"
 msgstr "Aktuální"
 
-#: src/configdialog.cpp:2065
+#: src/configdialog.cpp:2067
 msgid "User Defined"
 msgstr "Uživatelský"
 
-#: src/configdialog.cpp:2143
+#: src/configdialog.cpp:2147
 msgid "Some changes need restart application"
 msgstr "Některé změny vyžadují restart aplikace"
 

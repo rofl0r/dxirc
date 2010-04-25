@@ -38,5 +38,6 @@ rm -rf %{buildroot}
 %doc AUTHORS COPYING README TODO BUGS
 %attr(755,root,root) %{_bindir}/*
 %{_datadir}/dxirc/icons/*
+%{_datadir}/dxirc/sounds/*
 %{_datadir}/pixmaps/*
 %{_datadir}/applications/dxirc.desktop

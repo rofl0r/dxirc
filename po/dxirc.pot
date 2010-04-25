@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-24 16:54+0200\n"
+"POT-Creation-Date: 2010-04-25 17:09+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,9 +16,9 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/configdialog.cpp:123 src/configdialog.cpp:376 src/configdialog.cpp:917
-#: src/configdialog.cpp:955 src/configdialog.cpp:995 src/configdialog.cpp:1301
-#: src/configdialog.cpp:1341 src/dxirc.cpp:1380 src/irctabitem.cpp:59
+#: src/configdialog.cpp:123 src/configdialog.cpp:377 src/configdialog.cpp:918
+#: src/configdialog.cpp:956 src/configdialog.cpp:996 src/configdialog.cpp:1302
+#: src/configdialog.cpp:1342 src/dxirc.cpp:1380 src/irctabitem.cpp:59
 #: src/irctabitem.cpp:4246 src/irctabitem.cpp:4267 src/irctabitem.cpp:4292
 #: src/irctabitem.cpp:4315 src/serverdialog.cpp:101 src/serverdialog.cpp:181
 #: src/serverdialog.cpp:268 src/aliasdialog.cpp:53 src/aliasdialog.cpp:84
@@ -26,9 +26,9 @@ msgstr ""
 msgid "&Cancel"
 msgstr ""
 
-#: src/configdialog.cpp:124 src/configdialog.cpp:918 src/configdialog.cpp:956
-#: src/configdialog.cpp:996 src/configdialog.cpp:1302
-#: src/configdialog.cpp:1342 src/dxirc.cpp:1292 src/dxirc.cpp:1381
+#: src/configdialog.cpp:124 src/configdialog.cpp:919 src/configdialog.cpp:957
+#: src/configdialog.cpp:997 src/configdialog.cpp:1303
+#: src/configdialog.cpp:1343 src/dxirc.cpp:1292 src/dxirc.cpp:1381
 #: src/irctabitem.cpp:4247 src/irctabitem.cpp:4268 src/irctabitem.cpp:4293
 #: src/irctabitem.cpp:4316 src/serverdialog.cpp:182 src/serverdialog.cpp:269
 #: src/aliasdialog.cpp:85 src/aliasdialog.cpp:128
@@ -47,8 +47,8 @@ msgstr ""
 msgid "Preview:"
 msgstr ""
 
-#: src/configdialog.cpp:162 src/configdialog.cpp:1033
-#: src/configdialog.cpp:1866 src/irctabitem.cpp:72 src/irctabitem.cpp:82
+#: src/configdialog.cpp:162 src/configdialog.cpp:1034
+#: src/configdialog.cpp:1868 src/irctabitem.cpp:72 src/irctabitem.cpp:82
 msgid "Select file"
 msgstr ""
 
@@ -56,527 +56,527 @@ msgstr ""
 msgid "Preferences"
 msgstr ""
 
-#: src/configdialog.cpp:374 src/serverdialog.cpp:102 src/aliasdialog.cpp:54
+#: src/configdialog.cpp:375 src/serverdialog.cpp:102 src/aliasdialog.cpp:54
 msgid "&Save&&Close"
 msgstr ""
 
-#: src/configdialog.cpp:383
+#: src/configdialog.cpp:384
 msgid "Irc text settings"
 msgstr ""
 
-#: src/configdialog.cpp:389
+#: src/configdialog.cpp:390
 msgid "Text backround color"
 msgstr ""
 
-#: src/configdialog.cpp:391
+#: src/configdialog.cpp:392
 msgid "Text color"
 msgstr ""
 
-#: src/configdialog.cpp:393
+#: src/configdialog.cpp:394
 msgid "User events text color"
 msgstr ""
 
-#: src/configdialog.cpp:395
+#: src/configdialog.cpp:396
 msgid "Actions message text color"
 msgstr ""
 
-#: src/configdialog.cpp:397
+#: src/configdialog.cpp:398
 msgid "Notice text color"
 msgstr ""
 
-#: src/configdialog.cpp:399
+#: src/configdialog.cpp:400
 msgid "Error text color"
 msgstr ""
 
-#: src/configdialog.cpp:401
+#: src/configdialog.cpp:402
 msgid "Highlight message text color"
 msgstr ""
 
-#: src/configdialog.cpp:403
+#: src/configdialog.cpp:404
 msgid "Link color"
 msgstr ""
 
-#: src/configdialog.cpp:404 src/configdialog.cpp:585
+#: src/configdialog.cpp:405 src/configdialog.cpp:586
 msgid "Font"
 msgstr ""
 
-#: src/configdialog.cpp:406
+#: src/configdialog.cpp:407
 msgid "Use same font for commandline"
 msgstr ""
 
-#: src/configdialog.cpp:407
+#: src/configdialog.cpp:408
 msgid "Use same font for user list"
 msgstr ""
 
-#: src/configdialog.cpp:408
+#: src/configdialog.cpp:409
 msgid "Use colored nick"
 msgstr ""
 
-#: src/configdialog.cpp:409
+#: src/configdialog.cpp:410
 msgid "Strip colors in text"
 msgstr ""
 
-#: src/configdialog.cpp:415
+#: src/configdialog.cpp:416
 msgid "Ignore commands and users"
 msgstr ""
 
-#: src/configdialog.cpp:417
+#: src/configdialog.cpp:418
 msgid "Commands"
 msgstr ""
 
-#: src/configdialog.cpp:419 src/configdialog.cpp:425 src/configdialog.cpp:453
-#: src/configdialog.cpp:654 src/configdialog.cpp:701
+#: src/configdialog.cpp:420 src/configdialog.cpp:426 src/configdialog.cpp:454
+#: src/configdialog.cpp:655 src/configdialog.cpp:702
 msgid "Add"
 msgstr ""
 
-#: src/configdialog.cpp:420 src/configdialog.cpp:427 src/configdialog.cpp:454
-#: src/configdialog.cpp:656 src/configdialog.cpp:703 src/logviewer.cpp:417
+#: src/configdialog.cpp:421 src/configdialog.cpp:428 src/configdialog.cpp:455
+#: src/configdialog.cpp:657 src/configdialog.cpp:704 src/logviewer.cpp:417
 msgid "Delete"
 msgstr ""
 
-#: src/configdialog.cpp:423
+#: src/configdialog.cpp:424
 msgid "Users"
 msgstr ""
 
-#: src/configdialog.cpp:426 src/configdialog.cpp:655 src/configdialog.cpp:702
+#: src/configdialog.cpp:427 src/configdialog.cpp:656 src/configdialog.cpp:703
 msgid "Modify"
 msgstr ""
 
-#: src/configdialog.cpp:431
+#: src/configdialog.cpp:432
 msgid "User"
 msgstr ""
 
-#: src/configdialog.cpp:432 src/configdialog.cpp:661
+#: src/configdialog.cpp:433 src/configdialog.cpp:662
 msgid "Channel(s)"
 msgstr ""
 
-#: src/configdialog.cpp:433 src/configdialog.cpp:662
+#: src/configdialog.cpp:434 src/configdialog.cpp:663
 msgid "Server(s)"
 msgstr ""
 
-#: src/configdialog.cpp:449
+#: src/configdialog.cpp:450
 msgid "General settings"
 msgstr ""
 
-#: src/configdialog.cpp:451
+#: src/configdialog.cpp:452
 msgid "Nick icons themes"
 msgstr ""
 
-#: src/configdialog.cpp:468
+#: src/configdialog.cpp:469
 msgid "\tAdmin"
 msgstr ""
 
-#: src/configdialog.cpp:469
+#: src/configdialog.cpp:470
 msgid "\tOwner"
 msgstr ""
 
-#: src/configdialog.cpp:470
+#: src/configdialog.cpp:471
 msgid "\tOp"
 msgstr ""
 
-#: src/configdialog.cpp:471
+#: src/configdialog.cpp:472
 msgid "\tHalfop"
 msgstr ""
 
-#: src/configdialog.cpp:472
+#: src/configdialog.cpp:473
 msgid "\tVoice"
 msgstr ""
 
-#: src/configdialog.cpp:473
+#: src/configdialog.cpp:474
 msgid "\tNormal"
 msgstr ""
 
-#: src/configdialog.cpp:474
+#: src/configdialog.cpp:475
 msgid "\tAway"
 msgstr ""
 
-#: src/configdialog.cpp:475
+#: src/configdialog.cpp:476
 msgid "Reconnect after disconnection"
 msgstr ""
 
-#: src/configdialog.cpp:477
+#: src/configdialog.cpp:478
 msgid "Number of attempts"
 msgstr ""
 
-#: src/configdialog.cpp:483
+#: src/configdialog.cpp:484
 msgid "Delay between two attempts in seconds"
 msgstr ""
 
-#: src/configdialog.cpp:489
+#: src/configdialog.cpp:490
 msgid ""
 "Max. users number for checking away\tToo high number can be reason for ban"
 msgstr ""
 
-#: src/configdialog.cpp:492
+#: src/configdialog.cpp:493
 msgid "Nick completion char"
 msgstr ""
 
-#: src/configdialog.cpp:496
+#: src/configdialog.cpp:497
 msgid "Use trayicon"
 msgstr ""
 
-#: src/configdialog.cpp:497
+#: src/configdialog.cpp:498
 msgid "Close button hides application"
 msgstr ""
 
-#: src/configdialog.cpp:499
+#: src/configdialog.cpp:500
 msgid "Special tab for server messages"
 msgstr ""
 
-#: src/configdialog.cpp:500
+#: src/configdialog.cpp:501
 msgid "Logging chats"
 msgstr ""
 
-#: src/configdialog.cpp:502
+#: src/configdialog.cpp:503
 msgid "Log path"
 msgstr ""
 
-#: src/configdialog.cpp:509
+#: src/configdialog.cpp:510
 msgid "Automatically load scripts"
 msgstr ""
 
-#: src/configdialog.cpp:511
+#: src/configdialog.cpp:512
 msgid "Path"
 msgstr ""
 
-#: src/configdialog.cpp:526
+#: src/configdialog.cpp:527
 msgid "Tab position"
 msgstr ""
 
-#: src/configdialog.cpp:528
+#: src/configdialog.cpp:529
 msgid "Bottom"
 msgstr ""
 
-#: src/configdialog.cpp:529
+#: src/configdialog.cpp:530
 msgid "Left"
 msgstr ""
 
-#: src/configdialog.cpp:530
+#: src/configdialog.cpp:531
 msgid "Top"
 msgstr ""
 
-#: src/configdialog.cpp:531
+#: src/configdialog.cpp:532
 msgid "Right"
 msgstr ""
 
-#: src/configdialog.cpp:537
+#: src/configdialog.cpp:538
 msgid "FOX toolkit look for dxirc"
 msgstr ""
 
-#: src/configdialog.cpp:542
+#: src/configdialog.cpp:543
 msgid "Theme:"
 msgstr ""
 
-#: src/configdialog.cpp:549
+#: src/configdialog.cpp:550
 msgid "Base Color"
 msgstr ""
 
-#: src/configdialog.cpp:551
+#: src/configdialog.cpp:552
 msgid "Border Color"
 msgstr ""
 
-#: src/configdialog.cpp:553
+#: src/configdialog.cpp:554
 msgid "Text Color"
 msgstr ""
 
-#: src/configdialog.cpp:555
+#: src/configdialog.cpp:556
 msgid "Background Color"
 msgstr ""
 
-#: src/configdialog.cpp:557
+#: src/configdialog.cpp:558
 msgid "Selected Text Color"
 msgstr ""
 
-#: src/configdialog.cpp:559
+#: src/configdialog.cpp:560
 msgid "Selected Background Color"
 msgstr ""
 
-#: src/configdialog.cpp:561
+#: src/configdialog.cpp:562
 msgid "Selected Menu Text Color"
 msgstr ""
 
-#: src/configdialog.cpp:563
+#: src/configdialog.cpp:564
 msgid "Selected Menu Background Color"
 msgstr ""
 
-#: src/configdialog.cpp:565
+#: src/configdialog.cpp:566
 msgid "Tip Text Color"
 msgstr ""
 
-#: src/configdialog.cpp:567
+#: src/configdialog.cpp:568
 msgid "Tip Background Color"
 msgstr ""
 
-#: src/configdialog.cpp:571
+#: src/configdialog.cpp:572
 msgid "Select this text, to see the selected colors"
 msgstr ""
 
-#: src/configdialog.cpp:573
+#: src/configdialog.cpp:574
 msgid "Selected Text (with focus)"
 msgstr ""
 
-#: src/configdialog.cpp:575
+#: src/configdialog.cpp:576
 msgid "Selected Text (no focus)"
 msgstr ""
 
-#: src/configdialog.cpp:577
+#: src/configdialog.cpp:578
 msgid "Tooltip example"
 msgstr ""
 
-#: src/configdialog.cpp:578
+#: src/configdialog.cpp:579
 msgid "Menu example"
 msgstr ""
 
-#: src/configdialog.cpp:580
+#: src/configdialog.cpp:581
 msgid "&Server list"
 msgstr ""
 
-#: src/configdialog.cpp:581
+#: src/configdialog.cpp:582
 msgid "Selected Menu Entry"
 msgstr ""
 
-#: src/configdialog.cpp:583 src/dxirc.cpp:201
+#: src/configdialog.cpp:584 src/dxirc.cpp:201
 msgid "&Quit"
 msgstr ""
 
-#: src/configdialog.cpp:589
+#: src/configdialog.cpp:590
 msgid "DCC settings"
 msgstr ""
 
-#: src/configdialog.cpp:591
+#: src/configdialog.cpp:592
 msgid "Directory for saving files:"
 msgstr ""
 
-#: src/configdialog.cpp:596
+#: src/configdialog.cpp:597
 msgid "DCC IP address:"
 msgstr ""
 
-#: src/configdialog.cpp:604
+#: src/configdialog.cpp:605
 msgid "(Leave blank for use IP address from server)"
 msgstr ""
 
-#: src/configdialog.cpp:607
+#: src/configdialog.cpp:608
 msgid "DCC ports:"
 msgstr ""
 
-#: src/configdialog.cpp:613
+#: src/configdialog.cpp:614
 msgid "(Set 0 for use ports from OS)"
 msgstr ""
 
-#: src/configdialog.cpp:615
+#: src/configdialog.cpp:616
 msgid "Time for waiting for connection in seconds"
 msgstr ""
 
-#: src/configdialog.cpp:619
+#: src/configdialog.cpp:620
 msgid "Sound settings"
 msgstr ""
 
-#: src/configdialog.cpp:621
+#: src/configdialog.cpp:622
 msgid "Use sounds"
 msgstr ""
 
-#: src/configdialog.cpp:622
+#: src/configdialog.cpp:623
 msgid "Events"
 msgstr ""
 
-#: src/configdialog.cpp:624
+#: src/configdialog.cpp:625
 msgid "Friend connected"
 msgstr ""
 
-#: src/configdialog.cpp:630 src/configdialog.cpp:644 src/configdialog.cpp:686
+#: src/configdialog.cpp:631 src/configdialog.cpp:645 src/configdialog.cpp:687
 msgid "\tPlay"
 msgstr ""
 
-#: src/configdialog.cpp:638
+#: src/configdialog.cpp:639
 msgid "Friend disconnected"
 msgstr ""
 
-#: src/configdialog.cpp:652
+#: src/configdialog.cpp:653
 msgid "Friends"
 msgstr ""
 
-#: src/configdialog.cpp:660
+#: src/configdialog.cpp:661
 msgid "Friend"
 msgstr ""
 
-#: src/configdialog.cpp:680
+#: src/configdialog.cpp:681
 msgid "Highlighted message or query message"
 msgstr ""
 
-#: src/configdialog.cpp:696
+#: src/configdialog.cpp:697
 msgid "Smileys settings"
 msgstr ""
 
-#: src/configdialog.cpp:698
+#: src/configdialog.cpp:699
 msgid "Use smileys"
 msgstr ""
 
-#: src/configdialog.cpp:699
+#: src/configdialog.cpp:700
 msgid "Smileys"
 msgstr ""
 
-#: src/configdialog.cpp:704
+#: src/configdialog.cpp:705
 msgid "Import"
 msgstr ""
 
-#: src/configdialog.cpp:705
+#: src/configdialog.cpp:706
 msgid "Export"
 msgstr ""
 
-#: src/configdialog.cpp:736
+#: src/configdialog.cpp:737
 msgid "&General"
 msgstr ""
 
-#: src/configdialog.cpp:737
+#: src/configdialog.cpp:738
 msgid "&Look"
 msgstr ""
 
-#: src/configdialog.cpp:738
+#: src/configdialog.cpp:739
 msgid "&Irc Text"
 msgstr ""
 
-#: src/configdialog.cpp:739
+#: src/configdialog.cpp:740
 msgid "I&gnore"
 msgstr ""
 
-#: src/configdialog.cpp:740
+#: src/configdialog.cpp:741
 msgid "&DCC"
 msgstr ""
 
-#: src/configdialog.cpp:741
+#: src/configdialog.cpp:742
 msgid "&Sounds"
 msgstr ""
 
-#: src/configdialog.cpp:742
+#: src/configdialog.cpp:743
 msgid "S&mileys"
 msgstr ""
 
-#: src/configdialog.cpp:908
+#: src/configdialog.cpp:909
 msgid "Select ignore command"
 msgstr ""
 
-#: src/configdialog.cpp:912 src/aliasdialog.cpp:80 src/aliasdialog.cpp:122
+#: src/configdialog.cpp:913 src/aliasdialog.cpp:80 src/aliasdialog.cpp:122
 msgid "Command:"
 msgstr ""
 
-#: src/configdialog.cpp:939
+#: src/configdialog.cpp:940
 msgid "Add ignore user"
 msgstr ""
 
-#: src/configdialog.cpp:943 src/configdialog.cpp:984 src/configdialog.cpp:1289
-#: src/configdialog.cpp:1330
+#: src/configdialog.cpp:944 src/configdialog.cpp:985 src/configdialog.cpp:1290
+#: src/configdialog.cpp:1331
 msgid "Nick:"
 msgstr ""
 
-#: src/configdialog.cpp:946 src/configdialog.cpp:987 src/configdialog.cpp:1292
-#: src/configdialog.cpp:1333 src/dxirc.cpp:1364 src/serverdialog.cpp:160
+#: src/configdialog.cpp:947 src/configdialog.cpp:988 src/configdialog.cpp:1293
+#: src/configdialog.cpp:1334 src/dxirc.cpp:1364 src/serverdialog.cpp:160
 #: src/serverdialog.cpp:244
 msgid "Channel(s):\tChannels need to be comma separated"
 msgstr ""
 
-#: src/configdialog.cpp:949 src/configdialog.cpp:1295 src/serverdialog.cpp:163
+#: src/configdialog.cpp:950 src/configdialog.cpp:1296 src/serverdialog.cpp:163
 #: src/serverdialog.cpp:247
 msgid "Channels need to be comma separated"
 msgstr ""
 
-#: src/configdialog.cpp:950 src/configdialog.cpp:990 src/configdialog.cpp:1296
-#: src/configdialog.cpp:1336
+#: src/configdialog.cpp:951 src/configdialog.cpp:991 src/configdialog.cpp:1297
+#: src/configdialog.cpp:1337
 msgid "Server:"
 msgstr ""
 
-#: src/configdialog.cpp:980
+#: src/configdialog.cpp:981
 msgid "Modify ignore user"
 msgstr ""
 
-#: src/configdialog.cpp:1032
+#: src/configdialog.cpp:1033
 msgid "Warning"
 msgstr ""
 
-#: src/configdialog.cpp:1032
+#: src/configdialog.cpp:1033
 msgid "File import overwrites current settings"
 msgstr ""
 
-#: src/configdialog.cpp:1095
+#: src/configdialog.cpp:1096
 msgid "Save smiley settings as"
 msgstr ""
 
-#: src/configdialog.cpp:1285
+#: src/configdialog.cpp:1286
 msgid "Add friend"
 msgstr ""
 
-#: src/configdialog.cpp:1326
+#: src/configdialog.cpp:1327
 msgid "Modify friend"
 msgstr ""
 
-#: src/configdialog.cpp:1377
+#: src/configdialog.cpp:1378
 msgid "Select theme directory"
 msgstr ""
 
-#: src/configdialog.cpp:1442 src/configdialog.cpp:1461
+#: src/configdialog.cpp:1444 src/configdialog.cpp:1463
 msgid "Select font"
 msgstr ""
 
-#: src/configdialog.cpp:1720
+#: src/configdialog.cpp:1722
 msgid "Select log directory"
 msgstr ""
 
-#: src/configdialog.cpp:1731
+#: src/configdialog.cpp:1733
 msgid "Select autoload directory"
 msgstr ""
 
-#: src/configdialog.cpp:1742
+#: src/configdialog.cpp:1744
 msgid "Select directory"
 msgstr ""
 
-#: src/configdialog.cpp:1867
+#: src/configdialog.cpp:1869
 msgid "Sound file (*.wav)"
 msgstr ""
 
-#: src/configdialog.cpp:1928 src/configdialog.cpp:1936
-#: src/configdialog.cpp:1941 src/configdialog.cpp:1946
-#: src/configdialog.cpp:1967 src/configdialog.cpp:1972
-#: src/configdialog.cpp:1977 src/configdialog.cpp:2143 src/aliasdialog.cpp:93
+#: src/configdialog.cpp:1930 src/configdialog.cpp:1938
+#: src/configdialog.cpp:1943 src/configdialog.cpp:1948
+#: src/configdialog.cpp:1969 src/configdialog.cpp:1974
+#: src/configdialog.cpp:1979 src/configdialog.cpp:2147 src/aliasdialog.cpp:93
 #: src/aliasdialog.cpp:98 src/aliasdialog.cpp:103 src/aliasdialog.cpp:136
 #: src/aliasdialog.cpp:141 src/aliasdialog.cpp:146 src/logviewer.cpp:169
 #: src/logviewer.cpp:215 src/logviewer.cpp:290
 msgid "Information"
 msgstr ""
 
-#: src/configdialog.cpp:1928
+#: src/configdialog.cpp:1930
 msgid "Maximum number of 256 smileys is reached"
 msgstr ""
 
-#: src/configdialog.cpp:1931
+#: src/configdialog.cpp:1933
 msgid "Add smiley"
 msgstr ""
 
-#: src/configdialog.cpp:1936 src/configdialog.cpp:1967
+#: src/configdialog.cpp:1938 src/configdialog.cpp:1969
 #, c-format
 msgid "Icon file '%s' doesn't exist or isn't image file"
 msgstr ""
 
-#: src/configdialog.cpp:1941 src/configdialog.cpp:1972
+#: src/configdialog.cpp:1943 src/configdialog.cpp:1974
 msgid "Smiley text is empty"
 msgstr ""
 
-#: src/configdialog.cpp:1946 src/configdialog.cpp:1977
+#: src/configdialog.cpp:1948 src/configdialog.cpp:1979
 #, c-format
 msgid "Smiley '%s' already exist"
 msgstr ""
 
-#: src/configdialog.cpp:1962
+#: src/configdialog.cpp:1964
 msgid "Modify smiley"
 msgstr ""
 
-#: src/configdialog.cpp:2058
+#: src/configdialog.cpp:2060
 msgid "Current"
 msgstr ""
 
-#: src/configdialog.cpp:2065
+#: src/configdialog.cpp:2067
 msgid "User Defined"
 msgstr ""
 
-#: src/configdialog.cpp:2143
+#: src/configdialog.cpp:2147
 msgid "Some changes need restart application"
 msgstr ""
 

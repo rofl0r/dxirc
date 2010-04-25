@@ -359,7 +359,7 @@ void IrcTabItem::SetColor(IrcColor clrs)
 
 void IrcTabItem::SetTextBackColor(FXColor clr)
 {
-    for(FXint i=0; i<FXMIN(17,textStyleList.no()); i++)
+    for(FXint i=0; i<textStyleList.no(); i++)
     {
         textStyleList[i].normalBackColor = clr;
     }
