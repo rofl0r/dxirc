@@ -238,48 +238,29 @@ void dxText::setFont(FXFont* fnt)
     }
 }
 
-//Change usesmiley
-void dxText::setUseSmiley(FXbool smiley)
-{
-    if(usesmiley!=smiley)
-    {
-        usesmiley=smiley;
-        if(usesmiley && smileys.no())
-        {
-            for(FXint i=0; i<contents.no(); i++)
-                createSmiley(&contents[i], &styles[i]);
-            recompute();
-            layout();
-        }
-        if(!usesmiley)
-        {
-            for(FXint i=0; i<contents.no(); i++)
-                removeSmiley(&contents[i], &styles[i]);
-            recompute();
-            layout();
-        }
-    }
-}
-
 //Change smileys
-void dxText::setSmileys(dxSmileyArray nsmileys)
+void dxText::setSmileys(FXbool smiley, dxSmileyArray nsmileys)
 {
-    if(usesmiley)
-    {
-        for(FXint i=0; i<contents.no(); i++)
-        {
-            removeSmiley(&contents[i], &styles[i]);
-        }
-    }
+    if(smileys.no()) removeSmileys();
+    usesmiley=smiley;
     smileys=nsmileys;
-    if(usesmiley)
+    if(usesmiley && smileys.no())
     {
         for(FXint i=0; i<contents.no(); i++)
         {
             createSmiley(&contents[i], &styles[i]);
         }
-        recompute();
-        layout();
+    }
+    recompute();
+    layout();
+}
+
+//remove smileys from text back to chars
+void dxText::removeSmileys()
+{
+    for(FXint i=0; i<contents.no(); i++)
+    {
+        removeSmiley(&contents[i], &styles[i]);
     }
 }
 
@@ -398,15 +379,23 @@ void dxText::removeSmiley(FXString* text, FXString* style)
                 else next|=style->at(pos+1);
                 if(prev!=next) stylenum=next;
                 else stylenum=prev;
-                text->replace(pos, 1, smileys[s].text);
-                style->replace(pos, 1, stylenum, smileys[s].text.length());
+                if(smileys.no() && s<(FXuint)smileys.no())
+                {
+                    text->replace(pos, 1, smileys[s].text);
+                    style->replace(pos, 1, stylenum, smileys[s].text.length());
+                }
+                else
+                {
+                    text->replace(pos, ' ');
+                    style->replace(pos, 0);
+                }
             }
             pos++;
         }
     }
 }
 
-//Smiley back to plain text
+//Smiley back to plain text; usefull for copy
 FXString dxText::clearSmiley(FXint index, FXint pos, FXint len)
 {
     if(index<0 || index>contents.no()-1) return "";

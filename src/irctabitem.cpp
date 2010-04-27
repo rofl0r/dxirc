@@ -493,14 +493,14 @@ void IrcTabItem::SetStripColors(FXbool sclr)
     stripColors = sclr;
 }
 
-void IrcTabItem::SetUseSmiley(FXbool smiley)
+void IrcTabItem::SetSmileys(FXbool smiley, dxSmileyArray nsmileys)
 {
-    text->setUseSmiley(smiley);
+    text->setSmileys(smiley, nsmileys);
 }
 
-void IrcTabItem::SetSmileys(dxSmileyArray nsmileys)
+void IrcTabItem::RemoveSmileys()
 {
-    text->setSmileys(nsmileys);
+    text->removeSmileys();
 }
 
 //if highlight==TRUE, highlight tab

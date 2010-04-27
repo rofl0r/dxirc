@@ -88,9 +88,9 @@ public:
     const dxHiliteStyle* getHiliteStyles() const { return hilitestyles; }
     void setFont(FXFont* fnt);
     FXFont* getFont() const { return font; }
-    void setUseSmiley(FXbool smiley);
     FXbool getUseSmiley() const { return usesmiley; }
-    void setSmileys(dxSmileyArray nsmileys);
+    void setSmileys(FXbool smiley, dxSmileyArray nsmileys);
+    void removeSmileys();
     virtual void appendText(const FXString &text);
     virtual void appendStyledText(FXString text, FXint style=0);
     virtual void clearText();

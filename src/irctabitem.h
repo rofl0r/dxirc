@@ -133,8 +133,8 @@ class IrcTabItem: public FXTabItem
         void SetColoredNick(FXbool);
         void SetStripColors(FXbool);
         void SetCommandFocus();
-        void SetUseSmiley(FXbool smiley);
-        void SetSmileys(dxSmileyArray nsmileys);
+        void SetSmileys(FXbool smiley, dxSmileyArray nsmileys);
+        void RemoveSmileys();
         void MakeLastRowVisible();
 
         long OnCommandline(FXObject *, FXSelector, void*);

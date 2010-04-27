@@ -207,7 +207,7 @@ dxirc::dxirc(FXApp *app)
 
     UpdateTheme();
     UpdateFont(fontSpec);
-    UpdateTabs();
+    UpdateTabs(useSmileys && (FXint)smileysMap.size());
     UpdateTabPosition();
 
     getAccelTable()->addAccel(MKUINT(KEY_1, ALTMASK), this, FXSEL(SEL_COMMAND, ID_SELECTTAB));
@@ -756,15 +756,25 @@ long dxirc::OnCommandStatus(FXObject*, FXSelector, void*)
 
 long dxirc::OnCommandOptions(FXObject*, FXSelector, void*)
 {
+    FXFontDesc olddescr, newdescr;
+    ircFont->getFontDesc(olddescr);
+    dxStringMap oldsmileysMap = smileysMap;
     ConfigDialog dialog(this);
     if(dialog.execute(PLACEMENT_CURSOR))
     {
+        FXbool recreateSmileys = FALSE;
         ReadConfig();
         if(logging) logviewer->enable();
         else logviewer->disable();
+        ircFont->getFontDesc(newdescr);
+        if(olddescr.encoding!=newdescr.encoding || olddescr.flags!=newdescr.flags ||
+                olddescr.setwidth!=newdescr.setwidth || olddescr.size!=newdescr.size ||
+                olddescr.slant!=newdescr.slant || olddescr.weight!=newdescr.weight)
+            recreateSmileys = TRUE;
+        if(oldsmileysMap!=smileysMap) recreateSmileys = TRUE;
         UpdateTheme();
         UpdateFont();
-        UpdateTabs();
+        UpdateTabs(recreateSmileys);
         UpdateTabPosition();
         for(FXint i = 0; i<servers.no(); i++)
         {
@@ -1158,10 +1168,19 @@ void dxirc::UpdateFont(FXString fnt)
     }
 }
 
-void dxirc::UpdateTabs()
+void dxirc::UpdateTabs(FXbool recreateSmileys)
 {
-    if(useSmileys && (FXint)smileysMap.size())
+    if(recreateSmileys)
+    {
+        for(FXint i = 0; i<tabbook->numChildren(); i+=2)
+        {
+            if(compare(tabbook->childAtIndex(i)->getClassName(), "IrcTabItem") == 0)
+            {
+                static_cast<IrcTabItem*>(tabbook->childAtIndex(i))->RemoveSmileys();
+            }
+        }
         CreateSmileys();
+    }
     for(FXint i = 0; i<tabbook->numChildren(); i+=2)
     {        
         if(compare(tabbook->childAtIndex(i)->getClassName(), "IrcTabItem") == 0)
@@ -1178,8 +1197,7 @@ void dxirc::UpdateTabs()
             irctab->SetIrcFont(ircFont);
             irctab->SetColoredNick(coloredNick);
             irctab->SetStripColors(stripColors);
-            irctab->SetUseSmiley(useSmileys);
-            if(smileys.no()) irctab->SetSmileys(smileys);
+            irctab->SetSmileys(useSmileys, smileys);
         }        
         if(compare(tabbook->childAtIndex(i)->getClassName(), "TetrisTabItem") == 0)
         {
@@ -1263,8 +1281,7 @@ void dxirc::CreateSmileys()
     if((FXint)smileysMap.size() && ircFont)
     {
         StringIt it;
-        FXint i;
-        for(i=0, it=smileysMap.begin(); it!=smileysMap.end(); it++,i++)
+        for(it=smileysMap.begin(); it!=smileysMap.end(); it++)
         {
             dxSmiley smiley;
             smiley.text = (*it).first;
@@ -1429,8 +1446,7 @@ void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString
                 IrcTabItem *tabitem = new IrcTabItem(tabbook, dcc ? dccNick : hostname, dcc ? dccicon : servericon, TAB_BOTTOM, dcc ? DCCCHAT : SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList, coloredNick, stripColors);
                 tabitem->create();
                 tabitem->CreateGeom();
-                if(smileys.no()) tabitem->SetSmileys(smileys);
-                tabitem->SetUseSmiley(useSmileys);
+                tabitem->SetSmileys(useSmileys, smileys);
                 servers[0]->AppendTarget(tabitem);
                 UpdateTabPosition();
                 SortTabs();
@@ -1481,8 +1497,7 @@ void dxirc::ConnectServer(FXString hostname, FXint port, FXString pass, FXString
             IrcTabItem *tabitem = new IrcTabItem(tabbook, dcc ? dccNick : hostname, dcc ? dccicon : servericon, TAB_BOTTOM, dcc ? DCCCHAT : SERVER, servers[0], ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList, coloredNick, stripColors);
             tabitem->create();
             tabitem->CreateGeom();
-            if(smileys.no()) tabitem->SetSmileys(smileys);
-            tabitem->SetUseSmiley(useSmileys);
+            tabitem->SetSmileys(useSmileys, smileys);
             servers[0]->AppendTarget(tabitem);
             UpdateTabPosition();
             SortTabs();
@@ -1690,8 +1705,7 @@ void dxirc::OnIrcNewchannel(IrcSocket *server, IrcEvent *ev)
         server->AppendTarget(tabitem);
         tabitem->create();
         tabitem->CreateGeom();
-        if(smileys.no()) tabitem->SetSmileys(smileys);
-        tabitem->SetUseSmiley(useSmileys);
+        tabitem->SetSmileys(useSmileys, smileys);
         UpdateTabPosition();
         SortTabs();
         SendNewTab(server, ev->param1, GetTabId(server, ev->param1), FALSE, CHANNEL);
@@ -1717,8 +1731,7 @@ void dxirc::OnIrcQuery(IrcSocket *server, IrcEvent *ev)
         server->AppendTarget(tabitem);
         tabitem->create();
         tabitem->CreateGeom();
-        if(smileys.no()) tabitem->SetSmileys(smileys);
-        tabitem->SetUseSmiley(useSmileys);
+        tabitem->SetSmileys(useSmileys, smileys);
         UpdateTabPosition();
         SortTabs();
         SendNewTab(server, ev->param1, GetTabId(server, ev->param1), FALSE, QUERY);
@@ -3911,8 +3924,7 @@ int dxirc::OnLuaCreateTab(lua_State *lua)
     IrcTabItem *tabitem = new IrcTabItem(pThis->tabbook, name, NULL, TAB_BOTTOM, OTHER, NULL, pThis->ownServerWindow, pThis->usersShown, FALSE, pThis->commandsList, pThis->logPath, pThis->maxAway, pThis->colors, pThis->nickCompletionChar, pThis->ircFont, pThis->sameCmd, pThis->sameList, pThis->coloredNick, pThis->stripColors);
     tabitem->create();
     tabitem->CreateGeom();
-    if(pThis->smileys.no()) tabitem->SetSmileys(pThis->smileys);
-    tabitem->SetUseSmiley(pThis->useSmileys);
+    tabitem->SetSmileys(pThis->useSmileys, pThis->smileys);
     pThis->UpdateTabPosition();
     pThis->SortTabs();
     pThis->UpdateMenus();
