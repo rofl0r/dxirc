@@ -185,6 +185,7 @@ protected:
     void setSelection(FXint index, FXint pos);
     void setSelection(FXint startindex, FXint startpos, FXint endindex, FXint endpos);
     void killSelection();
+    FXbool isSelection(FXint index, FXint pos) const;
     void updateRange(FXint beg,FXint end) const;
     void setCursor(FXuint index);
 private:

@@ -390,6 +390,7 @@ void dxText::removeSmiley(FXString* text, FXString* style)
                     style->replace(pos, 0);
                 }
             }
+            s=prev=next=0;
             pos++;
         }
     }
@@ -422,9 +423,18 @@ FXString dxText::clearSmiley(FXint index, FXint pos, FXint len)
                 else next|=style.at(spos+1);
                 if(prev!=next) stylenum=next;
                 else stylenum=prev;
-                text.replace(spos, 1, smileys[s].text);
-                style.replace(spos, 1, stylenum, smileys[s].text.length());
+                if(smileys.no() && s<(FXuint)smileys.no())
+                {
+                    text.replace(spos, 1, smileys[s].text);
+                    style.replace(spos, 1, stylenum, smileys[s].text.length());
+                }
+                else
+                {
+                    text.replace(spos, ' ');
+                    style.replace(spos, 0);
+                }
             }
+            s=prev=next=0;
             spos++;
         }
     }
@@ -587,6 +597,23 @@ void dxText::killSelection()
     selstartpos = 0;
     selendindex = 0;
     selendpos = 0;
+}
+
+//Check index and pos in selection range
+FXbool dxText::isSelection(FXint index, FXint pos) const
+{
+    if(!selstartindex&&!selendindex&&!selstartpos&&!selendpos) return FALSE;
+    if(selstartindex==index)
+    {
+        if(selendindex>index && pos>=selstartpos) return TRUE;
+        if(index==selendindex && selstartpos<=pos && pos<=selendpos) return TRUE;
+    }
+    if(selstartindex<index)
+    {
+        if(selendindex>index) return TRUE;
+        if(index==selendindex && pos<=selendpos) return TRUE;
+    }
+    return FALSE;
 }
 
 // Repaint text range; beg and end are index
@@ -779,6 +806,8 @@ void dxText::drawTextLine(FXDCWindow& dc, FXint line, FXint left, FXint right) c
             if(curstyle&STYLE_SMILEY)
             {
                 style = curstyle&=~STYLE_SMILEY;
+                if(isSelection(index,ep))
+                    fillBufferRect(dc,edge+x,y,numberSmiley*smileyWidth(style),h,STYLE_SELECTED);
                 for(i=0; i<numberSmiley; i++)
                 {
                     drawIcon(dc, edge+x+i*smileyWidth(style), y, style);
@@ -809,6 +838,8 @@ void dxText::drawTextLine(FXDCWindow& dc, FXint line, FXint left, FXint right) c
     if(curstyle&STYLE_SMILEY)
     {
         style = curstyle&=~STYLE_SMILEY;
+        if(isSelection(index,ep))
+            fillBufferRect(dc,edge+x,y,numberSmiley*smileyWidth(style),h,STYLE_SELECTED);
         for(i=0; i<numberSmiley; i++)
         {
             drawIcon(dc, edge+x+i*smileyWidth(style), y, style);
@@ -887,16 +918,17 @@ FXuint dxText::styleOf(FXint line, FXint pos) const
     // Style for smiley icon
     if(ch == '\023') return (FXuchar)styles[line][pos]|STYLE_SMILEY;
     // Selected part of text
-    if(selstartindex==line)
-    {
-        if(selendindex>line && pos>=selstartpos) s|=STYLE_SELECTED;
-        if(line==selendindex && selstartpos<=pos && pos<selendpos) s|=STYLE_SELECTED;
-    }
-    if(selstartindex<line)
-    {
-        if(selendindex>line) s|=STYLE_SELECTED;
-        if(line==selendindex && pos<selendpos) s|=STYLE_SELECTED;
-    }    
+    if(isSelection(line,pos)) s|=STYLE_SELECTED;
+//    if(selstartindex==line)
+//    {
+//        if(selendindex>line && pos>=selstartpos) s|=STYLE_SELECTED;
+//        if(line==selendindex && selstartpos<=pos && pos<selendpos) s|=STYLE_SELECTED;
+//    }
+//    if(selstartindex<line)
+//    {
+//        if(selendindex>line) s|=STYLE_SELECTED;
+//        if(line==selendindex && pos<selendpos) s|=STYLE_SELECTED;
+//    }
     // Get value from style buffer
     if(styles.no()) s|=(FXuchar)styles[line][pos];
     // Tabs are just fill
