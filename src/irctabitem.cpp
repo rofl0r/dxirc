@@ -563,7 +563,7 @@ void IrcTabItem::AppendIrcStyledText(FXString styled, FXint stylenum, FXTime tim
     this->LogLine(StripColors(styled, TRUE), time);
 }
 
-static FXbool Badchar(FXchar c)
+static FXbool isBadchar(FXchar c)
 {
     switch(c) {
         case ' ':
@@ -589,7 +589,7 @@ static FXbool Badchar(FXchar c)
 }
 
 // checks is char nick/word delimiter
-static FXbool Delimiter(FXchar c)
+static FXbool isDelimiter(FXchar c)
 {
     switch(c) {
         case ' ':
@@ -597,13 +597,17 @@ static FXbool Delimiter(FXchar c)
         case ',':
         case '/':
         case '\\':
+        case '`':
+        case '\'':
         case '!':
         case '(':
         case ')':
         case '{':
         case '}':
+        case '|':
         case '[':
         case ']':
+        case '\"':
         case ':':
         case ';':
         case '<':
@@ -637,7 +641,7 @@ void IrcTabItem::AppendLinkText(const FXString &txt, FXint stylenum)
             }
             for(FXint j=i; j<length; j++)
             {
-                if(Badchar(txt[j]))
+                if(isBadchar(txt[j]))
                 {
                     break;
                 }
@@ -656,7 +660,7 @@ void IrcTabItem::AppendLinkText(const FXString &txt, FXint stylenum)
             }
             for(FXint j=i; j<length; j++)
             {
-                if(Badchar(txt[j]))
+                if(isBadchar(txt[j]))
                 {
                     break;
                 }
@@ -675,7 +679,7 @@ void IrcTabItem::AppendLinkText(const FXString &txt, FXint stylenum)
             }
             for(FXint j=i; j<length; j++)
             {
-                if(Badchar(txt[j]))
+                if(isBadchar(txt[j]))
                 {
                     break;
                 }
@@ -694,7 +698,7 @@ void IrcTabItem::AppendLinkText(const FXString &txt, FXint stylenum)
             }
             for(FXint j=i; j<length; j++)
             {
-                if(Badchar(txt[j]))
+                if(isBadchar(txt[j]))
                 {
                     break;
                 }
@@ -4559,8 +4563,8 @@ FXbool IrcTabItem::NeedHighlight(const FXString &msg)
     if(pos==-1) return FALSE;
     FXbool before = TRUE;
     FXbool after = FALSE;
-    if(pos) before = Delimiter(msg[pos-1]);
+    if(pos) before = isDelimiter(msg[pos-1]);
     if(pos+GetNickName().length() == msg.length()) after = TRUE;
-    if(pos+GetNickName().length() < msg.length()) after = Delimiter(msg[pos+GetNickName().length()]);
+    if(pos+GetNickName().length() < msg.length()) after = isDelimiter(msg[pos+GetNickName().length()]);
     return before && after;
 }

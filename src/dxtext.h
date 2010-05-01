@@ -133,7 +133,8 @@ protected:
     enum {
     MOUSE_NONE,                 // No mouse operation
     MOUSE_CHARS,                // Selecting characters
-    MOUSE_WORDS                 // Selecting words
+    MOUSE_WORDS,                // Selecting words
+    MOUSE_LINES                 // Selecting lines
     };
 
     FXStringBuffer contents;                //Text data
@@ -187,7 +188,9 @@ protected:
     void killSelection();
     FXbool isSelection(FXint index, FXint pos) const;
     void updateRange(FXint beg,FXint end) const;
-    void setCursor(FXuint index);
+    void setCursorType(FXuint index);
+    FXint wordStart(FXint index, FXint pos);
+    FXint wordEnd(FXint index, FXint pos);
 private:
     dxText(const dxText&);
     dxText& operator=(const dxText&);

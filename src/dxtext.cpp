@@ -51,6 +51,49 @@
 // Absolute value
 static inline FXint fxabs(FXint a){ return a<0?-a:a; }
 
+// checks is char word delimiter
+// ~.,/\\`'!@#$%^&*()-=+{}|[]\":;<>?
+static FXbool isDelimiter(FXchar c)
+{
+    switch(c) {
+        case ' ':
+        case '~':
+        case '.':
+        case ',':
+        case '/':
+        case '\\':
+        case '`':
+        case '\'':
+        case '!':
+        case '@':
+        case '#':
+        case '$':
+        case '%':
+        case '^':
+        case '&':
+        case '*':
+        case '(':
+        case ')':
+        case '-':
+        case '=':
+        case '+':
+        case '{':
+        case '}':
+        case '|':
+        case '[':
+        case ']':
+        case '\"':
+        case ':':
+        case ';':
+        case '<':
+        case '>':
+        case '?':
+            return TRUE;
+        default:
+            return FALSE;
+    }
+}
+
 FXDEFMAP(dxText) dxTextMap[] = {
     FXMAPFUNC(SEL_PAINT, 0, dxText::onPaint),
     FXMAPFUNC(SEL_MOTION, 0, dxText::onMotion),
@@ -638,7 +681,7 @@ void dxText::updateRange(FXint beg, FXint end) const
 }
 
 //set cursor type, index is of hilitestyle
-void dxText::setCursor(FXuint index)
+void dxText::setCursorType(FXuint index)
 {
     if(hilitestyles && index&STYLE_MASK)
     {
@@ -650,6 +693,37 @@ void dxText::setCursor(FXuint index)
         }
     }
     else setDefaultCursor(getApp()->getDefaultCursor(DEF_TEXT_CURSOR));
+}
+
+//wordstart for position
+FXint dxText::wordStart(FXint index, FXint pos)
+{
+    if(index<0 && index>contents.no()-1) return 0;
+    if(pos<=0) return 0;
+    if(pos>=contents[index].length()) pos=contents[index].length()-1;
+    if(isDelimiter(contents[index][pos])) return pos;
+    while(0<pos)
+    {
+        if(isDelimiter(contents[index][pos-1])) return pos;
+        pos--;
+    }
+    return 0;
+}
+
+//wordend for position
+FXint dxText::wordEnd(FXint index, FXint pos)
+{
+    register FXint length = contents[index].length();
+    if(index<0 && index>contents.no()-1) return 0;
+    if(pos<=0) return 0;
+    if(pos>=length) pos=length-1;
+    if(isDelimiter(contents[index][pos])) return pos;
+    while(pos<length-1)
+    {
+        if(isDelimiter(contents[index][pos+1])) return pos;
+        pos++;
+    }
+    return length-1;
 }
 
 // Get default width
@@ -919,16 +993,6 @@ FXuint dxText::styleOf(FXint line, FXint pos) const
     if(ch == '\023') return (FXuchar)styles[line][pos]|STYLE_SMILEY;
     // Selected part of text
     if(isSelection(line,pos)) s|=STYLE_SELECTED;
-//    if(selstartindex==line)
-//    {
-//        if(selendindex>line && pos>=selstartpos) s|=STYLE_SELECTED;
-//        if(line==selendindex && selstartpos<=pos && pos<selendpos) s|=STYLE_SELECTED;
-//    }
-//    if(selstartindex<line)
-//    {
-//        if(selendindex>line) s|=STYLE_SELECTED;
-//        if(line==selendindex && pos<selendpos) s|=STYLE_SELECTED;
-//    }
     // Get value from style buffer
     if(styles.no()) s|=(FXuchar)styles[line][pos];
     // Tabs are just fill
@@ -1116,7 +1180,7 @@ long dxText::onMotion(FXObject*,FXSelector,void* ptr)
 {
     FXEvent* event=(FXEvent*)ptr;
     FXuint index=styleOfXY(event->win_x, event->win_y);
-    setCursor(index);
+    setCursorType(index);
     if(mode==MOUSE_CHARS)
     {
         if(startAutoScroll(event,FALSE)) return 1;
@@ -1170,6 +1234,40 @@ long dxText::onLeftBtnPress(FXObject*, FXSelector, void* ptr)
             }
             else
             {
+                //select characters
+                if(event->click_count==1)
+                {
+                    if(event->state&SHIFTMASK)
+                    {
+                        setSelection(line, getPosOfXY(event->win_x, event->win_y));
+                    }
+                    else
+                    {
+                        killSelection();
+                        cursorindex = line;
+                        cursorpos = getPosOfXY(event->win_x, event->win_y);
+                    }
+                    mode = MOUSE_CHARS;
+                }
+                //select words
+                else if(event->click_count==2)
+                {
+                    setSelection(line,wordStart(line,getPosOfXY(event->win_x, event->win_y)),line,wordEnd(line,getPosOfXY(event->win_x, event->win_y)));
+                    mode = MOUSE_WORDS;
+                }
+                //select lines
+                else
+                {
+                    setSelection(line,0,line,contents[line].length()-1);
+                    mode = MOUSE_LINES;
+                }
+            }
+        }
+        else
+        {
+            //select characters
+            if(event->click_count==1)
+            {
                 if(event->state&SHIFTMASK)
                 {
                     setSelection(line, getPosOfXY(event->win_x, event->win_y));
@@ -1182,20 +1280,18 @@ long dxText::onLeftBtnPress(FXObject*, FXSelector, void* ptr)
                 }
                 mode = MOUSE_CHARS;
             }
-        }
-        else
-        {
-            if(event->state&SHIFTMASK)
+            //select words
+            else if(event->click_count==2)
             {
-                setSelection(line, getPosOfXY(event->win_x, event->win_y));
+                setSelection(line,wordStart(line,getPosOfXY(event->win_x, event->win_y)),line,wordEnd(line,getPosOfXY(event->win_x, event->win_y)));
+                mode = MOUSE_WORDS;
             }
+            //select lines
             else
             {
-                killSelection();
-                cursorindex = line;
-                cursorpos = getPosOfXY(event->win_x, event->win_y);
+                setSelection(line,0,line,contents[line].length()-1);
+                mode = MOUSE_LINES;
             }
-            mode = MOUSE_CHARS;
         }
         return 1;
     }
@@ -1451,7 +1547,7 @@ void dxText::makeLastRowVisible(FXbool force)
         if(button&LEFTBUTTONMASK || button&MIDDLEBUTTONMASK || button&RIGHTBUTTONMASK) return; //we don't need change cursor for button pressed
         if(x>=0 && x<=width && y>=0 && y<=height)
         {
-            setCursor(styleOfXY(x,y));
+            setCursorType(styleOfXY(x,y));
         }
     }
 }
