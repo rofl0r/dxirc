@@ -1808,6 +1808,35 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
                         else return server->SendMe(getText(), params);
                     }
                 }
+                else if(type == QUERY)
+                {
+                    if(params.empty())
+                    {
+                        AppendIrcStyledText(_("/me <message>, sends the action to the current query."), 4, FXSystem::now());
+                        return FALSE;
+                    }
+                    else
+                    {
+                        AppendIrcStyledText(GetNickName()+" "+params, 2, FXSystem::now());
+                        IrcEvent ev;
+                        ev.eventType = IRC_ACTION;
+                        ev.param1 = GetNickName();
+                        ev.param2 = getText();
+                        ev.param3 = params;
+                        parent->getParent()->getParent()->handle(server, FXSEL(SEL_COMMAND, IrcSocket::ID_SERVER), &ev);
+                        if(params.length() > maxLen-19-getText().length())
+                        {
+                            dxStringArray messages = CutText(params, maxLen-19-getText().length());
+                            FXbool result = TRUE;
+                            for(FXint i=0; i<messages.no(); i++)
+                            {
+                                result = server->SendMe(getText(), messages[i]) &result;
+                            }
+                            return result;
+                        }
+                        else return server->SendMe(getText(), params);
+                    }
+                }
                 else
                 {
                     if(!params.after(' ').empty())
