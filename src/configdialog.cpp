@@ -343,6 +343,9 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
 
     targetDccTimeout.connect(dccTimeout);
 
+    targetAutoDccChat.connect(autoDccChat);
+    targetAutoDccFile.connect(autoDccFile);
+
     targetSound.connect(sounds);
     targetSound.setTarget(this);
     targetSound.setSelector(ID_SOUNDS);
@@ -615,6 +618,8 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     FXHorizontalFrame *timeframe = new FXHorizontalFrame(dccpane, LAYOUT_FILL_X);
     new FXLabel(timeframe, _("Time for waiting for connection in seconds"), NULL, LAYOUT_LEFT);
     new FXSpinner(timeframe, 4, &targetDccTimeout, FXDataTarget::ID_VALUE, SPIN_NOMAX|SPIN_CYCLIC|FRAME_SUNKEN|FRAME_THICK);
+    new FXCheckButton(dccpane, _("Automatically connect offered chat"), &targetAutoDccChat, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
+    new FXCheckButton(dccpane, _("Automatically receive offered file"), &targetAutoDccFile, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
 
     FXVerticalFrame *soundpane = new FXVerticalFrame(switcher, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     new FXLabel(soundpane, _("Sound settings"), NULL, LAYOUT_LEFT);
@@ -2248,6 +2253,8 @@ void ConfigDialog::ReadConfig()
     if(logging && !FXStat::exists(logPath)) logging = FALSE;
     dccPath = set.readStringEntry("SETTINGS", "dccPath");
     if(!FXStat::exists(dccPath)) dccPath = FXSystem::getHomeDirectory();
+    autoDccChat = set.readBoolEntry("SETTINGS", "autoDccChat", FALSE);
+    autoDccFile = set.readBoolEntry("SETTINGS", "autoDccFile", FALSE);
     FXint usersNum = set.readIntEntry("USERS", "number", 0);
     if(usersNum)
     {
@@ -2453,6 +2460,8 @@ void ConfigDialog::SaveConfig()
     set.writeIntEntry("SETTINGS", "dccPortD", dccPortD);
     set.writeIntEntry("SETTINGS", "dccPortH", dccPortH);
     set.writeIntEntry("SETTINGS", "dccTimeout", dccTimeout);
+    set.writeBoolEntry("SETTINGS", "autoDccChat", autoDccChat);
+    set.writeBoolEntry("SETTINGS", "autoDccFile", autoDccFile);
     set.writeBoolEntry("SETTINGS", "sounds", sounds);
     set.writeBoolEntry("SETTINGS", "soundConnect", soundConnect);
     set.writeBoolEntry("SETTINGS", "soundDisconnect", soundDisconnect);

@@ -490,7 +490,7 @@ void dxText::extractText(FXString& text, FXint startindex, FXint startpos, FXint
     text.clear();
     if(startindex==endindex)
     {
-        text = clearSmiley(startindex, startpos, endpos-startpos);
+        text = clearSmiley(startindex, startpos, endpos-startpos+1);
         return;
     }
     else
@@ -498,7 +498,7 @@ void dxText::extractText(FXString& text, FXint startindex, FXint startpos, FXint
         text += clearSmiley(startindex, startpos, contents[startindex].length()-startpos);
         for(FXint i=startindex+1; i<endindex; i++)
             text += clearSmiley(i, 0, contents[i].length());
-        text += clearSmiley(endindex, 0, endpos);
+        text += clearSmiley(endindex, 0, endpos+1);
     }
 }
 

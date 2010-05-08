@@ -424,6 +424,8 @@ void dxirc::ReadConfig()
     if(logging && !FXStat::exists(logPath)) logging = FALSE;
     dccPath = set.readStringEntry("SETTINGS", "dccPath");
     if(!FXStat::exists(dccPath)) dccPath = FXSystem::getHomeDirectory();
+    autoDccChat = set.readBoolEntry("SETTINGS", "autoDccChat", FALSE);
+    autoDccFile = set.readBoolEntry("SETTINGS", "autoDccFile", FALSE);
     FXint usersNum = set.readIntEntry("USERS", "number", 0);
     usersList.clear();
     if(usersNum)
@@ -632,6 +634,8 @@ void dxirc::SaveConfig()
     set.writeIntEntry("SETTINGS", "dccPortD", dccPortD);
     set.writeIntEntry("SETTINGS", "dccPortH", dccPortH);
     set.writeIntEntry("SETTINGS", "dccTimeout", dccTimeout);
+    set.writeBoolEntry("SETTINGS", "autoDccChat", autoDccChat);
+    set.writeBoolEntry("SETTINGS", "autoDccFile", autoDccFile);
     set.writeBoolEntry("SETTINGS", "sounds", sounds);
     set.writeBoolEntry("SETTINGS", "soundConnect", soundConnect);
     set.writeBoolEntry("SETTINGS", "soundDisconnect", soundDisconnect);
@@ -1949,7 +1953,9 @@ void dxirc::OnIrcQuit(IrcSocket *server, IrcEvent *ev)
 //handle IrcEvent IRC_DCCCHAT
 void dxirc::OnIrcDccChat(IrcSocket *server, IrcEvent *ev)
 {
-    if(FXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("%s offers DCC Chat on %s port %s.\n Do you want connect?"), ev->param1.text(), ev->param2.text(), ev->param3.text()) == 1)
+    if(autoDccChat)
+        ConnectServer(ev->param2, FXIntVal(ev->param3), "", server->GetNickName(), "", "", "", FALSE, DCC_CHATIN, ev->param1);
+    if(!autoDccChat && FXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("%s offers DCC Chat on %s port %s.\n Do you want connect?"), ev->param1.text(), ev->param2.text(), ev->param3.text()) == 1)
     {
         ConnectServer(ev->param2, FXIntVal(ev->param3), "", server->GetNickName(), "", "", "", FALSE, DCC_CHATIN, ev->param1);
     }
@@ -1964,7 +1970,32 @@ void dxirc::OnIrcDccServer(IrcSocket *server, IrcEvent *ev)
 //handle IrcEvent IRC_DCCIN
 void dxirc::OnIrcDccIn(IrcSocket *server, IrcEvent *ev)
 {
-    if(FXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("%s offers file %s with size %s over DCC .\n Do you want connect?"), ev->param1.text(), ev->param3.text(), utils::GetFileSize(ev->param4).text()) == 1)
+    if(autoDccFile)
+    {
+        DccFile dcc;
+        dcc.path = GetUniqueName(dccPath, FXPath::stripExtension(ev->param3), FXPath::extension(ev->param3));
+        dcc.previousPostion = 0;
+        dcc.currentPosition = 0;
+        dcc.size = FXLongVal(ev->param4);
+        dcc.type = DCC_IN;
+        dcc.canceled = FALSE;
+        dcc.finishedPosition = 0;
+        dcc.token = -1;
+        dcc.ip = ev->param2.before('@');
+        dcc.port = FXIntVal(ev->param2.after('@'));
+        for(FXint i=0; i<dccfilesList.no(); i++)
+        {
+            if(dcc.path == dccfilesList[i].path && (dccfilesList[i].type==DCC_IN || dccfilesList[i].type==DCC_PIN))
+            {
+                dccfilesList.erase(i);
+                break;
+            }
+        }
+        ConnectServer(ev->param2.before('@'), FXIntVal(ev->param2.after('@')), "", server->GetNickName(), "", "", "", FALSE, DCC_IN, ev->param1, NULL, dcc);
+        dccfilesList.append(dcc);
+        OnCommandTransfers(NULL, 0, NULL);
+    }
+    if(!autoDccFile && FXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("%s offers file %s with size %s over DCC .\n Do you want connect?"), ev->param1.text(), ev->param3.text(), utils::GetFileSize(ev->param4).text()) == 1)
     {
         FXFileDialog dialog(this, _("Save file"));
         dialog.setFilename(dccPath+PATHSEPSTRING+ev->param3);
@@ -2070,7 +2101,30 @@ void dxirc::OnIrcDccMyToken(IrcSocket *server, IrcEvent *ev)
 //handle IrcEvent IRC_DCCTOKEN
 void dxirc::OnIrcDccToken(IrcSocket *server, IrcEvent *ev)
 {
-    if(FXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("%s offers file %s with size %s over DCC passive.\n Do you want accept?"), ev->param1.text(), ev->param2.text(), utils::GetFileSize(ev->param3).text()) == 1)
+    if(autoDccFile)
+    {
+        DccFile dcc;
+        dcc.path = GetUniqueName(dccPath, FXPath::stripExtension(ev->param2), FXPath::extension(ev->param2));
+        dcc.previousPostion = 0;
+        dcc.currentPosition = 0;
+        dcc.size = FXLongVal(ev->param3);
+        dcc.type = DCC_PIN;
+        dcc.canceled = FALSE;
+        dcc.finishedPosition = 0;
+        dcc.token = FXIntVal(ev->param4);
+        for(FXint i=0; i<dccfilesList.no(); i++)
+        {
+            if(dcc.path == dccfilesList[i].path && (dccfilesList[i].type==DCC_IN || dccfilesList[i].type==DCC_PIN))
+            {
+                dccfilesList.erase(i);
+                break;
+            }
+        }
+        ConnectServer(server->GetLocalIP(), 0, "", server->GetNickName(), "", "", "", FALSE, DCC_PIN, ev->param1, server, dcc);
+        dccfilesList.append(dcc);
+        OnCommandTransfers(NULL, 0, NULL);
+    }
+    if(!autoDccFile && FXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("%s offers file %s with size %s over DCC passive.\n Do you want accept?"), ev->param1.text(), ev->param2.text(), utils::GetFileSize(ev->param3).text()) == 1)
     {
         FXFileDialog dialog(this, _("Save file"));
         dialog.setFilename(dccPath+PATHSEPSTRING+ev->param2);
@@ -3440,6 +3494,22 @@ FXbool dxirc::HasAllCommand()
         }
     }
     return FALSE;
+}
+
+//return unique filename
+//usefull mainly for autoDccFile
+FXString dxirc::GetUniqueName(FXString path, FXString name, FXString extension)
+{
+    if(extension.empty())
+    {
+        if(!FXStat::exists(path+PATHSEPSTRING+name)) return path+PATHSEPSTRING+name;
+        else return path+PATHSEPSTRING+name+"-"+FXSystem::time("%Y-%m-%d-%H-%M-%S", FXSystem::now());
+    }
+    else
+    {
+        if(!FXStat::exists(path+PATHSEPSTRING+name+"."+extension)) return path+PATHSEPSTRING+name+"."+extension;
+        else return path+PATHSEPSTRING+name+"-"+FXSystem::time("%Y-%m-%d-%H-%M-%S", FXSystem::now())+"."+extension;
+    }
 }
 
 int dxirc::OnLuaAddCommand(lua_State *lua)

@@ -210,6 +210,7 @@ class ConfigDialog: public FXDialogBox
         FXbool logging, serverWindow, sameCmd, sameList, useTray, coloredNick, closeToTray, reconnect;
         FXbool usersShown, statusShown, autoload, sounds, soundConnect, soundDisconnect, soundMessage;
         FXbool stripColors, useSmileys, showImportwarning, showWarning;
+        FXbool autoDccChat, autoDccFile;
         dxServerInfoArray serverList;
         dxIgnoreUserArray usersList, friendsList;
         FXToolBar *iconsBar;
@@ -231,7 +232,7 @@ class ConfigDialog: public FXDialogBox
         FXDataTarget targetDccIP1, targetDccIP2, targetDccIP3, targetDccIP4, targetDccPortD, targetDccPortH, targetDccTimeout;
         FXDataTarget targetSound, targetSoundConnect, targetSoundDisconnect, targetSoundMessage;
         FXDataTarget targetPathConnect, targetPathDisconnect, targetPathMessage, targetStripColors;
-        FXDataTarget targetUseSmileys;
+        FXDataTarget targetUseSmileys, targetAutoDccChat, targetAutoDccFile;
         FXButton *selectConnect, *selectDisconnect, *selectMessage, *playConnect, *playDisconnect, *playMessage;
         FXString pathConnect, pathDisconnect, pathMessage;
         FXLabel *labelSelected, *labelNocurrent, *labelTip, *label;

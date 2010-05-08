@@ -145,6 +145,7 @@ class dxirc: public FXMainWindow
         FXbool usersShown, statusShown, logging, ownServerWindow, tempServerWindow, sameCmd;
         FXbool sameList, useTray, coloredNick, closeToTray, reconnect, autoload;
         FXbool sounds, soundConnect, soundDisconnect, soundMessage, stripColors, useSmileys;
+        FXbool autoDccChat, autoDccFile;
         IrcColor colors;
         FXString commandsList, themesList, themePath, logPath, autoloadPath;
         FXint maxAway, numberAttempt, delayAttempt, tabPosition, dccPortD, dccPortH, dccTimeout;
@@ -203,6 +204,7 @@ class dxirc: public FXMainWindow
         void AutoloadScripts();
         void SendNewTab(IrcSocket*, const FXString&, FXint, FXbool, TYPE);
         void CreateSmileys();
+        FXString GetUniqueName(FXString path, FXString name, FXString extension);
 
     protected:
         FXMenuBar *menubar;
