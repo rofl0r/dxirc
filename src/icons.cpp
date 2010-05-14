@@ -29,7 +29,7 @@ FXIcon *bigicon, *smallicon;
 FXIcon *irc_owner_icon, *irc_admin_icon, *irc_op_icon, *irc_voice_icon, *irc_halfop_icon, *irc_normal_icon;
 FXIcon *irc_away_owner_icon, *irc_away_admin_icon, *irc_away_op_icon, *irc_away_voice_icon, *irc_away_halfop_icon, *irc_away_normal_icon;
 FXIcon *serverlisticon, *connecticon, *disconnecticon, *quiticon, *closeicon, *optionicon, *helpicon;
-FXIcon *servericon, *channelicon, *queryicon, *clearicon, *flagicon, *trayicon, *newm, *unewm, *chnewm, *foldericon, *ofoldericon, *fileicon;
+FXIcon *servericon, *channelicon, *queryicon, *clearicon, *flagicon, *trayicon, *newm, *newfile, *unewm, *chnewm, *foldericon, *ofoldericon, *fileicon;
 FXIcon *cancelicon, *finishicon, *downicon, *upicon;
 FXIcon *dccicon, *dccnewm, *logsicon, *scripticon, *transfericon, *playicon;
 FXColor menuColor, textBackColor;
@@ -551,6 +551,7 @@ FXbool MakeAllIcons(FXApp *app, const FXString &iniFile, const FXString &datadir
     success = ((flagicon = MakeIcon(app, flagpath, "cz.png", TRUE)) != NULL) &success;
     success = ((trayicon = MakeIcon(app, mainpath, "small_dxirc.png")) != NULL) &success;
     success = ((newm = MakeIcon(app, mainpath, "newm.png")) != NULL) &success;
+    success = ((newfile = MakeIcon(app, mainpath, "newfile.png")) != NULL) &success;
     success = ((unewm = MakeIcon(app, mainpath, "unewm.png", TRUE)) != NULL) &success;
     success = ((chnewm = MakeIcon(app, mainpath, "chnewm.png", TRUE)) != NULL) &success;
     success = ((foldericon = MakeIcon(app, mainpath, "folder.png", TRUE)) != NULL) &success;

@@ -27,6 +27,8 @@
 #ifdef HAVE_OPENSSL
 #include <openssl/err.h>
 #include <openssl/rand.h>
+#include <fstream>
+#include <ios>
 #endif
 
 #define ETIMEOUT 666 //timeout for event fire
@@ -264,7 +266,16 @@ FXint IrcSocket::Connect()
         application->addTimeout(this, ID_ETIME, ETIMEOUT);
         return -1;
     }
-    if(dccType == DCC_IN) receivedFile.open(dccFile.path.text(), std::ios_base::out|std::ios_base::binary);
+    if(dccType == DCC_IN)
+    {
+        
+        if(dccFile.currentPosition)
+        {
+            receivedFile.open(FXString(dccFile.path+".part").text(), std::ios_base::binary|std::ios_base::ate|std::ios_base::app);
+        }
+        else
+            receivedFile.open(FXString(dccFile.path+".part").text(), std::ios_base::binary);
+    }
     serverSock.sin_family = AF_INET;
     serverSock.sin_port = htons(serverPort);
     memcpy(&(serverSock.sin_addr), host->h_addr, host->h_length);
@@ -300,7 +311,8 @@ FXint IrcSocket::Connect()
     if(dccType == DCC_IN) application->addTimeout(this, ID_PTIME, 1000);
     if(dccType == DCC_POUT)
     {
-        sentFile.open(dccFile.path.text(), std::ios_base::in|std::ios_base::binary);
+        sentFile.open(dccFile.path.text(), std::ios_base::binary);
+        if(dccFile.currentPosition) sentFile.seekg(dccFile.currentPosition);
         SendFile();
         application->addTimeout(this, ID_PTIME, 1000);
     }
@@ -632,13 +644,14 @@ FXint IrcSocket::Listen()
     application->removeTimeout(this, ID_CTIME);
     if(dccType == DCC_OUT)
     {
-        sentFile.open(dccFile.path.text(), std::ios_base::in|std::ios_base::binary);
+        sentFile.open(dccFile.path.text(), std::ios_base::binary);
+        if(dccFile.currentPosition) sentFile.seekg(dccFile.currentPosition);
         SendFile();
         application->addTimeout(this, ID_PTIME, 1000);
     }
     if(dccType == DCC_PIN)
     {
-        receivedFile.open(dccFile.path.text(), std::ios_base::out|std::ios_base::binary);
+        receivedFile.open(FXString(dccFile.path+".part").text(), std::ios_base::binary);
         application->addTimeout(this, ID_PTIME, 1000);
     }
     application->addTimeout(this, ID_ETIME, ETIMEOUT);
@@ -711,7 +724,7 @@ void IrcSocket::CloseConnection(FXbool disableReconnect)
     }
     if(dccType == DCC_IN)
     {
-        SendEvent(IRC_DISCONNECT, FXStringFormat(_("%s closed DCC file %s connection %s-%d"), dccNick.text(), dccFile.path.text(), serverName.text(), serverPort));
+        SendEvent(IRC_DISCONNECT, FXStringFormat(_("%s closed DCC file %s connection %s-%d"), dccFile.nick.text(), dccFile.path.text(), serverName.text(), serverPort));
         return;
     }
     if(reconnect && attempts < numberAttempt && !disableReconnect)
@@ -735,6 +748,8 @@ void IrcSocket::CloseDccfileConnection(DccFile file)
             if(dccFile.currentPosition < dccFile.size)
                 dccFile.canceled = TRUE;
             receivedFile.close();
+            if(dccFile.currentPosition >= dccFile.size)
+                FXFile::rename(FXString(dccFile.path+".part"), dccFile.path);
         }
         if(dccType == DCC_OUT)
         {
@@ -747,6 +762,8 @@ void IrcSocket::CloseDccfileConnection(DccFile file)
             if(dccFile.finishedPosition < dccFile.size)
                 dccFile.canceled = TRUE;
             receivedFile.close();
+            if(dccFile.finishedPosition >= dccFile.size)
+                FXFile::rename(FXString(dccFile.path+".part"), dccFile.path);
         }
         if(dccType == DCC_POUT)
         {
@@ -757,6 +774,27 @@ void IrcSocket::CloseDccfileConnection(DccFile file)
         SendEvent(IRC_DCCPOSITION, dccFile);
         CloseConnection(TRUE);
     }
+}
+
+//change position in file mainly for resumed file
+void IrcSocket::SetCurrentPostion(FXulong position)
+{
+    dccFile.currentPosition = position;
+    dccFile.previousPostion = position;
+    dccFile.finishedPosition = position;
+}
+
+//check dccfile for resume
+FXbool IrcSocket::IsForResume(const FXString& nick, const FXString& name, FXint port)
+{
+    return dccFile.nick == nick && FXPath::name(dccFile.path) == name
+                && dccFile.port == port;
+}
+
+//check dccfile for resume
+FXbool IrcSocket::IsForResume(FXint token)
+{
+    return dccFile.token == token;
 }
 
 void IrcSocket::ReadFileData()
@@ -780,6 +818,7 @@ void IrcSocket::ReadFileData()
             if(dccFile.currentPosition >= dccFile.size)
             {
                 receivedFile.close();
+                FXFile::rename(FXString(dccFile.path+".part"), dccFile.path);
                 CloseConnection(TRUE);
             }
         }
@@ -822,6 +861,7 @@ void IrcSocket::ReadFileData()
         if(dccFile.currentPosition >= dccFile.size)
         {
             receivedFile.close();
+            FXFile::rename(FXString(dccFile.path+".part"), dccFile.path);
             CloseConnection(TRUE);
         }
     }
@@ -1679,6 +1719,26 @@ void IrcSocket::Ctcp(const FXString &from, const FXString &params)
             else
                 SendEvent(IRC_DCCIN, nick, BinaryIPToString(utils::GetParam(ctcpRest, 3, FALSE))+"@"+utils::GetParam(ctcpRest, 4, FALSE), utils::GetParam(ctcpRest, 2, FALSE), utils::GetParam(ctcpRest, 5, FALSE));
         }
+        if(dccCommand == "RESUME")
+        {
+            // 2-filename,3-port,4-position,5-token
+            if(IsUserIgnored(nick, from.after('!').before('@'), from.after('@'), to))
+                return;
+            if(utils::GetParam(ctcpRest, 4, FALSE) != utils::GetParam(ctcpRest, 5, FALSE)) //passive send
+                SendEvent(IRC_DCCPRESUME, utils::GetParam(ctcpRest, 5, FALSE), utils::GetParam(ctcpRest, 4, FALSE));
+            else
+                SendEvent(IRC_DCCRESUME, nick, utils::GetParam(ctcpRest, 2, FALSE), utils::GetParam(ctcpRest, 3, FALSE), utils::GetParam(ctcpRest, 4, FALSE));
+        }
+        if(dccCommand == "ACCEPT")
+        {
+            // 2-filename,3-port,4-position,5-token
+            if(IsUserIgnored(nick, from.after('!').before('@'), from.after('@'), to))
+                return;
+            if(utils::GetParam(ctcpRest, 4, FALSE) != utils::GetParam(ctcpRest, 5, FALSE)) //passive send
+                SendEvent(IRC_DCCPACCEPT, utils::GetParam(ctcpRest, 5, FALSE), utils::GetParam(ctcpRest, 4, FALSE));
+            else
+                SendEvent(IRC_DCCACCEPT, nick, utils::GetParam(ctcpRest, 2, FALSE), utils::GetParam(ctcpRest, 3, FALSE), utils::GetParam(ctcpRest, 4, FALSE));
+        }
     }
     else if(ctcpCommand == "USERINFO")
     {
@@ -2501,7 +2561,7 @@ void IrcSocket::RemoveNick(const FXString &nick)
     }
 }
 
-NickInfo IrcSocket::GetNickInfo(const FXString &nick)
+NickInfo IrcSocket::GetNickInfo(const FXString &nick) const
 {
     NickInfo nickInfo;
     for(FXint i=0; i < nicks.no(); i++)
@@ -2515,7 +2575,7 @@ NickInfo IrcSocket::GetNickInfo(const FXString &nick)
     return nickInfo;
 }
 
-FXString IrcSocket::GetBannedNick(const FXString &banmask)
+FXString IrcSocket::GetBannedNick(const FXString &banmask) const
 {
     FXString nick = "";
     FXString banNick = banmask.before('!');
@@ -2610,6 +2670,12 @@ const char* IrcSocket::GetRemoteIP()
     fxmessage("RemoteIP: %s\n", inet_ntoa(serverSock.sin_addr));
 #endif
     return inet_ntoa(serverSock.sin_addr);
+}
+
+//Return IP usefull for DCC (byte order)
+FXuint IrcSocket::GetLocalIPBinary()
+{
+    return StringIPToBinary(GetLocalIP());
 }
 
 FXbool IrcSocket::IsUserIgnored(const FXString &nick, const FXString &user, const FXString &host, const FXString &on)

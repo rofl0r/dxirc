@@ -57,6 +57,7 @@ extern FXIcon *clearicon;
 extern FXIcon *flagicon;
 extern FXIcon *trayicon;
 extern FXIcon *newm;
+extern FXIcon *newfile;
 extern FXIcon *unewm;
 extern FXIcon *chnewm;
 extern FXIcon *foldericon;

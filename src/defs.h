@@ -75,6 +75,10 @@ enum IrcEventType {
     IRC_DCCTOKEN,
     IRC_DCCMYTOKEN,
     IRC_DCCPOSITION,
+    IRC_DCCRESUME,
+    IRC_DCCPRESUME,
+    IRC_DCCACCEPT,
+    IRC_DCCPACCEPT,
     IRC_JOIN,
     IRC_PART,
     IRC_QUIT,
@@ -201,9 +205,10 @@ struct DccFile {
     FXint token; //token passive send
     FXString ip; //ip adrress
     FXint port;
+    FXString nick; //usefull for resume
     bool operator==(const DccFile& file) const
     {
-        return path == file.path && type == file.type && ip == file.ip && port && file.port && token == file.token;
+        return path==file.path && type==file.type && ip==file.ip && port==file.port && token==file.token && nick==file.nick;
     }
 };
 

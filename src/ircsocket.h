@@ -82,13 +82,13 @@ class IrcSocket: public FXObject
         FXbool ClearTarget();
         void ClearAttempts() { attempts = 0; }
         void SetServerName(const FXString &name) { serverName = name; }
-        FXString GetServerName() { return serverName; }
-        FXString GetRealServerName() { return realServerName; }
+        FXString GetServerName() const { return serverName; }
+        FXString GetRealServerName() const { return realServerName; }
         void SetServerPort(FXint port) { serverPort = port; }
-        FXint GetServerPort() { return serverPort; }
+        FXint GetServerPort() const { return serverPort; }
         void SetServerPassword(const FXString &pass) { serverPassword = pass; }
         void SetNickName(const FXString &nick) { nickName = nick; }
-        FXString GetNickName() { return nickName; }
+        FXString GetNickName() const { return nickName; }
         void SetUserName(const FXString &user);
         void SetRealName(const FXString &rname) { realName = rname; }
         void SetStartChannels(const FXString &channels) { startChannels = utils::RemoveSpaces(channels); }
@@ -100,32 +100,34 @@ class IrcSocket: public FXObject
         void SetNumberAttempt(const FXint &na) { numberAttempt = na; }
         void SetDelayAttempt(const FXint &da) { delayAttempt = da; }
         void SetDccType(const DCCTYPE &dt) { dccType = dt; }
-        DCCTYPE GetDccType() { return dccType; }
+        DCCTYPE GetDccType() const { return dccType; }
         void SetDccFile(DccFile file) { dccFile = file; }
+        DccFile GetDccFile() const { return dccFile; }
         FXbool HasDccFile(DccFile file) { return dccFile == file; }
-        FXbool GetConnected() { return connected; }
-        FXbool GetConnecting() { return connecting; }
-        FXbool GetUseSsl() { return useSsl; }
-        FXint GetNickLen() { return nickLen; }
-        FXint GetTopicLen() { return topicLen; }
-        FXint GetKickLen() { return kickLen; }
-        FXint GetAwayLen() { return awayLen; }
-        FXchar GetAdminPrefix() { return adminPrefix; }
-        FXchar GetOwnerPrefix() { return ownerPrefix; }
-        FXchar GetOpPrefix() { return opPrefix; }
-        FXchar GetVoicePrefix() { return voicePrefix; }
-        FXchar GetHalfopPrefix() { return halfopPrefix; }
-        FXString GetChanTypes() { return chanTypes; }
+        FXbool GetConnected() const { return connected; }
+        FXbool GetConnecting() const { return connecting; }
+        FXbool GetUseSsl() const { return useSsl; }
+        FXint GetNickLen() const { return nickLen; }
+        FXint GetTopicLen() const { return topicLen; }
+        FXint GetKickLen() const { return kickLen; }
+        FXint GetAwayLen() const { return awayLen; }
+        FXchar GetAdminPrefix() const { return adminPrefix; }
+        FXchar GetOwnerPrefix() const { return ownerPrefix; }
+        FXchar GetOpPrefix() const { return opPrefix; }
+        FXchar GetVoicePrefix() const { return voicePrefix; }
+        FXchar GetHalfopPrefix() const { return halfopPrefix; }
+        FXString GetChanTypes() const { return chanTypes; }
         void AddIgnoreCommands(const FXString &command);
         void RemoveIgnoreCommands(const FXString &command);
         void AddNick(const FXString &nick, const FXString &user, const FXString &real, const FXString &host, const FXbool &away);
         void AddNick(const FXString &nick, const FXString &user, const FXString &real, const FXString &host);
         void RemoveNick(const FXString &nick);
-        NickInfo GetNickInfo(const FXString &nick);
-        FXString GetBannedNick(const FXString &banmask);
+        NickInfo GetNickInfo(const FXString &nick) const;
+        FXString GetBannedNick(const FXString &banmask) const;
         const char* GetLocalIP();
+        FXuint GetLocalIPBinary();
         const char* GetRemoteIP();
-        FXString GetDccIP() { return dccIP; } //IP address possible usable as routable in DCC
+        FXString GetDccIP() const  { return dccIP; } //IP address possible usable as routable in DCC
         FXbool SendAdmin(const FXString &params);
         FXbool SendAway(const FXString &params);
         FXbool SendBanlist(const FXString &channel);
@@ -159,6 +161,9 @@ class IrcSocket: public FXObject
         FXbool IsUserIgnored(const FXString &nick, const FXString &user, const FXString &host, const FXString &on);
         FXbool IsUserIgnored(const FXString &nick, const FXString &on);
         FXbool IsAway(const FXString &nick);
+        void SetCurrentPostion(FXulong position);
+        FXbool IsForResume(const FXString &nick, const FXString &name, FXint port);
+        FXbool IsForResume(FXint token);
 
         long OnIORead(FXObject*, FXSelector, void*);
         long OnIOWrite(FXObject*, FXSelector, void*);

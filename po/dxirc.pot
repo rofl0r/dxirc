@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-05-09 01:11+0200\n"
+"POT-Creation-Date: 2010-05-14 22:06+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 
 #: src/configdialog.cpp:123 src/configdialog.cpp:380 src/configdialog.cpp:923
 #: src/configdialog.cpp:961 src/configdialog.cpp:1001
-#: src/configdialog.cpp:1307 src/configdialog.cpp:1347 src/dxirc.cpp:1401
+#: src/configdialog.cpp:1307 src/configdialog.cpp:1347 src/dxirc.cpp:1402
 #: src/irctabitem.cpp:59 src/irctabitem.cpp:4279 src/irctabitem.cpp:4300
 #: src/irctabitem.cpp:4325 src/irctabitem.cpp:4348 src/serverdialog.cpp:101
 #: src/serverdialog.cpp:181 src/serverdialog.cpp:268 src/aliasdialog.cpp:53
@@ -28,7 +28,7 @@ msgstr ""
 
 #: src/configdialog.cpp:124 src/configdialog.cpp:924 src/configdialog.cpp:962
 #: src/configdialog.cpp:1002 src/configdialog.cpp:1308
-#: src/configdialog.cpp:1348 src/dxirc.cpp:1313 src/dxirc.cpp:1402
+#: src/configdialog.cpp:1348 src/dxirc.cpp:1314 src/dxirc.cpp:1403
 #: src/irctabitem.cpp:4280 src/irctabitem.cpp:4301 src/irctabitem.cpp:4326
 #: src/irctabitem.cpp:4349 src/serverdialog.cpp:182 src/serverdialog.cpp:269
 #: src/aliasdialog.cpp:85 src/aliasdialog.cpp:128
@@ -477,7 +477,7 @@ msgid "Nick:"
 msgstr ""
 
 #: src/configdialog.cpp:952 src/configdialog.cpp:993 src/configdialog.cpp:1298
-#: src/configdialog.cpp:1339 src/dxirc.cpp:1385 src/serverdialog.cpp:160
+#: src/configdialog.cpp:1339 src/dxirc.cpp:1386 src/serverdialog.cpp:160
 #: src/serverdialog.cpp:244
 msgid "Channel(s):\tChannels need to be comma separated"
 msgstr ""
@@ -668,91 +668,91 @@ msgstr ""
 msgid "&Help"
 msgstr ""
 
-#: src/dxirc.cpp:686 src/dxirc.cpp:1898 src/dxirc.cpp:1935 src/dxirc.cpp:2933
-#: src/dxirc.cpp:3023 src/dxirc.cpp:3073
+#: src/dxirc.cpp:687 src/dxirc.cpp:1921 src/dxirc.cpp:1958 src/dxirc.cpp:3206
+#: src/dxirc.cpp:3296 src/dxirc.cpp:3346
 #, c-format
 msgid "Lua plugin: error calling %s %s"
 msgstr ""
 
-#: src/dxirc.cpp:724
+#: src/dxirc.cpp:725
 msgid "Help"
 msgstr ""
 
-#: src/dxirc.cpp:733 src/logviewer.cpp:71 src/scriptdialog.cpp:77
+#: src/dxirc.cpp:734 src/logviewer.cpp:71 src/scriptdialog.cpp:77
 #: src/scriptdialog.cpp:216 src/dccdialog.cpp:75
 msgid "C&lose"
 msgstr ""
 
-#: src/dxirc.cpp:1301
+#: src/dxirc.cpp:1302
 #, c-format
 msgid "About %s"
 msgstr ""
 
-#: src/dxirc.cpp:1304
+#: src/dxirc.cpp:1305
 msgid ""
 "\n"
 "Copyright (C) 2008~ David Vachulka (david@konstrukce-cad.com)\n"
 msgstr ""
 
-#: src/dxirc.cpp:1305
+#: src/dxirc.cpp:1306
 #, c-format
 msgid ""
 "This software was built with the FOX Toolkit Library version %d.%d.%d "
 "(http://www.fox-toolkit.org)."
 msgstr ""
 
-#: src/dxirc.cpp:1307 src/dxirc.cpp:1310
+#: src/dxirc.cpp:1308 src/dxirc.cpp:1311
 #, c-format
 msgid "This software was built with %s"
 msgstr ""
 
-#: src/dxirc.cpp:1312
+#: src/dxirc.cpp:1313
 msgid "This sofware uses http://www.famfamfam.com/lab/icons/"
 msgstr ""
 
-#: src/dxirc.cpp:1361
+#: src/dxirc.cpp:1362
 msgid "Quick connect"
 msgstr ""
 
-#: src/dxirc.cpp:1366 src/serverdialog.cpp:55 src/serverdialog.cpp:141
+#: src/dxirc.cpp:1367 src/serverdialog.cpp:55 src/serverdialog.cpp:141
 #: src/serverdialog.cpp:223
 msgid "Hostname:"
 msgstr ""
 
-#: src/dxirc.cpp:1370 src/serverdialog.cpp:59 src/serverdialog.cpp:145
+#: src/dxirc.cpp:1371 src/serverdialog.cpp:59 src/serverdialog.cpp:145
 #: src/serverdialog.cpp:227 src/dccdialog.cpp:71
 msgid "Port:"
 msgstr ""
 
-#: src/dxirc.cpp:1375 src/serverdialog.cpp:63 src/serverdialog.cpp:150
+#: src/dxirc.cpp:1376 src/serverdialog.cpp:63 src/serverdialog.cpp:150
 #: src/serverdialog.cpp:232
 msgid "Password:"
 msgstr ""
 
-#: src/dxirc.cpp:1378 src/serverdialog.cpp:67 src/serverdialog.cpp:153
+#: src/dxirc.cpp:1379 src/serverdialog.cpp:67 src/serverdialog.cpp:153
 #: src/serverdialog.cpp:236
 msgid "Nickname:"
 msgstr ""
 
-#: src/dxirc.cpp:1382 src/serverdialog.cpp:71 src/serverdialog.cpp:157
+#: src/dxirc.cpp:1383 src/serverdialog.cpp:71 src/serverdialog.cpp:157
 #: src/serverdialog.cpp:240
 msgid "Realname:"
 msgstr ""
 
-#: src/dxirc.cpp:1390 src/serverdialog.cpp:90 src/serverdialog.cpp:173
+#: src/dxirc.cpp:1391 src/serverdialog.cpp:90 src/serverdialog.cpp:173
 #: src/serverdialog.cpp:258
 msgid "Use SSL:"
 msgstr ""
 
-#: src/dxirc.cpp:1394 src/serverdialog.cpp:82
+#: src/dxirc.cpp:1395 src/serverdialog.cpp:82
 msgid "Commands on connection:"
 msgstr ""
 
-#: src/dxirc.cpp:1545
+#: src/dxirc.cpp:1548
 msgid "Confirm disconnect"
 msgstr ""
 
-#: src/dxirc.cpp:1547
+#: src/dxirc.cpp:1550
 #, c-format
 msgid ""
 "Disconnect server: %s\n"
@@ -760,142 +760,184 @@ msgid ""
 "Nick: %s"
 msgstr ""
 
-#: src/dxirc.cpp:1549
+#: src/dxirc.cpp:1552
 msgid "&No"
 msgstr ""
 
-#: src/dxirc.cpp:1550
+#: src/dxirc.cpp:1553
 msgid "&Yes"
 msgstr ""
 
-#: src/dxirc.cpp:1958 src/dxirc.cpp:1998 src/dxirc.cpp:2127 src/dxirc.cpp:3346
-#: src/logviewer.cpp:462
+#: src/dxirc.cpp:1981 src/dxirc.cpp:2032 src/dxirc.cpp:2058 src/dxirc.cpp:2206
+#: src/dxirc.cpp:2230 src/dxirc.cpp:3619 src/logviewer.cpp:462
 msgid "Question"
 msgstr ""
 
-#: src/dxirc.cpp:1958
+#: src/dxirc.cpp:1981
 #, c-format
 msgid ""
 "%s offers DCC Chat on %s port %s.\n"
 " Do you want connect?"
 msgstr ""
 
-#: src/dxirc.cpp:1998
+#: src/dxirc.cpp:2026 src/dxirc.cpp:2088 src/dxirc.cpp:2200 src/dxirc.cpp:2258
+#: src/dxirc.cpp:2418 src/dxirc.cpp:2443
+#, c-format
+msgid "Receiving \"%s\" from %s"
+msgstr ""
+
+#: src/dxirc.cpp:2032
 #, c-format
 msgid ""
 "%s offers file %s with size %s over DCC .\n"
-" Do you want connect?"
+"File is already partially downloaded.\n"
+"Do you want continue in download?"
 msgstr ""
 
-#: src/dxirc.cpp:2000 src/dxirc.cpp:2129
+#: src/dxirc.cpp:2058
+#, c-format
+msgid ""
+"%s offers file %s with size %s over DCC .\n"
+"Do you want connect?"
+msgstr ""
+
+#: src/dxirc.cpp:2060 src/dxirc.cpp:2232
 msgid "Save file"
 msgstr ""
 
-#: src/dxirc.cpp:2127
+#: src/dxirc.cpp:2206
+#, c-format
+msgid ""
+"%s offers file %s with size %s over DCC passive.\n"
+"File is already partially downloaded.\n"
+"Do you want continue in download?"
+msgstr ""
+
+#: src/dxirc.cpp:2230
 #, c-format
 msgid ""
 "%s offers file %s with size %s over DCC passive.\n"
 " Do you want accept?"
 msgstr ""
 
-#: src/dxirc.cpp:2558
+#: src/dxirc.cpp:2291 src/dxirc.cpp:2306
+#, c-format
+msgid "Download of \"%s\" from %s canceled"
+msgstr ""
+
+#: src/dxirc.cpp:2295
+#, c-format
+msgid "Download of \"%s\" from %s finished"
+msgstr ""
+
+#: src/dxirc.cpp:2316 src/dxirc.cpp:2331
+#, c-format
+msgid "Upload of \"%s\" to %s canceled"
+msgstr ""
+
+#: src/dxirc.cpp:2320
+#, c-format
+msgid "Upload of \"%s\" to %s finished"
+msgstr ""
+
+#: src/dxirc.cpp:2831
 #, c-format
 msgid "New highlighted message on %s"
 msgstr ""
 
-#: src/dxirc.cpp:2559
+#: src/dxirc.cpp:2832
 #, c-format
 msgid "New message on %s"
 msgstr ""
 
-#: src/dxirc.cpp:2582
+#: src/dxirc.cpp:2855
 #, c-format
 msgid "'%s' can't be added to ignored commands"
 msgstr ""
 
-#: src/dxirc.cpp:2591
+#: src/dxirc.cpp:2864
 #, c-format
 msgid "'%s' is already added in ignored commands"
 msgstr ""
 
-#: src/dxirc.cpp:2595
+#: src/dxirc.cpp:2868
 #, c-format
 msgid "'%s' was added to ignored commands"
 msgstr ""
 
-#: src/dxirc.cpp:2622
+#: src/dxirc.cpp:2895
 #, c-format
 msgid "'%s' was removed from ignored commands"
 msgstr ""
 
-#: src/dxirc.cpp:2628
+#: src/dxirc.cpp:2901
 #, c-format
 msgid "'%s' isn't in ignored commands"
 msgstr ""
 
-#: src/dxirc.cpp:2661
+#: src/dxirc.cpp:2934
 #, c-format
 msgid "'%s' was updated in ignored users"
 msgstr ""
 
-#: src/dxirc.cpp:2672 src/dxirc.cpp:2682
+#: src/dxirc.cpp:2945 src/dxirc.cpp:2955
 #, c-format
 msgid "'%s' was added to ignored users"
 msgstr ""
 
-#: src/dxirc.cpp:2707
+#: src/dxirc.cpp:2980
 #, c-format
 msgid "'%s' was removed from ignored users"
 msgstr ""
 
-#: src/dxirc.cpp:2713
+#: src/dxirc.cpp:2986
 #, c-format
 msgid "'%s' wasn't removed from ignored users"
 msgstr ""
 
-#: src/dxirc.cpp:2858
+#: src/dxirc.cpp:3131
 msgid "Scripts aren't loaded"
 msgstr ""
 
-#: src/dxirc.cpp:2863
+#: src/dxirc.cpp:3136
 msgid "Loaded scrips:"
 msgstr ""
 
-#: src/dxirc.cpp:2866
+#: src/dxirc.cpp:3139
 #, c-format
 msgid "Name: %s"
 msgstr ""
 
-#: src/dxirc.cpp:2867
+#: src/dxirc.cpp:3140
 #, c-format
 msgid "Description: %s"
 msgstr ""
 
-#: src/dxirc.cpp:2868
+#: src/dxirc.cpp:3141
 #, c-format
 msgid "Version: %s"
 msgstr ""
 
-#: src/dxirc.cpp:2869
+#: src/dxirc.cpp:3142
 #, c-format
 msgid "Path: %s"
 msgstr ""
 
-#: src/dxirc.cpp:2890
+#: src/dxirc.cpp:3163
 #, c-format
 msgid "Error: %s"
 msgstr ""
 
-#: src/dxirc.cpp:2898 src/irctabitem.cpp:1747 src/irctabitem.cpp:2604
+#: src/dxirc.cpp:3171 src/irctabitem.cpp:1747 src/irctabitem.cpp:2604
 msgid "dxirc is compiled without support for Lua scripting"
 msgstr ""
 
-#: src/dxirc.cpp:3337
+#: src/dxirc.cpp:3610
 #, c-format
 msgid "Script %s is already loaded"
 msgstr ""
 
-#: src/dxirc.cpp:3346
+#: src/dxirc.cpp:3619
 #, c-format
 msgid ""
 "Script %s contains dxirc.AddAll\n"
@@ -903,61 +945,61 @@ msgid ""
 "Load it anyway?"
 msgstr ""
 
-#: src/dxirc.cpp:3348
+#: src/dxirc.cpp:3621
 #, c-format
 msgid "Script %s contains dxirc.AddAll. This can BREAK dxirc funcionality."
 msgstr ""
 
-#: src/dxirc.cpp:3353
+#: src/dxirc.cpp:3626
 msgid "Unable to initialize Lua."
 msgstr ""
 
-#: src/dxirc.cpp:3362
+#: src/dxirc.cpp:3635
 #, c-format
 msgid "Unable to load/run the file %s"
 msgstr ""
 
-#: src/dxirc.cpp:3369
+#: src/dxirc.cpp:3642
 #, c-format
 msgid "Lua plugin: error registering script %s"
 msgstr ""
 
-#: src/dxirc.cpp:3382
+#: src/dxirc.cpp:3655
 #, c-format
 msgid "Script with name %s is already loaded"
 msgstr ""
 
-#: src/dxirc.cpp:3394
+#: src/dxirc.cpp:3667
 #, c-format
 msgid "Script %s was loaded"
 msgstr ""
 
-#: src/dxirc.cpp:3421 src/dxirc.cpp:3446
+#: src/dxirc.cpp:3694 src/dxirc.cpp:3719
 #, c-format
 msgid "Script %s isn't loaded"
 msgstr ""
 
-#: src/dxirc.cpp:3445
+#: src/dxirc.cpp:3718
 #, c-format
 msgid "Script %s was unloaded"
 msgstr ""
 
-#: src/dxirc.cpp:3525
+#: src/dxirc.cpp:3804
 #, c-format
 msgid "Command %s already exists"
 msgstr ""
 
-#: src/dxirc.cpp:3569
+#: src/dxirc.cpp:3848
 #, c-format
 msgid "Function %s for event %s already exists"
 msgstr ""
 
-#: src/dxirc.cpp:3707
+#: src/dxirc.cpp:3986
 #, c-format
 msgid "Command/event %s in script %s was removed"
 msgstr ""
 
-#: src/dxirc.cpp:4062
+#: src/dxirc.cpp:4341
 msgid ""
 "\n"
 "Usage: dxirc [options] \n"
@@ -971,497 +1013,497 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/ircsocket.cpp:156
+#: src/ircsocket.cpp:158
 msgid "Connection closed. Client didn't connect in given timeout"
 msgstr ""
 
-#: src/ircsocket.cpp:199
+#: src/ircsocket.cpp:201
 #, c-format
 msgid "Connecting to %s"
 msgstr ""
 
-#: src/ircsocket.cpp:241 src/ircsocket.cpp:341 src/ircsocket.cpp:479
+#: src/ircsocket.cpp:243 src/ircsocket.cpp:353 src/ircsocket.cpp:491
 msgid "Unable to initiliaze socket"
 msgstr ""
 
-#: src/ircsocket.cpp:250 src/ircsocket.cpp:350
+#: src/ircsocket.cpp:252 src/ircsocket.cpp:362
 #, c-format
 msgid "Bad host: %s"
 msgstr ""
 
-#: src/ircsocket.cpp:258 src/ircsocket.cpp:358 src/ircsocket.cpp:488
+#: src/ircsocket.cpp:260 src/ircsocket.cpp:370 src/ircsocket.cpp:500
 msgid "Unable to create socket"
 msgstr ""
 
-#: src/ircsocket.cpp:273 src/ircsocket.cpp:372
+#: src/ircsocket.cpp:284 src/ircsocket.cpp:384
 #, c-format
 msgid "Unable to connect to: %s"
 msgstr ""
 
-#: src/ircsocket.cpp:308 src/ircsocket.cpp:434
+#: src/ircsocket.cpp:320 src/ircsocket.cpp:446
 #, c-format
 msgid "Connected to %s"
 msgstr ""
 
-#: src/ircsocket.cpp:408
+#: src/ircsocket.cpp:420
 msgid "SSL creation error"
 msgstr ""
 
-#: src/ircsocket.cpp:427
+#: src/ircsocket.cpp:439
 #, c-format
 msgid "SSL connect error %d"
 msgstr ""
 
-#: src/ircsocket.cpp:511 src/ircsocket.cpp:525
+#: src/ircsocket.cpp:523 src/ircsocket.cpp:537
 msgid "Unable to bind socket"
 msgstr ""
 
-#: src/ircsocket.cpp:541
+#: src/ircsocket.cpp:553
 #, c-format
 msgid "Listening on %s-%d"
 msgstr ""
 
-#: src/ircsocket.cpp:544
+#: src/ircsocket.cpp:556
 #, c-format
 msgid "%s isn't routable."
 msgstr ""
 
-#: src/ircsocket.cpp:550
+#: src/ircsocket.cpp:562
 #, c-format
 msgid "Trying IP from settings %s"
 msgstr ""
 
-#: src/ircsocket.cpp:555
+#: src/ircsocket.cpp:567
 #, c-format
 msgid "Trying IP from server %s"
 msgstr ""
 
-#: src/ircsocket.cpp:558
+#: src/ircsocket.cpp:570
 #, c-format
 msgid "%s isn't routable too, but will be used"
 msgstr ""
 
-#: src/ircsocket.cpp:561
+#: src/ircsocket.cpp:573
 msgid "But better doesn't exist."
 msgstr ""
 
-#: src/ircsocket.cpp:589
+#: src/ircsocket.cpp:601
 msgid "Unable to listen"
 msgstr ""
 
-#: src/ircsocket.cpp:602
+#: src/ircsocket.cpp:614
 msgid "Unable to accept connection"
 msgstr ""
 
-#: src/ircsocket.cpp:620
+#: src/ircsocket.cpp:632
 #, c-format
 msgid "Someone connected from %s"
 msgstr ""
 
-#: src/ircsocket.cpp:709
+#: src/ircsocket.cpp:722
 msgid "Client was disconnected"
 msgstr ""
 
-#: src/ircsocket.cpp:714
+#: src/ircsocket.cpp:727
 #, c-format
 msgid "%s closed DCC file %s connection %s-%d"
 msgstr ""
 
-#: src/ircsocket.cpp:719 src/ircsocket.cpp:725
+#: src/ircsocket.cpp:732 src/ircsocket.cpp:738
 #, c-format
 msgid "Server %s was disconnected"
 msgstr ""
 
-#: src/ircsocket.cpp:788 src/ircsocket.cpp:830
+#: src/ircsocket.cpp:827 src/ircsocket.cpp:870
 #, c-format
 msgid "Error in reading DCC data from %s"
 msgstr ""
 
-#: src/ircsocket.cpp:909
+#: src/ircsocket.cpp:949
 msgid "SSL_read() returns zero - closing socket"
 msgstr ""
 
-#: src/ircsocket.cpp:913
+#: src/ircsocket.cpp:953
 #, c-format
 msgid "SSL read problem, errcode = %d"
 msgstr ""
 
-#: src/ircsocket.cpp:935
+#: src/ircsocket.cpp:975
 msgid "Abnormal value from SSL read"
 msgstr ""
 
-#: src/ircsocket.cpp:977 src/ircsocket.cpp:1015
+#: src/ircsocket.cpp:1017 src/ircsocket.cpp:1055
 #, c-format
 msgid "Error in reading data from %s"
 msgstr ""
 
-#: src/ircsocket.cpp:1082
+#: src/ircsocket.cpp:1122
 msgid "End of STATS report"
 msgstr ""
 
-#: src/ircsocket.cpp:1086
+#: src/ircsocket.cpp:1126
 #, c-format
 msgid "Server Up %s days %s"
 msgstr ""
 
-#: src/ircsocket.cpp:1106
+#: src/ircsocket.cpp:1146
 msgid "You are no longer marked as being away"
 msgstr ""
 
-#: src/ircsocket.cpp:1118
+#: src/ircsocket.cpp:1158
 msgid "You have been marked as being away"
 msgstr ""
 
-#: src/ircsocket.cpp:1130
+#: src/ircsocket.cpp:1170
 msgid "Start of WHOIS"
 msgstr ""
 
-#: src/ircsocket.cpp:1133
+#: src/ircsocket.cpp:1173
 msgid "Realname: "
 msgstr ""
 
-#: src/ircsocket.cpp:1137
+#: src/ircsocket.cpp:1177
 msgid "Server: "
 msgstr ""
 
-#: src/ircsocket.cpp:1141
+#: src/ircsocket.cpp:1181
 #, c-format
 msgid "%s is an IRC operator"
 msgstr ""
 
-#: src/ircsocket.cpp:1156
+#: src/ircsocket.cpp:1196
 msgid "End of WHO list"
 msgstr ""
 
-#: src/ircsocket.cpp:1161
+#: src/ircsocket.cpp:1201
 msgid "Idle: "
 msgstr ""
 
-#: src/ircsocket.cpp:1164 src/ircsocket.cpp:1201
+#: src/ircsocket.cpp:1204 src/ircsocket.cpp:1241
 #, c-format
 msgid "%x %X"
 msgstr ""
 
-#: src/ircsocket.cpp:1165
+#: src/ircsocket.cpp:1205
 msgid "Signon: "
 msgstr ""
 
-#: src/ircsocket.cpp:1169
+#: src/ircsocket.cpp:1209
 msgid "End of WHOIS"
 msgstr ""
 
-#: src/ircsocket.cpp:1173
+#: src/ircsocket.cpp:1213
 msgid "Channels: "
 msgstr ""
 
-#: src/ircsocket.cpp:1177
+#: src/ircsocket.cpp:1217
 #, c-format
 msgid "%s : is identified to services"
 msgstr ""
 
-#: src/ircsocket.cpp:1178
+#: src/ircsocket.cpp:1218
 #, c-format
 msgid "%s : is signed on as account %s"
 msgstr ""
 
-#: src/ircsocket.cpp:1191 src/irctabitem.cpp:155 src/irctabitem.cpp:331
+#: src/ircsocket.cpp:1231 src/irctabitem.cpp:155 src/irctabitem.cpp:331
 msgid "No topic is set"
 msgstr ""
 
-#: src/ircsocket.cpp:1195
+#: src/ircsocket.cpp:1235
 #, c-format
 msgid "Topic for %s : %s"
 msgstr ""
 
-#: src/ircsocket.cpp:1202
+#: src/ircsocket.cpp:1242
 #, c-format
 msgid "Set %s %s"
 msgstr ""
 
-#: src/ircsocket.cpp:1206
+#: src/ircsocket.cpp:1246
 #, c-format
 msgid "You invite %s to %s"
 msgstr ""
 
-#: src/ircsocket.cpp:1210
+#: src/ircsocket.cpp:1250
 #, c-format
 msgid "%s :Summoning user to IRC"
 msgstr ""
 
-#: src/ircsocket.cpp:1250
+#: src/ircsocket.cpp:1290
 msgid "End of WHOWAS"
 msgstr ""
 
-#: src/ircsocket.cpp:1258
+#: src/ircsocket.cpp:1298
 msgid "End of INFO list"
 msgstr ""
 
-#: src/ircsocket.cpp:1262
+#: src/ircsocket.cpp:1302
 msgid "End of /MOTD command"
 msgstr ""
 
-#: src/ircsocket.cpp:1279
+#: src/ircsocket.cpp:1319
 msgid "You are now an IRC operator"
 msgstr ""
 
-#: src/ircsocket.cpp:1283
+#: src/ircsocket.cpp:1323
 #, c-format
 msgid "%s :No such nick/channel"
 msgstr ""
 
-#: src/ircsocket.cpp:1287
+#: src/ircsocket.cpp:1327
 #, c-format
 msgid "%s :No such server"
 msgstr ""
 
-#: src/ircsocket.cpp:1291
+#: src/ircsocket.cpp:1331
 #, c-format
 msgid "%s :No such channel"
 msgstr ""
 
-#: src/ircsocket.cpp:1295
+#: src/ircsocket.cpp:1335
 #, c-format
 msgid "%s :Cannot send to channel"
 msgstr ""
 
-#: src/ircsocket.cpp:1299
+#: src/ircsocket.cpp:1339
 #, c-format
 msgid "%s :You have joined too many channels"
 msgstr ""
 
-#: src/ircsocket.cpp:1303
+#: src/ircsocket.cpp:1343
 #, c-format
 msgid "%s :There was no such nickname"
 msgstr ""
 
-#: src/ircsocket.cpp:1307
+#: src/ircsocket.cpp:1347
 #, c-format
 msgid "%s :Too many targets"
 msgstr ""
 
-#: src/ircsocket.cpp:1311
+#: src/ircsocket.cpp:1351
 #, c-format
 msgid "%s :No such service"
 msgstr ""
 
-#: src/ircsocket.cpp:1315
+#: src/ircsocket.cpp:1355
 msgid "No origin specified"
 msgstr ""
 
-#: src/ircsocket.cpp:1319
+#: src/ircsocket.cpp:1359
 msgid "No recipient given"
 msgstr ""
 
-#: src/ircsocket.cpp:1323
+#: src/ircsocket.cpp:1363
 msgid "No text to send"
 msgstr ""
 
-#: src/ircsocket.cpp:1327
+#: src/ircsocket.cpp:1367
 #, c-format
 msgid "%s :No toplevel domain specified"
 msgstr ""
 
-#: src/ircsocket.cpp:1331
+#: src/ircsocket.cpp:1371
 #, c-format
 msgid "%s :Wildcard in toplevel domain"
 msgstr ""
 
-#: src/ircsocket.cpp:1335
+#: src/ircsocket.cpp:1375
 #, c-format
 msgid "%s :Bad Server/host mask"
 msgstr ""
 
-#: src/ircsocket.cpp:1339
+#: src/ircsocket.cpp:1379
 #, c-format
 msgid "%s :Unknown command"
 msgstr ""
 
-#: src/ircsocket.cpp:1343
+#: src/ircsocket.cpp:1383
 msgid "MOTD File is missing"
-msgstr ""
-
-#: src/ircsocket.cpp:1360
-#, c-format
-msgid "%s :No administrative info available"
-msgstr ""
-
-#: src/ircsocket.cpp:1364
-msgid "File error doing"
-msgstr ""
-
-#: src/ircsocket.cpp:1368
-msgid "No nickname given"
-msgstr ""
-
-#: src/ircsocket.cpp:1372
-#, c-format
-msgid "%s :Erroneous nickname"
-msgstr ""
-
-#: src/ircsocket.cpp:1373 src/ircsocket.cpp:1383
-#, c-format
-msgid "You still have nick: %s"
-msgstr ""
-
-#: src/ircsocket.cpp:1382
-#, c-format
-msgid "%s :Nickname is already in use"
-msgstr ""
-
-#: src/ircsocket.cpp:1392
-#, c-format
-msgid "%s :Nickname collision"
-msgstr ""
-
-#: src/ircsocket.cpp:1396
-#, c-format
-msgid "%s :Nick/channel is temporarily unavailable"
 msgstr ""
 
 #: src/ircsocket.cpp:1400
 #, c-format
-msgid "%s %s :They aren't on that channel"
+msgid "%s :No administrative info available"
 msgstr ""
 
 #: src/ircsocket.cpp:1404
-#, c-format
-msgid "%s :You're not on that channel"
+msgid "File error doing"
 msgstr ""
 
 #: src/ircsocket.cpp:1408
-#, c-format
-msgid "%s %s :is already on channel"
+msgid "No nickname given"
 msgstr ""
 
 #: src/ircsocket.cpp:1412
 #, c-format
-msgid "%s :User not logged in"
+msgid "%s :Erroneous nickname"
 msgstr ""
 
-#: src/ircsocket.cpp:1416
-msgid "SUMMON has been disabled"
-msgstr ""
-
-#: src/ircsocket.cpp:1420
-msgid "USERS has been disabled"
-msgstr ""
-
-#: src/ircsocket.cpp:1424
-msgid "You have not registered"
-msgstr ""
-
-#: src/ircsocket.cpp:1428
+#: src/ircsocket.cpp:1413 src/ircsocket.cpp:1423
 #, c-format
-msgid "%s :Not enough parameters"
+msgid "You still have nick: %s"
+msgstr ""
+
+#: src/ircsocket.cpp:1422
+#, c-format
+msgid "%s :Nickname is already in use"
 msgstr ""
 
 #: src/ircsocket.cpp:1432
-msgid "Unauthorized command (already registered)"
+#, c-format
+msgid "%s :Nickname collision"
 msgstr ""
 
 #: src/ircsocket.cpp:1436
-msgid "Your host isn't among the privileged"
+#, c-format
+msgid "%s :Nick/channel is temporarily unavailable"
 msgstr ""
 
 #: src/ircsocket.cpp:1440
-msgid "Password incorrect"
+#, c-format
+msgid "%s %s :They aren't on that channel"
 msgstr ""
 
 #: src/ircsocket.cpp:1444
-msgid "You are banned from this server"
+#, c-format
+msgid "%s :You're not on that channel"
 msgstr ""
 
 #: src/ircsocket.cpp:1448
-msgid "You will be banned from this server"
+#, c-format
+msgid "%s %s :is already on channel"
 msgstr ""
 
 #: src/ircsocket.cpp:1452
 #, c-format
-msgid "%s :Channel key already set"
+msgid "%s :User not logged in"
 msgstr ""
 
 #: src/ircsocket.cpp:1456
-#, c-format
-msgid "%s :Cannot join channel (+l)"
+msgid "SUMMON has been disabled"
 msgstr ""
 
 #: src/ircsocket.cpp:1460
-#, c-format
-msgid "%s :is unknown mode char to me for channel"
+msgid "USERS has been disabled"
 msgstr ""
 
 #: src/ircsocket.cpp:1464
-#, c-format
-msgid "%s :Cannot join channel (+i)"
+msgid "You have not registered"
 msgstr ""
 
 #: src/ircsocket.cpp:1468
 #, c-format
-msgid "%s :Cannot join channel (+b)"
+msgid "%s :Not enough parameters"
 msgstr ""
 
 #: src/ircsocket.cpp:1472
+msgid "Unauthorized command (already registered)"
+msgstr ""
+
+#: src/ircsocket.cpp:1476
+msgid "Your host isn't among the privileged"
+msgstr ""
+
+#: src/ircsocket.cpp:1480
+msgid "Password incorrect"
+msgstr ""
+
+#: src/ircsocket.cpp:1484
+msgid "You are banned from this server"
+msgstr ""
+
+#: src/ircsocket.cpp:1488
+msgid "You will be banned from this server"
+msgstr ""
+
+#: src/ircsocket.cpp:1492
+#, c-format
+msgid "%s :Channel key already set"
+msgstr ""
+
+#: src/ircsocket.cpp:1496
+#, c-format
+msgid "%s :Cannot join channel (+l)"
+msgstr ""
+
+#: src/ircsocket.cpp:1500
+#, c-format
+msgid "%s :is unknown mode char to me for channel"
+msgstr ""
+
+#: src/ircsocket.cpp:1504
+#, c-format
+msgid "%s :Cannot join channel (+i)"
+msgstr ""
+
+#: src/ircsocket.cpp:1508
+#, c-format
+msgid "%s :Cannot join channel (+b)"
+msgstr ""
+
+#: src/ircsocket.cpp:1512
 #, c-format
 msgid "%s :Cannot join channel (+k)"
 msgstr ""
 
-#: src/ircsocket.cpp:1476
+#: src/ircsocket.cpp:1516
 #, c-format
 msgid "%s :Bad Channel Mask"
 msgstr ""
 
-#: src/ircsocket.cpp:1481
+#: src/ircsocket.cpp:1521
 #, c-format
 msgid "%s :Channel doesn't support modes"
 msgstr ""
 
-#: src/ircsocket.cpp:1486
+#: src/ircsocket.cpp:1526
 #, c-format
 msgid "%s %s :Channel list is full"
 msgstr ""
 
-#: src/ircsocket.cpp:1491
+#: src/ircsocket.cpp:1531
 msgid "Permission Denied- You're not an IRC operator"
 msgstr ""
 
-#: src/ircsocket.cpp:1495
+#: src/ircsocket.cpp:1535
 #, c-format
 msgid "%s :You're not channel operator"
 msgstr ""
 
-#: src/ircsocket.cpp:1499
+#: src/ircsocket.cpp:1539
 msgid "You can't kill a server!"
 msgstr ""
 
-#: src/ircsocket.cpp:1503
+#: src/ircsocket.cpp:1543
 msgid "Your connection is restricted!"
 msgstr ""
 
-#: src/ircsocket.cpp:1507
+#: src/ircsocket.cpp:1547
 msgid "You're not the original channel operator"
 msgstr ""
 
-#: src/ircsocket.cpp:1511
+#: src/ircsocket.cpp:1551
 msgid "No O-lines for your host"
 msgstr ""
 
-#: src/ircsocket.cpp:1515
+#: src/ircsocket.cpp:1555
 msgid "Unknown MODE flag"
 msgstr ""
 
-#: src/ircsocket.cpp:1519
+#: src/ircsocket.cpp:1559
 msgid "Cannot change mode for other users"
 msgstr ""
 
-#: src/ircsocket.cpp:1759
+#: src/ircsocket.cpp:1819
 msgid "PONG from "
 msgstr ""
 
-#: src/ircsocket.cpp:2043
+#: src/ircsocket.cpp:2103
 msgid "Unable to send data"
 msgstr ""
 
-#: src/ircsocket.cpp:2222
+#: src/ircsocket.cpp:2282
 #, c-format
 msgid "Bad command on connection:%s"
 msgstr ""

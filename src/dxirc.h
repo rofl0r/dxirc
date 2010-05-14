@@ -176,6 +176,10 @@ class dxirc: public FXMainWindow
         void OnIrcDccMyToken(IrcSocket*, IrcEvent*);
         void OnIrcDccToken(IrcSocket*, IrcEvent*);
         void OnIrcDccPosition(IrcSocket*, IrcEvent*);
+        void OnIrcDccResume(IrcSocket*, IrcEvent*);
+        void OnIrcDccPresume(IrcSocket*, IrcEvent*);
+        void OnIrcDccAccept(IrcSocket*, IrcEvent*);
+        void OnIrcDccPaccept(IrcSocket*, IrcEvent*);
         FXbool TabExist(IrcSocket*, FXString);
         FXbool ServerExist(const FXString&, const FXint&, const FXString&);
         FXint GetServerTab(IrcSocket*);
@@ -204,7 +208,8 @@ class dxirc: public FXMainWindow
         void AutoloadScripts();
         void SendNewTab(IrcSocket*, const FXString&, FXint, FXbool, TYPE);
         void CreateSmileys();
-        FXString GetUniqueName(FXString path, FXString name, FXString extension);
+        FXString GetUniqueName(const FXString &path, const FXString &name, const FXString &extension);
+        FXbool IsForResume(const FXString &name);
 
     protected:
         FXMenuBar *menubar;
