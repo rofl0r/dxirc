@@ -32,6 +32,9 @@
 #include "dxtext.h"
 #endif
 
+#define FOXVERSION ((FOX_LEVEL) + (FOX_MINOR*1000) + (FOX_MAJOR*100000))
+#define FXVERSION(major,minor,release) ((release)+(minor*1000)+(major*100000))
+
 class IrcSocket;
 struct lua_State;
 

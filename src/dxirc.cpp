@@ -42,6 +42,76 @@
 
 #define DISPLAY(app) ((Display*)((app)->getDisplay()))
 
+/*from Goggles Music Manager
+thanks Sander Jansen */
+#ifdef ENABLE_NLS
+#include <FXTranslator.h>
+
+class dxTranslator : public FXTranslator
+{
+    FXDECLARE(dxTranslator)
+private:
+private:
+    dxTranslator(const dxTranslator&);
+    dxTranslator & operator=(const dxTranslator&);
+#if FOXVERSION < FXVERSION(1,7,16)
+protected:
+
+    dxTranslator() {
+    }
+public:
+    /// Construct translator
+
+    dxTranslator(FXApp* a) : FXTranslator(a) {
+        setlocale(LC_MESSAGES, "");
+        setlocale(LC_NUMERIC, "C");
+        bindtextdomain(PACKAGE, LOCALEDIR);
+        bind_textdomain_codeset(PACKAGE, "UTF-8");
+        textdomain(PACKAGE);
+#ifdef DEBUG
+        fxmessage("localedir: %s\n", LOCALEDIR);
+#endif
+    };
+#else
+public:
+
+    dxTranslator() {
+        setlocale(LC_MESSAGES, "");
+        setlocale(LC_NUMERIC, "C");
+        bindtextdomain(PACKAGE, LOCALEDIR);
+        bind_textdomain_codeset(PACKAGE, "UTF-8");
+        textdomain(PACKAGE);
+#ifdef DEBUG
+        fxmessage("localedir: %s\n", LOCALEDIR);
+#endif
+    };
+#endif
+
+#if FOXVERSION < FXVERSION(1,7,16)
+    virtual const FXchar* tr(const FXchar* context, const FXchar* message, const FXchar* hint = NULL) const;
+#else
+    virtual const FXchar* tr(const FXchar* context, const FXchar* message, const FXchar* hint = NULL, FXint count = -1) const;
+#endif
+
+    ~dxTranslator() {
+    }
+
+};
+
+FXIMPLEMENT(dxTranslator, FXTranslator, NULL, 0)
+
+#if FOXVERSION < FXVERSION(1,7,16)
+const FXchar* dxTranslator::tr(const FXchar*, const FXchar* message, const FXchar*) const {
+    fxmessage("message: %s; preklad: %s\n", message, gettext(message));
+    return gettext(message);
+}
+#else
+const FXchar* dxTranslator::tr(const FXchar*, const FXchar* message, const FXchar*, FXint) const {
+    return gettext(message);
+}
+#endif
+#endif
+
 FXDEFMAP(dxirc) dxircMap[] = {
     FXMAPFUNC(SEL_CLOSE,        0,                          dxirc::OnCommandClose),
     FXMAPFUNC(SEL_COMMAND,      dxirc::ID_QUIT,             dxirc::OnCommandQuit),
@@ -4357,12 +4427,6 @@ int main(int argc,char *argv[])
     FXbool loadIcon;
     FXString datadir = DXIRC_DATADIR;
 
-#if ENABLE_NLS
-    bindtextdomain(PACKAGE, LOCALEDIR);
-    bind_textdomain_codeset(PACKAGE, "utf-8");
-    textdomain(PACKAGE);
-#endif
-
     for(FXint i=0; i<argc; ++i)
     {
         if(compare(argv[i],"-v")==0 || compare(argv[i],"--version")==0)
@@ -4392,6 +4456,18 @@ int main(int argc,char *argv[])
 #endif
     app.reg().setAsciiMode(TRUE);
     app.init(argc,argv);
+#ifdef ENABLE_NLS
+#if FOXVERSION < FXVERSION(1,7,16)
+    app.setTranslator(new dxTranslator(&app));
+#else
+    app.setTranslator(new dxTranslator());
+#endif
+#endif
+#if ENABLE_NLS
+    bindtextdomain(PACKAGE, LOCALEDIR);
+    bind_textdomain_codeset(PACKAGE, "utf-8");
+    textdomain(PACKAGE);
+#endif
     loadIcon = MakeAllIcons(&app, utils::GetIniFile(), datadir);
     new dxirc(&app);
     app.create();
