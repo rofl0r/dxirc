@@ -89,7 +89,7 @@ public:
 
     FXbool Cell(FXint x, FXint y) const;
     void AddCell(FXint x, FXint y, FXint type);
-    void RemoveCell(FXint x, FXint y);
+    void RemoveCell(FXint x, FXint y, FXbool update=TRUE);
     void FindFullLines();
     void CreateGeom();
     void SetColor(IrcColor);
@@ -136,6 +136,7 @@ private:
     void LandPiece();
     void GameOver();
     void UpdateLabels();
+    void UpdateCell(FXint x, FXint y);
 };
 
 #endif	/* TETRISTABITEM_H */

@@ -216,13 +216,27 @@ void TetrisTabItem::AddCell(FXint x, FXint y, FXint type)
     FXASSERT(type > 0 && type < 8);
     FXASSERT(cells[x][y] == 0);
     cells[x][y] = type;
+    UpdateCell(x,y);
 }
 
-void TetrisTabItem::RemoveCell(FXint x, FXint y)
+void TetrisTabItem::RemoveCell(FXint x, FXint y, FXbool update)
 {
     FXASSERT(x >= 0 && x < columns);
     FXASSERT(y >= 0 && y < rows);
     cells[x][y] = 0;
+    if(update) UpdateCell(x,y);
+}
+
+void TetrisTabItem::UpdateCell(FXint x, FXint y)
+{
+    FXASSERT(x >= 0 && x < columns);
+    FXASSERT(y >= 0 && y < rows);
+    FXDCWindow dc(gamecanvas);
+    if(cells[x][y] != 0)
+        dc.setForeground(colors[cells[x][y]-1]);
+    else
+        dc.setForeground(gamecanvas->getBackColor());
+    dc.fillRectangle(x*apiece+1, y*apiece+1, apiece-2, apiece-2);
 }
 
 void TetrisTabItem::FindFullLines()
@@ -300,6 +314,8 @@ void TetrisTabItem::NewGame()
         }
     }
     CreatePiece();
+    Redraw();
+    UpdateLabels();
 }
 
 void TetrisTabItem::StopGame()
@@ -338,7 +354,6 @@ void TetrisTabItem::MoveLeft()
     if(done || paused) return;
     if(!piece) return;
     piece->MoveLeft();
-    Redraw();
 }
 
 void TetrisTabItem::MoveRight()
@@ -346,7 +361,6 @@ void TetrisTabItem::MoveRight()
     if(done || paused) return;
     if(!piece) return;
     piece->MoveRight();
-    Redraw();
 }
 
 void TetrisTabItem::Rotate()
@@ -354,7 +368,6 @@ void TetrisTabItem::Rotate()
     if(done || paused) return;
     if(!piece) return;
     piece->Rotate();
-    Redraw();
 }
 
 void TetrisTabItem::Drop()
@@ -363,7 +376,6 @@ void TetrisTabItem::Drop()
     if(!piece) return;
     piece->Drop();
     LandPiece();
-    Redraw();
 }
 
 void TetrisTabItem::CreatePiece()
@@ -459,7 +471,7 @@ void TetrisTabItem::RemoveLines()
         // Remove line
         for(FXint col = 0; col < 10; ++col)
         {
-            RemoveCell(col, row);
+            RemoveCell(col, row, FALSE); //not need update canvas, CreatePiece do it
         }
         ++removedLines;
         deltascore *= 3;
@@ -477,7 +489,7 @@ void TetrisTabItem::RemoveLines()
     {
         for(FXint col = 0; col < 10; ++col)
         {
-            RemoveCell(col, 0);
+            RemoveCell(col, 0, FALSE); //not need update canvas, CreatePiece do it
         }
     }
     level = (removedLines / 10) + 1;
@@ -565,7 +577,6 @@ long TetrisTabItem::OnTimeout(FXObject*, FXSelector, void*)
     FXASSERT(piece != 0);
     if(piece->MoveDown())
     {
-        DrawLines();
         getApp()->addTimeout(this, ID_TETRISTIMEOUT, timeout-(level-1)*13);
     }
     else LandPiece();

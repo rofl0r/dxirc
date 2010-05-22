@@ -3758,7 +3758,10 @@ void IrcTabItem::OnIrcReconnect(IrcEvent* ev)
         }
     }
     if(type == CHANNEL)
+    {
         users->clearItems();
+        iamOp = FALSE;
+    }
 }
 
 //handle IrcEvent IRC_UNKNOWN
