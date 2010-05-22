@@ -133,6 +133,7 @@ FXDEFMAP(IrcTabItem) IrcTabItemMap[] = {
     FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_KICK,            IrcTabItem::OnKick),
     FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_BAN,             IrcTabItem::OnBan),
     FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_KICKBAN,         IrcTabItem::OnKickban),
+    FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_IGNORE,          IrcTabItem::OnIgnore),
     FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_TOPIC,           IrcTabItem::OnTopic),
     FXMAPFUNC(SEL_LINK,                 IrcTabItem::ID_TOPIC,           IrcTabItem::OnTopicLink),
     FXMAPFUNC(SEL_COMMAND,              dxPipe::ID_PIPE,                IrcTabItem::OnPipe),
@@ -4173,6 +4174,7 @@ long IrcTabItem::OnRightMouse(FXObject *, FXSelector, void *ptr)
             new FXMenuCommand(&popup, _("User information (WHOIS)"), NULL, this, ID_WHOIS);
             new FXMenuCommand(&popup, _("DCC chat"), NULL, this, ID_DCCCHAT);
             new FXMenuCommand(&popup, _("Send file"), NULL, this, ID_DCCSEND);
+            new FXMenuCommand(&popup, _("Ignore"), NULL, this, ID_IGNORE);
             if(iamOp) new FXMenuCascade(&popup, _("Operator actions"), NULL, &opmenu);
         }
         else
@@ -4329,6 +4331,36 @@ long IrcTabItem::OnKickban(FXObject *, FXSelector, void *)
     {
         server->SendKick(getText(), nickOnRight.nick, reasonEdit->getText());
         server->SendMode(getText()+" +b "+banEdit->getText());
+    }
+    return 1;
+}
+
+//handle popup Ignore
+long IrcTabItem::OnIgnore(FXObject*, FXSelector, void*)
+{
+    FXDialogBox dialog(this, _("Add ignore user"), DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0);
+    FXVerticalFrame *contents = new FXVerticalFrame(&dialog, LAYOUT_SIDE_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 10,10,10,10, 0,0);
+    FXMatrix *matrix = new FXMatrix(contents,2,MATRIX_BY_COLUMNS|LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+
+    new FXLabel(matrix, _("Nick:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    FXTextField *nick = new FXTextField(matrix, 25, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    nick->setText(nickOnRight.nick+"!"+nickOnRight.user+"@"+nickOnRight.host);
+    new FXLabel(matrix, _("Channel(s):\tChannels need to be comma separated"), NULL,JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    FXTextField *channel = new FXTextField(matrix, 25, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    channel->setText(getText());
+    channel->setTipText(_("Channels need to be comma separated"));
+    new FXLabel(matrix, _("Server:"), NULL,JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    FXTextField *server = new FXTextField(matrix, 25, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    server->setText(GetServerName());
+
+    FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
+    new FXButton(buttonframe, _("&Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    new FXButton(buttonframe, _("&OK"), NULL, &dialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+
+    if(dialog.execute(PLACEMENT_CURSOR))
+    {
+        FXString ignoretext = nick->getText()+" "+channel->getText()+" "+server->getText();
+        parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_ADDIUSER), &ignoretext);
     }
     return 1;
 }

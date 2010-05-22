@@ -102,7 +102,6 @@ FXIMPLEMENT(dxTranslator, FXTranslator, NULL, 0)
 
 #if FOXVERSION < FXVERSION(1,7,16)
 const FXchar* dxTranslator::tr(const FXchar*, const FXchar* message, const FXchar*) const {
-    fxmessage("message: %s; preklad: %s\n", message, gettext(message));
     return gettext(message);
 }
 #else
@@ -449,8 +448,8 @@ void dxirc::ReadConfig()
     commandsList = set.readStringEntry("SETTINGS", "commandsList");
     themePath = utils::CheckThemePath(set.readStringEntry("SETTINGS", "themePath", DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "default"));
     themesList = utils::CheckThemesList(set.readStringEntry("SETTINGS", "themesList", FXString(themePath+";").text()));
-    colors.text = set.readColorEntry("SETTINGS", "textColor", FXRGB(0,0,0));
-    colors.back = set.readColorEntry("SETTINGS", "textBackColor", FXRGB(255,255,255));
+    colors.text = set.readColorEntry("SETTINGS", "textColor", FXRGB(255,255,255));
+    colors.back = set.readColorEntry("SETTINGS", "textBackColor", FXRGB(0,0,0));
     colors.user = set.readColorEntry("SETTINGS", "userColor", FXRGB(191,191,191));
     colors.action = set.readColorEntry("SETTINGS", "actionsColor", FXRGB(255,165,0));
     colors.notice = set.readColorEntry("SETTINGS", "noticeColor", FXRGB(0,0,255));
@@ -4462,11 +4461,6 @@ int main(int argc,char *argv[])
 #else
     app.setTranslator(new dxTranslator());
 #endif
-#endif
-#if ENABLE_NLS
-    bindtextdomain(PACKAGE, LOCALEDIR);
-    bind_textdomain_codeset(PACKAGE, "utf-8");
-    textdomain(PACKAGE);
 #endif
     loadIcon = MakeAllIcons(&app, utils::GetIniFile(), datadir);
     new dxirc(&app);

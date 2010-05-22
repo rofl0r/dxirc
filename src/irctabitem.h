@@ -91,6 +91,7 @@ class IrcTabItem: public FXTabItem
             ID_KICK,
             ID_BAN,
             ID_KICKBAN,
+            ID_IGNORE,
             ID_TOPIC,
             ID_CSERVER,
             ID_NEXTTAB,
@@ -155,6 +156,7 @@ class IrcTabItem: public FXTabItem
         long OnKick(FXObject *, FXSelector, void*);
         long OnBan(FXObject *, FXSelector, void*);
         long OnKickban(FXObject *, FXSelector, void*);
+        long OnIgnore(FXObject *, FXSelector, void*);
         long OnTopic(FXObject *, FXSelector, void*);
         long OnTopicLink(FXObject *, FXSelector, void*);
         long OnPipe(FXObject *, FXSelector, void*);

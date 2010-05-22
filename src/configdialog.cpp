@@ -2208,8 +2208,8 @@ void ConfigDialog::ReadConfig()
     commandsList = set.readStringEntry("SETTINGS", "commandsList");
     themePath = utils::CheckThemePath(set.readStringEntry("SETTINGS", "themePath", DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "default"));
     themesList = utils::CheckThemesList(set.readStringEntry("SETTINGS", "themesList", FXString(themePath+";").text()));
-    colors.text = set.readColorEntry("SETTINGS", "textColor", FXRGB(0,0,0));
-    colors.back = set.readColorEntry("SETTINGS", "textBackColor", FXRGB(255,255,255));
+    colors.text = set.readColorEntry("SETTINGS", "textColor", FXRGB(255,255,255));
+    colors.back = set.readColorEntry("SETTINGS", "textBackColor", FXRGB(0,0,0));
     colors.user = set.readColorEntry("SETTINGS", "userColor", FXRGB(191,191,191));
     colors.action = set.readColorEntry("SETTINGS", "actionsColor", FXRGB(255,165,0));
     colors.notice = set.readColorEntry("SETTINGS", "noticeColor", FXRGB(0,0,255));
