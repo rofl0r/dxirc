@@ -168,6 +168,9 @@ dxText::dxText(FXComposite *p,FXObject* tgt,FXSelector sel,FXuint opts,FXint x,F
     selstartpos = 0;
     selendindex = 0;
     selendpos = 0;
+    textColor=getApp()->getForeColor();
+    selbackColor=getApp()->getSelbackColor();
+    seltextColor=getApp()->getSelforeColor();
     mode = MOUSE_NONE;
     contents.no(0);
     styles.no(0);

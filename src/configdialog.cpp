@@ -368,6 +368,8 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     targetUseSmileys.setTarget(this);
     targetUseSmileys.setSelector(ID_USESMILEYS);
 
+    targetTrayColor.connect(trayColor);
+
     getApp()->getNormalFont()->create();
     FXFontDesc fontdescription;
     getApp()->getNormalFont()->getFontDesc(fontdescription);
@@ -569,6 +571,10 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     new FXLabel(themeMatrix, _("Tip Text Color"));
     new FXColorWell(themeMatrix, FXRGB(0,0,255), &targetTipback, FXDataTarget::ID_VALUE);
     new FXLabel(themeMatrix, _("Tip Background Color"));
+#ifndef WIN32
+    new FXColorWell(themeMatrix, FXRGB(0,0,255), &targetTrayColor, FXDataTarget::ID_VALUE);
+    new FXLabel(themeMatrix, _("Tray Color"));
+#endif
     label = new FXLabel(vframe2, "Label");
     textFrame1 = new FXHorizontalFrame(vframe2, LAYOUT_FILL_X);
     textTest = new FXTextField(textFrame1, 30, NULL, 0, LAYOUT_FILL_X|FRAME_THICK|FRAME_SUNKEN);
@@ -2202,6 +2208,7 @@ void ConfigDialog::ReadConfig()
     themeCurrent.tipfore = set.readColorEntry("SETTINGS", "tipforecolor", getApp()->getTipforeColor());
     themeCurrent.hilite = set.readColorEntry("SETTINGS", "hilitecolor", getApp()->getHiliteColor());
     themeCurrent.shadow = set.readColorEntry("SETTINGS", "shadowcolor", getApp()->getShadowColor());
+    trayColor = set.readColorEntry("SETTINGS", "traycolor", themeCurrent.base);
     usersShown = set.readBoolEntry("SETTINGS", "usersShown", TRUE);
     statusShown = set.readBoolEntry("SETTINGS", "statusShown", TRUE);
     tabPosition = set.readIntEntry("SETTINGS", "tabPosition", 0);
@@ -2440,6 +2447,7 @@ void ConfigDialog::SaveConfig()
     set.writeColorEntry("SETTINGS", "tipbackcolor", themeCurrent.tipback);
     set.writeColorEntry("SETTINGS", "selmenutextcolor", themeCurrent.menufore);
     set.writeColorEntry("SETTINGS", "selmenubackcolor", themeCurrent.menuback);
+    set.writeColorEntry("SETTINGS", "traycolor", trayColor);
     set.writeStringEntry("SETTINGS", "normalfont", font->getFont().text());
     dxStringMap aliases = utils::GetAliases();
     set.writeIntEntry("ALIASES", "number", (FXint)aliases.size());

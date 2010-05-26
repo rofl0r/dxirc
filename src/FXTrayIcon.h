@@ -149,6 +149,9 @@ public:
     /** Get the tool tip text. */
     const FXString& getText() const;
 
+    /** Set tray color. */
+    void setColor(FXColor color);
+
 private:
     FXPopup* mPup;
     FXuint mOpts;

@@ -232,7 +232,7 @@ class ConfigDialog: public FXDialogBox
         FXDataTarget targetDccIP1, targetDccIP2, targetDccIP3, targetDccIP4, targetDccPortD, targetDccPortH, targetDccTimeout;
         FXDataTarget targetSound, targetSoundConnect, targetSoundDisconnect, targetSoundMessage;
         FXDataTarget targetPathConnect, targetPathDisconnect, targetPathMessage, targetStripColors;
-        FXDataTarget targetUseSmileys, targetAutoDccChat, targetAutoDccFile;
+        FXDataTarget targetUseSmileys, targetAutoDccChat, targetAutoDccFile, targetTrayColor;
         FXButton *selectConnect, *selectDisconnect, *selectMessage, *playConnect, *playDisconnect, *playMessage;
         FXString pathConnect, pathDisconnect, pathMessage;
         FXLabel *labelSelected, *labelNocurrent, *labelTip, *label;
@@ -245,6 +245,7 @@ class ConfigDialog: public FXDialogBox
         FXListBox *listTabs;
         FXMainWindow *owner;
         dxStringMap smileysMap;
+        FXColor trayColor;
 
         void FillCommnads();
         FXString FillCommandsCombo();

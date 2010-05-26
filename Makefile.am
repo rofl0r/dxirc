@@ -1,4 +1,4 @@
-SUBDIRS = intl po m4 src icons sounds
+SUBDIRS = intl po m4 src icons icons/default icons/flags icons/smileys sounds
 DIST_SUBDIRS = intl po m4 src icons icons/default icons/flags icons/smileys sounds
 
 rcdir = $(prefix)/share/dxirc

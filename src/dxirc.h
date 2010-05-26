@@ -157,6 +157,7 @@ class dxirc: public FXMainWindow
         FXint lastToken;
         dxStringMap smileysMap;
         dxSmileyArray smileys;
+        FXColor trayColor;
 
         void OnIrcNewchannel(IrcSocket*, IrcEvent*);
         void OnIrcQuery(IrcSocket*, IrcEvent*);

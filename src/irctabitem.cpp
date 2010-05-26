@@ -3659,6 +3659,7 @@ void IrcTabItem::OnIrcChmode(IrcEvent* ev)
     if(comparecase(channel, getText()) == 0)
     {
         if(modes.contains('t')) editableTopic = FALSE;
+        AppendIrcStyledText(FXStringFormat(_("Mode for %s: %s"), channel.text(), modes.text()), 1, ev->time);
     }
 }
 

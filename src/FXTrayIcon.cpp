@@ -344,6 +344,12 @@ const FXString& FXTrayIcon::getText() const
     return btn->getTipText();
 }
 
+void FXTrayIcon::setColor(FXColor color)
+{
+    setBackColor(color);
+    btn->setBackColor(color);
+}
+
 long FXTrayIcon::onLeft(FXObject* obj, FXSelector sel, void* ptr)
 {
     if (mOpts & TRAY_MENU_ON_LEFT) 

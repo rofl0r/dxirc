@@ -740,7 +740,7 @@ namespace utils
             iniFile = pathname.append(PATHSEPSTRING "dxirc.ini");
             return iniFile;
 #else
-            pathname = FXSystem::getHomeDirectory()+PATHSEPSTRING+".dxirc";
+            pathname = FXSystem::getHomeDirectory()+PATHSEPSTRING+".config"+PATHSEPSTRING+"dxirc";
             if(!FXStat::exists(pathname))
             {
                 if(!FXDir::create(pathname))

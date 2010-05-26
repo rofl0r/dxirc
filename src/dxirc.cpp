@@ -63,8 +63,10 @@ public:
     /// Construct translator
 
     dxTranslator(FXApp* a) : FXTranslator(a) {
+#ifndef WIN32
         setlocale(LC_MESSAGES, "");
         setlocale(LC_NUMERIC, "C");
+#endif
         bindtextdomain(PACKAGE, LOCALEDIR);
         bind_textdomain_codeset(PACKAGE, "UTF-8");
         textdomain(PACKAGE);
@@ -76,8 +78,10 @@ public:
 public:
 
     dxTranslator() {
+#ifndef WIN32
         setlocale(LC_MESSAGES, "");
         setlocale(LC_NUMERIC, "C");
+#endif
         bindtextdomain(PACKAGE, LOCALEDIR);
         bind_textdomain_codeset(PACKAGE, "UTF-8");
         textdomain(PACKAGE);
@@ -441,6 +445,7 @@ void dxirc::ReadConfig()
     appTheme.tipfore = set.readColorEntry("SETTINGS", "tipforecolor", app->getTipforeColor());
     appTheme.hilite = set.readColorEntry("SETTINGS", "hilitecolor", app->getHiliteColor());
     appTheme.shadow = set.readColorEntry("SETTINGS", "shadowcolor", app->getShadowColor());
+    trayColor = set.readColorEntry("SETTINGS", "traycolor", appTheme.base);
     fontSpec = set.readStringEntry("SETTINGS", "normalfont", app->getNormalFont()->getFont().text());
     usersShown = set.readBoolEntry("SETTINGS", "usersShown", TRUE);
     statusShown = set.readBoolEntry("SETTINGS", "statusShown", TRUE);
@@ -685,6 +690,7 @@ void dxirc::SaveConfig()
     set.writeColorEntry("SETTINGS", "tipbackcolor", appTheme.tipback);
     set.writeColorEntry("SETTINGS", "selmenutextcolor", appTheme.menufore);
     set.writeColorEntry("SETTINGS", "selmenubackcolor", appTheme.menuback);
+    set.writeColorEntry("SETTINGS", "traycolor", trayColor);
     set.writeStringEntry("SETTINGS", "normalfont", app->getNormalFont()->getFont().text());
     dxStringMap aliases = utils::GetAliases();
     set.writeIntEntry("ALIASES", "number", (FXint)aliases.size());
@@ -1213,6 +1219,12 @@ void dxirc::UpdateTheme()
         }
         w = w->getNext();
     }
+#ifndef WIN32
+#ifdef HAVE_TRAY
+    if(useTray && trayIcon)
+        trayIcon->setColor(trayColor);
+#endif
+#endif
 }
 
 void dxirc::UpdateFont()
