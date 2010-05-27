@@ -194,6 +194,7 @@ class dxirc: public FXMainWindow
         void SaveConfig();
         void UpdateMenus();
         void UpdateTheme();
+        void UpdateTrayColor();
         void UpdateTabs(FXbool recreateSmileys=FALSE);
         void UpdateTabPosition();
         void UpdateFont();

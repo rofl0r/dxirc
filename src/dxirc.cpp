@@ -282,6 +282,7 @@ dxirc::dxirc(FXApp *app)
     UpdateFont(fontSpec);
     UpdateTabs(useSmileys && (FXint)smileysMap.size());
     UpdateTabPosition();
+    UpdateTrayColor();
 
     getAccelTable()->addAccel(MKUINT(KEY_1, ALTMASK), this, FXSEL(SEL_COMMAND, ID_SELECTTAB));
     getAccelTable()->addAccel(MKUINT(KEY_2, ALTMASK), this, FXSEL(SEL_COMMAND, ID_SELECTTAB));
@@ -856,6 +857,7 @@ long dxirc::OnCommandOptions(FXObject*, FXSelector, void*)
         UpdateFont();
         UpdateTabs(recreateSmileys);
         UpdateTabPosition();
+        UpdateTrayColor();
         for(FXint i = 0; i<servers.no(); i++)
         {
             servers[i]->SetUsersList(usersList);
@@ -1219,6 +1221,11 @@ void dxirc::UpdateTheme()
         }
         w = w->getNext();
     }
+}
+
+//update tray backround color for X11
+void dxirc::UpdateTrayColor()
+{
 #ifndef WIN32
 #ifdef HAVE_TRAY
     if(useTray && trayIcon)
