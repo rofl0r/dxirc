@@ -3761,7 +3761,7 @@ FXint dxirc::LoadLuaScript(FXString path, FXbool showMessage)
         {
             if (lua_pcall(L, 0, 0, 0))
             {
-                AppendIrcStyledText(FXStringFormat("Lua plugin: error calling dxirc_Init() %s", lua_tostring(L, -1)), 3);
+                AppendIrcStyledText(FXStringFormat(_("Lua plugin: error calling dxirc_Init() %s"), lua_tostring(L, -1)), 4);
                 lua_pop(L, 1);
             }
         }        

@@ -7,15 +7,15 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{11B40D37-A7C9-4720-8741-EEC36F2D07DB}
 AppName=dxirc
-AppVerName=dxirc 0.50.svn
+AppVerName=dxirc 0.50.0
 AppPublisher=David Vachulka
 AppPublisherURL=http://www.dxirc.org
 AppSupportURL=http://www.dxirc.org
 AppUpdatesURL=http://www.dxirc.org
 DefaultDirName={pf}\dxirc
 DefaultGroupName=dxirc
-LicenseFile=..\COPYING
-OutputBaseFilename=dxirc-0.50.svn-setup
+LicenseFile=COPYING
+OutputBaseFilename=dxirc-0.50.0-setup
 Compression=lzma
 SolidCompression=yes
 
@@ -31,7 +31,9 @@ Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescrip
 Source: "dxirc.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "*.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "icons\*.png"; DestDir: "{app}\icons"; Flags: recursesubdirs
+Source: "icons\smileys\dxirc.smiley"; DestDir: "{app}\icons\smileys"; Flags: ignoreversion
 Source: "locale\*.mo"; DestDir: "{app}\locale"; Flags: recursesubdirs
+Source: "sounds\*.wav"; DestDir: "{app}\sounds"; Flags: recursesubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
@@ -43,3 +45,5 @@ Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\dxirc"; Filename: 
 
 [Run]
 Filename: "{app}\dxirc.exe"; Description: "{cm:LaunchProgram,dxirc}"; Flags: nowait postinstall skipifsilent
+
+

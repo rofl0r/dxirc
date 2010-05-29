@@ -726,8 +726,13 @@ void IrcTabItem::AppendLinkText(const FXString &txt, FXint stylenum)
                 lastStyle = HiliteStyleExist(foreColor, backColor, style);
                 if(lastStyle == -1)
                 {
-                    CreateHiliteStyle(foreColor, backColor, style);
-                    lastStyle = textStyleList.no();
+                    //dxText has available max. 255 styles
+                    if(textStyleList.no()<256)
+                    {
+                        CreateHiliteStyle(foreColor, backColor, style);
+                        lastStyle = textStyleList.no();
+                    }
+                    else lastStyle = 0;
                 }
             }
             else if(txt[i] == '\026') //reverse
@@ -747,8 +752,13 @@ void IrcTabItem::AppendLinkText(const FXString &txt, FXint stylenum)
                 lastStyle = HiliteStyleExist(foreColor, backColor, style);
                 if(lastStyle == -1)
                 {
-                    CreateHiliteStyle(foreColor, backColor, style);
-                    lastStyle = textStyleList.no();
+                    //dxText has available max. 255 styles
+                    if(textStyleList.no()<256)
+                    {
+                        CreateHiliteStyle(foreColor, backColor, style);
+                        lastStyle = textStyleList.no();
+                    }
+                    else lastStyle = 0;
                 }
             }
             else if(txt[i] == '\037') //underline
@@ -766,8 +776,13 @@ void IrcTabItem::AppendLinkText(const FXString &txt, FXint stylenum)
                 lastStyle = HiliteStyleExist(foreColor, backColor, style);
                 if(lastStyle == -1)
                 {
-                    CreateHiliteStyle(foreColor, backColor, style);
-                    lastStyle = textStyleList.no();
+                    //dxText has available max. 255 styles
+                    if(textStyleList.no()<256)
+                    {
+                        CreateHiliteStyle(foreColor, backColor, style);
+                        lastStyle = textStyleList.no();
+                    }
+                    else lastStyle = 0;
                 }
             }
             else if(txt[i] == '\021') //fixed
@@ -858,8 +873,13 @@ void IrcTabItem::AppendLinkText(const FXString &txt, FXint stylenum)
                 lastStyle = HiliteStyleExist(foreColor, backColor, style);
                 if(lastStyle == -1)
                 {
-                    CreateHiliteStyle(foreColor, backColor, style);
-                    lastStyle = textStyleList.no();
+                    //dxText has available max. 255 styles
+                    if(textStyleList.no()<256)
+                    {
+                        CreateHiliteStyle(foreColor, backColor, style);
+                        lastStyle = textStyleList.no();
+                    }
+                    else lastStyle = 0;
                 };
                 i +=colorLength;
             }
@@ -1035,8 +1055,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
         if(command == "egg")
         {
             text->clearText();
-            text->appendStyledText(FXString("ahoj sem pan Vajíčko,\n"), 3);
-            text->appendStyledText(FXString("a dnes Vám přináším killer feature VODOTRYSK!!!\n"), 3);
+            text->appendStyledText(FXString("ahoj sem pan Vajíčko.\n"), 3);
             getApp()->addTimeout(this, ID_ETIME, 1000);
             pics = 0;
             return TRUE;
@@ -1449,8 +1468,7 @@ FXbool IrcTabItem::ProcessCommand(const FXString& commandtext)
         if(command == "egg")
         {
             text->clearText();
-            text->appendStyledText(FXString("ahoj sem pan Vajíčko,\n"), 3);
-            text->appendStyledText(FXString("a dnes Vám přináším killer feature VODOTRYSK!!!\n"), 3);
+            text->appendStyledText(FXString("ahoj sem pan Vajíčko.\n"), 3);
             getApp()->addTimeout(this, ID_ETIME, 1000);
             pics = 0;
             return TRUE;
@@ -4069,9 +4087,9 @@ long IrcTabItem::OnPipeTimeout(FXObject*, FXSelector, void*)
 
 long IrcTabItem::OnEggTimeout(FXObject*, FXSelector, void*)
 {
-    FXString pic1 = "     ,.    ,-.\n   ,'  `. /  ,--.\n  /      ' ,'  \\ `.\n '  .--, |/     '  \\\n |.'    `| ,-.  |   |\n /   ,-. |/   \\     |\n|   /   \\|     |    |\n|   | ,--!--.  |    |\n     (   |   )\n      `-----'\n";
-    FXString pic2 = "     .,    .-,\n   .'  `, /  .-,.\n  /      \" .`  \\ ',\n |  ,-,. |/     |  \\\n ','    `| .,.  '   '\n /   .-, !/   \\     |\n'   / ,-\\|--.  '    |\n|   !'   |   `.|    !\n   (     |     )\n    `.       ,'\n      `-----'\n";
-    FXString pic3 = "     ,.    .-.\n   ,'  '. /  ,--,\n  '      ' .'  \\ `,\n '  ,,-. !/     '  \\\n |,`    '| .-,  |   |\n /   ,-.-|/--.\\     |\n|  ,/   \\|    `|    '\n' / |    |     '\\   |\n (     ( | )     )\n  \\             /\n   `.         ,'\n     '-------'\n";
+    FXString pic1 = "     __  __\n  _/__//__/|_\n /_| |_| |/_/|\n |_   _   _|/\n /_| |_| |/_/|\n |_   _   _|/\n   |_|/|_|/\n";
+    FXString pic2 = "\n\n       __  __\n    _/__//__/|_\n   /_| |_| |/_/|\n   |_   _   _|/\n   /_| |_| |/_/|\n   |_   _   _|/\n     |_|/|_|/\n";
+    FXString pic3 = "\n\n\n\n         __  __\n      _/__//__/|_\n     /_| |_| |/_/|\n     |_   _   _|/\n     /_| |_| |/_/|\n     |_   _   _|/\n       |_|/|_|/\n";
     if(pics<24)
     {
         
@@ -4079,17 +4097,17 @@ long IrcTabItem::OnEggTimeout(FXObject*, FXSelector, void*)
         text->clearText();
         if((pics)%3==0)
         {
-            text->appendStyledText(pic1, 3);
+            text->appendStyledText(pic1, 4);
             pics++;
             return 1;
         }
         if((pics)%3==1)
         {
-            text->appendStyledText(pic2, 3);
+            text->appendStyledText(pic2, 4);
             pics++;
             return 1;
         }
-        text->appendStyledText(pic3, 3);
+        text->appendStyledText(pic3, 4);
         pics++;
     }
     return 1;

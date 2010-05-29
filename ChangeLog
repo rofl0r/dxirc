@@ -1,4 +1,14 @@
-Version 0.40.1 (13-02-2010)
+Version 0.50.0 (released 29-05-2010)
+- added support for smileys.
+- added initial support for sounds.
+- new functions in Lua scripting support.
+- added DCC RESUME and DCC ACCEPT.
+- The location of the local configuration files on *nix has changed.
+  This is to be compliant with the Freedesktop standards.
+  The local configuration files for dxirc is now located in the ~/.config/dxirc directory.
+- added support sending styled text.
+
+Version 0.40.1 (released 13-02-2010)
 - small issues in tabs, trayicon, mainicon fixed
 - new startup option -i [PATH] for location program icons (usefull mainly on Windows)
 

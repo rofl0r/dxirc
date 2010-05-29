@@ -37,14 +37,14 @@ Build=0
 LanguageID=1029
 CharsetID=1252
 CompanyName=David Vachulka
-FileVersion=0.50.svn
+FileVersion=0.50.0
 FileDescription=dxirc - simple IRC client
 InternalName=dxirc
 LegalCopyright=Copyright (C) 2008~ David Vachulka
 LegalTrademarks=GPL
 OriginalFilename=dxirc.exe
 ProductName=dxirc - simple IRC client
-ProductVersion=0.50.svn
+ProductVersion=0.50.0
 AutoIncBuildNr=0
 
 [Unit1]
