@@ -2579,7 +2579,7 @@ long dxirc::OnTabBook(FXObject *, FXSelector, void *ptr)
         else if(currenttab->GetType() == OTHER)
             UpdateStatus(currenttab->getText());
         else
-            UpdateStatus(currenttab->getText()+"-"+currenttab->GetServerName()+"-"+currenttab->GetNickName());
+            UpdateStatus((currenttab->getText()[0]=='&' ? "&"+currenttab->getText(): currenttab->getText())+"-"+currenttab->GetServerName()+"-"+currenttab->GetNickName());
     }    
     if(compare(tabbook->childAtIndex(index)->getClassName(), "TetrisTabItem") == 0)
     {
