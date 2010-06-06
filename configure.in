@@ -115,6 +115,8 @@ fi
 dnl Include flags for the FOX library
 FOXCFLAGS=`$FOX_CONFIG --cflags`
 CXXFLAGS="${CXXFLAGS} $FOXCFLAGS"
+FOXLIBS=`$FOX_CONFIG --libs`
+LIBS="$LIBS $FOXLIBS"
 
 dnl Check for libPNG
 AC_CHECK_LIB(png, png_read_info,,AC_MSG_ERROR("libPNG not found"))

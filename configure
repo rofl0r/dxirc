@@ -12009,6 +12009,8 @@ fi
 
 FOXCFLAGS=`$FOX_CONFIG --cflags`
 CXXFLAGS="${CXXFLAGS} $FOXCFLAGS"
+FOXLIBS=`$FOX_CONFIG --libs`
+LIBS="$LIBS $FOXLIBS"
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for png_read_info in -lpng" >&5
 $as_echo_n "checking for png_read_info in -lpng... " >&6; }
