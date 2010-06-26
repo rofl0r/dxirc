@@ -3488,9 +3488,8 @@ void IrcTabItem::OnIrcTopic(IrcEvent* ev)
 {
     if(comparecase(ev->param2, getText()) == 0)
     {
-        AppendIrcText(FXStringFormat(_("%s Set new topic for %s: %s"), ev->param1.text(), ev->param2.text(), ev->param3.text()), ev->time);
-        topic = ev->param3;
-        topicline->setText(topic);
+        AppendIrcText(FXStringFormat(_("%s set new topic for %s: %s"), ev->param1.text(), ev->param2.text(), ev->param3.text()), ev->time);
+        topicline->setText(ev->param3);
     }
 }
 

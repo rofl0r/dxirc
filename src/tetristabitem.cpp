@@ -421,12 +421,12 @@ void TetrisTabItem::DrawLines()
     {
         dc.setFont(getApp()->getNormalFont());
         dc.drawText(2, getApp()->getNormalFont()->getFontHeight()+2, _("Keys for playing:"));
-        dc.drawText(2, 2*(getApp()->getNormalFont()->getFontHeight()+2), _("N .. new game"));
-        dc.drawText(2, 3*(getApp()->getNormalFont()->getFontHeight()+2), _("P .. pause game"));
-        dc.drawText(2, 4*(getApp()->getNormalFont()->getFontHeight()+2), _("Num5 .. rotate piece"));
-        dc.drawText(2, 5*(getApp()->getNormalFont()->getFontHeight()+2), _("Num3 .. move piece right"));
-        dc.drawText(2, 6*(getApp()->getNormalFont()->getFontHeight()+2), _("Num2 .. drop piece"));
-        dc.drawText(2, 7*(getApp()->getNormalFont()->getFontHeight()+2), _("Num1 .. move piece left"));
+        dc.drawText(2, 2*(getApp()->getNormalFont()->getFontHeight()+2), _("n .. new game"));
+        dc.drawText(2, 3*(getApp()->getNormalFont()->getFontHeight()+2), _("p .. pause game"));
+        dc.drawText(2, 4*(getApp()->getNormalFont()->getFontHeight()+2), _("i .. rotate piece"));
+        dc.drawText(2, 5*(getApp()->getNormalFont()->getFontHeight()+2), _("l .. move piece right"));
+        dc.drawText(2, 6*(getApp()->getNormalFont()->getFontHeight()+2), _("k .. drop piece"));
+        dc.drawText(2, 7*(getApp()->getNormalFont()->getFontHeight()+2), _("j .. move piece left"));
     }
     dc.setFont(messageFont);
     if(done)

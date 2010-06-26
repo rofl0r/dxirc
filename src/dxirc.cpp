@@ -256,6 +256,7 @@ dxirc::dxirc(FXApp *app)
 
     IrcTabItem *tabitem = new IrcTabItem(tabbook, "(server)", servericon, TAB_BOTTOM, SERVER, server, ownServerWindow, usersShown, logging, commandsList, logPath, maxAway, colors, nickCompletionChar, ircFont, sameCmd, sameList, coloredNick, stripColors);
     server->AppendTarget(tabitem);
+    tabitem->SetIrcFont(ircFont);
 
     statusbar = new FXHorizontalFrame(mainframe, LAYOUT_LEFT|JUSTIFY_LEFT|LAYOUT_FILL_X|FRAME_NONE, 0,0,0,0, 1,1,1,1);
     FXHorizontalFrame *hframe=new FXHorizontalFrame(statusbar, LAYOUT_LEFT|JUSTIFY_LEFT|LAYOUT_FILL_X|FRAME_SUNKEN, 0,0,0,0, 0,0,0,0);
@@ -300,10 +301,14 @@ dxirc::dxirc(FXApp *app)
     getAccelTable()->addAccel(KEY_N, this, FXSEL(SEL_COMMAND, ID_TETRIS));
     getAccelTable()->addAccel(KEY_p, this, FXSEL(SEL_COMMAND, ID_TETRIS));
     getAccelTable()->addAccel(KEY_P, this, FXSEL(SEL_COMMAND, ID_TETRIS));
-    getAccelTable()->addAccel(KEY_KP_5, this, FXSEL(SEL_COMMAND, ID_TETRIS));
-    getAccelTable()->addAccel(KEY_KP_3, this, FXSEL(SEL_COMMAND, ID_TETRIS));
-    getAccelTable()->addAccel(KEY_KP_2, this, FXSEL(SEL_COMMAND, ID_TETRIS));
-    getAccelTable()->addAccel(KEY_KP_1, this, FXSEL(SEL_COMMAND, ID_TETRIS));
+    getAccelTable()->addAccel(KEY_i, this, FXSEL(SEL_COMMAND, ID_TETRIS));
+    getAccelTable()->addAccel(KEY_I, this, FXSEL(SEL_COMMAND, ID_TETRIS));
+    getAccelTable()->addAccel(KEY_l, this, FXSEL(SEL_COMMAND, ID_TETRIS));
+    getAccelTable()->addAccel(KEY_L, this, FXSEL(SEL_COMMAND, ID_TETRIS));
+    getAccelTable()->addAccel(KEY_k, this, FXSEL(SEL_COMMAND, ID_TETRIS));
+    getAccelTable()->addAccel(KEY_K, this, FXSEL(SEL_COMMAND, ID_TETRIS));
+    getAccelTable()->addAccel(KEY_j, this, FXSEL(SEL_COMMAND, ID_TETRIS));
+    getAccelTable()->addAccel(KEY_J, this, FXSEL(SEL_COMMAND, ID_TETRIS));
 }
 
 dxirc::~dxirc()
@@ -3114,22 +3119,26 @@ long dxirc::OnTetrisKey(FXObject*, FXSelector, void *ptr)
             static_cast<TetrisTabItem*>(tabbook->childAtIndex(tabbook->getCurrent()*2))->PauseResumeGame();
             break;
         }
-        case KEY_KP_5:
+        case KEY_I:
+        case KEY_i:
         {
             static_cast<TetrisTabItem*>(tabbook->childAtIndex(tabbook->getCurrent()*2))->Rotate();
             break;
         }
-        case KEY_KP_3:
+        case KEY_L:
+        case KEY_l:
         {
             static_cast<TetrisTabItem*>(tabbook->childAtIndex(tabbook->getCurrent()*2))->MoveRight();
             break;
         }
-        case KEY_KP_2:
+        case KEY_K:
+        case KEY_k:
         {
             static_cast<TetrisTabItem*>(tabbook->childAtIndex(tabbook->getCurrent()*2))->Drop();
             break;
         }
-        case KEY_KP_1:
+        case KEY_J:
+        case KEY_j:
         {
             static_cast<TetrisTabItem*>(tabbook->childAtIndex(tabbook->getCurrent()*2))->MoveLeft();
             break;

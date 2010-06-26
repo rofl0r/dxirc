@@ -155,7 +155,7 @@ long FXTrayIcon::onEvent(FXObject* obj, FXSelector, void* ptr)
         POINT p;
         GetCursorPos(&p);
         mPup->popup(0, p.x, p.y);
-        getApp()->addTimeout(this, ID_POPTIMEOUT, 2000);
+        getApp()->addTimeout(this, ID_POPTIMEOUT, 10000);
 
         return 1;
     }
@@ -396,7 +396,7 @@ void FXTrayIcon::popup(FXint x, FXint y)
     }
 
     mPup->popup(0, x, y);
-    getApp()->addTimeout(this, ID_POPTIMEOUT, 2000);
+    getApp()->addTimeout(this, ID_POPTIMEOUT, 10000);
 
 }
 #endif
@@ -408,7 +408,7 @@ long FXTrayIcon::onTimeout(FXObject*, FXSelector, void*)
     FXuint button;
     getCursorPosition(x,y,button);
     translateCoordinatesTo(px,py,getParent(),x,y);
-    mPup->contains(px,py) ? getApp()->addTimeout(this, ID_POPTIMEOUT, 1000) : mPup->popdown();
+    mPup->contains(px,py) ? getApp()->addTimeout(this, ID_POPTIMEOUT, 10000) : mPup->popdown();
     return 1;
 }
 }

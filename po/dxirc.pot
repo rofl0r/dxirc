@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: david@konstrukce-cad.com\n"
-"POT-Creation-Date: 2010-05-29 21:10+0200\n"
+"POT-Creation-Date: 2010-06-10 18:08+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 
 #: src/configdialog.cpp:123 src/configdialog.cpp:382 src/configdialog.cpp:929
 #: src/configdialog.cpp:967 src/configdialog.cpp:1007
-#: src/configdialog.cpp:1313 src/configdialog.cpp:1353 src/dxirc.cpp:1490
+#: src/configdialog.cpp:1313 src/configdialog.cpp:1353 src/dxirc.cpp:1494
 #: src/irctabitem.cpp:59 src/irctabitem.cpp:4303 src/irctabitem.cpp:4324
 #: src/irctabitem.cpp:4349 src/irctabitem.cpp:4379 src/irctabitem.cpp:4402
 #: src/serverdialog.cpp:101 src/serverdialog.cpp:181 src/serverdialog.cpp:268
@@ -39,7 +39,7 @@ msgstr ""
 
 #: src/configdialog.cpp:124 src/configdialog.cpp:930 src/configdialog.cpp:968
 #: src/configdialog.cpp:1008 src/configdialog.cpp:1314
-#: src/configdialog.cpp:1354 src/dxirc.cpp:1402 src/dxirc.cpp:1491
+#: src/configdialog.cpp:1354 src/dxirc.cpp:1406 src/dxirc.cpp:1495
 #: src/irctabitem.cpp:4304 src/irctabitem.cpp:4325 src/irctabitem.cpp:4350
 #: src/irctabitem.cpp:4380 src/irctabitem.cpp:4403 src/serverdialog.cpp:182
 #: src/serverdialog.cpp:269 src/aliasdialog.cpp:85 src/aliasdialog.cpp:128
@@ -499,7 +499,7 @@ msgid "Nick:"
 msgstr ""
 
 #: src/configdialog.cpp:958 src/configdialog.cpp:999 src/configdialog.cpp:1304
-#: src/configdialog.cpp:1345 src/dxirc.cpp:1474 src/irctabitem.cpp:4370
+#: src/configdialog.cpp:1345 src/dxirc.cpp:1478 src/irctabitem.cpp:4370
 #: src/serverdialog.cpp:160 src/serverdialog.cpp:244
 msgid "Channel(s):\tChannels need to be comma separated"
 msgstr ""
@@ -690,91 +690,91 @@ msgstr ""
 msgid "&Help"
 msgstr ""
 
-#: src/dxirc.cpp:763 src/dxirc.cpp:2009 src/dxirc.cpp:2046 src/dxirc.cpp:3294
-#: src/dxirc.cpp:3384 src/dxirc.cpp:3434
+#: src/dxirc.cpp:767 src/dxirc.cpp:2013 src/dxirc.cpp:2050 src/dxirc.cpp:3302
+#: src/dxirc.cpp:3392 src/dxirc.cpp:3442
 #, c-format
 msgid "Lua plugin: error calling %s %s"
 msgstr ""
 
-#: src/dxirc.cpp:801
+#: src/dxirc.cpp:805
 msgid "Help"
 msgstr ""
 
-#: src/dxirc.cpp:810 src/logviewer.cpp:71 src/scriptdialog.cpp:77
+#: src/dxirc.cpp:814 src/logviewer.cpp:71 src/scriptdialog.cpp:77
 #: src/scriptdialog.cpp:216 src/dccdialog.cpp:75
 msgid "C&lose"
 msgstr ""
 
-#: src/dxirc.cpp:1390
+#: src/dxirc.cpp:1394
 #, c-format
 msgid "About %s"
 msgstr ""
 
-#: src/dxirc.cpp:1393
+#: src/dxirc.cpp:1397
 msgid ""
 "\n"
 "Copyright (C) 2008~ David Vachulka (david@konstrukce-cad.com)\n"
 msgstr ""
 
-#: src/dxirc.cpp:1394
+#: src/dxirc.cpp:1398
 #, c-format
 msgid ""
 "This software was built with the FOX Toolkit Library version %d.%d.%d "
 "(http://www.fox-toolkit.org)."
 msgstr ""
 
-#: src/dxirc.cpp:1396 src/dxirc.cpp:1399
+#: src/dxirc.cpp:1400 src/dxirc.cpp:1403
 #, c-format
 msgid "This software was built with %s"
 msgstr ""
 
-#: src/dxirc.cpp:1401
+#: src/dxirc.cpp:1405
 msgid "This sofware uses http://www.famfamfam.com/lab/icons/"
 msgstr ""
 
-#: src/dxirc.cpp:1450
+#: src/dxirc.cpp:1454
 msgid "Quick connect"
 msgstr ""
 
-#: src/dxirc.cpp:1455 src/serverdialog.cpp:55 src/serverdialog.cpp:141
+#: src/dxirc.cpp:1459 src/serverdialog.cpp:55 src/serverdialog.cpp:141
 #: src/serverdialog.cpp:223
 msgid "Hostname:"
 msgstr ""
 
-#: src/dxirc.cpp:1459 src/serverdialog.cpp:59 src/serverdialog.cpp:145
+#: src/dxirc.cpp:1463 src/serverdialog.cpp:59 src/serverdialog.cpp:145
 #: src/serverdialog.cpp:227 src/dccdialog.cpp:71
 msgid "Port:"
 msgstr ""
 
-#: src/dxirc.cpp:1464 src/serverdialog.cpp:63 src/serverdialog.cpp:150
+#: src/dxirc.cpp:1468 src/serverdialog.cpp:63 src/serverdialog.cpp:150
 #: src/serverdialog.cpp:232
 msgid "Password:"
 msgstr ""
 
-#: src/dxirc.cpp:1467 src/serverdialog.cpp:67 src/serverdialog.cpp:153
+#: src/dxirc.cpp:1471 src/serverdialog.cpp:67 src/serverdialog.cpp:153
 #: src/serverdialog.cpp:236
 msgid "Nickname:"
 msgstr ""
 
-#: src/dxirc.cpp:1471 src/serverdialog.cpp:71 src/serverdialog.cpp:157
+#: src/dxirc.cpp:1475 src/serverdialog.cpp:71 src/serverdialog.cpp:157
 #: src/serverdialog.cpp:240
 msgid "Realname:"
 msgstr ""
 
-#: src/dxirc.cpp:1479 src/serverdialog.cpp:90 src/serverdialog.cpp:173
+#: src/dxirc.cpp:1483 src/serverdialog.cpp:90 src/serverdialog.cpp:173
 #: src/serverdialog.cpp:258
 msgid "Use SSL:"
 msgstr ""
 
-#: src/dxirc.cpp:1483 src/serverdialog.cpp:82
+#: src/dxirc.cpp:1487 src/serverdialog.cpp:82
 msgid "Commands on connection:"
 msgstr ""
 
-#: src/dxirc.cpp:1636
+#: src/dxirc.cpp:1640
 msgid "Confirm disconnect"
 msgstr ""
 
-#: src/dxirc.cpp:1638
+#: src/dxirc.cpp:1642
 #, c-format
 msgid ""
 "Disconnect server: %s\n"
@@ -782,35 +782,35 @@ msgid ""
 "Nick: %s"
 msgstr ""
 
-#: src/dxirc.cpp:1640 ../../fox-1.6.37/src/FXMessageBox.cpp:112
+#: src/dxirc.cpp:1644 ../../fox-1.6.37/src/FXMessageBox.cpp:112
 #: ../../fox-1.6.37/src/FXMessageBox.cpp:117
 msgid "&No"
 msgstr ""
 
-#: src/dxirc.cpp:1641 ../../fox-1.6.37/src/FXMessageBox.cpp:111
+#: src/dxirc.cpp:1645 ../../fox-1.6.37/src/FXMessageBox.cpp:111
 #: ../../fox-1.6.37/src/FXMessageBox.cpp:116
 msgid "&Yes"
 msgstr ""
 
-#: src/dxirc.cpp:2069 src/dxirc.cpp:2120 src/dxirc.cpp:2146 src/dxirc.cpp:2294
-#: src/dxirc.cpp:2318 src/dxirc.cpp:3707 src/logviewer.cpp:462
+#: src/dxirc.cpp:2073 src/dxirc.cpp:2124 src/dxirc.cpp:2150 src/dxirc.cpp:2298
+#: src/dxirc.cpp:2322 src/dxirc.cpp:3715 src/logviewer.cpp:462
 msgid "Question"
 msgstr ""
 
-#: src/dxirc.cpp:2069
+#: src/dxirc.cpp:2073
 #, c-format
 msgid ""
 "%s offers DCC Chat on %s port %s.\n"
 " Do you want connect?"
 msgstr ""
 
-#: src/dxirc.cpp:2114 src/dxirc.cpp:2176 src/dxirc.cpp:2288 src/dxirc.cpp:2346
-#: src/dxirc.cpp:2506 src/dxirc.cpp:2531
+#: src/dxirc.cpp:2118 src/dxirc.cpp:2180 src/dxirc.cpp:2292 src/dxirc.cpp:2350
+#: src/dxirc.cpp:2510 src/dxirc.cpp:2535
 #, c-format
 msgid "Receiving \"%s\" from %s"
 msgstr ""
 
-#: src/dxirc.cpp:2120
+#: src/dxirc.cpp:2124
 #, c-format
 msgid ""
 "%s offers file %s with size %s over DCC .\n"
@@ -818,18 +818,18 @@ msgid ""
 "Do you want continue in download?"
 msgstr ""
 
-#: src/dxirc.cpp:2146
+#: src/dxirc.cpp:2150
 #, c-format
 msgid ""
 "%s offers file %s with size %s over DCC .\n"
 "Do you want connect?"
 msgstr ""
 
-#: src/dxirc.cpp:2148 src/dxirc.cpp:2320
+#: src/dxirc.cpp:2152 src/dxirc.cpp:2324
 msgid "Save file"
 msgstr ""
 
-#: src/dxirc.cpp:2294
+#: src/dxirc.cpp:2298
 #, c-format
 msgid ""
 "%s offers file %s with size %s over DCC passive.\n"
@@ -837,131 +837,131 @@ msgid ""
 "Do you want continue in download?"
 msgstr ""
 
-#: src/dxirc.cpp:2318
+#: src/dxirc.cpp:2322
 #, c-format
 msgid ""
 "%s offers file %s with size %s over DCC passive.\n"
 " Do you want accept?"
 msgstr ""
 
-#: src/dxirc.cpp:2379 src/dxirc.cpp:2394
+#: src/dxirc.cpp:2383 src/dxirc.cpp:2398
 #, c-format
 msgid "Download of \"%s\" from %s canceled"
 msgstr ""
 
-#: src/dxirc.cpp:2383
+#: src/dxirc.cpp:2387
 #, c-format
 msgid "Download of \"%s\" from %s finished"
 msgstr ""
 
-#: src/dxirc.cpp:2404 src/dxirc.cpp:2419
+#: src/dxirc.cpp:2408 src/dxirc.cpp:2423
 #, c-format
 msgid "Upload of \"%s\" to %s canceled"
 msgstr ""
 
-#: src/dxirc.cpp:2408
+#: src/dxirc.cpp:2412
 #, c-format
 msgid "Upload of \"%s\" to %s finished"
 msgstr ""
 
-#: src/dxirc.cpp:2919
+#: src/dxirc.cpp:2923
 #, c-format
 msgid "New highlighted message on %s"
 msgstr ""
 
-#: src/dxirc.cpp:2920
+#: src/dxirc.cpp:2924
 #, c-format
 msgid "New message on %s"
 msgstr ""
 
-#: src/dxirc.cpp:2943
+#: src/dxirc.cpp:2947
 #, c-format
 msgid "'%s' can't be added to ignored commands"
 msgstr ""
 
-#: src/dxirc.cpp:2952
+#: src/dxirc.cpp:2956
 #, c-format
 msgid "'%s' is already added in ignored commands"
 msgstr ""
 
-#: src/dxirc.cpp:2956
+#: src/dxirc.cpp:2960
 #, c-format
 msgid "'%s' was added to ignored commands"
 msgstr ""
 
-#: src/dxirc.cpp:2983
+#: src/dxirc.cpp:2987
 #, c-format
 msgid "'%s' was removed from ignored commands"
 msgstr ""
 
-#: src/dxirc.cpp:2989
+#: src/dxirc.cpp:2993
 #, c-format
 msgid "'%s' isn't in ignored commands"
 msgstr ""
 
-#: src/dxirc.cpp:3022
+#: src/dxirc.cpp:3026
 #, c-format
 msgid "'%s' was updated in ignored users"
 msgstr ""
 
-#: src/dxirc.cpp:3033 src/dxirc.cpp:3043
+#: src/dxirc.cpp:3037 src/dxirc.cpp:3047
 #, c-format
 msgid "'%s' was added to ignored users"
 msgstr ""
 
-#: src/dxirc.cpp:3068
+#: src/dxirc.cpp:3072
 #, c-format
 msgid "'%s' was removed from ignored users"
 msgstr ""
 
-#: src/dxirc.cpp:3074
+#: src/dxirc.cpp:3078
 #, c-format
 msgid "'%s' wasn't removed from ignored users"
 msgstr ""
 
-#: src/dxirc.cpp:3219
+#: src/dxirc.cpp:3227
 msgid "Scripts aren't loaded"
 msgstr ""
 
-#: src/dxirc.cpp:3224
+#: src/dxirc.cpp:3232
 msgid "Loaded scrips:"
 msgstr ""
 
-#: src/dxirc.cpp:3227
+#: src/dxirc.cpp:3235
 #, c-format
 msgid "Name: %s"
 msgstr ""
 
-#: src/dxirc.cpp:3228
+#: src/dxirc.cpp:3236
 #, c-format
 msgid "Description: %s"
 msgstr ""
 
-#: src/dxirc.cpp:3229
+#: src/dxirc.cpp:3237
 #, c-format
 msgid "Version: %s"
 msgstr ""
 
-#: src/dxirc.cpp:3230
+#: src/dxirc.cpp:3238
 #, c-format
 msgid "Path: %s"
 msgstr ""
 
-#: src/dxirc.cpp:3251
+#: src/dxirc.cpp:3259
 #, c-format
 msgid "Error: %s"
 msgstr ""
 
-#: src/dxirc.cpp:3259 src/irctabitem.cpp:1766 src/irctabitem.cpp:2623
+#: src/dxirc.cpp:3267 src/irctabitem.cpp:1766 src/irctabitem.cpp:2623
 msgid "dxirc is compiled without support for Lua scripting"
 msgstr ""
 
-#: src/dxirc.cpp:3698
+#: src/dxirc.cpp:3706
 #, c-format
 msgid "Script %s is already loaded"
 msgstr ""
 
-#: src/dxirc.cpp:3707
+#: src/dxirc.cpp:3715
 #, c-format
 msgid ""
 "Script %s contains dxirc.AddAll\n"
@@ -969,66 +969,66 @@ msgid ""
 "Load it anyway?"
 msgstr ""
 
-#: src/dxirc.cpp:3709
+#: src/dxirc.cpp:3717
 #, c-format
 msgid "Script %s contains dxirc.AddAll. This can BREAK dxirc funcionality."
 msgstr ""
 
-#: src/dxirc.cpp:3714
+#: src/dxirc.cpp:3722
 msgid "Unable to initialize Lua."
 msgstr ""
 
-#: src/dxirc.cpp:3723
+#: src/dxirc.cpp:3731
 #, c-format
 msgid "Unable to load/run the file %s"
 msgstr ""
 
-#: src/dxirc.cpp:3730
+#: src/dxirc.cpp:3738
 #, c-format
 msgid "Lua plugin: error registering script %s"
 msgstr ""
 
-#: src/dxirc.cpp:3743
+#: src/dxirc.cpp:3751
 #, c-format
 msgid "Script with name %s is already loaded"
 msgstr ""
 
-#: src/dxirc.cpp:3755
+#: src/dxirc.cpp:3763
 #, c-format
 msgid "Script %s was loaded"
 msgstr ""
 
-#: src/dxirc.cpp:3764
+#: src/dxirc.cpp:3772
 #, c-format
 msgid "Lua plugin: error calling dxirc_Init() %s"
 msgstr ""
 
-#: src/dxirc.cpp:3782 src/dxirc.cpp:3807
+#: src/dxirc.cpp:3790 src/dxirc.cpp:3815
 #, c-format
 msgid "Script %s isn't loaded"
 msgstr ""
 
-#: src/dxirc.cpp:3806
+#: src/dxirc.cpp:3814
 #, c-format
 msgid "Script %s was unloaded"
 msgstr ""
 
-#: src/dxirc.cpp:3892
+#: src/dxirc.cpp:3900
 #, c-format
 msgid "Command %s already exists"
 msgstr ""
 
-#: src/dxirc.cpp:3936
+#: src/dxirc.cpp:3944
 #, c-format
 msgid "Function %s for event %s already exists"
 msgstr ""
 
-#: src/dxirc.cpp:4074
+#: src/dxirc.cpp:4082
 #, c-format
 msgid "Command/event %s in script %s was removed"
 msgstr ""
 
-#: src/dxirc.cpp:4429
+#: src/dxirc.cpp:4437
 msgid ""
 "\n"
 "Usage: dxirc [options] \n"
@@ -2097,27 +2097,27 @@ msgstr ""
 msgid "Keys for playing:"
 msgstr ""
 
-#: src/irctabitem.cpp:2712 src/tetristabitem.cpp:424
+#: src/irctabitem.cpp:2712
 msgid "N .. new game"
 msgstr ""
 
-#: src/irctabitem.cpp:2713 src/tetristabitem.cpp:425
+#: src/irctabitem.cpp:2713
 msgid "P .. pause game"
 msgstr ""
 
-#: src/irctabitem.cpp:2714 src/tetristabitem.cpp:426
+#: src/irctabitem.cpp:2714
 msgid "Num5 .. rotate piece"
 msgstr ""
 
-#: src/irctabitem.cpp:2715 src/tetristabitem.cpp:427
+#: src/irctabitem.cpp:2715
 msgid "Num3 .. move piece right"
 msgstr ""
 
-#: src/irctabitem.cpp:2716 src/tetristabitem.cpp:428
+#: src/irctabitem.cpp:2716
 msgid "Num2 .. drop piece"
 msgstr ""
 
-#: src/irctabitem.cpp:2717 src/tetristabitem.cpp:429
+#: src/irctabitem.cpp:2717
 msgid "Num1 .. move piece left"
 msgstr ""
 
@@ -2810,6 +2810,30 @@ msgstr ""
 #: src/tetristabitem.cpp:186 src/tetristabitem.cpp:302
 #: src/tetristabitem.cpp:522
 msgid "&Pause game"
+msgstr ""
+
+#: src/tetristabitem.cpp:424
+msgid "n .. new game"
+msgstr ""
+
+#: src/tetristabitem.cpp:425
+msgid "p .. pause game"
+msgstr ""
+
+#: src/tetristabitem.cpp:426
+msgid "i .. rotate piece"
+msgstr ""
+
+#: src/tetristabitem.cpp:427
+msgid "l .. move piece right"
+msgstr ""
+
+#: src/tetristabitem.cpp:428
+msgid "k .. drop piece"
+msgstr ""
+
+#: src/tetristabitem.cpp:429
+msgid "j .. move piece left"
 msgstr ""
 
 #: src/tetristabitem.cpp:434 src/tetristabitem.cpp:437
