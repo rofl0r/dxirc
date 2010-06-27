@@ -206,7 +206,7 @@ private:
     LogItem *itemOnRight;
     FXString logPath, searchstring;
     FXDataTarget targetAll, targetChannel, targetFile, targetIcase;
-    FXbool all, channel, file, icase;
+    FXbool all, channel, file, icase, treeLoaded;
 };
 
 #endif  /* LOGVIEWER_H */

@@ -56,6 +56,7 @@ LogViewer::LogViewer(FXApp *app, const FXString &lpath, FXFont *fnt)
     channel = FALSE;
     file = FALSE;
     icase = FALSE;
+    treeLoaded = FALSE;
     targetAll.connect(all);
     targetAll.setTarget(this);
     targetAll.setSelector(ID_ALL);
@@ -224,8 +225,22 @@ long LogViewer::OnSearch(FXObject*, FXSelector, void*)
             return 1;
         }
     }
-    else
+    else //search over all files
     {
+        //we need load full tree
+        if(!treeLoaded)
+        {
+            getApp()->beginWaitCursor();
+            LogItem *item = (LogItem*)treeHistory->getFirstItem();
+            while(item!=NULL)
+            {
+                ListChildItems(item);
+                item=(LogItem*)item->getBelow();
+            }
+            getApp()->endWaitCursor();
+            treeLoaded = TRUE;
+        }
+        getApp()->endWaitCursor();
         FXint count = 0;
         FXRex rex;
         FXint rexmode = REX_VERBATIM;
@@ -493,14 +508,17 @@ long LogViewer::OnCmdSearchOptions(FXObject*, FXSelector sel, void*)
     case ID_ALL:
         channel = FALSE;
         file = FALSE;
+        all = TRUE;
         break;
     case ID_CHANNEL:
         all = FALSE;
         file = FALSE;
+        channel = TRUE;
         break;
     case ID_FILE:
         all = FALSE;
         channel = FALSE;
+        file = TRUE;
         break;
     }
     return 1;
@@ -864,7 +882,7 @@ FXbool LogViewer::IsRightFile(const FXString& path, const FXString& name)
             FXFREE(&txt);
             return FALSE;
         }
-        if(FXRex("[\\d\\d:\\d\\d:\\d\\d]").match(txt,10))
+        if(FXRex("^\\[\\d\\d:\\d\\d:\\d\\d\\]+$").match(txt,10))
         {
             FXFREE(&txt);
             return TRUE;
