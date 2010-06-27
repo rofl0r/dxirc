@@ -240,7 +240,6 @@ long LogViewer::OnSearch(FXObject*, FXSelector, void*)
             getApp()->endWaitCursor();
             treeLoaded = TRUE;
         }
-        getApp()->endWaitCursor();
         FXint count = 0;
         FXRex rex;
         FXint rexmode = REX_VERBATIM;
