@@ -167,46 +167,46 @@ public:
 
     virtual void create();
 
-    long OnClose(FXObject*,FXSelector,void*);
-    long OnKeyPress(FXObject*,FXSelector,void*);
-    long OnTree(FXObject*,FXSelector,void*);
-    long OnRightTree(FXObject*,FXSelector,void*);
-    long OnSearch(FXObject*,FXSelector,void*);
-    long OnSearchNext(FXObject*,FXSelector,void*);
-    long OnReset(FXObject*,FXSelector,void*);
-    long OnCmdSearchOptions(FXObject*,FXSelector,void*);
-    long OnPack(FXObject*,FXSelector,void*);
-    long OnUnpack(FXObject*,FXSelector,void*);
-    long OnDelete(FXObject*,FXSelector,void*);
-    void SetFont(FXFont*);
+    long onClose(FXObject*,FXSelector,void*);
+    long onKeyPress(FXObject*,FXSelector,void*);
+    long onTree(FXObject*,FXSelector,void*);
+    long onRightTree(FXObject*,FXSelector,void*);
+    long onSearch(FXObject*,FXSelector,void*);
+    long onSearchNext(FXObject*,FXSelector,void*);
+    long onReset(FXObject*,FXSelector,void*);
+    long onCmdSearchOptions(FXObject*,FXSelector,void*);
+    long onPack(FXObject*,FXSelector,void*);
+    long onUnpack(FXObject*,FXSelector,void*);
+    long onDelete(FXObject*,FXSelector,void*);
+    void setFont(FXFont*);
 
 private:
     LogViewer() {}
     LogViewer(const LogViewer&);
 
-    FXbool LoadFile(const FXString& file);
-    FXbool IsChannelItem(const LogItem *item);
-    void LoadTree();
-    FXString GetItemPathname(const FXTreeItem* item);
-    void ListChildItems(LogItem *par);
-    void EnableAllItems();
-    FXbool IsRightFile(const FXString &path, const FXString &name);
-    void Scan();
+    FXbool loadFile(const FXString& file);
+    FXbool isChannelItem(const LogItem *item);
+    void loadTree();
+    FXString getItemPathname(const FXTreeItem* item);
+    void listChildItems(LogItem *par);
+    void enableAllItems();
+    FXbool isRightFile(const FXString &path, const FXString &name);
+    void scan();
 
-    FXVerticalFrame *listframe, *textframe, *treeframe;
-    FXHorizontalFrame *content, *buttonframe, *searchframe;
-    FXSplitter *splitter;
-    FXTreeList *treeHistory;
-    FXTextField *searchfield;
-    FXButton *buttonClose, *buttonSearch, *buttonReset;
-    FXGroupBox *group;
-    FXRadioButton *buttonAll, *buttonChannel, *buttonFile;
-    FXCheckButton *buttonIcase;
-    FXText *text;
-    LogItem *itemOnRight;
-    FXString logPath, searchstring;
-    FXDataTarget targetAll, targetChannel, targetFile, targetIcase;
-    FXbool all, channel, file, icase, treeLoaded;
+    FXVerticalFrame *m_listframe, *m_textframe, *m_treeframe;
+    FXHorizontalFrame *m_content, *m_buttonframe, *m_searchframe;
+    FXSplitter *m_splitter;
+    FXTreeList *m_treeHistory;
+    FXTextField *m_searchfield;
+    FXButton *m_buttonClose, *m_buttonSearch, *m_buttonReset;
+    FXGroupBox *m_group;
+    FXRadioButton *m_buttonAll, *m_buttonChannel, *m_buttonFile;
+    FXCheckButton *m_buttonIcase;
+    FXText *m_text;
+    LogItem *m_itemOnRight;
+    FXString m_logPath, m_searchstring;
+    FXDataTarget m_targetAll, m_targetChannel, m_targetFile, m_targetIcase;
+    FXbool m_all, m_channel, m_file, m_icase, m_treeLoaded;
 };
 
 #endif  /* LOGVIEWER_H */

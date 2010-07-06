@@ -34,204 +34,198 @@
 #define ETIMEOUT 666 //timeout for event fire
 
 FXDEFMAP(IrcSocket) IrcSocketMap[] = {
-    FXMAPFUNC(SEL_IO_READ,      IrcSocket::ID_SOCKET,   IrcSocket::OnIORead),
-    FXMAPFUNC(SEL_TIMEOUT,      IrcSocket::ID_SSLTIME,  IrcSocket::OnIORead),
-    FXMAPFUNC(SEL_IO_WRITE,     IrcSocket::ID_SOCKET,   IrcSocket::OnIOWrite),
-    FXMAPFUNC(SEL_TIMEOUT,      IrcSocket::ID_RTIME,    IrcSocket::OnReconnectTimeout),
-    FXMAPFUNC(SEL_TIMEOUT,      IrcSocket::ID_PTIME,    IrcSocket::OnPositionTimeout),
-    FXMAPFUNC(SEL_TIMEOUT,      IrcSocket::ID_CTIME,    IrcSocket::OnCloseTimeout),
-    FXMAPFUNC(SEL_TIMEOUT,      IrcSocket::ID_ETIME,    IrcSocket::OnEventTimeout)
+    FXMAPFUNC(SEL_IO_READ,      IrcSocket::ID_SOCKET,   IrcSocket::onIORead),
+    FXMAPFUNC(SEL_TIMEOUT,      IrcSocket::ID_SSLTIME,  IrcSocket::onIORead),
+    FXMAPFUNC(SEL_IO_WRITE,     IrcSocket::ID_SOCKET,   IrcSocket::onIOWrite),
+    FXMAPFUNC(SEL_TIMEOUT,      IrcSocket::ID_RTIME,    IrcSocket::onReconnectTimeout),
+    FXMAPFUNC(SEL_TIMEOUT,      IrcSocket::ID_PTIME,    IrcSocket::onPositionTimeout),
+    FXMAPFUNC(SEL_TIMEOUT,      IrcSocket::ID_CTIME,    IrcSocket::onCloseTimeout),
+    FXMAPFUNC(SEL_TIMEOUT,      IrcSocket::ID_ETIME,    IrcSocket::onEventTimeout)
 };
 
 FXIMPLEMENT(IrcSocket, FXObject, IrcSocketMap, ARRAYNUMBER(IrcSocketMap))
 
 IrcSocket::IrcSocket(FXApp *app, FXObject *tgt, FXString channels, FXString commands)
-    : application(app), startChannels(utils::RemoveSpaces(channels)), startCommands(commands)
+    : m_application(app), m_startChannels(utils::removeSpaces(channels)), m_startCommands(commands)
 #ifdef HAVE_OPENSSL
-        ,ctx(NULL), ssl(NULL)
+        ,m_ctx(NULL), m_ssl(NULL)
 #endif
 {
-    targets.append(tgt);
-    serverName = "localhost";
-    realServerName = "";
-    serverPort = 6667;
-    serverPassword = "";
-    nickName = "xxx";
-    userName = nickName;
-    realName = nickName;
-    receiveRest = "";
-    connected = FALSE;
-    connecting = FALSE;
-    endmotd = FALSE;
-    ignoreUserHost = FALSE;
-    dccType = DCC_NONE;
-    dccNick = "";
-    dccIP = utils::GetStringIniEntry("SETTINGS", "dccIP");
+    m_targets.append(tgt);
+    m_serverName = "localhost";
+    m_realServerName = "";
+    m_serverPort = 6667;
+    m_serverPassword = "";
+    m_nickName = "xxx";
+    m_userName = m_nickName;
+    m_realName = m_nickName;
+    m_receiveRest = "";
+    m_connected = FALSE;
+    m_connecting = FALSE;
+    m_endmotd = FALSE;
+    m_ignoreUserHost = FALSE;
+    m_dccType = DCC_NONE;
+    m_dccNick = "";
+    m_dccIP = utils::getStringIniEntry("SETTINGS", "dccIP");
     FXRex rex("\\l");
-    if(dccIP.contains('.')!=3 || rex.match(dccIP))
-        dccIP = "";
-    dccPortD = utils::GetIntIniEntry("SETTINGS", "dccPortD");
-    if(dccPortD<0 || dccPortD>65536) dccPortD = 0;
-    dccPortH = utils::GetIntIniEntry("SETTINGS", "dccPortH");
-    if(dccPortH<0 || dccPortH>65536) dccPortH = 0;
-    if(dccPortH<dccPortD) dccPortH = dccPortD;
-    dccTimeout = utils::GetIntIniEntry("SETTINGS", "dccTimeout", 66);
-    dccFile = DccFile();
-    chanTypes = "#&+!";
-    adminPrefix = '!';
-    ownerPrefix = '*';
-    opPrefix = '@';
-    voicePrefix = '+';
-    halfopPrefix = '%';
-    attempts = 0;
-    numberAttempt = 1;
-    nickLen = 460;
-    topicLen = 460;
-    kickLen = 460;
-    awayLen = 460;
-    thread = new ConnectThread(this);
+    if(m_dccIP.contains('.')!=3 || rex.match(m_dccIP))
+        m_dccIP = "";
+    m_dccPortD = utils::getIntIniEntry("SETTINGS", "dccPortD");
+    if(m_dccPortD<0 || m_dccPortD>65536) m_dccPortD = 0;
+    m_dccPortH = utils::getIntIniEntry("SETTINGS", "dccPortH");
+    if(m_dccPortH<0 || m_dccPortH>65536) m_dccPortH = 0;
+    if(m_dccPortH<m_dccPortD) m_dccPortH = m_dccPortD;
+    m_dccTimeout = utils::getIntIniEntry("SETTINGS", "dccTimeout", 66);
+    m_dccFile = DccFile();
+    m_chanTypes = "#&+!";
+    m_adminPrefix = '!';
+    m_ownerPrefix = '*';
+    m_opPrefix = '@';
+    m_voicePrefix = '+';
+    m_halfopPrefix = '%';
+    m_attempts = 0;
+    m_numberAttempt = 1;
+    m_nickLen = 460;
+    m_topicLen = 460;
+    m_kickLen = 460;
+    m_awayLen = 460;
+    m_thread = new ConnectThread(this);
 }
 
 IrcSocket::~IrcSocket()
 {
 #ifdef HAVE_OPENSSL
-    if(ssl)
+    if(m_ssl)
     {
-        SSL_free(ssl);
+        SSL_free(m_ssl);
     }
 #endif
-    delete thread;
+    delete m_thread;
 }
 
-void IrcSocket::SetUserName(const FXString& user)
+void IrcSocket::setUserName(const FXString& user)
 {
     //needed for freenode
-    userName = utils::RemoveNonalphanumeric(user);
+    m_userName = utils::removeNonalphanumeric(user);
 }
 
-long IrcSocket::OnReconnectTimeout(FXObject*, FXSelector, void*)
+long IrcSocket::onReconnectTimeout(FXObject*, FXSelector, void*)
 {
-    if(attempts < numberAttempt && !connected)
+    if(m_attempts < m_numberAttempt && !m_connected)
     {
-        if(thread->running())
-            application->addTimeout(this, ID_RTIME, 1000);
+        if(m_thread->running())
+            m_application->addTimeout(this, ID_RTIME, 1000);
         else
         {
-            SendEvents();
-            StartConnection();
-            application->addTimeout(this, ID_RTIME, delayAttempt*1000);
+            sendEvents();
+            startConnection();
+            m_application->addTimeout(this, ID_RTIME, m_delayAttempt*1000);
         }
     }
     else
-        ClearAttempts();
+        clearAttempts();
     return 1;
 }
 
-long IrcSocket::OnPositionTimeout(FXObject*, FXSelector, void*)
+long IrcSocket::onPositionTimeout(FXObject*, FXSelector, void*)
 {
-    SendEvent(IRC_DCCPOSITION, dccFile);
-    if(dccFile.currentPosition < dccFile.size && connected)
-        application->addTimeout(this, ID_PTIME, 1000);
+    sendEvent(IRC_DCCPOSITION, m_dccFile);
+    if(m_dccFile.currentPosition < m_dccFile.size && m_connected)
+        m_application->addTimeout(this, ID_PTIME, 1000);
     return 1;
 }
 
 //for offered connectin to me
-long IrcSocket::OnCloseTimeout(FXObject*, FXSelector, void*)
+long IrcSocket::onCloseTimeout(FXObject*, FXSelector, void*)
 {
-    if(dccType != DCC_CHATOUT)
+    if(m_dccType != DCC_CHATOUT)
     {
-        dccFile.canceled = TRUE;
-        SendEvent(IRC_DCCPOSITION, dccFile);
+        m_dccFile.canceled = TRUE;
+        sendEvent(IRC_DCCPOSITION, m_dccFile);
     }
-    if(!connected)
+    if(!m_connected)
     {
 #ifdef WIN32
-        shutdown(serverid, SD_BOTH);
-        closesocket(serverid);
+        shutdown(m_serverid, SD_BOTH);
+        closesocket(m_serverid);
 #else
 #ifndef SHUT_RDWR
 #define SHUT_RDWR 2
 #endif
-        shutdown(serverid, SHUT_RDWR);
-        close(serverid);
+        shutdown(m_serverid, SHUT_RDWR);
+        close(m_serverid);
 #endif
-        SendEvent(IRC_DISCONNECT, _("Connection closed. Client didn't connect in given timeout"));
-        CloseConnection(TRUE);
+        sendEvent(IRC_DISCONNECT, _("Connection closed. Client didn't connect in given timeout"));
+        closeConnection(TRUE);
     }
     return 1;
 }
 
 //fired events stored during thread
-long IrcSocket::OnEventTimeout(FXObject*, FXSelector, void*)
+long IrcSocket::onEventTimeout(FXObject*, FXSelector, void*)
 {
-    SendEvents();
+    sendEvents();
     return 1;
 }
 
-long IrcSocket::OnIORead(FXObject *, FXSelector, void *)
+long IrcSocket::onIORead(FXObject *, FXSelector, void *)
 {
 #ifdef WIN32
-    if(useSsl)
-        application->addTimeout(this, ID_SSLTIME, 100);
+    if(m_useSsl)
+        m_application->addTimeout(this, ID_SSLTIME, 100);
 #endif
-    if(connected)
+    if(m_connected)
     {
-        if(dccType == DCC_IN || dccType == DCC_PIN)
-            ReadFileData();
+        if(m_dccType == DCC_IN || m_dccType == DCC_PIN)
+            readFileData();
         else
-            ReadData();
+            readData();
     }
     return 1;
 }
 
-long IrcSocket::OnIOWrite(FXObject*, FXSelector, void*)
+long IrcSocket::onIOWrite(FXObject*, FXSelector, void*)
 {
-    SendFile();
+    sendFile();
     return 1;
 }
 
-void IrcSocket::StartConnection()
+void IrcSocket::startConnection()
 {
-    FXASSERT(thread);
-#ifdef DEBUG
-    fxmessage("StartConnection\n");
-    fxmessage("Attempts on %s-%d-%s: %d\n", serverName.text(), serverPort, nickName.text(), attempts);
-#endif
-    connecting = TRUE;
-    SendEvent(IRC_CONNECT, FXStringFormat(_("Connecting to %s"), serverName.text()));
-    if(!thread->running())
+    FXASSERT(m_thread);
+    utils::debugLine("StartConnection");
+    utils::debugLine(FXStringFormat("Attempts on %s-%d-%s: %d", m_serverName.text(), m_serverPort, m_nickName.text(), m_attempts));
+    m_connecting = TRUE;
+    sendEvent(IRC_CONNECT, FXStringFormat(_("Connecting to %s"), m_serverName.text()));
+    if(!m_thread->running())
     {
-        attempts++;
-        thread->start();
+        m_attempts++;
+        m_thread->start();
     }
 }
 
-void IrcSocket::StartListening(const  FXString &nick, IrcSocket *server)
+void IrcSocket::startListening(const  FXString &nick, IrcSocket *server)
 {
-    FXASSERT(thread);
-#ifdef DEBUG
-    fxmessage("StartListening\n");
-#endif
-    connecting = TRUE;
-    dccNick = nick;
-    dccParent = server;
-    if(!thread->running())
-        thread->start();
+    FXASSERT(m_thread);
+    utils::debugLine("StartListening");
+    m_connecting = TRUE;
+    m_dccNick = nick;
+    m_dccParent = server;
+    if(!m_thread->running())
+        m_thread->start();
 }
 
-FXint IrcSocket::Connect()
+FXint IrcSocket::connectIRC()
 {
-#ifdef DEBUG
-    fxmessage("Connect\n");
-    fxmessage("startChannels: %s\n", startChannels.text());
-    fxmessage("startCommands: %s\n", startCommands.text());
-#endif
-    if(connected)
+    utils::debugLine("Connect");
+    utils::debugLine(FXStringFormat("startChannels: %s", m_startChannels.text()));
+    utils::debugLine(FXStringFormat("startCommands: %s", m_startCommands.text()));
+    if(m_connected)
     {
-        application->addTimeout(this, ID_ETIME, ETIMEOUT);
+        m_application->addTimeout(this, ID_ETIME, ETIMEOUT);
         return 1;
     }
-    endmotd = FALSE;
+    m_endmotd = FALSE;
 #ifdef WIN32
     WORD wVersionRequested = MAKEWORD(2,0);
     WSADATA data;
@@ -240,107 +234,105 @@ FXint IrcSocket::Connect()
 #ifdef WIN32
     if (WSAStartup(wVersionRequested, &data) != 0)
     {
-        SendEvent(IRC_ERROR, _("Unable to initiliaze socket"));
-        ClearChannelsCommands(FALSE);
-        connecting = FALSE;
-        application->addTimeout(this, ID_ETIME, ETIMEOUT);
+        sendEvent(IRC_ERROR, _("Unable to initiliaze socket"));
+        clearChannelsCommands(FALSE);
+        m_connecting = FALSE;
+        m_application->addTimeout(this, ID_ETIME, ETIMEOUT);
         return -1;
     }
 #endif
-    if ((host = gethostbyname(serverName.text())) == NULL)
+    if ((host = gethostbyname(m_serverName.text())) == NULL)
     {
-        SendEvent(IRC_ERROR, FXStringFormat(_("Bad host: %s"), serverName.text()));
-        ClearChannelsCommands(FALSE);
-        connecting = FALSE;
-        application->addTimeout(this, ID_ETIME, ETIMEOUT);
+        sendEvent(IRC_ERROR, FXStringFormat(_("Bad host: %s"), m_serverName.text()));
+        clearChannelsCommands(FALSE);
+        m_connecting = FALSE;
+        m_application->addTimeout(this, ID_ETIME, ETIMEOUT);
         return -1;
     }
-    if ((serverid = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
+    if ((m_serverid = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
     {
-        SendEvent(IRC_ERROR, _("Unable to create socket"));
-        ClearChannelsCommands(FALSE);
+        sendEvent(IRC_ERROR, _("Unable to create socket"));
+        clearChannelsCommands(FALSE);
 #ifdef WIN32
         WSACleanup();
 #endif
-        connecting = FALSE;
-        application->addTimeout(this, ID_ETIME, ETIMEOUT);
+        m_connecting = FALSE;
+        m_application->addTimeout(this, ID_ETIME, ETIMEOUT);
         return -1;
     }
-    if(dccType == DCC_IN)
+    if(m_dccType == DCC_IN)
     {
         
-        if(dccFile.currentPosition)
+        if(m_dccFile.currentPosition)
         {
-            receivedFile.open(FXString(dccFile.path+".part").text(), std::ios_base::binary|std::ios_base::ate|std::ios_base::app);
+            m_receivedFile.open(FXString(m_dccFile.path+".part").text(), std::ios_base::binary|std::ios_base::ate|std::ios_base::app);
         }
         else
-            receivedFile.open(FXString(dccFile.path+".part").text(), std::ios_base::binary);
+            m_receivedFile.open(FXString(m_dccFile.path+".part").text(), std::ios_base::binary);
     }
-    serverSock.sin_family = AF_INET;
-    serverSock.sin_port = htons(serverPort);
-    memcpy(&(serverSock.sin_addr), host->h_addr, host->h_length);
-    if (connect(serverid, (sockaddr *)&serverSock, sizeof(serverSock)) == -1)
+    m_serverSock.sin_family = AF_INET;
+    m_serverSock.sin_port = htons(m_serverPort);
+    memcpy(&(m_serverSock.sin_addr), host->h_addr, host->h_length);
+    if (connect(m_serverid, (sockaddr *)&m_serverSock, sizeof(m_serverSock)) == -1)
     {
-        SendEvent(IRC_ERROR, FXStringFormat(_("Unable to connect to: %s"), serverName.text()));
-        ClearChannelsCommands(FALSE);
+        sendEvent(IRC_ERROR, FXStringFormat(_("Unable to connect to: %s"), m_serverName.text()));
+        clearChannelsCommands(FALSE);
 #ifdef WIN32
-        closesocket(serverid);
+        closesocket(m_serverid);
 #else
-        close(serverid);
+        close(m_serverid);
 #endif
-        connecting = FALSE;
-        receivedFile.close();
-        application->addTimeout(this, ID_ETIME, ETIMEOUT);
+        m_connecting = FALSE;
+        m_receivedFile.close();
+        m_application->addTimeout(this, ID_ETIME, ETIMEOUT);
         return -1;
     }
 #ifdef WIN32
-    event = WSACreateEvent();
-    WSAEventSelect(serverid, event, FD_CONNECT|FD_READ|FD_CLOSE); // sets non-blocking!!
-    if(dccType == DCC_POUT) 
-        application->addInput((FXInputHandle)event, INPUT_READ|INPUT_WRITE, this, ID_SOCKET);
+    m_event = WSACreateEvent();
+    WSAEventSelect(m_serverid, m_event, FD_CONNECT|FD_READ|FD_CLOSE); // sets non-blocking!!
+    if(m_dccType == DCC_POUT)
+        m_application->addInput((FXInputHandle)m_event, INPUT_READ|INPUT_WRITE, this, ID_SOCKET);
     else
-        application->addInput((FXInputHandle)event, INPUT_READ, this, ID_SOCKET);
+        m_application->addInput((FXInputHandle)m_event, INPUT_READ, this, ID_SOCKET);
 #else
-    if(dccType == DCC_POUT)
-        application->addInput((FXInputHandle)serverid, INPUT_READ|INPUT_WRITE, this, ID_SOCKET);
+    if(m_dccType == DCC_POUT)
+        m_application->addInput((FXInputHandle)m_serverid, INPUT_READ|INPUT_WRITE, this, ID_SOCKET);
     else
-        application->addInput((FXInputHandle)serverid, INPUT_READ, this, ID_SOCKET);
+        m_application->addInput((FXInputHandle)m_serverid, INPUT_READ, this, ID_SOCKET);
 #endif
-    connected = TRUE;
-    connecting = FALSE;
-    if(dccType == DCC_IN) application->addTimeout(this, ID_PTIME, 1000);
-    if(dccType == DCC_POUT)
+    m_connected = TRUE;
+    m_connecting = FALSE;
+    if(m_dccType == DCC_IN) m_application->addTimeout(this, ID_PTIME, 1000);
+    if(m_dccType == DCC_POUT)
     {
-        sentFile.open(dccFile.path.text(), std::ios_base::binary);
-        if(dccFile.currentPosition) sentFile.seekg(dccFile.currentPosition);
-        SendFile();
-        application->addTimeout(this, ID_PTIME, 1000);
+        m_sentFile.open(m_dccFile.path.text(), std::ios_base::binary);
+        if(m_dccFile.currentPosition) m_sentFile.seekg(m_dccFile.currentPosition);
+        sendFile();
+        m_application->addTimeout(this, ID_PTIME, 1000);
     }
-    ClearAttempts();
-    SendEvent(IRC_CONNECT, FXStringFormat(_("Connected to %s"), serverName.text()));
-    if(!serverPassword.empty() && dccType != DCC_CHATIN && dccType != DCC_IN && dccType != DCC_POUT)
-        SendLine("PASS "+serverPassword+"\r\n");
-    if(dccType != DCC_CHATIN && dccType != DCC_IN && dccType != DCC_POUT)
-        SendLine("NICK "+nickName+"\r\n");
-    if(dccType != DCC_CHATIN && dccType != DCC_IN && dccType != DCC_POUT)
-        SendLine("USER "+userName+" 0 * :"+realName+"\r\n");
-    application->addTimeout(this, ID_ETIME, ETIMEOUT);
+    clearAttempts();
+    sendEvent(IRC_CONNECT, FXStringFormat(_("Connected to %s"), m_serverName.text()));
+    if(!m_serverPassword.empty() && m_dccType != DCC_CHATIN && m_dccType != DCC_IN && m_dccType != DCC_POUT)
+        sendLine("PASS "+m_serverPassword+"\r\n");
+    if(m_dccType != DCC_CHATIN && m_dccType != DCC_IN && m_dccType != DCC_POUT)
+        sendLine("NICK "+m_nickName+"\r\n");
+    if(m_dccType != DCC_CHATIN && m_dccType != DCC_IN && m_dccType != DCC_POUT)
+        sendLine("USER "+m_userName+" 0 * :"+m_realName+"\r\n");
+    m_application->addTimeout(this, ID_ETIME, ETIMEOUT);
     return 1;
 }
 
-FXint IrcSocket::ConnectSSL()
+FXint IrcSocket::connectSSL()
 {
-#ifdef DEBUG
-    fxmessage("ConnectSSL\n");
-    fxmessage("startChannels: %s\n", startChannels.text());
-    fxmessage("startCommands: %s\n", startCommands.text());
-#endif
-    if(connected)
+    utils::debugLine("ConnectSSL");
+    utils::debugLine(FXStringFormat("startChannels: %s", m_startChannels.text()));
+    utils::debugLine(FXStringFormat("startCommands: %s", m_startCommands.text()));
+    if(m_connected)
     {
-        application->addTimeout(this, ID_ETIME, ETIMEOUT);
+        m_application->addTimeout(this, ID_ETIME, ETIMEOUT);
         return 1;
     }
-    endmotd = FALSE;
+    m_endmotd = FALSE;
 #ifdef HAVE_OPENSSL
 #ifdef WIN32
     WORD wVersionRequested = MAKEWORD(2,0);
@@ -350,52 +342,52 @@ FXint IrcSocket::ConnectSSL()
 #ifdef WIN32
     if (WSAStartup(wVersionRequested, &data) != 0)
     {
-        SendEvent(IRC_ERROR, _("Unable to initiliaze socket"));
-        ClearChannelsCommands(FALSE);
-        connecting = FALSE;
-        application->addTimeout(this, ID_ETIME, ETIMEOUT);
+        sendEvent(IRC_ERROR, _("Unable to initiliaze socket"));
+        clearChannelsCommands(FALSE);
+        m_connecting = FALSE;
+        m_application->addTimeout(this, ID_ETIME, ETIMEOUT);
         return -1;
     }
 #endif
-    if ((host = gethostbyname(serverName.text())) == NULL)
+    if ((host = gethostbyname(m_serverName.text())) == NULL)
     {
-        SendEvent(IRC_ERROR, FXStringFormat(_("Bad host: %s"), serverName.text()));
-        ClearChannelsCommands(FALSE);
-        connecting = FALSE;
-        application->addTimeout(this, ID_ETIME, ETIMEOUT);
+        sendEvent(IRC_ERROR, FXStringFormat(_("Bad host: %s"), m_serverName.text()));
+        clearChannelsCommands(FALSE);
+        m_connecting = FALSE;
+        m_application->addTimeout(this, ID_ETIME, ETIMEOUT);
         return -1;
     }
-    if ((serverid = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
+    if ((m_serverid = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
     {
-        SendEvent(IRC_ERROR, _("Unable to create socket"));
-        ClearChannelsCommands(FALSE);
+        sendEvent(IRC_ERROR, _("Unable to create socket"));
+        clearChannelsCommands(FALSE);
 #ifdef WIN32
         WSACleanup();
 #endif
-        connecting = FALSE;
-        application->addTimeout(this, ID_ETIME, ETIMEOUT);
+        m_connecting = FALSE;
+        m_application->addTimeout(this, ID_ETIME, ETIMEOUT);
         return -1;
     }
-    serverSock.sin_family = AF_INET;
-    serverSock.sin_port = htons(serverPort);
-    memcpy(&(serverSock.sin_addr), host->h_addr, host->h_length);
-    if (connect(serverid, (sockaddr *)&serverSock, sizeof(serverSock)) == -1)
+    m_serverSock.sin_family = AF_INET;
+    m_serverSock.sin_port = htons(m_serverPort);
+    memcpy(&(m_serverSock.sin_addr), host->h_addr, host->h_length);
+    if (connect(m_serverid, (sockaddr *)&m_serverSock, sizeof(m_serverSock)) == -1)
     {
-        SendEvent(IRC_ERROR, FXStringFormat(_("Unable to connect to: %s"), serverName.text()));
-        ClearChannelsCommands(FALSE);
+        sendEvent(IRC_ERROR, FXStringFormat(_("Unable to connect to: %s"), m_serverName.text()));
+        clearChannelsCommands(FALSE);
 #ifdef WIN32
-        closesocket(serverid);
+        closesocket(m_serverid);
 #else
-        close(serverid);
+        close(m_serverid);
 #endif
-        connecting = FALSE;
-        application->addTimeout(this, ID_ETIME, ETIMEOUT);
+        m_connecting = FALSE;
+        m_application->addTimeout(this, ID_ETIME, ETIMEOUT);
         return -1;
     }
     SSLeay_add_ssl_algorithms();
     SSL_load_error_strings();    
-    ctx = SSL_CTX_new(SSLv3_client_method());
-    SSL_CTX_set_options(ctx, SSL_OP_ALL);
+    m_ctx = SSL_CTX_new(SSLv3_client_method());
+    SSL_CTX_set_options(m_ctx, SSL_OP_ALL);
 #ifdef WIN32
     int i,r;
     for(i=0; i<128; i++)
@@ -404,77 +396,75 @@ FXint IrcSocket::ConnectSSL()
         RAND_seed((unsigned char *)&r, sizeof(r));
     }
 #endif
-    ssl = SSL_new(ctx);
-    if(!ssl)
+    m_ssl = SSL_new(m_ctx);
+    if(!m_ssl)
     {
 #ifdef WIN32
-        shutdown(serverid, SD_BOTH);
-        closesocket(serverid);
+        shutdown(m_serverid, SD_BOTH);
+        closesocket(m_serverid);
 #else
 #ifndef SHUT_RDWR
 #define SHUT_RDWR 2
 #endif
-        shutdown(serverid, SHUT_RDWR);
-        close(serverid);
+        shutdown(m_serverid, SHUT_RDWR);
+        close(m_serverid);
 #endif
-        SendEvent(IRC_ERROR, _("SSL creation error"));
-        connecting = FALSE;
-        application->addTimeout(this, ID_ETIME, ETIMEOUT);
+        sendEvent(IRC_ERROR, _("SSL creation error"));
+        m_connecting = FALSE;
+        m_application->addTimeout(this, ID_ETIME, ETIMEOUT);
         return -1;
     }
-    SSL_set_fd(ssl, serverid);
-    err = SSL_connect(ssl);
-    if(!err)
+    SSL_set_fd(m_ssl, m_serverid);
+    m_err = SSL_connect(m_ssl);
+    if(!m_err)
     {
 #ifdef WIN32
-        shutdown(serverid, SD_BOTH);
-        closesocket(serverid);
+        shutdown(m_serverid, SD_BOTH);
+        closesocket(m_serverid);
 #else
 #ifndef SHUT_RDWR
 #define SHUT_RDWR 2
 #endif
-        shutdown(serverid, SHUT_RDWR);
-        close(serverid);
+        shutdown(m_serverid, SHUT_RDWR);
+        close(m_serverid);
 #endif
-        SendEvent(IRC_ERROR, FXStringFormat(_("SSL connect error %d"), SSL_get_error(ssl, err)));
-        connecting = FALSE;
-        application->addTimeout(this, ID_ETIME, ETIMEOUT);
+        sendEvent(IRC_ERROR, FXStringFormat(_("SSL connect error %d"), SSL_get_error(m_ssl, m_err)));
+        m_connecting = FALSE;
+        m_application->addTimeout(this, ID_ETIME, ETIMEOUT);
         return -1;
     }
-    connected = TRUE;
-    ClearAttempts();
-    SendEvent(IRC_CONNECT, FXStringFormat(_("Connected to %s"), serverName.text()));
-    if (!serverPassword.empty()) SendLine("PASS "+serverPassword+"\r\n");
-    SendLine("NICK "+nickName+"\r\n");
-    SendLine("USER "+userName+" 0 * :"+realName+"\r\n");
+    m_connected = TRUE;
+    clearAttempts();
+    sendEvent(IRC_CONNECT, FXStringFormat(_("Connected to %s"), m_serverName.text()));
+    if (!m_serverPassword.empty()) sendLine("PASS "+m_serverPassword+"\r\n");
+    sendLine("NICK "+m_nickName+"\r\n");
+    sendLine("USER "+m_userName+" 0 * :"+m_realName+"\r\n");
 #ifdef WIN32
-    event = WSACreateEvent();
-    WSAEventSelect(serverid, event, FD_CONNECT|FD_READ|FD_CLOSE); // sets non-blocking!!
+    m_event = WSACreateEvent();
+    WSAEventSelect(m_serverid, m_event, FD_CONNECT|FD_READ|FD_CLOSE); // sets non-blocking!!
     /* now here 'dirty' solution with timeout
-    application->addInput((FXInputHandle)event, INPUT_READ, this, ID_READ);
+    application->addInput((FXInputHandle)m_event, INPUT_READ, this, ID_READ);
     */
-    application->addTimeout(this, ID_SSLTIME, 100);
+    m_application->addTimeout(this, ID_SSLTIME, 100);
 #else
-    application->addInput((FXInputHandle)serverid, INPUT_READ, this, ID_SOCKET);
+    m_application->addInput((FXInputHandle)m_serverid, INPUT_READ, this, ID_SOCKET);
 #endif
 #else
-    connected = FALSE;
+    m_connected = FALSE;
 #endif //HAVE_OPENSSL    
-    connecting = FALSE;
-    application->addTimeout(this, ID_ETIME, ETIMEOUT);
+    m_connecting = FALSE;
+    m_application->addTimeout(this, ID_ETIME, ETIMEOUT);
     return 1;
 }
 
 //Start listening for DCC
-FXint IrcSocket::Listen()
+FXint IrcSocket::listenIRC()
 {
-#ifdef DEBUG
-    fxmessage("Listen\n");
-#endif
-    if(connected)
+    utils::debugLine("Listen");
+    if(m_connected)
     {
-        connecting = FALSE;
-        application->addTimeout(this, ID_ETIME, ETIMEOUT);
+        m_connecting = FALSE;
+        m_application->addTimeout(this, ID_ETIME, ETIMEOUT);
         return 1;
     }
     FXint i, bindResult = -1;
@@ -488,437 +478,433 @@ FXint IrcSocket::Listen()
 #ifdef WIN32
     if (WSAStartup(wVersionRequested, &data) != 0)
     {
-        SendEvent(IRC_ERROR, _("Unable to initiliaze socket"));
-        ClearChannelsCommands(FALSE);
-        connecting = FALSE;
-        application->addTimeout(this, ID_ETIME, ETIMEOUT);
+        sendEvent(IRC_ERROR, _("Unable to initiliaze socket"));
+        clearChannelsCommands(FALSE);
+        m_connecting = FALSE;
+        m_application->addTimeout(this, ID_ETIME, ETIMEOUT);
         return -1;
     }
 #endif
-    if ((serverid = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
+    if ((m_serverid = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
     {
-        SendEvent(IRC_ERROR, _("Unable to create socket"));
-        ClearChannelsCommands(FALSE);
+        sendEvent(IRC_ERROR, _("Unable to create socket"));
+        clearChannelsCommands(FALSE);
 #ifdef WIN32
         WSACleanup();
 #endif
-        connecting = FALSE;
-        application->addTimeout(this, ID_ETIME, ETIMEOUT);
+        m_connecting = FALSE;
+        m_application->addTimeout(this, ID_ETIME, ETIMEOUT);
         return -1;
     }
-    serverSock.sin_family = AF_INET;
-    serverSock.sin_addr.s_addr = INADDR_ANY;
-    if(dccPortD > 0)
+    m_serverSock.sin_family = AF_INET;
+    m_serverSock.sin_addr.s_addr = INADDR_ANY;
+    if(m_dccPortD > 0)
     {
-        serverSock.sin_port = 0;
+        m_serverSock.sin_port = 0;
         i = 0;
-        while(dccPortH > ntohs(serverSock.sin_port) && bindResult == -1)
+        while(m_dccPortH > ntohs(m_serverSock.sin_port) && bindResult == -1)
         {
-            serverSock.sin_port = htons(dccPortD+i);
+            m_serverSock.sin_port = htons(m_dccPortD+i);
             i++;
-            bindResult = bind(serverid, (sockaddr *)&serverSock, sizeof(serverSock));
+            bindResult = bind(m_serverid, (sockaddr *)&m_serverSock, sizeof(m_serverSock));
         }
         if (bindResult == -1)
         {
-            SendEvent(IRC_ERROR, _("Unable to bind socket"));
+            sendEvent(IRC_ERROR, _("Unable to bind socket"));
 #ifdef WIN32
             WSACleanup();
 #endif
-            connecting = FALSE;
-            application->addTimeout(this, ID_ETIME, ETIMEOUT);
+            m_connecting = FALSE;
+            m_application->addTimeout(this, ID_ETIME, ETIMEOUT);
             return -1;
         }
     }
     else
     {
-        serverSock.sin_port = 0;
-        if (bind(serverid, (sockaddr *)&serverSock, sizeof(serverSock)) == -1)
+        m_serverSock.sin_port = 0;
+        if (bind(m_serverid, (sockaddr *)&m_serverSock, sizeof(m_serverSock)) == -1)
         {
-            SendEvent(IRC_ERROR, _("Unable to bind socket"));
+            sendEvent(IRC_ERROR, _("Unable to bind socket"));
 #ifdef WIN32
             WSACleanup();
 #endif
-            connecting = FALSE;
-            application->addTimeout(this, ID_ETIME, ETIMEOUT);
+            m_connecting = FALSE;
+            m_application->addTimeout(this, ID_ETIME, ETIMEOUT);
             return -1;
         }
     }
 #ifdef WIN32
-    FXint len = sizeof(serverSock);
+    FXint len = sizeof(m_serverSock);
 #else
-    socklen_t len = sizeof(serverSock);
+    socklen_t len = sizeof(m_serverSock);
 #endif
-    getsockname(serverid, (sockaddr *)&serverSock, &len);
-    serverPort = ntohs(serverSock.sin_port);
-    SendEvent(IRC_CONNECT, FXStringFormat(_("Listening on %s-%d"), serverName.text(), serverPort));
-    if(!IsRoutableIP(StringIPToBinary(serverName)))
+    getsockname(m_serverid, (sockaddr *)&m_serverSock, &len);
+    m_serverPort = ntohs(m_serverSock.sin_port);
+    sendEvent(IRC_CONNECT, FXStringFormat(_("Listening on %s-%d"), m_serverName.text(), m_serverPort));
+    if(!isRoutableIP(stringIPToBinary(m_serverName)))
     {
-        SendEvent(IRC_ERROR, FXStringFormat(_("%s isn't routable."), serverName.text()));
-        if(!dccParent->GetDccIP().empty() || !dccIP.empty())
+        sendEvent(IRC_ERROR, FXStringFormat(_("%s isn't routable."), m_serverName.text()));
+        if(!m_dccParent->getDccIP().empty() || !m_dccIP.empty())
         {
-            if(!dccIP.empty())
+            if(!m_dccIP.empty())
             {
-                serverName = dccIP;
-                SendEvent(IRC_CONNECT, FXStringFormat(_("Trying IP from settings %s"), serverName.text()));
+                m_serverName = m_dccIP;
+                sendEvent(IRC_CONNECT, FXStringFormat(_("Trying IP from settings %s"), m_serverName.text()));
             }
             else
             {
-                serverName = dccParent->GetDccIP();
-                SendEvent(IRC_CONNECT, FXStringFormat(_("Trying IP from server %s"), serverName.text()));
+                m_serverName = m_dccParent->getDccIP();
+                sendEvent(IRC_CONNECT, FXStringFormat(_("Trying IP from server %s"), m_serverName.text()));
             }
-            if(!IsRoutableIP(StringIPToBinary(serverName)))
-                SendEvent(IRC_ERROR, FXStringFormat(_("%s isn't routable too, but will be used"), serverName.text()));
+            if(!isRoutableIP(stringIPToBinary(m_serverName)))
+                sendEvent(IRC_ERROR, FXStringFormat(_("%s isn't routable too, but will be used"), m_serverName.text()));
         }
         else
-            SendEvent(IRC_ERROR, _("But better doesn't exist."));
+            sendEvent(IRC_ERROR, _("But better doesn't exist."));
     }
-    if(dccParent->GetConnected())
+    if(m_dccParent->getConnected())
     {
-        if(dccType == DCC_CHATOUT) dccParent->SendCtcp(dccNick, "DCC CHAT chat "+FXStringVal(StringIPToBinary(serverName))+" "+FXStringVal(serverPort));
-        else if(dccType == DCC_OUT)
+        if(m_dccType == DCC_CHATOUT) m_dccParent->sendCtcp(m_dccNick, "DCC CHAT chat "+FXStringVal(stringIPToBinary(m_serverName))+" "+FXStringVal(m_serverPort));
+        else if(m_dccType == DCC_OUT)
         {
-            dccParent->SendCtcp(dccNick, "DCC SEND "+utils::RemoveSpaces(dccFile.path.rafter(PATHSEP))+" "+FXStringVal(StringIPToBinary(serverName))+" "+FXStringVal(serverPort)+" "+FXStringVal(dccFile.size));
-            dccFile.ip = serverName;
-            dccFile.port = serverPort;
-            SendEvent(IRC_DCCPOSITION, dccFile);
+            m_dccParent->sendCtcp(m_dccNick, "DCC SEND "+utils::removeSpaces(m_dccFile.path.rafter(PATHSEP))+" "+FXStringVal(stringIPToBinary(m_serverName))+" "+FXStringVal(m_serverPort)+" "+FXStringVal(m_dccFile.size));
+            m_dccFile.ip = m_serverName;
+            m_dccFile.port = m_serverPort;
+            sendEvent(IRC_DCCPOSITION, m_dccFile);
         }
-        else if(dccType == DCC_PIN)
+        else if(m_dccType == DCC_PIN)
         {
-            dccParent->SendCtcp(dccNick, "DCC SEND "+utils::RemoveSpaces(dccFile.path.rafter(PATHSEP))+" "+FXStringVal(StringIPToBinary(serverName))+" "+FXStringVal(serverPort)+" "+FXStringVal(dccFile.size)+" "+FXStringVal(dccFile.token));
-            dccFile.ip = serverName;
-            dccFile.port = serverPort;
-            SendEvent(IRC_DCCPOSITION, dccFile);
+            m_dccParent->sendCtcp(m_dccNick, "DCC SEND "+utils::removeSpaces(m_dccFile.path.rafter(PATHSEP))+" "+FXStringVal(stringIPToBinary(m_serverName))+" "+FXStringVal(m_serverPort)+" "+FXStringVal(m_dccFile.size)+" "+FXStringVal(m_dccFile.token));
+            m_dccFile.ip = m_serverName;
+            m_dccFile.port = m_serverPort;
+            sendEvent(IRC_DCCPOSITION, m_dccFile);
         }
     }
     else
     {
-        connecting = FALSE;
-        application->addTimeout(this, ID_ETIME, ETIMEOUT);
+        m_connecting = FALSE;
+        m_application->addTimeout(this, ID_ETIME, ETIMEOUT);
         return -1;
     }
-    if(listen(serverid, 1) == -1)
+    if(listen(m_serverid, 1) == -1)
     {
-        SendEvent(IRC_ERROR, _("Unable to listen"));
+        sendEvent(IRC_ERROR, _("Unable to listen"));
 #ifdef WIN32
         WSACleanup();
 #endif
-        connecting = FALSE;
-        application->addTimeout(this, ID_ETIME, ETIMEOUT);
+        m_connecting = FALSE;
+        m_application->addTimeout(this, ID_ETIME, ETIMEOUT);
         return -1;
     }
-    application->addTimeout(this, ID_CTIME, dccTimeout*1000);
-    addrlen = sizeof(clientSock);
-    clientid = accept(serverid, (sockaddr *)&clientSock, &addrlen);
-    if(clientid == -1)
+    m_application->addTimeout(this, ID_CTIME, m_dccTimeout*1000);
+    addrlen = sizeof(m_clientSock);
+    m_clientid = accept(m_serverid, (sockaddr *)&m_clientSock, &addrlen);
+    if(m_clientid == -1)
     {
-        SendEvent(IRC_ERROR, _("Unable to accept connection"));
+        sendEvent(IRC_ERROR, _("Unable to accept connection"));
 #ifdef WIN32
         WSACleanup();
 #endif
-        connecting = FALSE;
-        application->addTimeout(this, ID_ETIME, ETIMEOUT);
+        m_connecting = FALSE;
+        m_application->addTimeout(this, ID_ETIME, ETIMEOUT);
         return -1;
     }
 #ifdef WIN32
-    shutdown(serverid, SD_BOTH);
-    closesocket(serverid);
+    shutdown(m_serverid, SD_BOTH);
+    closesocket(m_serverid);
 #else
 #ifndef SHUT_RDWR
 #define SHUT_RDWR 2
 #endif
-    shutdown(serverid, SHUT_RDWR);
-    close(serverid);
+    shutdown(m_serverid, SHUT_RDWR);
+    close(m_serverid);
 #endif
-    SendEvent(IRC_CONNECT, FXStringFormat(_("Someone connected from %s"), inet_ntoa((in_addr)clientSock.sin_addr)));
+    sendEvent(IRC_CONNECT, FXStringFormat(_("Someone connected from %s"), inet_ntoa((in_addr)m_clientSock.sin_addr)));
 #ifdef WIN32
-    event = WSACreateEvent();
-    WSAEventSelect(clientid, event, FD_CONNECT|FD_READ|FD_WRITE|FD_CLOSE); // sets non-blocking!!
-    if(dccType == DCC_CHATOUT || dccType == DCC_PIN) application->addInput((FXInputHandle)event, INPUT_READ, this, ID_SOCKET);
-    else application->addInput((FXInputHandle)event, INPUT_READ|INPUT_WRITE, this, ID_SOCKET);
+    m_event = WSACreateEvent();
+    WSAEventSelect(m_clientid, m_event, FD_CONNECT|FD_READ|FD_WRITE|FD_CLOSE); // sets non-blocking!!
+    if(m_dccType == DCC_CHATOUT || m_dccType == DCC_PIN) m_application->addInput((FXInputHandle)m_event, INPUT_READ, this, ID_SOCKET);
+    else m_application->addInput((FXInputHandle)m_event, INPUT_READ|INPUT_WRITE, this, ID_SOCKET);
 #else
-    if(dccType == DCC_CHATOUT || dccType == DCC_PIN) application->addInput((FXInputHandle)clientid, INPUT_READ, this, ID_SOCKET);
-    else application->addInput((FXInputHandle)clientid, INPUT_READ|INPUT_WRITE, this, ID_SOCKET);
+    if(m_dccType == DCC_CHATOUT || m_dccType == DCC_PIN) m_application->addInput((FXInputHandle)m_clientid, INPUT_READ, this, ID_SOCKET);
+    else m_application->addInput((FXInputHandle)m_clientid, INPUT_READ|INPUT_WRITE, this, ID_SOCKET);
 #endif
-    connected = TRUE;
-    connecting = FALSE;
-    application->removeTimeout(this, ID_CTIME);
-    if(dccType == DCC_OUT)
+    m_connected = TRUE;
+    m_connecting = FALSE;
+    m_application->removeTimeout(this, ID_CTIME);
+    if(m_dccType == DCC_OUT)
     {
-        sentFile.open(dccFile.path.text(), std::ios_base::binary);
-        if(dccFile.currentPosition) sentFile.seekg(dccFile.currentPosition);
-        SendFile();
-        application->addTimeout(this, ID_PTIME, 1000);
+        m_sentFile.open(m_dccFile.path.text(), std::ios_base::binary);
+        if(m_dccFile.currentPosition) m_sentFile.seekg(m_dccFile.currentPosition);
+        sendFile();
+        m_application->addTimeout(this, ID_PTIME, 1000);
     }
-    if(dccType == DCC_PIN)
+    if(m_dccType == DCC_PIN)
     {
-        receivedFile.open(FXString(dccFile.path+".part").text(), std::ios_base::binary);
-        application->addTimeout(this, ID_PTIME, 1000);
+        m_receivedFile.open(FXString(m_dccFile.path+".part").text(), std::ios_base::binary);
+        m_application->addTimeout(this, ID_PTIME, 1000);
     }
-    application->addTimeout(this, ID_ETIME, ETIMEOUT);
+    m_application->addTimeout(this, ID_ETIME, ETIMEOUT);
     return 1;
 }
 
-void IrcSocket::Disconnect()
+void IrcSocket::disconnect()
 {
-#ifdef DEBUG
-    fxmessage("Quit: %s-%d-%s\n", serverName.text(), serverPort, nickName.text());
-#endif
-    if(connected) SendLine(dccType == DCC_CHATIN ? "QUIT\n" : "QUIT\r\n");
-    CloseConnection(TRUE);
+    utils::debugLine(FXStringFormat("Quit: %s-%d-%s", m_serverName.text(), m_serverPort, m_nickName.text()));
+    if(m_connected) sendLine(m_dccType == DCC_CHATIN ? "QUIT\n" : "QUIT\r\n");
+    closeConnection(TRUE);
 }
 
-void IrcSocket::Disconnect(const FXString& reason)
+void IrcSocket::disconnect(const FXString& reason)
 {
-#ifdef DEBUG
-    fxmessage("Quit: %s-%d-%s\n", serverName.text(), serverPort, nickName.text());
-#endif 
-    if(connected) SendLine("QUIT :"+reason+(dccType == DCC_CHATIN ? "\n" : "\r\n"));
-    CloseConnection(TRUE);
+    utils::debugLine(FXStringFormat("Quit: %s-%d-%s", m_serverName.text(), m_serverPort, m_nickName.text()));
+    if(m_connected) sendLine("QUIT :"+reason+(m_dccType == DCC_CHATIN ? "\n" : "\r\n"));
+    closeConnection(TRUE);
 }
 
-void IrcSocket::CloseConnection(FXbool disableReconnect)
+void IrcSocket::closeConnection(FXbool disableReconnect)
 {
-    SendEvents();
-    FXbool client = dccType == DCC_CHATOUT || dccType == DCC_OUT || dccType == DCC_PIN;
-    ClearChannelsCommands(disableReconnect);
-    if(!connected && disableReconnect)
+    sendEvents();
+    FXbool client = m_dccType == DCC_CHATOUT || m_dccType == DCC_OUT || m_dccType == DCC_PIN;
+    clearChannelsCommands(disableReconnect);
+    if(!m_connected && disableReconnect)
     {
-        application->removeTimeout(this, ID_RTIME);
+        m_application->removeTimeout(this, ID_RTIME);
         return;
     }
-    connected = FALSE;
+    m_connected = FALSE;
 #ifdef WIN32
-    shutdown(client ? clientid : serverid, SD_BOTH);
-    closesocket(client ? clientid : serverid);
-    if(event)
+    shutdown(client ? m_clientid : m_serverid, SD_BOTH);
+    closesocket(client ? m_clientid : m_serverid);
+    if(m_event)
     {
-        application->removeInput((FXInputHandle)event, INPUT_READ);
-        if(dccType == DCC_OUT || dccType == DCC_POUT) application->removeInput((FXInputHandle)event, INPUT_WRITE);
-        WSACloseEvent(event);
-        event = NULL;
+        m_application->removeInput((FXInputHandle)m_event, INPUT_READ);
+        if(m_dccType == DCC_OUT || m_dccType == DCC_POUT) m_application->removeInput((FXInputHandle)m_event, INPUT_WRITE);
+        WSACloseEvent(m_event);
+        m_event = NULL;
     }
 #else
 #ifndef SHUT_RDWR
 #define SHUT_RDWR 2
 #endif
-    shutdown(client ? clientid : serverid, SHUT_RDWR);
-    close(client ? clientid : serverid);
-    application->removeInput(client ? clientid : serverid, INPUT_READ);
-    if(dccType == DCC_OUT || dccType == DCC_POUT) application->removeInput(client ? clientid : serverid, INPUT_WRITE);
+    shutdown(client ? m_clientid : m_serverid, SHUT_RDWR);
+    close(client ? m_clientid : m_serverid);
+    m_application->removeInput(client ? m_clientid : m_serverid, INPUT_READ);
+    if(m_dccType == DCC_OUT || m_dccType == DCC_POUT) m_application->removeInput(client ? m_clientid : m_serverid, INPUT_WRITE);
 #endif
 #ifdef HAVE_OPENSSL
-    if(useSsl && ssl)
+    if(m_useSsl && m_ssl)
     {
-        SSL_shutdown(ssl);
-        if(ssl)
+        SSL_shutdown(m_ssl);
+        if(m_ssl)
         {            
-            SSL_free(ssl);
-            ssl = NULL;
+            SSL_free(m_ssl);
+            m_ssl = NULL;
         }
     }
 #endif
-    if(dccType == DCC_CHATOUT)
+    if(m_dccType == DCC_CHATOUT)
     {
-        SendEvent(IRC_DISCONNECT, _("Client was disconnected"));
+        sendEvent(IRC_DISCONNECT, _("Client was disconnected"));
         return;
     }
-    if(dccType == DCC_IN)
+    if(m_dccType == DCC_IN)
     {
-        SendEvent(IRC_DISCONNECT, FXStringFormat(_("%s closed DCC file %s connection %s-%d"), dccFile.nick.text(), dccFile.path.text(), serverName.text(), serverPort));
+        sendEvent(IRC_DISCONNECT, FXStringFormat(_("%s closed DCC file %s connection %s-%d"), m_dccFile.nick.text(), m_dccFile.path.text(), m_serverName.text(), m_serverPort));
         return;
     }
-    if(reconnect && attempts < numberAttempt && !disableReconnect)
+    if(m_reconnect && m_attempts < m_numberAttempt && !disableReconnect)
     {
-        SendEvent(IRC_RECONNECT, FXStringFormat(_("Server %s was disconnected"), serverName.text()));
-        application->addTimeout(this, ID_RTIME, delayAttempt*1000);
+        sendEvent(IRC_RECONNECT, FXStringFormat(_("Server %s was disconnected"), m_serverName.text()));
+        m_application->addTimeout(this, ID_RTIME, m_delayAttempt*1000);
     }
     else
     {
-        application->removeTimeout(this, ID_RTIME);
-        SendEvent(IRC_DISCONNECT, FXStringFormat(_("Server %s was disconnected"), serverName.text()));
+        m_application->removeTimeout(this, ID_RTIME);
+        sendEvent(IRC_DISCONNECT, FXStringFormat(_("Server %s was disconnected"), m_serverName.text()));
     }
 }
 
-void IrcSocket::CloseDccfileConnection(DccFile file)
+void IrcSocket::closeDccfileConnection(DccFile file)
 {
-    if(dccFile == file)
+    if(m_dccFile == file)
     {
-        if(dccType == DCC_IN)
+        if(m_dccType == DCC_IN)
         {
-            if(dccFile.currentPosition < dccFile.size)
-                dccFile.canceled = TRUE;
-            receivedFile.close();
-            if(dccFile.currentPosition >= dccFile.size)
-                FXFile::rename(FXString(dccFile.path+".part"), dccFile.path);
+            if(m_dccFile.currentPosition < m_dccFile.size)
+                m_dccFile.canceled = TRUE;
+            m_receivedFile.close();
+            if(m_dccFile.currentPosition >= m_dccFile.size)
+                FXFile::rename(FXString(m_dccFile.path+".part"), m_dccFile.path);
         }
-        if(dccType == DCC_OUT)
+        if(m_dccType == DCC_OUT)
         {
-            if(dccFile.finishedPosition < dccFile.size)
-                dccFile.canceled = TRUE;
-            sentFile.close();
+            if(m_dccFile.finishedPosition < m_dccFile.size)
+                m_dccFile.canceled = TRUE;
+            m_sentFile.close();
         }
-        if(dccType == DCC_PIN)
+        if(m_dccType == DCC_PIN)
         {
-            if(dccFile.finishedPosition < dccFile.size)
-                dccFile.canceled = TRUE;
-            receivedFile.close();
-            if(dccFile.finishedPosition >= dccFile.size)
-                FXFile::rename(FXString(dccFile.path+".part"), dccFile.path);
+            if(m_dccFile.finishedPosition < m_dccFile.size)
+                m_dccFile.canceled = TRUE;
+            m_receivedFile.close();
+            if(m_dccFile.finishedPosition >= m_dccFile.size)
+                FXFile::rename(FXString(m_dccFile.path+".part"), m_dccFile.path);
         }
-        if(dccType == DCC_POUT)
+        if(m_dccType == DCC_POUT)
         {
-            if(dccFile.currentPosition < dccFile.size)
-                dccFile.canceled = TRUE;
-            sentFile.close();
+            if(m_dccFile.currentPosition < m_dccFile.size)
+                m_dccFile.canceled = TRUE;
+            m_sentFile.close();
         }
-        SendEvent(IRC_DCCPOSITION, dccFile);
-        CloseConnection(TRUE);
+        sendEvent(IRC_DCCPOSITION, m_dccFile);
+        closeConnection(TRUE);
     }
 }
 
 //change position in file mainly for resumed file
-void IrcSocket::SetCurrentPostion(FXulong position)
+void IrcSocket::setCurrentPostion(FXulong position)
 {
-    dccFile.currentPosition = position;
-    dccFile.previousPostion = position;
-    dccFile.finishedPosition = position;
+    m_dccFile.currentPosition = position;
+    m_dccFile.previousPostion = position;
+    m_dccFile.finishedPosition = position;
 }
 
 //check dccfile for resume
-FXbool IrcSocket::IsForResume(const FXString& nick, const FXString& name, FXint port)
+FXbool IrcSocket::isForResume(const FXString& nick, const FXString& name, FXint port)
 {
-    return dccFile.nick == nick && FXPath::name(dccFile.path) == name
-                && dccFile.port == port;
+    return m_dccFile.nick == nick && FXPath::name(m_dccFile.path) == name
+                && m_dccFile.port == port;
 }
 
 //check dccfile for resume
-FXbool IrcSocket::IsForResume(FXint token)
+FXbool IrcSocket::isForResume(FXint token)
 {
-    return dccFile.token == token;
+    return m_dccFile.token == token;
 }
 
-void IrcSocket::ReadFileData()
+void IrcSocket::readFileData()
 {
     FXchar buffer[4096];
     int size = 0;
-    FXbool client = dccType == DCC_PIN;
+    FXbool client = m_dccType == DCC_PIN;
 #ifdef WIN32
     WSANETWORKEVENTS network_events;
-    WSAEnumNetworkEvents(client? clientid : serverid, event, &network_events);
+    WSAEnumNetworkEvents(client? m_clientid : m_serverid, m_event, &network_events);
     if (network_events.lNetworkEvents&FD_READ)
     {
-        size = recv(client? clientid : serverid, buffer, 4095, 0);
+        size = recv(client? m_clientid : m_serverid, buffer, 4095, 0);
         if (size > 0)
         {
-            dccFile.currentPosition += size;
-            if(receivedFile.good())
-                receivedFile.write(buffer, size);
-            FXlong pos = htonl(dccFile.currentPosition);
-            send(client? clientid : serverid, reinterpret_cast<char *>(&pos), 4, 0);
-            if(dccFile.currentPosition >= dccFile.size)
+            m_dccFile.currentPosition += size;
+            if(m_receivedFile.good())
+                m_receivedFile.write(buffer, size);
+            FXlong pos = htonl(m_dccFile.currentPosition);
+            send(client? m_clientid : m_serverid, reinterpret_cast<char *>(&pos), 4, 0);
+            if(m_dccFile.currentPosition >= m_dccFile.size)
             {
-                receivedFile.close();
-                FXFile::rename(FXString(dccFile.path+".part"), dccFile.path);
-                CloseConnection(TRUE);
+                m_receivedFile.close();
+                FXFile::rename(FXString(m_dccFile.path+".part"), m_dccFile.path);
+                closeConnection(TRUE);
             }
         }
         else if (size < 0)
         {
-            SendEvent(IRC_ERROR, FXStringFormat(_("Error in reading DCC data from %s"), serverName.text()));
-            application->removeTimeout(this, ID_PTIME);
-            dccFile.canceled = TRUE;
-            SendEvent(IRC_DCCPOSITION, dccFile);
-            receivedFile.close();
-            CloseConnection(TRUE);
+            sendEvent(IRC_ERROR, FXStringFormat(_("Error in reading DCC data from %s"), m_serverName.text()));
+            m_application->removeTimeout(this, ID_PTIME);
+            m_dccFile.canceled = TRUE;
+            sendEvent(IRC_DCCPOSITION, m_dccFile);
+            m_receivedFile.close();
+            closeConnection(TRUE);
         }
         else
         {
-            application->removeTimeout(this, ID_PTIME);
-            dccFile.canceled = TRUE;
-            SendEvent(IRC_DCCPOSITION, dccFile);
-            receivedFile.close();
-            CloseConnection(TRUE);
+            m_application->removeTimeout(this, ID_PTIME);
+            m_dccFile.canceled = TRUE;
+            sendEvent(IRC_DCCPOSITION, m_dccFile);
+            m_receivedFile.close();
+            closeConnection(TRUE);
         }
     }
     //else if (network_events.lNetworkEvents&FD_CONNECT) ;
     else if (network_events.lNetworkEvents&FD_CLOSE)
     {
-        application->removeTimeout(this, ID_PTIME);
-        dccFile.canceled = TRUE;
-        SendEvent(IRC_DCCPOSITION, dccFile);
-        receivedFile.close();
-        CloseConnection(TRUE);
+        m_application->removeTimeout(this, ID_PTIME);
+        m_dccFile.canceled = TRUE;
+        sendEvent(IRC_DCCPOSITION, m_dccFile);
+        m_receivedFile.close();
+        closeConnection(TRUE);
     }
 #else
-    size = recv(client? clientid : serverid, buffer, 4095, 0);
+    size = recv(client? m_clientid : m_serverid, buffer, 4095, 0);
     if (size > 0)
     {
-        dccFile.currentPosition += size;
-        if(receivedFile.good())
-            receivedFile.write(buffer, size);
-        FXulong pos = htonl(dccFile.currentPosition);
-        if(connected) send(client? clientid : serverid, reinterpret_cast<char *>(&pos), 4, 0);
-        if(dccFile.currentPosition >= dccFile.size)
+        m_dccFile.currentPosition += size;
+        if(m_receivedFile.good())
+            m_receivedFile.write(buffer, size);
+        FXulong pos = htonl(m_dccFile.currentPosition);
+        if(m_connected) send(client? m_clientid : m_serverid, reinterpret_cast<char *>(&pos), 4, 0);
+        if(m_dccFile.currentPosition >= m_dccFile.size)
         {
-            receivedFile.close();
-            FXFile::rename(FXString(dccFile.path+".part"), dccFile.path);
-            CloseConnection(TRUE);
+            m_receivedFile.close();
+            FXFile::rename(FXString(m_dccFile.path+".part"), m_dccFile.path);
+            closeConnection(TRUE);
         }
     }
     else if (size < 0)
     {
-        SendEvent(IRC_ERROR, FXStringFormat(_("Error in reading DCC data from %s"), serverName.text()));
-        application->removeTimeout(this, ID_PTIME);
-        dccFile.canceled = TRUE;
-        SendEvent(IRC_DCCPOSITION, dccFile);
-        receivedFile.close();
-        CloseConnection(TRUE);
+        sendEvent(IRC_ERROR, FXStringFormat(_("Error in reading DCC data from %s"), m_serverName.text()));
+        m_application->removeTimeout(this, ID_PTIME);
+        m_dccFile.canceled = TRUE;
+        sendEvent(IRC_DCCPOSITION, m_dccFile);
+        m_receivedFile.close();
+        closeConnection(TRUE);
     }
     else
     {
-        application->removeTimeout(this, ID_PTIME);
-        dccFile.canceled = TRUE;
-        SendEvent(IRC_DCCPOSITION, dccFile);
-        receivedFile.close();
-        CloseConnection(TRUE);
+        m_application->removeTimeout(this, ID_PTIME);
+        m_dccFile.canceled = TRUE;
+        sendEvent(IRC_DCCPOSITION, m_dccFile);
+        m_receivedFile.close();
+        closeConnection(TRUE);
     }
 #endif
 }
 
-void IrcSocket::SendFile()
+void IrcSocket::sendFile()
 {
-    FXbool client = dccType == DCC_OUT;
+    FXbool client = m_dccType == DCC_OUT;
     FXchar buf[1024];
-    if(sentFile.good())
-        sentFile.read(buf, 1024);
-    int readedChars = (int)sentFile.gcount();
+    if(m_sentFile.good())
+        m_sentFile.read(buf, 1024);
+    int readedChars = (int)m_sentFile.gcount();
     int size = 0;
-    if(connected && dccFile.currentPosition < dccFile.size)
+    if(m_connected && m_dccFile.currentPosition < m_dccFile.size)
     {
-        if((size = send(client ? clientid : serverid, buf, FXMIN(1024, dccFile.size-dccFile.currentPosition), 0)) == -1)
+        if((size = send(client ? m_clientid : m_serverid, buf, FXMIN(1024, m_dccFile.size-m_dccFile.currentPosition), 0)) == -1)
         {
-            if(dccFile.finishedPosition < dccFile.size)
-                dccFile.canceled = TRUE;
-            application->removeTimeout(this, ID_PTIME);
-            SendEvent(IRC_DCCPOSITION, dccFile);
-            sentFile.close();
+            if(m_dccFile.finishedPosition < m_dccFile.size)
+                m_dccFile.canceled = TRUE;
+            m_application->removeTimeout(this, ID_PTIME);
+            sendEvent(IRC_DCCPOSITION, m_dccFile);
+            m_sentFile.close();
 #ifdef WIN32
-            application->removeInput((FXInputHandle)event, INPUT_WRITE);
+            m_application->removeInput((FXInputHandle)m_event, INPUT_WRITE);
 #else
-            application->removeInput(client ? clientid : serverid, INPUT_WRITE);
+            m_application->removeInput(client ? m_clientid : m_serverid, INPUT_WRITE);
 #endif
-            CloseConnection(TRUE);
+            closeConnection(TRUE);
         }
         else
         {
-            dccFile.currentPosition += readedChars;
-            if(dccFile.currentPosition >= dccFile.size)
+            m_dccFile.currentPosition += readedChars;
+            if(m_dccFile.currentPosition >= m_dccFile.size)
             {
-                sentFile.close();
+                m_sentFile.close();
 #ifdef WIN32
-                application->removeInput((FXInputHandle)event, INPUT_WRITE);
+                m_application->removeInput((FXInputHandle)m_event, INPUT_WRITE);
 #else
-                application->removeInput(client ? clientid : serverid, INPUT_WRITE);
+                m_application->removeInput(client ? m_clientid : m_serverid, INPUT_WRITE);
 #endif
                 return;
             }
@@ -926,19 +912,19 @@ void IrcSocket::SendFile()
     }
 }
 
-void IrcSocket::ReadData()
+void IrcSocket::readData()
 {
     FXchar buffer[1024];
     int size = 0;
 
-    FXString data = receiveRest;
+    FXString data = m_receiveRest;
 #ifdef HAVE_OPENSSL
-    if(useSsl)
+    if(m_useSsl)
     {
-        size = SSL_read(ssl, buffer, 1023);
+        size = SSL_read(m_ssl, buffer, 1023);
         if(size == -1)
         {
-            size = SSL_get_error(ssl, size);
+            size = SSL_get_error(m_ssl, size);
             switch (size)
             {
             case SSL_ERROR_NONE:
@@ -946,33 +932,33 @@ void IrcSocket::ReadData()
             case SSL_ERROR_WANT_WRITE:
                 break;
             case SSL_ERROR_ZERO_RETURN:
-                SendEvent(IRC_ERROR, _("SSL_read() returns zero - closing socket"));
-                CloseConnection();
+                sendEvent(IRC_ERROR, _("SSL_read() returns zero - closing socket"));
+                closeConnection();
                 break;
             default:
-                SendEvent(IRC_ERROR, FXStringFormat(_("SSL read problem, errcode = %d"), size));
-                CloseConnection();
+                sendEvent(IRC_ERROR, FXStringFormat(_("SSL read problem, errcode = %d"), size));
+                closeConnection();
             }
         }
         else if(!size)
         {
-            CloseConnection();
+            closeConnection();
         }
         else if(size > 0 && size <= 1023)
         {
             buffer[size] = '\0';
-            if (utils::IsUtf8(buffer, size)) data.append(buffer);
-            else data.append(utils::LocaleToUtf8(buffer));
+            if (utils::isUtf8(buffer, size)) data.append(buffer);
+            else data.append(utils::localeToUtf8(buffer));
             while (data.contains('\n'))
             {
-                ParseLine(data.before('\n').before('\r'));
+                parseLine(data.before('\n').before('\r'));
                 data = data.after('\n');
             }
-            receiveRest = data;
+            m_receiveRest = data;
         }
         else
         {
-            SendEvent(IRC_ERROR, _("Abnormal value from SSL read"));
+            sendEvent(IRC_ERROR, _("Abnormal value from SSL read"));
         }
     }
     else
@@ -980,247 +966,245 @@ void IrcSocket::ReadData()
     {
 #ifdef WIN32
         WSANETWORKEVENTS network_events;
-        if(dccType == DCC_CHATOUT || dccType == DCC_OUT) WSAEnumNetworkEvents(clientid, event, &network_events);
-        else WSAEnumNetworkEvents(serverid, event, &network_events);
+        if(m_dccType == DCC_CHATOUT || m_dccType == DCC_OUT) WSAEnumNetworkEvents(m_clientid, m_event, &network_events);
+        else WSAEnumNetworkEvents(m_serverid, m_event, &network_events);
         if (network_events.lNetworkEvents&FD_READ)
         {
-            if(dccType == DCC_CHATOUT) size = recv(clientid, buffer, 1023, 0);
-            else if(dccType == DCC_OUT || dccType == DCC_POUT)
+            if(m_dccType == DCC_CHATOUT) size = recv(m_clientid, buffer, 1023, 0);
+            else if(m_dccType == DCC_OUT || m_dccType == DCC_POUT)
             {
                 FXulong pos;
-                recv(dccType == DCC_OUT ? clientid : serverid, reinterpret_cast<char *>(&pos), 4, 0);
+                recv(m_dccType == DCC_OUT ? m_clientid : m_serverid, reinterpret_cast<char *>(&pos), 4, 0);
                 pos = ntohl(pos);
-                dccFile.finishedPosition = pos;
-                if(dccFile.finishedPosition >= dccFile.size)
+                m_dccFile.finishedPosition = pos;
+                if(m_dccFile.finishedPosition >= m_dccFile.size)
                 {
-                    application->removeTimeout(this, ID_PTIME);
-                    SendEvent(IRC_DCCPOSITION, dccFile);
-                    CloseConnection(TRUE);
+                    m_application->removeTimeout(this, ID_PTIME);
+                    sendEvent(IRC_DCCPOSITION, m_dccFile);
+                    closeConnection(TRUE);
                 }
                 return;
             }
-            else size = recv(serverid, buffer, 1023, 0);
+            else size = recv(m_serverid, buffer, 1023, 0);
             if (size > 0)
             {
                 buffer[size] = '\0';
-                if (utils::IsUtf8(buffer, size)) data.append(buffer);
-                else data.append(utils::LocaleToUtf8(buffer));
+                if (utils::isUtf8(buffer, size)) data.append(buffer);
+                else data.append(utils::localeToUtf8(buffer));
                 while (data.contains('\n'))
                 {
-                    ParseLine(data.before('\n').before('\r'));
+                    parseLine(data.before('\n').before('\r'));
                     data = data.after('\n');
                 }
-                receiveRest = data;
+                m_receiveRest = data;
             }
             else if (size < 0)
             {
-                SendEvent(IRC_ERROR, FXStringFormat(_("Error in reading data from %s"), serverName.text()));
-                CloseConnection();
+                sendEvent(IRC_ERROR, FXStringFormat(_("Error in reading data from %s"), m_serverName.text()));
+                closeConnection();
             }
-            else CloseConnection();
+            else closeConnection();
         }
         //else if (network_events.lNetworkEvents&FD_CONNECT) ;
-        else if (network_events.lNetworkEvents&FD_CLOSE) CloseConnection();
+        else if (network_events.lNetworkEvents&FD_CLOSE) closeConnection();
 #else
-        if(dccType == DCC_CHATOUT) size = recv(clientid, buffer, 1023, 0);
-        else if(dccType == DCC_OUT || dccType == DCC_POUT)
+        if(m_dccType == DCC_CHATOUT) size = recv(m_clientid, buffer, 1023, 0);
+        else if(m_dccType == DCC_OUT || m_dccType == DCC_POUT)
         {
             FXulong pos;
-            recv(dccType == DCC_OUT ? clientid : serverid, reinterpret_cast<char *>(&pos), 4, 0);
+            recv(m_dccType == DCC_OUT ? m_clientid : m_serverid, reinterpret_cast<char *>(&pos), 4, 0);
             pos = ntohl(pos);
-            dccFile.finishedPosition = pos;
-            if(dccFile.finishedPosition >= dccFile.size)
+            m_dccFile.finishedPosition = pos;
+            if(m_dccFile.finishedPosition >= m_dccFile.size)
             {
-                application->removeTimeout(this, ID_PTIME);
-                SendEvent(IRC_DCCPOSITION, dccFile);
-                CloseConnection(TRUE);
+                m_application->removeTimeout(this, ID_PTIME);
+                sendEvent(IRC_DCCPOSITION, m_dccFile);
+                closeConnection(TRUE);
             }
             return;
         }
-        else size = recv(serverid, buffer, 1023, 0);
+        else size = recv(m_serverid, buffer, 1023, 0);
         if (size > 0)
         {
             buffer[size] = '\0';
-            if (utils::IsUtf8(buffer, size)) data.append(buffer);
-            else data.append(utils::LocaleToUtf8(buffer));
+            if (utils::isUtf8(buffer, size)) data.append(buffer);
+            else data.append(utils::localeToUtf8(buffer));
             while (data.contains('\n'))
             {
-                ParseLine(data.before('\n').before('\r'));
+                parseLine(data.before('\n').before('\r'));
                 data = data.after('\n');
             }
-            receiveRest = data;
+            m_receiveRest = data;
         }
         else if (size < 0)
         {
-            SendEvent(IRC_ERROR, FXStringFormat(_("Error in reading data from %s"), serverName.text()));
-            CloseConnection();
+            sendEvent(IRC_ERROR, FXStringFormat(_("Error in reading data from %s"), m_serverName.text()));
+            closeConnection();
         }
-        else CloseConnection();
+        else closeConnection();
 #endif
     }
 }
 
-void IrcSocket::ParseLine(const FXString &line)
+void IrcSocket::parseLine(const FXString &line)
 {
-#ifdef DEBUG
-    fxmessage("<< %s\n",line.text());
-#endif
+    utils::debugLine(FXStringFormat("<< %s",line.text()));
     FXString from, command, params;
     if (line[0] == ':')
     {
-        from = utils::GetParam(line, 1, FALSE).after(':');
-        command = utils::GetParam(line, 2, FALSE).upper();
-        params = utils::GetParam(line, 3, TRUE);
+        from = utils::getParam(line, 1, FALSE).after(':');
+        command = utils::getParam(line, 2, FALSE).upper();
+        params = utils::getParam(line, 3, TRUE);
     }
     else
     {
         from = "";
-        command = utils::GetParam(line, 1, FALSE).upper();
-        params = utils::GetParam(line, 2, TRUE);
+        command = utils::getParam(line, 1, FALSE).upper();
+        params = utils::getParam(line, 2, TRUE);
     }
 
-    if(dccType == DCC_CHATIN || dccType == DCC_CHATOUT)
+    if(m_dccType == DCC_CHATIN || m_dccType == DCC_CHATOUT)
     {
-        DccMsg(line);
+        dccMsg(line);
         return;
     }
-    if(dccType == DCC_OUT)
+    if(m_dccType == DCC_OUT)
     {
 
     }
     if(command.length() == 3)
     {
-        realServerName = from;
-        Numeric(FXIntVal(command), params);
+        m_realServerName = from;
+        numeric(FXIntVal(command), params);
     }
-    else if(command == "PRIVMSG") Privmsg(from, params);
-    else if(command == "JOIN") Join(from, params);
-    else if(command == "PART") Part(from, params);
-    else if(command == "QUIT") Quitirc(from, params);
-    else if(command == "PING") Ping(params);
-    else if(command == "PONG") Pong(from, params);
-    else if(command == "MODE") Mode(from, params);
-    else if(command == "TOPIC") Topic(from, params);
-    else if(command == "NOTICE") Notice(from, params);
-    else if(command == "KICK") Kick(from, params);
-    else if(command == "NICK") Nick(from, params);
-    else if(command == "INVITE") Invite(from, params);
-    else if(command == "ERROR") Error(params);
-    else Unknown(command, params);
+    else if(command == "PRIVMSG") privmsg(from, params);
+    else if(command == "JOIN") join(from, params);
+    else if(command == "PART") part(from, params);
+    else if(command == "QUIT") quitirc(from, params);
+    else if(command == "PING") ping(params);
+    else if(command == "PONG") pong(from, params);
+    else if(command == "MODE") mode(from, params);
+    else if(command == "TOPIC") topic(from, params);
+    else if(command == "NOTICE") notice(from, params);
+    else if(command == "KICK") kick(from, params);
+    else if(command == "NICK") nick(from, params);
+    else if(command == "INVITE") invite(from, params);
+    else if(command == "ERROR") error(params);
+    else unknown(command, params);
 }
 
-void IrcSocket::Numeric(const FXint &command, const FXString &params)
+void IrcSocket::numeric(const FXint &command, const FXString &params)
 {
     switch(command) {
         case 5: //RPL_ISUPPORT
         {
-            SendEvent(IRC_SERVERREPLY, utils::GetParam(params, 2, TRUE));
-            ParseRplIsupport(params);
+            sendEvent(IRC_SERVERREPLY, utils::getParam(params, 2, TRUE));
+            parseRplsupport(params);
         }break;
         case 219: //RPL_ENDOFSTATS
         {
-            SendEvent(IRC_SERVERREPLY, _("End of STATS report"));
+            sendEvent(IRC_SERVERREPLY, _("End of STATS report"));
         }break;
         case 242: //RPL_STATSUPTIME
         {
-            SendEvent(IRC_SERVERREPLY, FXStringFormat(_("Server Up %s days %s"), utils::GetParam(params, 4, FALSE).text(), utils::GetParam(params, 6, TRUE).text()));
+            sendEvent(IRC_SERVERREPLY, FXStringFormat(_("Server Up %s days %s"), utils::getParam(params, 4, FALSE).text(), utils::getParam(params, 6, TRUE).text()));
         }break;
         case 301: //RPL_AWAY
         {
-            SendEvent(IRC_301, utils::GetParam(params, 2, FALSE), utils::GetParam(params, 3, TRUE).after(':'));
+            sendEvent(IRC_301, utils::getParam(params, 2, FALSE), utils::getParam(params, 3, TRUE).after(':'));
         }break;
         case 302: //RPL_USERHOST
         {
-            if(!ignoreUserHost)
-                SendEvent(IRC_SERVERREPLY, utils::GetParam(params, 2, TRUE).after(':'));
+            if(!m_ignoreUserHost)
+                sendEvent(IRC_SERVERREPLY, utils::getParam(params, 2, TRUE).after(':'));
             else
             {
-                ignoreUserHost = FALSE;
-                if(dccIP.empty())
-                    dccIP = utils::GetParam(params, 2, TRUE).after('@');
+                m_ignoreUserHost = FALSE;
+                if(m_dccIP.empty())
+                    m_dccIP = utils::getParam(params, 2, TRUE).after('@');
             }
 
         }break;
         case 305: //RPL_UNAWAY
         {
-            SendEvent(IRC_305, _("You are no longer marked as being away"));
-            for(FXint i=0; i < nicks.no(); i++)
+            sendEvent(IRC_305, _("You are no longer marked as being away"));
+            for(FXint i=0; i < m_nicks.no(); i++)
             {
-                if(nicks[i].nick == nickName)
+                if(m_nicks[i].nick == m_nickName)
                 {
-                    nicks[i].away = FALSE;
+                    m_nicks[i].away = FALSE;
                     break;
                 }
             }
         }break;
         case 306: //RPL_NOWAWAY
         {
-            SendEvent(IRC_306, _("You have been marked as being away"));
-            for(FXint i=0; i < nicks.no(); i++)
+            sendEvent(IRC_306, _("You have been marked as being away"));
+            for(FXint i=0; i < m_nicks.no(); i++)
             {
-                if(nicks[i].nick == nickName)
+                if(m_nicks[i].nick == m_nickName)
                 {
-                    nicks[i].away = TRUE;
+                    m_nicks[i].away = TRUE;
                     break;
                 }
             }
         }break;
         case 311: //RPL_WHOISUSER
         {
-            SendEvent(IRC_SERVERREPLY, _("Start of WHOIS"));
-            SendEvent(IRC_SERVERREPLY, utils::GetParam(params, 2, FALSE)+" ["+utils::GetParam(params, 3, FALSE)+"@"+utils::GetParam(params, 4, FALSE)+"]");
-            AddNick(utils::GetParam(params, 2, FALSE), utils::GetParam(params, 3, FALSE), utils::GetParam(params, 6, TRUE).after(':'), utils::GetParam(params, 4, FALSE));
-            SendEvent(IRC_SERVERREPLY, _("Realname: ")+utils::GetParam(params, 6, TRUE).after(':'));
+            sendEvent(IRC_SERVERREPLY, _("Start of WHOIS"));
+            sendEvent(IRC_SERVERREPLY, utils::getParam(params, 2, FALSE)+" ["+utils::getParam(params, 3, FALSE)+"@"+utils::getParam(params, 4, FALSE)+"]");
+            addNick(utils::getParam(params, 2, FALSE), utils::getParam(params, 3, FALSE), utils::getParam(params, 6, TRUE).after(':'), utils::getParam(params, 4, FALSE));
+            sendEvent(IRC_SERVERREPLY, _("Realname: ")+utils::getParam(params, 6, TRUE).after(':'));
         }break;
         case 312: //RPL_WHOISSERVER
         {
-            SendEvent(IRC_SERVERREPLY, _("Server: ")+utils::GetParam(params, 3, FALSE)+" ["+utils::GetParam(params, 4, TRUE).after(':')+"]");
+            sendEvent(IRC_SERVERREPLY, _("Server: ")+utils::getParam(params, 3, FALSE)+" ["+utils::getParam(params, 4, TRUE).after(':')+"]");
         }break;
         case 313: //RPL_WHOISOPERATOR
         {
-            SendEvent(IRC_SERVERREPLY, FXStringFormat(_("%s is an IRC operator"), utils::GetParam(params, 2, FALSE).text()));
+            sendEvent(IRC_SERVERREPLY, FXStringFormat(_("%s is an IRC operator"), utils::getParam(params, 2, FALSE).text()));
         }break;
         case 315: //RPL_ENDOFWHO
         {
             FXbool ignoreEvent = FALSE;
-            for(FXint i=0; i < ignoreCommands.no(); i++)
+            for(FXint i=0; i < m_ignoreCommands.no(); i++)
             {
-                if((utils::GetParam(ignoreCommands[i], 1, FALSE) == "who") && comparecase(utils::GetParam(ignoreCommands[i], 2, TRUE), utils::GetParam(params, 2, FALSE)) == 0)
+                if((utils::getParam(m_ignoreCommands[i], 1, FALSE) == "who") && comparecase(utils::getParam(m_ignoreCommands[i], 2, TRUE), utils::getParam(params, 2, FALSE)) == 0)
                 {
-                    ignoreCommands.erase(i);
+                    m_ignoreCommands.erase(i);
                     ignoreEvent = TRUE;
-                    SendEvent(IRC_AWAY, utils::GetParam(params, 2, FALSE));
+                    sendEvent(IRC_AWAY, utils::getParam(params, 2, FALSE));
                     break;
                 }
             }
-            if(!ignoreEvent) SendEvent(IRC_SERVERREPLY, _("End of WHO list"));
+            if(!ignoreEvent) sendEvent(IRC_SERVERREPLY, _("End of WHO list"));
         }break;
         case 317: //RPL_WHOISIDLE
         {
-            FXlong idle = FXLongVal(utils::GetParam(params, 3, FALSE));
-            SendEvent(IRC_SERVERREPLY, _("Idle: ")+FXStringVal(idle/3600)+":"+FXStringVal((idle/60)%60)+":"+FXStringVal(idle%60));
-            FXString datestr = utils::GetParam(params, 4, FALSE);
+            FXlong idle = FXLongVal(utils::getParam(params, 3, FALSE));
+            sendEvent(IRC_SERVERREPLY, _("Idle: ")+FXStringVal(idle/3600)+":"+FXStringVal((idle/60)%60)+":"+FXStringVal(idle%60));
+            FXString datestr = utils::getParam(params, 4, FALSE);
             FXlong time = FXLongVal(datestr);
             datestr = FXSystem::time(_("%x %X"), time);
-            SendEvent(IRC_SERVERREPLY, _("Signon: ")+datestr);
+            sendEvent(IRC_SERVERREPLY, _("Signon: ")+datestr);
         }break;
         case 318: //RPL_ENDOFWHOIS
         {
-            SendEvent(IRC_SERVERREPLY, _("End of WHOIS"));
+            sendEvent(IRC_SERVERREPLY, _("End of WHOIS"));
         }break;
         case 319: //RPL_WHOISCHANNELS
         {
-            SendEvent(IRC_SERVERREPLY, _("Channels: ")+utils::GetParam(params, 3, TRUE).after(':'));
+            sendEvent(IRC_SERVERREPLY, _("Channels: ")+utils::getParam(params, 3, TRUE).after(':'));
         }break;
         case 320: //RPL_IDENTIFIED
         {
-            if(params.contains("is identified to services")) SendEvent(IRC_SERVERREPLY, FXStringFormat(_("%s : is identified to services"), utils::GetParam(params, 2, FALSE).text()));
-            else if(params.contains("is signed on as account")) SendEvent(IRC_SERVERREPLY, FXStringFormat(_("%s : is signed on as account %s"), utils::GetParam(params, 2, FALSE).text(), utils::GetParam(params, 8, FALSE).text()));
-            else SendEvent(IRC_SERVERREPLY, utils::GetParam(params, 2, TRUE));
+            if(params.contains("is identified to services")) sendEvent(IRC_SERVERREPLY, FXStringFormat(_("%s : is identified to services"), utils::getParam(params, 2, FALSE).text()));
+            else if(params.contains("is signed on as account")) sendEvent(IRC_SERVERREPLY, FXStringFormat(_("%s : is signed on as account %s"), utils::getParam(params, 2, FALSE).text(), utils::getParam(params, 8, FALSE).text()));
+            else sendEvent(IRC_SERVERREPLY, utils::getParam(params, 2, TRUE));
         }break;
         case 324: //RPL_CHANNELMODEIS
         {
-            SendEvent(IRC_CHMODE, utils::GetParam(params, 2, FALSE), utils::GetParam(params, 3, FALSE));
+            sendEvent(IRC_CHMODE, utils::getParam(params, 2, FALSE), utils::getParam(params, 3, FALSE));
         }break;
         case 329: //RPL of channel mode (creation time)
         {
@@ -1228,340 +1212,340 @@ void IrcSocket::Numeric(const FXint &command, const FXString &params)
         }break;
         case 331: //RPL_NOTOPIC
         {
-            SendEvent(IRC_331, utils::GetParam(params, 2, FALSE), _("No topic is set"));
+            sendEvent(IRC_331, utils::getParam(params, 2, FALSE), _("No topic is set"));
         }break;
         case 332: //RPL_TOPIC
         {
-            SendEvent(IRC_332, utils::GetParam(params, 2, FALSE), FXStringFormat(_("Topic for %s : %s"), utils::GetParam(params, 2, FALSE).text(), utils::GetParam(params, 3, TRUE).after(':').text()));
+            sendEvent(IRC_332, utils::getParam(params, 2, FALSE), FXStringFormat(_("Topic for %s : %s"), utils::getParam(params, 2, FALSE).text(), utils::getParam(params, 3, TRUE).after(':').text()));
         }break;
         case 333: //RPL_TOPICSETBY
         {
-            FXString datestr = utils::GetParam(params, 4, FALSE);
+            FXString datestr = utils::getParam(params, 4, FALSE);
             FXlong time = FXLongVal(datestr);
             datestr = FXSystem::time(_("%x %X"), time);
-            SendEvent(IRC_333, utils::GetParam(params, 2, FALSE), FXStringFormat(_("Set %s %s"), utils::GetParam(params, 3, FALSE).before('!').text(), datestr.text()));
+            sendEvent(IRC_333, utils::getParam(params, 2, FALSE), FXStringFormat(_("Set %s %s"), utils::getParam(params, 3, FALSE).before('!').text(), datestr.text()));
         }break;
         case 341: //RPL_INVITING
         {
-            SendEvent(IRC_SERVERREPLY, FXStringFormat(_("You invite %s to %s"), utils::GetParam(params, 2, FALSE).text(), utils::GetParam(params, 3, FALSE).text()));
+            sendEvent(IRC_SERVERREPLY, FXStringFormat(_("You invite %s to %s"), utils::getParam(params, 2, FALSE).text(), utils::getParam(params, 3, FALSE).text()));
         }break;
         case 342: //RPL_SUMMONING
         {
-            SendEvent(IRC_SERVERREPLY, FXStringFormat(_("%s :Summoning user to IRC"), utils::GetParam(params, 2, FALSE).text()));
+            sendEvent(IRC_SERVERREPLY, FXStringFormat(_("%s :Summoning user to IRC"), utils::getParam(params, 2, FALSE).text()));
         }break;
         case 352: //RPL_WHOREPLY
         {
             FXbool ignoreEvent = FALSE;
-            for(FXint i=0; i < ignoreCommands.no(); i++)
+            for(FXint i=0; i < m_ignoreCommands.no(); i++)
             {
-                if((utils::GetParam(ignoreCommands[i], 1, FALSE) == "who") && comparecase(utils::GetParam(ignoreCommands[i], 2, TRUE), utils::GetParam(params, 2, FALSE)) == 0)
+                if((utils::getParam(m_ignoreCommands[i], 1, FALSE) == "who") && comparecase(utils::getParam(m_ignoreCommands[i], 2, TRUE), utils::getParam(params, 2, FALSE)) == 0)
                 {
                     //param:xxx #test ~dvx localhost dvx.irc.dvx dvx H :0 dvx
-                    AddNick(utils::GetParam(params, 6, FALSE), utils::GetParam(params, 3, FALSE), utils::GetParam(params, 9, TRUE), utils::GetParam(params, 4, FALSE), utils::GetParam(params, 7, FALSE)[0] == 'H' ? FALSE : TRUE);
+                    addNick(utils::getParam(params, 6, FALSE), utils::getParam(params, 3, FALSE), utils::getParam(params, 9, TRUE), utils::getParam(params, 4, FALSE), utils::getParam(params, 7, FALSE)[0] == 'H' ? FALSE : TRUE);
                     ignoreEvent = TRUE;
                     break;
                 }
             }
-            if(!ignoreEvent) SendEvent(IRC_SERVERREPLY, utils::GetParam(params, 2, TRUE));
+            if(!ignoreEvent) sendEvent(IRC_SERVERREPLY, utils::getParam(params, 2, TRUE));
         }break;
         case 353: //RPL_NAMREPLY
         {
-            FXString nicks = utils::GetParam(params, 4, TRUE);
+            FXString nicks = utils::getParam(params, 4, TRUE);
             //checking ':' is for servers, which don't use RFC right :)
-            SendEvent(IRC_353, utils::GetParam(params, 3, FALSE), nicks[0]==':' ? nicks.after(':') : nicks);
+            sendEvent(IRC_353, utils::getParam(params, 3, FALSE), nicks[0]==':' ? nicks.after(':') : nicks);
         }break;
         case 366: //RPL_ENDOFNAMES
         {
-            SendEvent(IRC_366, utils::GetParam(params, 2, FALSE));
+            sendEvent(IRC_366, utils::getParam(params, 2, FALSE));
         }break;
         case 367: //RPL_BANLIST
         {
-            FXString datestr = utils::GetParam(params, 5, TRUE);
-            if(datestr.empty()) SendEvent(IRC_SERVERREPLY, utils::GetParam(params, 2, FALSE)+" "+utils::GetParam(params, 3, FALSE));
+            FXString datestr = utils::getParam(params, 5, TRUE);
+            if(datestr.empty()) sendEvent(IRC_SERVERREPLY, utils::getParam(params, 2, FALSE)+" "+utils::getParam(params, 3, FALSE));
             else
             {
                 FXlong time = FXLongVal(datestr);
                 datestr = FXSystem::time("%x %X", time);
-                SendEvent(IRC_SERVERREPLY, utils::GetParam(params, 2, FALSE)+" "+utils::GetParam(params, 3, FALSE)+" "+utils::GetParam(params, 4, FALSE)+" "+datestr);
+                sendEvent(IRC_SERVERREPLY, utils::getParam(params, 2, FALSE)+" "+utils::getParam(params, 3, FALSE)+" "+utils::getParam(params, 4, FALSE)+" "+datestr);
             }
         }break;
         case 369: //RPL_ENDOFWHOWAS
         {
-            SendEvent(IRC_SERVERREPLY, _("End of WHOWAS"));
+            sendEvent(IRC_SERVERREPLY, _("End of WHOWAS"));
         }break;
         case 372: //RPL_MOTD
         {
-            SendEvent(IRC_372, utils::GetParam(params, 2, TRUE).after(':'));
+            sendEvent(IRC_372, utils::getParam(params, 2, TRUE).after(':'));
         }break;
         case 374: //RPL_ENDOFINFO
         {
-            SendEvent(IRC_SERVERREPLY, _("End of INFO list"));
+            sendEvent(IRC_SERVERREPLY, _("End of INFO list"));
         }break;
         case 376: //RPL_ENDOFMOTD
         {
-            SendEvent(IRC_SERVERREPLY, _("End of /MOTD command"));
-            SendEvent(IRC_ENDMOTD);
-            endmotd = TRUE;
-            if(!startChannels.empty())
+            sendEvent(IRC_SERVERREPLY, _("End of /MOTD command"));
+            sendEvent(IRC_ENDMOTD);
+            m_endmotd = TRUE;
+            if(!m_startChannels.empty())
             {
-                SendJoin(startChannels);
-                startChannels.clear();
+                sendJoin(m_startChannels);
+                m_startChannels.clear();
             }
-            if(!startCommands.empty())
+            if(!m_startCommands.empty())
             {
-                SendCommands();
+                sendCommands();
             }
-            SendLine("USERHOST "+nickName+" \r\n");
-            ignoreUserHost = TRUE;
+            sendLine("USERHOST "+m_nickName+" \r\n");
+            m_ignoreUserHost = TRUE;
         }break;
         case 381: //RPL_YOUREOPER
         {
-            SendEvent(IRC_SERVERREPLY, _("You are now an IRC operator"));
+            sendEvent(IRC_SERVERREPLY, _("You are now an IRC operator"));
         }break;
         case 401: //ERR_NOSUCHNICK
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :No such nick/channel"), utils::GetParam(params, 2, FALSE).text()));
+            sendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :No such nick/channel"), utils::getParam(params, 2, FALSE).text()));
         }break;
         case 402: //ERR_NOSUCHSERVER
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :No such server"), utils::GetParam(params, 2, FALSE).text()));
+            sendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :No such server"), utils::getParam(params, 2, FALSE).text()));
         }break;
         case 403: //ERR_NOSUCHCHANNEL
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :No such channel"), utils::GetParam(params, 2, FALSE).text()));
+            sendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :No such channel"), utils::getParam(params, 2, FALSE).text()));
         }break;
         case 404: //ERR_CANNOTSENDTOCHAN
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Cannot send to channel"), utils::GetParam(params, 2, FALSE).text()));
+            sendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Cannot send to channel"), utils::getParam(params, 2, FALSE).text()));
         }break;
         case 405: //ERR_TOOMANYCHANNELS
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :You have joined too many channels"), utils::GetParam(params, 2, FALSE).text()));
+            sendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :You have joined too many channels"), utils::getParam(params, 2, FALSE).text()));
         }break;
         case 406: //ERR_WASNOSUCHNICK
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :There was no such nickname"), utils::GetParam(params, 2, FALSE).text()));
+            sendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :There was no such nickname"), utils::getParam(params, 2, FALSE).text()));
         }break;
         case 407: //ERR_TOOMANYTARGETS
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Too many targets"), utils::GetParam(params, 2, FALSE).text()));
+            sendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Too many targets"), utils::getParam(params, 2, FALSE).text()));
         }break;
         case 408: //ERR_NOSUCHSERVICE
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :No such service"), utils::GetParam(params, 2, FALSE).text()));
+            sendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :No such service"), utils::getParam(params, 2, FALSE).text()));
         }break;
         case 409: //ERR_NOORIGIN
         {
-            SendEvent(IRC_SERVERERROR, _("No origin specified"));
+            sendEvent(IRC_SERVERERROR, _("No origin specified"));
         }break;
         case 411: //ERR_NORECIPIENT
         {
-            SendEvent(IRC_SERVERERROR, _("No recipient given"));
+            sendEvent(IRC_SERVERERROR, _("No recipient given"));
         }break;
         case 412: //ERR_NOTEXTTOSEND
         {
-            SendEvent(IRC_SERVERERROR, _("No text to send"));
+            sendEvent(IRC_SERVERERROR, _("No text to send"));
         }break;
         case 413: //ERR_NOTOPLEVEL
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :No toplevel domain specified"), utils::GetParam(params, 2, FALSE).text()));
+            sendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :No toplevel domain specified"), utils::getParam(params, 2, FALSE).text()));
         }break;
         case 414: //ERR_WILDTOPLEVEL
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Wildcard in toplevel domain"), utils::GetParam(params, 2, FALSE).text()));
+            sendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Wildcard in toplevel domain"), utils::getParam(params, 2, FALSE).text()));
         }break;
         case 415: //ERR_BADMASK
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Bad Server/host mask"), utils::GetParam(params, 2, FALSE).text()));
+            sendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Bad Server/host mask"), utils::getParam(params, 2, FALSE).text()));
         }break;
         case 421: //ERR_UNKNOWNCOMMAND
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Unknown command"), utils::GetParam(params, 2, FALSE).text()));
+            sendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Unknown command"), utils::getParam(params, 2, FALSE).text()));
         }break;
         case 422: //ERR_NOMOTD
         {
-            SendEvent(IRC_SERVERERROR, _("MOTD File is missing"));
-            SendEvent(IRC_ENDMOTD);
-            endmotd = TRUE;
-            if(!startChannels.empty())
+            sendEvent(IRC_SERVERERROR, _("MOTD File is missing"));
+            sendEvent(IRC_ENDMOTD);
+            m_endmotd = TRUE;
+            if(!m_startChannels.empty())
             {
-                SendJoin(startChannels);
-                startChannels.clear();
+                sendJoin(m_startChannels);
+                m_startChannels.clear();
             }
-            if(!startCommands.empty())
+            if(!m_startCommands.empty())
             {
-                SendCommands();
+                sendCommands();
             }
-            SendLine("USERHOST "+nickName+" \r\n");
-            ignoreUserHost = TRUE;
+            sendLine("USERHOST "+m_nickName+" \r\n");
+            m_ignoreUserHost = TRUE;
         }break;
         case 423: //ERR_NOADMININFO
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :No administrative info available"), utils::GetParam(params, 2, FALSE).text()));
+            sendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :No administrative info available"), utils::getParam(params, 2, FALSE).text()));
         }break;
         case 424: //ERR_FILEERROR
         {
-            SendEvent(IRC_SERVERERROR, _("File error doing"));
+            sendEvent(IRC_SERVERERROR, _("File error doing"));
         }break;
         case 431: //ERR_NONICKNAMEGIVEN
         {
-            SendEvent(IRC_SERVERERROR, _("No nickname given"));
+            sendEvent(IRC_SERVERERROR, _("No nickname given"));
         }break;
         case 432: //ERR_ERRONEUSNICKNAME
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Erroneous nickname"), utils::GetParam(params, 2, FALSE).text()));
-            if(endmotd) SendEvent(IRC_SERVERREPLY, FXStringFormat(_("You still have nick: %s"), nickName.text()));
+            sendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Erroneous nickname"), utils::getParam(params, 2, FALSE).text()));
+            if(m_endmotd) sendEvent(IRC_SERVERREPLY, FXStringFormat(_("You still have nick: %s"), m_nickName.text()));
             else
             {
-                nickName = "_xxx_";
-                SendNick(nickName);
+                m_nickName = "_xxx_";
+                sendNick(m_nickName);
             }
         }break;
         case 433: //ERR_NICKNAMEINUSE
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Nickname is already in use"), utils::GetParam(params, 2, FALSE).text()));
-            if(endmotd) SendEvent(IRC_SERVERREPLY, FXStringFormat(_("You still have nick: %s"), nickName.text()));
+            sendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Nickname is already in use"), utils::getParam(params, 2, FALSE).text()));
+            if(m_endmotd) sendEvent(IRC_SERVERREPLY, FXStringFormat(_("You still have nick: %s"), m_nickName.text()));
             else
             {
-                nickName += "_";
-                SendNick(nickName);
+                m_nickName += "_";
+                sendNick(m_nickName);
             }
         }break;
         case 436: //ERR_NICKCOLLISION
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Nickname collision"), utils::GetParam(params, 2, FALSE).text()));
+            sendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Nickname collision"), utils::getParam(params, 2, FALSE).text()));
         }break;
         case 437: //ERR_UNAVAILRESOURCE
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Nick/channel is temporarily unavailable"), utils::GetParam(params, 2, FALSE).text()));
+            sendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Nick/channel is temporarily unavailable"), utils::getParam(params, 2, FALSE).text()));
         }break;
         case 441: //ERR_USERNOTINCHANNEL
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s %s :They aren't on that channel"), utils::GetParam(params, 2, FALSE).text(), utils::GetParam(params, 3, FALSE).text()));
+            sendEvent(IRC_SERVERERROR, FXStringFormat(_("%s %s :They aren't on that channel"), utils::getParam(params, 2, FALSE).text(), utils::getParam(params, 3, FALSE).text()));
         }break;
         case 442: //ERR_NOTONCHANNEL
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :You're not on that channel"), utils::GetParam(params, 2, FALSE).text()));
+            sendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :You're not on that channel"), utils::getParam(params, 2, FALSE).text()));
         }break;
         case 443: //ERR_USERONCHANNEL
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s %s :is already on channel"), utils::GetParam(params, 2, FALSE).text(), utils::GetParam(params, 3, FALSE).text()));
+            sendEvent(IRC_SERVERERROR, FXStringFormat(_("%s %s :is already on channel"), utils::getParam(params, 2, FALSE).text(), utils::getParam(params, 3, FALSE).text()));
         }break;
         case 444: //ERR_NOLOGIN
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :User not logged in"), utils::GetParam(params, 2, FALSE).text()));
+            sendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :User not logged in"), utils::getParam(params, 2, FALSE).text()));
         }break;
         case 445: //ERR_SUMMONDISABLED
         {
-            SendEvent(IRC_SERVERERROR, _("SUMMON has been disabled"));
+            sendEvent(IRC_SERVERERROR, _("SUMMON has been disabled"));
         }break;
         case 446: //ERR_USERSDISABLED
         {
-            SendEvent(IRC_SERVERERROR, _("USERS has been disabled"));
+            sendEvent(IRC_SERVERERROR, _("USERS has been disabled"));
         }break;
         case 451: //ERR_NOTREGISTERED
         {
-            SendEvent(IRC_SERVERERROR, _("You have not registered"));
+            sendEvent(IRC_SERVERERROR, _("You have not registered"));
         }break;
         case 461: //ERR_NEEDMOREPARAMS
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Not enough parameters"), utils::GetParam(params, 2, FALSE).text()));
+            sendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Not enough parameters"), utils::getParam(params, 2, FALSE).text()));
         }break;
         case 462: //ERR_ALREADYREGISTRED
         {
-            SendEvent(IRC_SERVERERROR, _("Unauthorized command (already registered)"));
+            sendEvent(IRC_SERVERERROR, _("Unauthorized command (already registered)"));
         }break;
         case 463: //ERR_NOPERMFORHOST
         {
-            SendEvent(IRC_SERVERERROR, _("Your host isn't among the privileged"));
+            sendEvent(IRC_SERVERERROR, _("Your host isn't among the privileged"));
         }break;
         case 464: //ERR_PASSWDMISMATCH
         {
-            SendEvent(IRC_SERVERERROR, _("Password incorrect"));
+            sendEvent(IRC_SERVERERROR, _("Password incorrect"));
         }break;
         case 465: //ERR_YOUREBANNEDCREEP
         {
-            SendEvent(IRC_SERVERERROR, _("You are banned from this server"));
+            sendEvent(IRC_SERVERERROR, _("You are banned from this server"));
         }break;
         case 466: //ERR_YOUWILLBEBANNED
         {
-            SendEvent(IRC_SERVERERROR, _("You will be banned from this server"));
+            sendEvent(IRC_SERVERERROR, _("You will be banned from this server"));
         }break;
         case 467: //ERR_KEYSET
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Channel key already set"), utils::GetParam(params, 2, FALSE).text()));
+            sendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Channel key already set"), utils::getParam(params, 2, FALSE).text()));
         }break;
         case 471: //ERR_CHANNELISFULL
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Cannot join channel (+l)"), utils::GetParam(params, 2, FALSE).text()));
+            sendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Cannot join channel (+l)"), utils::getParam(params, 2, FALSE).text()));
         }break;
         case 472: //ERR_UNKNOWNMODE
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :is unknown mode char to me for channel"), utils::GetParam(params, 2, FALSE).text()));
+            sendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :is unknown mode char to me for channel"), utils::getParam(params, 2, FALSE).text()));
         }break;
         case 473: //ERR_INVITEONLYCHAN
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Cannot join channel (+i)"), utils::GetParam(params, 2, FALSE).text()));
+            sendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Cannot join channel (+i)"), utils::getParam(params, 2, FALSE).text()));
         }break;
         case 474: //ERR_BANNEDFROMCHAN
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Cannot join channel (+b)"), utils::GetParam(params, 2, FALSE).text()));
+            sendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Cannot join channel (+b)"), utils::getParam(params, 2, FALSE).text()));
         }break;
         case 475: //ERR_BADCHANNELKEY
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Cannot join channel (+k)"), utils::GetParam(params, 2, FALSE).text()));
+            sendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Cannot join channel (+k)"), utils::getParam(params, 2, FALSE).text()));
         }break;
         case 476: //ERR_BADCHANMASK
         {
-            if(utils::GetParam(params, 3, TRUE).contains("Bad Channel Mask")) SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Bad Channel Mask"), utils::GetParam(params, 2, FALSE).text()));
-            else SendEvent(IRC_SERVERERROR, params);
+            if(utils::getParam(params, 3, TRUE).contains("Bad Channel Mask")) sendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Bad Channel Mask"), utils::getParam(params, 2, FALSE).text()));
+            else sendEvent(IRC_SERVERERROR, params);
         }break;
         case 477: //ERR_NOCHANMODES
         {
-            if(utils::GetParam(params, 3, TRUE).contains("Channel doesn't support modes")) SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Channel doesn't support modes"), utils::GetParam(params, 2, FALSE).text()));
-            else SendEvent(IRC_SERVERERROR, params);
+            if(utils::getParam(params, 3, TRUE).contains("Channel doesn't support modes")) sendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :Channel doesn't support modes"), utils::getParam(params, 2, FALSE).text()));
+            else sendEvent(IRC_SERVERERROR, params);
         }break;
         case 478: //ERR_BANLISTFULL
         {
-            if(utils::GetParam(params, 3, TRUE).contains("Channel list is full")) SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s %s :Channel list is full"), utils::GetParam(params, 2, FALSE).text(), utils::GetParam(params, 3, FALSE).text()));
-            else SendEvent(IRC_SERVERERROR, params);
+            if(utils::getParam(params, 3, TRUE).contains("Channel list is full")) sendEvent(IRC_SERVERERROR, FXStringFormat(_("%s %s :Channel list is full"), utils::getParam(params, 2, FALSE).text(), utils::getParam(params, 3, FALSE).text()));
+            else sendEvent(IRC_SERVERERROR, params);
         }break;
         case 481: //ERR_NOPRIVILEGES
         {
-            SendEvent(IRC_SERVERERROR, _("Permission Denied- You're not an IRC operator"));
+            sendEvent(IRC_SERVERERROR, _("Permission Denied- You're not an IRC operator"));
         }break;
         case 482: //ERR_CHANOPRIVSNEEDED
         {
-            SendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :You're not channel operator"), utils::GetParam(params, 2, FALSE).text()));
+            sendEvent(IRC_SERVERERROR, FXStringFormat(_("%s :You're not channel operator"), utils::getParam(params, 2, FALSE).text()));
         }break;
         case 483: //ERR_CANTKILLSERVER
         {
-            SendEvent(IRC_SERVERERROR, _("You can't kill a server!"));
+            sendEvent(IRC_SERVERERROR, _("You can't kill a server!"));
         }break;
         case 484: //ERR_RESTRICTED
         {
-            SendEvent(IRC_SERVERERROR, _("Your connection is restricted!"));
+            sendEvent(IRC_SERVERERROR, _("Your connection is restricted!"));
         }break;
         case 485: //ERR_UNIQOPPRIVSNEEDED
         {
-            SendEvent(IRC_SERVERERROR, _("You're not the original channel operator"));
+            sendEvent(IRC_SERVERERROR, _("You're not the original channel operator"));
         }break;
         case 491: //ERR_NOOPERHOST
         {
-            SendEvent(IRC_SERVERERROR, _("No O-lines for your host"));
+            sendEvent(IRC_SERVERERROR, _("No O-lines for your host"));
         }break;
         case 501: //ERR_UMODEUNKNOWNFLAG
         {
-            SendEvent(IRC_SERVERERROR, _("Unknown MODE flag"));
+            sendEvent(IRC_SERVERERROR, _("Unknown MODE flag"));
         }break;
         case 502: //ERR_USERSDONTMATCH
         {
-            SendEvent(IRC_SERVERERROR, _("Cannot change mode for other users"));
+            sendEvent(IRC_SERVERERROR, _("Cannot change mode for other users"));
         }break;
         default:
         {
-            if(utils::GetParam(params, 2, TRUE)[0] == ':') SendEvent(IRC_SERVERREPLY, utils::GetParam(params, 2, TRUE).after(':'));
-            else SendEvent(IRC_SERVERREPLY, utils::GetParam(params, 2, TRUE));
+            if(utils::getParam(params, 2, TRUE)[0] == ':') sendEvent(IRC_SERVERREPLY, utils::getParam(params, 2, TRUE).after(':'));
+            else sendEvent(IRC_SERVERREPLY, utils::getParam(params, 2, TRUE));
         }
     }
 }
@@ -1570,7 +1554,7 @@ void IrcSocket::Numeric(const FXint &command, const FXString &params)
  * Parse 005 - RPL_ISUPPORT
  * http://www.irc.org/tech_docs/005.html
  */
-void IrcSocket::ParseRplIsupport(FXString text)
+void IrcSocket::parseRplsupport(FXString text)
 {
     // nickLen, topicLen, kickLen, awayLen
     if(text.right(1) != " ") text.append(" ");
@@ -1590,19 +1574,19 @@ void IrcSocket::ParseRplIsupport(FXString text)
             {
                 switch(modes[j]) {
                     case 'a':
-                        adminPrefix = chars[j];
+                        m_adminPrefix = chars[j];
                         break;
                     case 'q':
-                        ownerPrefix = chars[j];
+                        m_ownerPrefix = chars[j];
                         break;
                     case 'o':
-                        opPrefix = chars[j];
+                        m_opPrefix = chars[j];
                         break;
                     case 'v':
-                        voicePrefix = chars[j];
+                        m_voicePrefix = chars[j];
                         break;
                     case 'h':
-                        halfopPrefix = chars[j];
+                        m_halfopPrefix = chars[j];
                         break;
                 }
             }
@@ -1610,50 +1594,48 @@ void IrcSocket::ParseRplIsupport(FXString text)
         }
         if(!comparecase(parameter, "CHANTYPES"))
         {
-            chanTypes = value;
+            m_chanTypes = value;
             continue;
         }
         if(!comparecase(parameter, "NICKLEN"))
         {
-            nickLen = FXIntVal(value);
+            m_nickLen = FXIntVal(value);
             continue;
         }
         if(!comparecase(parameter, "TOPICLEN"))
         {
-            topicLen = FXIntVal(value);
+            m_topicLen = FXIntVal(value);
             continue;
         }
         if(!comparecase(parameter, "KICKLEN"))
         {
-            kickLen = FXIntVal(value);
+            m_kickLen = FXIntVal(value);
             continue;
         }
         if(!comparecase(parameter, "AWAYLEN"))
         {
-            awayLen = FXIntVal(value);
+            m_awayLen = FXIntVal(value);
             continue;
         }
     }
-#ifdef DEBUG
-    fxmessage("adminPrefix=%c;ownerPrefix=%c;opPrefix=%c;voicePrefix=%c;halfopPrefix=%c\n", adminPrefix, ownerPrefix, opPrefix, voicePrefix, halfopPrefix);
-    fxmessage("chantypes=%s\n", chanTypes.text());
-    fxmessage("nickLen=%d\n", nickLen);
-    fxmessage("topicLen=%d\n", topicLen);
-    fxmessage("kickLen=%d\n", kickLen);
-    fxmessage("awayLen=%d\n", awayLen);
-#endif
+    utils::debugLine(FXStringFormat("adminPrefix=%c;ownerPrefix=%c;opPrefix=%c;voicePrefix=%c;halfopPrefix=%c", m_adminPrefix, m_ownerPrefix, m_opPrefix, m_voicePrefix, m_halfopPrefix));
+    utils::debugLine(FXStringFormat("chantypes=%s", m_chanTypes.text()));
+    utils::debugLine(FXStringFormat("nickLen=%d", m_nickLen));
+    utils::debugLine(FXStringFormat("topicLen=%d", m_topicLen));
+    utils::debugLine(FXStringFormat("kickLen=%d", m_kickLen));
+    utils::debugLine(FXStringFormat("awayLen=%d", m_awayLen));
 }
 
-void IrcSocket::Privmsg(const FXString &from, const FXString &params)
+void IrcSocket::privmsg(const FXString &from, const FXString &params)
 {
     FXString nick = from.before('!');
-    FXString to = utils::GetParam(params, 1, FALSE);
-    FXString msg = utils::GetParam(params, 2, TRUE).after(':');
-    if(msg[0] == '\001') Ctcp(from, params);
+    FXString to = utils::getParam(params, 1, FALSE);
+    FXString msg = utils::getParam(params, 2, TRUE).after(':');
+    if(msg[0] == '\001') ctcp(from, params);
     else
     {
-        if(nickName == to && !IsUserIgnored(nick, from.after('!').before('@'), from.after('@'), to)) SendEvent(IRC_QUERY, nick);
-        if(!IsUserIgnored(nick, from.after('!').before('@'), from.after('@'), to)) SendEvent(IRC_PRIVMSG, nick, to, msg);
+        if(m_nickName == to && !isUserIgnored(nick, from.after('!').before('@'), from.after('@'), to)) sendEvent(IRC_QUERY, nick);
+        if(!isUserIgnored(nick, from.after('!').before('@'), from.after('@'), to)) sendEvent(IRC_PRIVMSG, nick, to, msg);
     }
 }
 
@@ -1670,441 +1652,439 @@ int inet_aton(const char *address, struct in_addr *sock)
 }
 #endif
 
-void IrcSocket::Ctcp(const FXString &from, const FXString &params)
+void IrcSocket::ctcp(const FXString &from, const FXString &params)
 {
     FXString nick = from.before('!');
-    FXString to = utils::GetParam(params, 1, FALSE);
-    FXString msg = utils::GetParam(params, 2, TRUE).after(':').after('\001').before('\001');
+    FXString to = utils::getParam(params, 1, FALSE);
+    FXString msg = utils::getParam(params, 2, TRUE).after(':').after('\001').before('\001');
     FXString ctcpCommand = msg.before(' ').upper();
     FXString ctcpRest = msg.after(' ');
     if(ctcpCommand == "VERSION")
     {
-        if(IsUserIgnored(nick, from.after('!').before('@'), from.after('@'), to))
+        if(isUserIgnored(nick, from.after('!').before('@'), from.after('@'), to))
             return;
-        SendEvent(IRC_CTCPREQUEST, nick, ctcpCommand);
-        SendVersion(nick);
+        sendEvent(IRC_CTCPREQUEST, nick, ctcpCommand);
+        sendVersion(nick);
     }
     else if(ctcpCommand == "ACTION")
     {
-        if(nickName == to && !IsUserIgnored(nick, from.after('!').before('@'), from.after('@'), to)) SendEvent(IRC_QUERY, nick);
-        if(!IsUserIgnored(nick, from.after('!').before('@'), from.after('@'), to)) SendEvent(IRC_ACTION, nick, to, ctcpRest);
+        if(m_nickName == to && !isUserIgnored(nick, from.after('!').before('@'), from.after('@'), to)) sendEvent(IRC_QUERY, nick);
+        if(!isUserIgnored(nick, from.after('!').before('@'), from.after('@'), to)) sendEvent(IRC_ACTION, nick, to, ctcpRest);
     }
     else if(ctcpCommand == "PING")
     {
-        if(IsUserIgnored(nick, from.after('!').before('@'), from.after('@'), to))
+        if(isUserIgnored(nick, from.after('!').before('@'), from.after('@'), to))
             return;
-        SendEvent(IRC_CTCPREQUEST, nick, ctcpCommand);
-        SendCtcpNotice(nick, ctcpCommand+" "+ctcpRest);
+        sendEvent(IRC_CTCPREQUEST, nick, ctcpCommand);
+        sendCtcpNotice(nick, ctcpCommand+" "+ctcpRest);
     }
     else if(ctcpCommand == "DCC")
     {
-        FXString dccCommand = utils::GetParam(ctcpRest, 1, FALSE).upper();
+        FXString dccCommand = utils::getParam(ctcpRest, 1, FALSE).upper();
         if(dccCommand == "CHAT")
         {
-            if(IsUserIgnored(nick, from.after('!').before('@'), from.after('@'), to))
+            if(isUserIgnored(nick, from.after('!').before('@'), from.after('@'), to))
                 return;
-            SendEvent(IRC_DCCCHAT, nick, BinaryIPToString(utils::GetParam(ctcpRest, 3, FALSE)), utils::GetParam(ctcpRest, 4, FALSE));
+            sendEvent(IRC_DCCCHAT, nick, binaryIPToString(utils::getParam(ctcpRest, 3, FALSE)), utils::getParam(ctcpRest, 4, FALSE));
         }
         if(dccCommand == "SEND")
         {
-            if(IsUserIgnored(nick, from.after('!').before('@'), from.after('@'), to))
+            if(isUserIgnored(nick, from.after('!').before('@'), from.after('@'), to))
                 return;
-            if(utils::GetParam(ctcpRest, 5, FALSE) != utils::GetParam(ctcpRest, 6, FALSE)) //passive send
+            if(utils::getParam(ctcpRest, 5, FALSE) != utils::getParam(ctcpRest, 6, FALSE)) //passive send
             {
-                if(FXIntVal(utils::GetParam(ctcpRest, 4, FALSE)))
-                    SendEvent(IRC_DCCMYTOKEN, BinaryIPToString(utils::GetParam(ctcpRest, 3, FALSE)), utils::GetParam(ctcpRest, 4, FALSE), utils::GetParam(ctcpRest, 6, FALSE));
+                if(FXIntVal(utils::getParam(ctcpRest, 4, FALSE)))
+                    sendEvent(IRC_DCCMYTOKEN, binaryIPToString(utils::getParam(ctcpRest, 3, FALSE)), utils::getParam(ctcpRest, 4, FALSE), utils::getParam(ctcpRest, 6, FALSE));
                 else
-                    SendEvent(IRC_DCCTOKEN, nick, utils::GetParam(ctcpRest, 2, FALSE), utils::GetParam(ctcpRest, 5, FALSE), utils::GetParam(ctcpRest, 6, FALSE));
+                    sendEvent(IRC_DCCTOKEN, nick, utils::getParam(ctcpRest, 2, FALSE), utils::getParam(ctcpRest, 5, FALSE), utils::getParam(ctcpRest, 6, FALSE));
             }
             else
-                SendEvent(IRC_DCCIN, nick, BinaryIPToString(utils::GetParam(ctcpRest, 3, FALSE))+"@"+utils::GetParam(ctcpRest, 4, FALSE), utils::GetParam(ctcpRest, 2, FALSE), utils::GetParam(ctcpRest, 5, FALSE));
+                sendEvent(IRC_DCCIN, nick, binaryIPToString(utils::getParam(ctcpRest, 3, FALSE))+"@"+utils::getParam(ctcpRest, 4, FALSE), utils::getParam(ctcpRest, 2, FALSE), utils::getParam(ctcpRest, 5, FALSE));
         }
         if(dccCommand == "RESUME")
         {
             // 2-filename,3-port,4-position,5-token
-            if(IsUserIgnored(nick, from.after('!').before('@'), from.after('@'), to))
+            if(isUserIgnored(nick, from.after('!').before('@'), from.after('@'), to))
                 return;
-            if(utils::GetParam(ctcpRest, 4, FALSE) != utils::GetParam(ctcpRest, 5, FALSE)) //passive send
-                SendEvent(IRC_DCCPRESUME, utils::GetParam(ctcpRest, 5, FALSE), utils::GetParam(ctcpRest, 4, FALSE));
+            if(utils::getParam(ctcpRest, 4, FALSE) != utils::getParam(ctcpRest, 5, FALSE)) //passive send
+                sendEvent(IRC_DCCPRESUME, utils::getParam(ctcpRest, 5, FALSE), utils::getParam(ctcpRest, 4, FALSE));
             else
-                SendEvent(IRC_DCCRESUME, nick, utils::GetParam(ctcpRest, 2, FALSE), utils::GetParam(ctcpRest, 3, FALSE), utils::GetParam(ctcpRest, 4, FALSE));
+                sendEvent(IRC_DCCRESUME, nick, utils::getParam(ctcpRest, 2, FALSE), utils::getParam(ctcpRest, 3, FALSE), utils::getParam(ctcpRest, 4, FALSE));
         }
         if(dccCommand == "ACCEPT")
         {
             // 2-filename,3-port,4-position,5-token
-            if(IsUserIgnored(nick, from.after('!').before('@'), from.after('@'), to))
+            if(isUserIgnored(nick, from.after('!').before('@'), from.after('@'), to))
                 return;
-            if(utils::GetParam(ctcpRest, 4, FALSE) != utils::GetParam(ctcpRest, 5, FALSE)) //passive send
-                SendEvent(IRC_DCCPACCEPT, utils::GetParam(ctcpRest, 5, FALSE), utils::GetParam(ctcpRest, 4, FALSE));
+            if(utils::getParam(ctcpRest, 4, FALSE) != utils::getParam(ctcpRest, 5, FALSE)) //passive send
+                sendEvent(IRC_DCCPACCEPT, utils::getParam(ctcpRest, 5, FALSE), utils::getParam(ctcpRest, 4, FALSE));
             else
-                SendEvent(IRC_DCCACCEPT, nick, utils::GetParam(ctcpRest, 2, FALSE), utils::GetParam(ctcpRest, 3, FALSE), utils::GetParam(ctcpRest, 4, FALSE));
+                sendEvent(IRC_DCCACCEPT, nick, utils::getParam(ctcpRest, 2, FALSE), utils::getParam(ctcpRest, 3, FALSE), utils::getParam(ctcpRest, 4, FALSE));
         }
     }
     else if(ctcpCommand == "USERINFO")
     {
-        if(IsUserIgnored(nick, from.after('!').before('@'), from.after('@'), to))
+        if(isUserIgnored(nick, from.after('!').before('@'), from.after('@'), to))
             return;
-        SendEvent(IRC_CTCPREQUEST, nick, ctcpCommand);
-        SendCtcpNotice(nick, ctcpCommand+" "+realName);
+        sendEvent(IRC_CTCPREQUEST, nick, ctcpCommand);
+        sendCtcpNotice(nick, ctcpCommand+" "+m_realName);
     }
     else if(ctcpCommand == "CLIENTINFO")
     {
-        if(IsUserIgnored(nick, from.after('!').before('@'), from.after('@'), to))
+        if(isUserIgnored(nick, from.after('!').before('@'), from.after('@'), to))
             return;
-        SendEvent(IRC_CTCPREQUEST, nick, ctcpCommand);
-        SendCtcpNotice(nick, "CLIENTINFO ACTION CLIENTINFO PING TIME USERINFO VERSION");
+        sendEvent(IRC_CTCPREQUEST, nick, ctcpCommand);
+        sendCtcpNotice(nick, "CLIENTINFO ACTION CLIENTINFO PING TIME USERINFO VERSION");
     }
     else if(ctcpCommand == "TIME")
     {
-        if(IsUserIgnored(nick, from.after('!').before('@'), from.after('@'), to))
+        if(isUserIgnored(nick, from.after('!').before('@'), from.after('@'), to))
             return;
-        SendEvent(IRC_CTCPREQUEST, nick, ctcpCommand);
-        SendCtcpNotice(nick, ctcpCommand+" "+FXSystem::time("%x %X", FXSystem::now()));
+        sendEvent(IRC_CTCPREQUEST, nick, ctcpCommand);
+        sendCtcpNotice(nick, ctcpCommand+" "+FXSystem::time("%x %X", FXSystem::now()));
     }
 }
 
-void IrcSocket::DccMsg(const FXString &line)
+void IrcSocket::dccMsg(const FXString &line)
 {
-    if(line.contains('\001')) SendEvent(IRC_DCCACTION, line.after('\001').before('\001').after(' '));
-    else SendEvent(IRC_DCCMSG, line);
+    if(line.contains('\001')) sendEvent(IRC_DCCACTION, line.after('\001').before('\001').after(' '));
+    else sendEvent(IRC_DCCMSG, line);
 }
 
-void IrcSocket::Join(const FXString &from, const FXString &params)
+void IrcSocket::join(const FXString &from, const FXString &params)
 {
-    FXString channel = utils::GetParam(params, 1, FALSE);
+    FXString channel = utils::getParam(params, 1, FALSE);
     if (channel[0] == ':') channel = channel.after(':');
     FXString nick = from.before('!');
-    if(nickName == nick) SendEvent(IRC_NEWCHANNEL, (channel[0] == '&' ? "&"+channel : channel));
-    else SendEvent(IRC_JOIN, nick, channel);
-    AddNick(nick, from.after('!').before('@'), "", from.after('@'), FALSE);
+    if(m_nickName == nick) sendEvent(IRC_NEWCHANNEL, (channel[0] == '&' ? "&"+channel : channel));
+    else sendEvent(IRC_JOIN, nick, channel);
+    addNick(nick, from.after('!').before('@'), "", from.after('@'), FALSE);
 }
 
-void IrcSocket::Quitirc(const FXString &from, const FXString &params)
+void IrcSocket::quitirc(const FXString &from, const FXString &params)
 {
-    FXString reason = utils::GetParam(params, 1, TRUE).after(':');
+    FXString reason = utils::getParam(params, 1, TRUE).after(':');
     FXString nick = from.before('!');
     if (reason.empty())
     {
-        SendEvent(IRC_QUIT, nick);
+        sendEvent(IRC_QUIT, nick);
     }
     else
     {
-        SendEvent(IRC_QUIT, nick, reason);
+        sendEvent(IRC_QUIT, nick, reason);
     }
-    RemoveNick(nick);
+    removeNick(nick);
 }
 
-void IrcSocket::Part(const FXString &from, const FXString &params)
+void IrcSocket::part(const FXString &from, const FXString &params)
 {
-    FXString channel = utils::GetParam(params, 1, FALSE);
-    FXString reason = utils::GetParam(params, 1, TRUE).after(':');
+    FXString channel = utils::getParam(params, 1, FALSE);
+    FXString reason = utils::getParam(params, 1, TRUE).after(':');
     FXString nick = from.before('!');
     if (reason.empty())
     {
-        SendEvent(IRC_PART, nick, channel);
+        sendEvent(IRC_PART, nick, channel);
     }
     else
     {
-        SendEvent(IRC_PART, nick, channel, reason);
+        sendEvent(IRC_PART, nick, channel, reason);
     }
 }
 
-void IrcSocket::Ping(const FXString &params)
+void IrcSocket::ping(const FXString &params)
 {
-    SendLine("PONG "+params+"\r\n");
+    sendLine("PONG "+params+"\r\n");
 }
 
-void IrcSocket::Pong(const FXString &from, const FXString &params)
+void IrcSocket::pong(const FXString &from, const FXString &params)
 {
-    SendEvent(IRC_SERVERREPLY, _("PONG from ")+from+" "+params.after(':'));
+    sendEvent(IRC_SERVERREPLY, _("PONG from ")+from+" "+params.after(':'));
 }
 
-void IrcSocket::Notice(const FXString &from, const FXString &params)
+void IrcSocket::notice(const FXString &from, const FXString &params)
 {
-    FXString to = utils::GetParam(params, 1, FALSE);
+    FXString to = utils::getParam(params, 1, FALSE);
     FXString nick = from.before('!');
-    FXString msg = utils::GetParam(params, 2, TRUE).after(':');
+    FXString msg = utils::getParam(params, 2, TRUE).after(':');
     if(msg[0] == '\001')
     {
-        if(IsUserIgnored(nick, from.after('!').before('@'), from.after('@'), to))
+        if(isUserIgnored(nick, from.after('!').before('@'), from.after('@'), to))
             return;
-        SendEvent(IRC_CTCPREPLY, nick, msg.after('\001').before('\001'));
+        sendEvent(IRC_CTCPREPLY, nick, msg.after('\001').before('\001'));
     }
     else
     {
         if(from.empty()) //public notice
         {
-            SendEvent(IRC_NOTICE, to, msg);
+            sendEvent(IRC_NOTICE, to, msg);
         }
         else
         {
-            if(!IsUserIgnored(nick, from.after('!').before('@'), from.after('@'), to)) SendEvent(IRC_CHNOTICE, nick, to, msg);
+            if(!isUserIgnored(nick, from.after('!').before('@'), from.after('@'), to)) sendEvent(IRC_CHNOTICE, nick, to, msg);
         }
     }
 }
 
-void IrcSocket::Nick(const FXString &from, const FXString &params)
+void IrcSocket::nick(const FXString &from, const FXString &params)
 {
     FXString nick = from.before('!');
-    FXString newnick = utils::GetParam(params, 1, FALSE);
+    FXString newnick = utils::getParam(params, 1, FALSE);
     if(newnick[0] == ':') newnick = newnick.after(':');
-    if(nickName == nick) nickName = newnick;
-    SendEvent(IRC_NICK, nick, newnick);
-    for(FXint i = 0; i < nicks.no(); i++)
+    if(m_nickName == nick) m_nickName = newnick;
+    sendEvent(IRC_NICK, nick, newnick);
+    for(FXint i = 0; i < m_nicks.no(); i++)
     {
-        if(nick == nicks[i].nick)
+        if(nick == m_nicks[i].nick)
         {
-            nicks[i].nick = newnick;
+            m_nicks[i].nick = newnick;
             break;
         }
     }
 }
 
-void IrcSocket::Topic(const FXString &from, const FXString &params)
+void IrcSocket::topic(const FXString &from, const FXString &params)
 {
     FXString nick = from.before('!');
-    FXString channel = utils::GetParam(params, 1, FALSE);
-    FXString topic = utils::GetParam(params, 2, TRUE).after(':');
-    SendEvent(IRC_TOPIC, nick, channel, topic);
+    FXString channel = utils::getParam(params, 1, FALSE);
+    FXString topic = utils::getParam(params, 2, TRUE).after(':');
+    sendEvent(IRC_TOPIC, nick, channel, topic);
 }
 
-void IrcSocket::Invite(const FXString &from, const FXString &params)
+void IrcSocket::invite(const FXString &from, const FXString &params)
 {
     FXString nick = from.before('!');
-    FXString to = utils::GetParam(params, 1, FALSE);
-    FXString channel = utils::GetParam(params, 2, FALSE);
+    FXString to = utils::getParam(params, 1, FALSE);
+    FXString channel = utils::getParam(params, 2, FALSE);
     if (channel[0] == ':') channel = channel.after(':');
-    if(!IsUserIgnored(nick, from.after('!').before('@'), from.after('@'), channel)) SendEvent(IRC_INVITE, nick, to, channel);
+    if(!isUserIgnored(nick, from.after('!').before('@'), from.after('@'), channel)) sendEvent(IRC_INVITE, nick, to, channel);
 }
 
-void IrcSocket::Kick(const FXString &from, const FXString &params)
+void IrcSocket::kick(const FXString &from, const FXString &params)
 {
     FXString nick = from.before('!');
-    FXString to = utils::GetParam(params, 2, FALSE);
-    FXString channel = utils::GetParam(params, 1, FALSE);
-    FXString reason = utils::GetParam(params, 3, TRUE).after(':');
-    SendEvent(IRC_KICK, nick, to, channel, reason);
+    FXString to = utils::getParam(params, 2, FALSE);
+    FXString channel = utils::getParam(params, 1, FALSE);
+    FXString reason = utils::getParam(params, 3, TRUE).after(':');
+    sendEvent(IRC_KICK, nick, to, channel, reason);
 }
 
-void IrcSocket::Mode(const FXString &from, const FXString &params)
+void IrcSocket::mode(const FXString &from, const FXString &params)
 {
-    if(params.contains(':')) SendEvent(IRC_MODE, utils::GetParam(params, 2, TRUE).after(':'), utils::GetParam(params, 1, FALSE));
+    if(params.contains(':')) sendEvent(IRC_MODE, utils::getParam(params, 2, TRUE).after(':'), utils::getParam(params, 1, FALSE));
     else //channel mode
     {
         FXString moderator = from.before('!');
-        FXString channel = utils::GetParam(params, 1, FALSE);
-        FXString modes = utils::GetParam(params, 2, FALSE);
-        FXString args = utils::GetParam(params, 3, TRUE);
-        SendEvent(IRC_UMODE, moderator, channel, modes, args);
+        FXString channel = utils::getParam(params, 1, FALSE);
+        FXString modes = utils::getParam(params, 2, FALSE);
+        FXString args = utils::getParam(params, 3, TRUE);
+        sendEvent(IRC_UMODE, moderator, channel, modes, args);
     }
 }
 
-void IrcSocket::Error(const FXString &params)
+void IrcSocket::error(const FXString &params)
 {
-    SendEvent(IRC_SERVERERROR, params[0] == ':' ? params.after(':') : params);
+    sendEvent(IRC_SERVERERROR, params[0] == ':' ? params.after(':') : params);
 }
 
-void IrcSocket::Unknown(const FXString &command, const FXString &params)
+void IrcSocket::unknown(const FXString &command, const FXString &params)
 {
-    SendEvent(IRC_UNKNOWN, command, params);
+    sendEvent(IRC_UNKNOWN, command, params);
 }
 
-void IrcSocket::AddIgnoreCommands(const FXString& command)
+void IrcSocket::addIgnoreCommands(const FXString& command)
 {
-    ignoreCommands.append(command);
+    m_ignoreCommands.append(command);
 }
 
-void IrcSocket::RemoveIgnoreCommands(const FXString& command)
+void IrcSocket::removeIgnoreCommands(const FXString& command)
 {
-    for(FXint i=0; i < ignoreCommands.no(); i++)
+    for(FXint i=0; i < m_ignoreCommands.no(); i++)
     {
-        if(ignoreCommands[i] == command)
+        if(m_ignoreCommands[i] == command)
         {
-            ignoreCommands.erase(i);
+            m_ignoreCommands.erase(i);
             break;
         }
     }
 }
 
-FXbool IrcSocket::SendAdmin(const FXString& params)
+FXbool IrcSocket::sendAdmin(const FXString& params)
 {
-    return SendLine("ADMIN "+params+"\r\n");
+    return sendLine("ADMIN "+params+"\r\n");
 }
 
-FXbool IrcSocket::SendAway(const FXString& params)
+FXbool IrcSocket::sendAway(const FXString& params)
 {
-    return SendLine("AWAY :"+params+"\r\n");
+    return sendLine("AWAY :"+params+"\r\n");
 }
 
-FXbool IrcSocket::SendBanlist(const FXString& channel)
+FXbool IrcSocket::sendBanlist(const FXString& channel)
 {
-    return SendLine("MODE "+channel+" +b\r\n");
+    return sendLine("MODE "+channel+" +b\r\n");
 }
 
-FXbool IrcSocket::SendCtcp(const FXString& to, const FXString& params)
+FXbool IrcSocket::sendCtcp(const FXString& to, const FXString& params)
 {
-    return SendLine("PRIVMSG "+to+" :\001"+params+"\001\r\n");
+    return sendLine("PRIVMSG "+to+" :\001"+params+"\001\r\n");
 }
 
-FXbool IrcSocket::SendCtcpNotice(const FXString& to, const FXString& params)
+FXbool IrcSocket::sendCtcpNotice(const FXString& to, const FXString& params)
 {
-    return SendLine("NOTICE "+to+" :\001"+params+"\001\r\n");
+    return sendLine("NOTICE "+to+" :\001"+params+"\001\r\n");
 }
 
-FXbool IrcSocket::SendDccChatText(const FXString& message)
+FXbool IrcSocket::sendDccChatText(const FXString& message)
 {
-    return SendLine(message+"\n");
+    return sendLine(message+"\n");
 }
 
-FXbool IrcSocket::SendMode(const FXString& params)
+FXbool IrcSocket::sendMode(const FXString& params)
 {
-    return SendLine("MODE "+params+"\r\n");
+    return sendLine("MODE "+params+"\r\n");
 }
 
-FXbool IrcSocket::SendInvite(const FXString& to, const FXString& params)
+FXbool IrcSocket::sendInvite(const FXString& to, const FXString& params)
 {
-    return SendLine("INVITE "+to+" "+params+"\r\n");
+    return sendLine("INVITE "+to+" "+params+"\r\n");
 }
 
-FXbool IrcSocket::SendJoin(const FXString& chan)
+FXbool IrcSocket::sendJoin(const FXString& chan)
 {
-    return SendLine("JOIN "+chan+"\r\n");
+    return sendLine("JOIN "+chan+"\r\n");
 }
 
-FXbool IrcSocket::SendKick(const FXString& chan, const FXString& nick, const FXString& reason)
+FXbool IrcSocket::sendKick(const FXString& chan, const FXString& nick, const FXString& reason)
 {
-    return SendLine("KICK "+chan+" "+nick+" :"+reason+"\r\n");
+    return sendLine("KICK "+chan+" "+nick+" :"+reason+"\r\n");
 }
 
-FXbool IrcSocket::SendKill(const FXString& nick, const FXString& reason)
+FXbool IrcSocket::sendKill(const FXString& nick, const FXString& reason)
 {
-    return SendLine("KILL "+nick+" :"+reason+"\r\n");
+    return sendLine("KILL "+nick+" :"+reason+"\r\n");
 }
 
-FXbool IrcSocket::SendList(const FXString& params)
+FXbool IrcSocket::sendList(const FXString& params)
 {
-    return SendLine("LIST "+params+"\r\n");
+    return sendLine("LIST "+params+"\r\n");
 }
 
-FXbool IrcSocket::SendMe(const FXString& to, const FXString& message)
+FXbool IrcSocket::sendMe(const FXString& to, const FXString& message)
 {
-    return SendLine("PRIVMSG "+to+" :\001ACTION "+message+"\001\r\n");
+    return sendLine("PRIVMSG "+to+" :\001ACTION "+message+"\001\r\n");
 }
 
-FXbool IrcSocket::SendMsg(const FXString& to, const FXString& message)
+FXbool IrcSocket::sendMsg(const FXString& to, const FXString& message)
 {
-    return SendLine("PRIVMSG "+to+" :"+message+"\r\n");
+    return sendLine("PRIVMSG "+to+" :"+message+"\r\n");
 }
 
-FXbool IrcSocket::SendNames(const FXString& channel)
+FXbool IrcSocket::sendNames(const FXString& channel)
 {
-    return SendLine("NAMES "+channel+"\r\n");
+    return sendLine("NAMES "+channel+"\r\n");
 }
 
-FXbool IrcSocket::SendNick(const FXString& nick)
+FXbool IrcSocket::sendNick(const FXString& nick)
 {
-    return SendLine("NICK "+nick+"\r\n");
+    return sendLine("NICK "+nick+"\r\n");
 }
 
-FXbool IrcSocket::SendNotice(const FXString& to, const FXString& message)
+FXbool IrcSocket::sendNotice(const FXString& to, const FXString& message)
 {
-    return SendLine("NOTICE "+to+" :"+message+"\r\n");
+    return sendLine("NOTICE "+to+" :"+message+"\r\n");
 }
 
-FXbool IrcSocket::SendOper(const FXString& login, const FXString& password)
+FXbool IrcSocket::sendOper(const FXString& login, const FXString& password)
 {
-    return SendLine("OPER "+login+" "+password+"\r\n");
+    return sendLine("OPER "+login+" "+password+"\r\n");
 }
 
-FXbool IrcSocket::SendPart(const FXString& chan)
+FXbool IrcSocket::sendPart(const FXString& chan)
 {
-    return SendLine("PART "+chan+"\r\n");
+    return sendLine("PART "+chan+"\r\n");
 }
 
-FXbool IrcSocket::SendPart(const FXString& chan, const FXString& reason)
+FXbool IrcSocket::sendPart(const FXString& chan, const FXString& reason)
 {
-    return SendLine("PART "+chan+" :"+reason+"\r\n");
+    return sendLine("PART "+chan+" :"+reason+"\r\n");
 }
 
-FXbool IrcSocket::SendQuote(const FXString& text)
+FXbool IrcSocket::sendQuote(const FXString& text)
 {
-    return SendLine(text+"\r\n");
+    return sendLine(text+"\r\n");
 }
 
-FXbool IrcSocket::SendStats(const FXString& type)
+FXbool IrcSocket::sendStats(const FXString& type)
 {
     if(type.empty())
-        return SendLine("STATS\r\n");
+        return sendLine("STATS\r\n");
     else
-        return SendLine("STATS "+type+"\r\n");
+        return sendLine("STATS "+type+"\r\n");
 }
 
-FXbool IrcSocket::SendTopic(const FXString& chan, const FXString& topic)
+FXbool IrcSocket::sendTopic(const FXString& chan, const FXString& topic)
 {
     if (topic.empty())
-        return SendLine("TOPIC "+chan+"\r\n");
+        return sendLine("TOPIC "+chan+"\r\n");
     else
-        return SendLine("TOPIC "+chan+" :"+topic+"\r\n");
+        return sendLine("TOPIC "+chan+" :"+topic+"\r\n");
 }
 
-FXbool IrcSocket::SendTopic(const FXString& chan)
+FXbool IrcSocket::sendTopic(const FXString& chan)
 {
-    return SendLine("TOPIC "+chan+"\r\n");
+    return sendLine("TOPIC "+chan+"\r\n");
 }
 
-FXbool IrcSocket::SendWallops(const FXString& msg)
+FXbool IrcSocket::sendWallops(const FXString& msg)
 {
-    return SendLine("WALLOPS :"+msg+"\r\n");
+    return sendLine("WALLOPS :"+msg+"\r\n");
 }
 
-FXbool IrcSocket::SendVersion(const FXString& to)
+FXbool IrcSocket::sendVersion(const FXString& to)
 {
-    return SendLine("NOTICE "+to+FXStringFormat(" :\001VERSION dxirc %s (C) 2008~ by David Vachulka\001\r\n", VERSION));
+    return sendLine("NOTICE "+to+FXStringFormat(" :\001VERSION dxirc %s (C) 2008~ by David Vachulka\001\r\n", VERSION));
 }
 
-FXbool IrcSocket::SendWho(const FXString& mask)
+FXbool IrcSocket::sendWho(const FXString& mask)
 {
-    return SendLine("WHO "+mask+"\r\n");
+    return sendLine("WHO "+mask+"\r\n");
 }
 
-FXbool IrcSocket::SendWhoami()
+FXbool IrcSocket::sendWhoami()
 {
-    return SendLine("WHOIS "+nickName+"\r\n");
+    return sendLine("WHOIS "+m_nickName+"\r\n");
 }
 
-FXbool IrcSocket::SendWhois(const FXString& params)
+FXbool IrcSocket::sendWhois(const FXString& params)
 {
-    return SendLine("WHOIS "+params+"\r\n");
+    return sendLine("WHOIS "+params+"\r\n");
 }
 
-FXbool IrcSocket::SendWhowas(const FXString& params)
+FXbool IrcSocket::sendWhowas(const FXString& params)
 {
-    return SendLine("WHOWAS "+params+"\r\n");
+    return sendLine("WHOWAS "+params+"\r\n");
 }
 
-FXbool IrcSocket::SendLine(const FXString& line)
+FXbool IrcSocket::sendLine(const FXString& line)
 {
-#ifdef DEBUG
-    fxmessage(">> %s", line.text());
-#endif
+    utils::debugLine(FXStringFormat(">> %s", line.before('\n').text()));
     int size;
-    if (connected)
+    if (m_connected)
     {
-        if(useSsl)
+        if(m_useSsl)
         {
 #ifdef HAVE_OPENSSL
-            size = SSL_write(ssl, line.text(), line.length());
+            size = SSL_write(m_ssl, line.text(), line.length());
 #endif
         }
         else
         {
-            if ((size = send(dccType == DCC_CHATOUT ? clientid : serverid, line.text(), line.length(), 0)) == -1)
+            if ((size = send(m_dccType == DCC_CHATOUT ? m_clientid : m_serverid, line.text(), line.length(), 0)) == -1)
             {
-                SendEvent(IRC_ERROR, _("Unable to send data"));
+                sendEvent(IRC_ERROR, _("Unable to send data"));
 #ifdef WIN32
                 WSACleanup();
 #endif
-                CloseConnection();
+                closeConnection();
                 return FALSE;
             }
         }
@@ -2113,67 +2093,67 @@ FXbool IrcSocket::SendLine(const FXString& line)
     else return FALSE;
 }
 
-void IrcSocket::SendCommands()
+void IrcSocket::sendCommands()
 {
-    if(!startCommands.contains('\n')) startCommands.append('\n');
-    if(startCommands.right(1) != "\n") startCommands.append('\n');
-    for(FXint i=0; i < startCommands.contains('\n'); i++)
+    if(!m_startCommands.contains('\n')) m_startCommands.append('\n');
+    if(m_startCommands.right(1) != "\n") m_startCommands.append('\n');
+    for(FXint i=0; i < m_startCommands.contains('\n'); i++)
     {
-        SendCommand(startCommands.section('\n', i));
+        sendCommand(m_startCommands.section('\n', i));
     }
 }
 
-FXbool IrcSocket::SendCommand(const FXString& commandtext)
+FXbool IrcSocket::sendCommand(const FXString& commandtext)
 {
-    if(connected)
+    if(m_connected)
     {
         FXString command = commandtext.after('/').before(' ').lower();
         if(command == "admin")
         {
-            return SendAdmin(commandtext.after(' '));
+            return sendAdmin(commandtext.after(' '));
         }
         if(command == "away")
         {
-            return SendAway(commandtext.after(' '));
+            return sendAway(commandtext.after(' '));
         }
         if(command == "banlist")
         {
             FXString channel = commandtext.after(' ');
-            return SendBanlist(channel);
+            return sendBanlist(channel);
         }
         if(command == "ctcp")
         {
             FXString to = commandtext.after(' ').before(' ');
             FXString msg = commandtext.after(' ', 2);
-            return SendCtcp(to, msg);
+            return sendCtcp(to, msg);
         }
         if(command == "deop")
         {
             FXString params = commandtext.after(' ');
             FXString channel = params.before(' ');
             FXString nicks = params.after(' ');
-            FXString modeparams = utils::CreateModes('-', 'o', nicks);
-            return SendMode(channel+" "+modeparams);
+            FXString modeparams = utils::createModes('-', 'o', nicks);
+            return sendMode(channel+" "+modeparams);
         }
         if(command == "devoice")
         {
             FXString params = commandtext.after(' ');
             FXString channel = params.before(' ');
             FXString nicks = params.after(' ');
-            FXString modeparams = utils::CreateModes('-', 'v', nicks);
-            return SendMode(channel+" "+modeparams);
+            FXString modeparams = utils::createModes('-', 'v', nicks);
+            return sendMode(channel+" "+modeparams);
         }
         if(command == "invite")
         {
             FXString params = commandtext.after(' ');
             FXString nick = params.before(' ');
             FXString channel = params.after(' ');
-            return SendInvite(nick, channel);
+            return sendInvite(nick, channel);
         }
         if(command == "join")
         {
             FXString channel = commandtext.after(' ');
-            return SendJoin(channel);
+            return sendJoin(channel);
         }
         if(command == "kick")
         {
@@ -2181,126 +2161,126 @@ FXbool IrcSocket::SendCommand(const FXString& commandtext)
             FXString channel = params.before(' ');
             FXString nick = params.after(' ');
             FXString reason = params.after(' ', 2);
-            return SendKick(channel, nick, reason);
+            return sendKick(channel, nick, reason);
         }
         if(command == "kill")
         {
             FXString params = commandtext.after(' ');
             FXString nick = params.before(' ');
             FXString reason = params.after(' ');
-            return SendKill(nick, reason);
+            return sendKill(nick, reason);
         }
         if(command == "list")
         {
-            return SendList(commandtext.after(' '));
+            return sendList(commandtext.after(' '));
         }
         if(command == "me")
         {
             FXString params = commandtext.after(' ');
             FXString to = params.before(' ');
             FXString message = params.after(' ');
-            return SendMe(to, message);
+            return sendMe(to, message);
         }
         if(command == "msg")
         {
             FXString params = commandtext.after(' ');
             FXString to = params.before(' ');
             FXString message = params.after(' ');
-            return SendMsg(to, message);
+            return sendMsg(to, message);
         }
         if(command == "names")
         {
             FXString params = commandtext.after(' ');
-            return SendNames(params);
+            return sendNames(params);
         }
         if(command == "nick")
         {
             FXString nick = commandtext.after(' ');
-            return SendNick(nick);
+            return sendNick(nick);
         }
         if(command == "notice")
         {
             FXString params = commandtext.after(' ');
             FXString to = params.before(' ');
             FXString message = params.after(' ');
-            return SendNotice(to, message);
+            return sendNotice(to, message);
         }
         if(command == "op")
         {
             FXString params = commandtext.after(' ');
             FXString channel = params.before(' ');
             FXString nicks = params.after(' ');
-            FXString modeparams = utils::CreateModes('+', 'o', nicks);
-            return SendMode(channel+" "+modeparams);
+            FXString modeparams = utils::createModes('+', 'o', nicks);
+            return sendMode(channel+" "+modeparams);
         }
         if(command == "oper")
         {
             FXString params = commandtext.after(' ');
             FXString login = params.before(' ');
             FXString password = params.after(' ');
-            return SendOper(login, password);
+            return sendOper(login, password);
         }
         if(command == "quote")
         {
-            return SendQuote(commandtext.after(' '));
+            return sendQuote(commandtext.after(' '));
         }
         if(command == "topic")
         {
             FXString params = commandtext.after(' ');
             FXString channel = params.before(' ');
             FXString topic = params.after(' ');
-            return SendTopic(channel, topic);
+            return sendTopic(channel, topic);
         }
         if(command == "voice")
         {
             FXString params = commandtext.after(' ');
             FXString channel = params.before(' ');
             FXString nicks = params.after(' ');
-            FXString modeparams = utils::CreateModes('+', 'v', nicks);
-            return SendMode(channel+" "+modeparams);
+            FXString modeparams = utils::createModes('+', 'v', nicks);
+            return sendMode(channel+" "+modeparams);
         }
         if(command == "wallops")
         {
             FXString params = commandtext.after(' ');
-            return SendWallops(params);
+            return sendWallops(params);
         }
         if(command == "who")
         {
             FXString params = commandtext.after(' ');
-            return SendWho(params);
+            return sendWho(params);
         }
         if(command == "whois")
         {
             FXString params = commandtext.after(' ');
-            return SendWhois(params);
+            return sendWhois(params);
         }
         if(command == "whowas")
         {
             FXString params = commandtext.after(' ');
-            return SendWhowas(params);
+            return sendWhowas(params);
         }
-        SendEvent(IRC_ERROR, FXStringFormat(_("Bad command on connection:%s"), commandtext.text()));
+        sendEvent(IRC_ERROR, FXStringFormat(_("Bad command on connection:%s"), commandtext.text()));
         return FALSE;
     }
     else
         return FALSE;
 }
 
-void IrcSocket::SendEvents()
+void IrcSocket::sendEvents()
 {
-    if(thread->running())
+    if(m_thread->running())
         return;
-    while(events.no())
+    while(m_events.no())
     {
-        for(FXint i=0; i < targets.no(); i++)
+        for(FXint i=0; i < m_targets.no(); i++)
         {
-            targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &events[0]);
+            m_targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &m_events[0]);
         }
-        events.erase(0);
+        m_events.erase(0);
     }
 }
 
-void IrcSocket::SendEvent(IrcEventType eventType)
+void IrcSocket::sendEvent(IrcEventType eventType)
 {
     IrcEvent ev;
     ev.eventType = eventType;
@@ -2310,19 +2290,19 @@ void IrcSocket::SendEvent(IrcEventType eventType)
     ev.param4 = "";
     ev.dccFile = DccFile();
     ev.time = FXSystem::now();
-    if(thread->running())
-        events.append(ev);
+    if(m_thread->running())
+        m_events.append(ev);
     else
     {
-        SendEvents();
-        for(FXint i=0; i < targets.no(); i++)
+        sendEvents();
+        for(FXint i=0; i < m_targets.no(); i++)
         {
-            targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
+            m_targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
         }
     }
 }
 
-void IrcSocket::SendEvent(IrcEventType eventType, const FXString &param1)
+void IrcSocket::sendEvent(IrcEventType eventType, const FXString &param1)
 {
     IrcEvent ev;
     ev.eventType = eventType;
@@ -2332,19 +2312,19 @@ void IrcSocket::SendEvent(IrcEventType eventType, const FXString &param1)
     ev.param4 = "";
     ev.dccFile = DccFile();
     ev.time = FXSystem::now();
-    if(thread->running())
-        events.append(ev);
+    if(m_thread->running())
+        m_events.append(ev);
     else
     {
-        SendEvents();
-        for(FXint i=0; i < targets.no(); i++)
+        sendEvents();
+        for(FXint i=0; i < m_targets.no(); i++)
         {
-            targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
+            m_targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
         }
     }
 }
 
-void IrcSocket::SendEvent(IrcEventType eventType, const FXString &param1, const FXString &param2)
+void IrcSocket::sendEvent(IrcEventType eventType, const FXString &param1, const FXString &param2)
 {
     IrcEvent ev;
     ev.eventType = eventType;
@@ -2354,19 +2334,19 @@ void IrcSocket::SendEvent(IrcEventType eventType, const FXString &param1, const 
     ev.param4 = "";
     ev.dccFile = DccFile();
     ev.time = FXSystem::now();
-    if(thread->running())
-        events.append(ev);
+    if(m_thread->running())
+        m_events.append(ev);
     else
     {
-        SendEvents();
-        for(FXint i=0; i < targets.no(); i++)
+        sendEvents();
+        for(FXint i=0; i < m_targets.no(); i++)
         {
-            targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
+            m_targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
         }
     }
 }
 
-void IrcSocket::SendEvent(IrcEventType eventType, const FXString &param1, const FXString &param2, const FXString &param3)
+void IrcSocket::sendEvent(IrcEventType eventType, const FXString &param1, const FXString &param2, const FXString &param3)
 {
     IrcEvent ev;
     ev.eventType = eventType;
@@ -2376,19 +2356,19 @@ void IrcSocket::SendEvent(IrcEventType eventType, const FXString &param1, const 
     ev.param4 = "";
     ev.dccFile = DccFile();
     ev.time = FXSystem::now();
-    if(thread->running())
-        events.append(ev);
+    if(m_thread->running())
+        m_events.append(ev);
     else
     {
-        SendEvents();
-        for(FXint i=0; i < targets.no(); i++)
+        sendEvents();
+        for(FXint i=0; i < m_targets.no(); i++)
         {
-            targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
+            m_targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
         }
     }
 }
 
-void IrcSocket::SendEvent(IrcEventType eventType, const FXString &param1, const FXString &param2, const FXString &param3, const FXString &param4)
+void IrcSocket::sendEvent(IrcEventType eventType, const FXString &param1, const FXString &param2, const FXString &param3, const FXString &param4)
 {
     IrcEvent ev;
     ev.eventType = eventType;
@@ -2398,20 +2378,20 @@ void IrcSocket::SendEvent(IrcEventType eventType, const FXString &param1, const 
     ev.param4 = param4;
     ev.dccFile = DccFile();
     ev.time = FXSystem::now();
-    if(thread->running())
-        events.append(ev);
+    if(m_thread->running())
+        m_events.append(ev);
     else
     {
-        SendEvents();
-        for(FXint i=0; i < targets.no(); i++)
+        sendEvents();
+        for(FXint i=0; i < m_targets.no(); i++)
         {
-            targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
+            m_targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
         }
     }
 }
 
 //usefull for dcc receiving/sending file
-void IrcSocket::SendEvent(IrcEventType eventType, DccFile file)
+void IrcSocket::sendEvent(IrcEventType eventType, DccFile file)
 {
     IrcEvent ev;
     ev.eventType = eventType;
@@ -2421,40 +2401,40 @@ void IrcSocket::SendEvent(IrcEventType eventType, DccFile file)
     ev.param4 = "";
     ev.dccFile = file;
     ev.time = FXSystem::now();
-    if(thread->running())
-        events.append(ev);
+    if(m_thread->running())
+        m_events.append(ev);
     else
     {
-        SendEvents();
-        for(FXint i=0; i < targets.no(); i++)
+        sendEvents();
+        for(FXint i=0; i < m_targets.no(); i++)
         {
-            targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
+            m_targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
         }
     }
 }
 
-void IrcSocket::AppendTarget(FXObject *tgt)
+void IrcSocket::appendTarget(FXObject *tgt)
 {
-     targets.append(tgt);
+     m_targets.append(tgt);
 }
 
-void IrcSocket::RemoveTarget(FXObject *tgt)
+void IrcSocket::removeTarget(FXObject *tgt)
 {
-    for(FXint i=0; i < targets.no(); i++)
+    for(FXint i=0; i < m_targets.no(); i++)
     {
-        if(targets[i] == tgt)
+        if(m_targets[i] == tgt)
         {
-            targets.erase(i);
+            m_targets.erase(i);
             break;
         }
     }
 }
 
-FXbool IrcSocket::FindTarget(FXObject *tgt)
+FXbool IrcSocket::findTarget(FXObject *tgt)
 {
-    for(FXint i=0; i < targets.no(); i++)
+    for(FXint i=0; i < m_targets.no(); i++)
     {
-        if(targets[i] == tgt)
+        if(m_targets[i] == tgt)
         {
             return TRUE;
         }
@@ -2462,51 +2442,51 @@ FXbool IrcSocket::FindTarget(FXObject *tgt)
     return FALSE;
 }
 
-void IrcSocket::ClearChannelsCommands(FXbool disableReconnect)
+void IrcSocket::clearChannelsCommands(FXbool disableReconnect)
 {
-    if(reconnect && attempts < numberAttempt && !disableReconnect)
+    if(m_reconnect && m_attempts < m_numberAttempt && !disableReconnect)
     {
-        MakeStartChannels();
+        makeStartChannels();
     }
     else
     {
-        startChannels.clear();
-        startCommands.clear();
+        m_startChannels.clear();
+        m_startCommands.clear();
     }
 }
 
-void IrcSocket::MakeStartChannels()
+void IrcSocket::makeStartChannels()
 {
-    startChannels.clear();
+    m_startChannels.clear();
     IrcTabItem *tab;
-    for(FXint i=0; i < targets.no(); i++)
+    for(FXint i=0; i < m_targets.no(); i++)
     {
-        if((tab = dynamic_cast<IrcTabItem*>(targets[i])))
+        if((tab = dynamic_cast<IrcTabItem*>(m_targets[i])))
         {
-            if(tab->GetType() == CHANNEL)
-                startChannels.append(tab->getText()+",");
+            if(tab->getType() == CHANNEL)
+                m_startChannels.append(tab->getText()+",");
         }
     }
 }
 
-FXbool IrcSocket::ClearTarget()
+FXbool IrcSocket::clearTarget()
 {
-    targets.clear();
-    if(targets.no()) return FALSE;
+    m_targets.clear();
+    if(m_targets.no()) return FALSE;
     else return TRUE;
 }
 
-void IrcSocket::AddNick(const FXString &nick, const FXString &user, const FXString &real, const FXString &host, const FXbool &away)
+void IrcSocket::addNick(const FXString &nick, const FXString &user, const FXString &real, const FXString &host, const FXbool &away)
 {
     FXbool nickExist = FALSE;
-    for(FXint i=0; i < nicks.no(); i++)
+    for(FXint i=0; i < m_nicks.no(); i++)
     {
-        if(nicks[i].nick == nick)
+        if(m_nicks[i].nick == nick)
         {
-            nicks[i].user = user;
-            nicks[i].real = real;
-            nicks[i].host = host;
-            nicks[i].away = away;
+            m_nicks[i].user = user;
+            m_nicks[i].real = real;
+            m_nicks[i].host = host;
+            m_nicks[i].away = away;
             nickExist = TRUE;
             break;
         }
@@ -2519,20 +2499,20 @@ void IrcSocket::AddNick(const FXString &nick, const FXString &user, const FXStri
         nickStruct.real = real;
         nickStruct.host = host;
         nickStruct.away = away;
-        nicks.append(nickStruct);
+        m_nicks.append(nickStruct);
     }
 }
 
-void IrcSocket::AddNick(const FXString &nick, const FXString &user, const FXString &real, const FXString &host)
+void IrcSocket::addNick(const FXString &nick, const FXString &user, const FXString &real, const FXString &host)
 {
     FXbool nickExist = FALSE;
-    for(FXint i=0; i < nicks.no(); i++)
+    for(FXint i=0; i < m_nicks.no(); i++)
     {
-        if(nicks[i].nick == nick)
+        if(m_nicks[i].nick == nick)
         {
-            nicks[i].user = user;
-            nicks[i].real = real;
-            nicks[i].host = host;
+            m_nicks[i].user = user;
+            m_nicks[i].real = real;
+            m_nicks[i].host = host;
             nickExist = TRUE;
             break;
         }
@@ -2545,63 +2525,63 @@ void IrcSocket::AddNick(const FXString &nick, const FXString &user, const FXStri
         nickStruct.real = real;
         nickStruct.host = host;
         nickStruct.away = FALSE;
-        nicks.append(nickStruct);
+        m_nicks.append(nickStruct);
     }
 }
 
-void IrcSocket::RemoveNick(const FXString &nick)
+void IrcSocket::removeNick(const FXString &nick)
 {
-    for(FXint i=0; i < nicks.no(); i++)
+    for(FXint i=0; i < m_nicks.no(); i++)
     {
-        if(nicks[i].nick == nick)
+        if(m_nicks[i].nick == nick)
         {
-            nicks.erase(i);
+            m_nicks.erase(i);
             break;
         }
     }
 }
 
-NickInfo IrcSocket::GetNickInfo(const FXString &nick) const
+NickInfo IrcSocket::getNickInfo(const FXString &nick) const
 {
     NickInfo nickInfo;
-    for(FXint i=0; i < nicks.no(); i++)
+    for(FXint i=0; i < m_nicks.no(); i++)
     {
-        if(nicks[i].nick == nick)
+        if(m_nicks[i].nick == nick)
         {
-            nickInfo = nicks[i];
+            nickInfo = m_nicks[i];
             break;
         }
     }
     return nickInfo;
 }
 
-FXString IrcSocket::GetBannedNick(const FXString &banmask) const
+FXString IrcSocket::getBannedNick(const FXString &banmask) const
 {
     FXString nick = "";
     FXString banNick = banmask.before('!');
     FXString banUser = banmask.after('!').before('@');
     FXString banHost = banmask.after('@');
-    for(FXint i=0; i<nicks.no(); i++)
+    for(FXint i=0; i<m_nicks.no(); i++)
     {
-        if(FXRex(FXString("\\<"+banNick+"\\>").substitute("*","\\w*")).match(nicks[i].nick) && FXRex(FXString(banUser+"\\>").substitute("*","\\w*")).match(nicks[i].user) && FXRex(FXString("\\<"+banHost+"\\>").substitute("*","\\w*")).match(nicks[i].host)) nick += nicks[i].nick+";";
+        if(FXRex(FXString("\\<"+banNick+"\\>").substitute("*","\\w*")).match(m_nicks[i].nick) && FXRex(FXString(banUser+"\\>").substitute("*","\\w*")).match(m_nicks[i].user) && FXRex(FXString("\\<"+banHost+"\\>").substitute("*","\\w*")).match(m_nicks[i].host)) nick += m_nicks[i].nick+";";
     }
     return nick;
 }
 
-FXbool IrcSocket::IsAway(const FXString& nick)
+FXbool IrcSocket::isAway(const FXString& nick)
 {
-    for(FXint i=0; i < nicks.no(); i++)
+    for(FXint i=0; i < m_nicks.no(); i++)
     {
-        if(nicks[i].nick == nick)
+        if(m_nicks[i].nick == nick)
         {
-            return nicks[i].away;
+            return m_nicks[i].away;
         }
     }
     return FALSE;
 }
 
 //ipaddr in byte order
-FXbool IrcSocket::IsRoutableIP(FXuint ipaddr)
+FXbool IrcSocket::isRoutableIP(FXuint ipaddr)
 {
     if(!ipaddr) return FALSE;
     unsigned char * ip = (unsigned char *)&ipaddr;
@@ -2622,7 +2602,7 @@ FXbool IrcSocket::IsRoutableIP(FXuint ipaddr)
 }
 
 //address as 2130706433
-FXString IrcSocket::BinaryIPToString(const FXString &address)
+FXString IrcSocket::binaryIPToString(const FXString &address)
 {
     struct in_addr addr;
     inet_aton(address.text(), &addr);
@@ -2631,7 +2611,7 @@ FXString IrcSocket::BinaryIPToString(const FXString &address)
 
 //Return IP usefull for DCC (byte order)
 //address as "127.0.0.1" or "locahost"
-FXuint IrcSocket::StringIPToBinary(const FXString &address)
+FXuint IrcSocket::stringIPToBinary(const FXString &address)
 {
     if(address.contains('.') == 3)
     {
@@ -2652,54 +2632,50 @@ FXuint IrcSocket::StringIPToBinary(const FXString &address)
 }
 
 //return string in dots-and-numbers format
-const char* IrcSocket::GetLocalIP()
+const char* IrcSocket::getLocalIP()
 {
     struct sockaddr_in local;
     socklen_t len = sizeof(struct sockaddr_in);
-    getsockname(serverid, reinterpret_cast<struct sockaddr *>(&local), &len);
-#ifdef DEBUG
-    fxmessage("LocalIP: %s\n", inet_ntoa(local.sin_addr));
-#endif
+    getsockname(m_serverid, reinterpret_cast<struct sockaddr *>(&local), &len);
+    utils::debugLine(FXStringFormat("LocalIP: %s", inet_ntoa(local.sin_addr)));
     return inet_ntoa(local.sin_addr);
 }
 
 //return string in dots-and-numbers format
-const char* IrcSocket::GetRemoteIP()
+const char* IrcSocket::getRemoteIP()
 {
-#ifdef DEBUG
-    fxmessage("RemoteIP: %s\n", inet_ntoa(serverSock.sin_addr));
-#endif
-    return inet_ntoa(serverSock.sin_addr);
+    utils::debugLine(FXStringFormat("RemoteIP: %s", inet_ntoa(m_serverSock.sin_addr)));
+    return inet_ntoa(m_serverSock.sin_addr);
 }
 
 //Return IP usefull for DCC (byte order)
-FXuint IrcSocket::GetLocalIPBinary()
+FXuint IrcSocket::getLocalIPBinary()
 {
-    return StringIPToBinary(GetLocalIP());
+    return stringIPToBinary(getLocalIP());
 }
 
-FXbool IrcSocket::IsUserIgnored(const FXString &nick, const FXString &user, const FXString &host, const FXString &on)
+FXbool IrcSocket::isUserIgnored(const FXString &nick, const FXString &user, const FXString &host, const FXString &on)
 {
     FXbool bnick = FALSE;
     FXbool buser = FALSE;
     FXbool bhost = FALSE;
     FXbool bchannel = FALSE;
     FXbool bserver = FALSE;
-    for(FXint i=0; i<usersList.no(); i++)
+    for(FXint i=0; i<m_usersList.no(); i++)
     {
         FXString inick, iuser, ihost;
-        inick = usersList[i].nick.before('!');
-        iuser = usersList[i].nick.after('!').before('@');
-        ihost = usersList[i].nick.after('@');
+        inick = m_usersList[i].nick.before('!');
+        iuser = m_usersList[i].nick.after('!').before('@');
+        ihost = m_usersList[i].nick.after('@');
         if(FXRex(FXString("\\<"+inick+"\\>").substitute("*","\\w*")).match(nick)) bnick = TRUE;
         if(FXRex(FXString("\\<"+iuser+"\\>").substitute("*","\\w*")).match(user) || iuser.empty()) buser = TRUE;
         if(FXRex(FXString("\\<"+ihost+"\\>").substitute("*","\\w*")).match(host) || ihost.empty()) bhost = TRUE;
-        if(usersList[i].channel == "all") bchannel = TRUE;
-        if(usersList[i].channel.contains(','))
+        if(m_usersList[i].channel == "all") bchannel = TRUE;
+        if(m_usersList[i].channel.contains(','))
         {
-            for(FXint j=1; j<usersList[i].channel.contains(',')+2; j++)
+            for(FXint j=1; j<m_usersList[i].channel.contains(',')+2; j++)
             {
-                if(FXRex(FXString(utils::GetParam(usersList[i].channel, j, FALSE, ',')+"\\>").substitute("*","\\w*")).match(on))
+                if(FXRex(FXString(utils::getParam(m_usersList[i].channel, j, FALSE, ',')+"\\>").substitute("*","\\w*")).match(on))
                 {
                     bchannel = TRUE;
                     break;
@@ -2708,15 +2684,15 @@ FXbool IrcSocket::IsUserIgnored(const FXString &nick, const FXString &user, cons
         }
         else
         {
-            if(FXRex(FXString(usersList[i].channel+"\\>").substitute("*","\\w*")).match(on)) bchannel = TRUE;
+            if(FXRex(FXString(m_usersList[i].channel+"\\>").substitute("*","\\w*")).match(on)) bchannel = TRUE;
         }
-        if(usersList[i].server == "all") bserver = TRUE;
-        if(FXRex(FXString("\\<"+usersList[i].server+"\\>").substitute("*","\\w*")).match(serverName)) bserver = TRUE;
+        if(m_usersList[i].server == "all") bserver = TRUE;
+        if(FXRex(FXString("\\<"+m_usersList[i].server+"\\>").substitute("*","\\w*")).match(m_serverName)) bserver = TRUE;
     }
     return bnick && buser && bhost && bchannel && bserver;
 }
 
-FXbool IrcSocket::IsUserIgnored(const FXString &nick, const FXString &on)
+FXbool IrcSocket::isUserIgnored(const FXString &nick, const FXString &on)
 {
     FXbool bnick = FALSE;
     FXbool buser = FALSE;
@@ -2724,30 +2700,30 @@ FXbool IrcSocket::IsUserIgnored(const FXString &nick, const FXString &on)
     FXbool bchannel = FALSE;
     FXbool bserver = FALSE;
     FXString user, host;
-    for(FXint i = 0; i < nicks.no(); i++)
+    for(FXint i = 0; i < m_nicks.no(); i++)
     {
-        if(nick == nicks[i].nick)
+        if(nick == m_nicks[i].nick)
         {
-            user = nicks[i].user;
-            host = nicks[i].host;
+            user = m_nicks[i].user;
+            host = m_nicks[i].host;
             break;
         }
     }
-    for(FXint i=0; i<usersList.no(); i++)
+    for(FXint i=0; i<m_usersList.no(); i++)
     {
         FXString inick, iuser, ihost;
-        inick = usersList[i].nick.before('!');
-        iuser = usersList[i].nick.after('!').before('@');
-        ihost = usersList[i].nick.after('@');
+        inick = m_usersList[i].nick.before('!');
+        iuser = m_usersList[i].nick.after('!').before('@');
+        ihost = m_usersList[i].nick.after('@');
         if(FXRex(FXString("\\<"+inick+"\\>").substitute("*","\\w*")).match(nick)) bnick = TRUE;
         if(FXRex(FXString("\\<"+iuser+"\\>").substitute("*","\\w*")).match(user) || iuser.empty()) buser = TRUE;
         if(FXRex(FXString("\\<"+ihost+"\\>").substitute("*","\\w*")).match(host) || ihost.empty()) bhost = TRUE;
-        if(usersList[i].channel == "all") bchannel = TRUE;
-        if(usersList[i].channel.contains(','))
+        if(m_usersList[i].channel == "all") bchannel = TRUE;
+        if(m_usersList[i].channel.contains(','))
         {
-            for(FXint j=1; j<usersList[i].channel.contains(',')+2; j++)
+            for(FXint j=1; j<m_usersList[i].channel.contains(',')+2; j++)
             {
-                if(FXRex(FXString(utils::GetParam(usersList[i].channel, j, FALSE, ',')+"\\>").substitute("*","\\w*")).match(on))
+                if(FXRex(FXString(utils::getParam(m_usersList[i].channel, j, FALSE, ',')+"\\>").substitute("*","\\w*")).match(on))
                 {
                     bchannel = TRUE;
                     break;
@@ -2756,15 +2732,15 @@ FXbool IrcSocket::IsUserIgnored(const FXString &nick, const FXString &on)
         }
         else
         {
-            if(FXRex(FXString(usersList[i].channel+"\\>").substitute("*","\\w*")).match(on)) bchannel = TRUE;
+            if(FXRex(FXString(m_usersList[i].channel+"\\>").substitute("*","\\w*")).match(on)) bchannel = TRUE;
         }
-        if(usersList[i].server == "all") bserver = TRUE;
-        if(FXRex(FXString("\\<"+usersList[i].server+"\\>").substitute("*","\\w*")).match(serverName)) bserver = TRUE;
+        if(m_usersList[i].server == "all") bserver = TRUE;
+        if(FXRex(FXString("\\<"+m_usersList[i].server+"\\>").substitute("*","\\w*")).match(m_serverName)) bserver = TRUE;
     }
     return bnick && buser && bhost && bchannel && bserver;
 }
 
-ConnectThread::ConnectThread(IrcSocket *sct) : socket(sct)
+ConnectThread::ConnectThread(IrcSocket *socket) : m_socket(socket)
 {
 }
 
@@ -2774,14 +2750,14 @@ ConnectThread::~ConnectThread()
 
 FXint ConnectThread::run()
 {
-    if(socket->GetDccType() == DCC_CHATOUT
-            || socket->GetDccType() == DCC_OUT
-            || socket->GetDccType() == DCC_PIN)
-        socket->Listen();
+    if(m_socket->getDccType() == DCC_CHATOUT
+            || m_socket->getDccType() == DCC_OUT
+            || m_socket->getDccType() == DCC_PIN)
+        m_socket->listenIRC();
     else
     {
-        if(socket->GetUseSsl()) socket->ConnectSSL();
-        else socket->Connect();
+        if(m_socket->getUseSsl()) m_socket->connectSSL();
+        else m_socket->connectIRC();
     }
     return 1;
 }

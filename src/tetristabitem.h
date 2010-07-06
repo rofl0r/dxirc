@@ -53,23 +53,23 @@ class Piece
 public:
     Piece(FXint type, TetrisTabItem *parent);
 
-    FXbool IsValid() const { return valid; }
-    FXbool MoveLeft() { return Move(-1, 0); }
-    FXbool MoveRight() { return Move(1, 0); }
-    FXbool MoveDown() { return Move(0, 1); }
-    FXbool Rotate();
-    void Drop();
-    static void Cells(Cell* cells, FXint type);
+    FXbool isValid() const { return m_valid; }
+    FXbool moveLeft() { return move(-1, 0); }
+    FXbool moveRight() { return move(1, 0); }
+    FXbool moveDown() { return move(0, 1); }
+    FXbool rotate();
+    void drop();
+    static void cells(Cell* cells, FXint type);
 
 private:
-    FXint type;
-    TetrisTabItem *parent;
-    Cell cells[4];
-    Cell pivot;
-    FXbool valid;
+    FXint m_type;
+    TetrisTabItem *m_parent;
+    Cell m_cells[4];
+    Cell m_pivot;
+    FXbool m_valid;
 
-    FXbool Move(FXint x, FXint y);
-    FXbool UpdatePosition(const Cell* ucells);
+    FXbool move(FXint x, FXint y);
+    FXbool updatePosition(const Cell* ucells);
 };
 
 class TetrisTabItem : public FXTabItem
@@ -87,56 +87,56 @@ public:
         ID_LAST
     };
 
-    FXbool Cell(FXint x, FXint y) const;
-    void AddCell(FXint x, FXint y, FXint type);
-    void RemoveCell(FXint x, FXint y, FXbool update=TRUE);
-    void FindFullLines();
-    void CreateGeom();
-    void SetColor(IrcColor);
-    void SetGameFocus();
-    void NewGame();
-    void StopGame();
-    void PauseResumeGame();
-    void ReparentTab();
-    void Redraw();
-    void MoveLeft();
-    void MoveRight();
-    void Rotate();
-    void Drop();
-    FXbool IsPauseEnable() { return pauseEnable; }
-    FXbool IsPaused() { return paused; }
+    FXbool cell(FXint x, FXint y) const;
+    void addCell(FXint x, FXint y, FXint type);
+    void removeCell(FXint x, FXint y, FXbool update=TRUE);
+    void findFullLines();
+    void createGeom();
+    void setColor(IrcColor);
+    void setGameFocus();
+    void newGame();
+    void stopGame();
+    void pauseResumeGame();
+    void reparentTab();
+    void redraw();
+    void moveLeft();
+    void moveRight();
+    void rotate();
+    void drop();
+    FXbool isPauseEnable() { return m_pauseEnable; }
+    FXbool isPaused() { return m_paused; }
 
-    long OnPaint(FXObject*, FXSelector, void*);
-    long OnTimeout(FXObject*, FXSelector, void*);
-    long OnNewGame(FXObject*, FXSelector, void*);
-    long OnPauseGame(FXObject*, FXSelector, void*);
+    long onPaint(FXObject*, FXSelector, void*);
+    long onTimeout(FXObject*, FXSelector, void*);
+    long onNewGame(FXObject*, FXSelector, void*);
+    long onPauseGame(FXObject*, FXSelector, void*);
 
 private:
     TetrisTabItem() {}
 
-    dxTabBook *parent;
-    FXVerticalFrame *mainframe, *gameframe, *otherframe;
-    FXSplitter *splitter;
-    FXCanvas *gamecanvas, *nextcanvas;
-    FXLabel *levelLabel, *scoreLabel, *linesLabel;
-    FXButton *newButton, *pauseButton;
-    FXFont *messageFont;
-    FXint cells[columns][rows];
-    FXint fullLines[4];
-    FXint apiece, anext;
-    FXint removedLines, level, score, nextPiece;
-    FXbool paused, done, pauseEnable;
-    Piece *piece;
-    FXColor penColor;
+    dxTabBook *m_parent;
+    FXVerticalFrame *m_mainframe, *m_gameframe, *m_otherframe;
+    FXSplitter *m_splitter;
+    FXCanvas *m_gamecanvas, *m_nextcanvas;
+    FXLabel *m_levelLabel, *m_scoreLabel, *m_linesLabel;
+    FXButton *m_newButton, *m_pauseButton;
+    FXFont *m_messageFont;
+    FXint m_cells[columns][rows];
+    FXint m_fullLines[4];
+    FXint m_apiece, m_anext;
+    FXint m_removedLines, m_level, m_score, m_nextPiece;
+    FXbool m_paused, m_done, m_pauseEnable;
+    Piece *m_piece;
+    FXColor m_penColor;
 
-    void CreatePiece();
-    void DrawLines();
-    void DrawNextPiece(FXint type);
-    void RemoveLines();
-    void LandPiece();
-    void GameOver();
-    void UpdateLabels();
-    void UpdateCell(FXint x, FXint y);
+    void createPiece();
+    void drawLines();
+    void drawNextPiece(FXint type);
+    void removeLines();
+    void landPiece();
+    void gameOver();
+    void updateLabels();
+    void updateCell(FXint x, FXint y);
 };
 
 #endif	/* TETRISTABITEM_H */

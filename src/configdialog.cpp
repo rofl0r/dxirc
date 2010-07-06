@@ -109,9 +109,9 @@ static bool writeString(FXFile& file, const FXchar* string)
 }
 
 FXDEFMAP(SmileyDialog) SmileyDialogMap[] = {
-    FXMAPFUNC(SEL_COMMAND, SmileyDialog::ID_ACCEPT, SmileyDialog::OnAccept),
-    FXMAPFUNC(SEL_COMMAND, SmileyDialog::ID_CANCEL, SmileyDialog::OnCancel),
-    FXMAPFUNC(SEL_COMMAND, SmileyDialog::ID_PATH, SmileyDialog::OnPath)
+    FXMAPFUNC(SEL_COMMAND, SmileyDialog::ID_ACCEPT, SmileyDialog::onAccept),
+    FXMAPFUNC(SEL_COMMAND, SmileyDialog::ID_CANCEL, SmileyDialog::onCancel),
+    FXMAPFUNC(SEL_COMMAND, SmileyDialog::ID_PATH, SmileyDialog::onPath)
 };
 
 FXIMPLEMENT(SmileyDialog, FXDialogBox, SmileyDialogMap, ARRAYNUMBER(SmileyDialogMap))
@@ -126,16 +126,16 @@ SmileyDialog::SmileyDialog(FXWindow* owner, FXString title, FXString smiley, FXS
 
     FXMatrix *matrix = new FXMatrix(this,2,MATRIX_BY_COLUMNS|LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     new FXLabel(matrix, _("Smiley:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    smileyText = new FXTextField(matrix, 25, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    if(!smiley.empty()) smileyText->setText(smiley);
+    m_smileyText = new FXTextField(matrix, 25, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    if(!smiley.empty()) m_smileyText->setText(smiley);
     new FXLabel(matrix, _("Path:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     FXHorizontalFrame *pathframe = new FXHorizontalFrame(matrix, LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW, 0,0,0,0, 0,0,0,0);
-    pathText = new FXTextField(pathframe, 25, NULL, 0, TEXTFIELD_READONLY|FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_X);
-    pathText->setBackColor(getApp()->getBaseColor());
-    if(!path.empty()) pathText->setText(path);
-    pathButton = new FXButton(pathframe, "...", NULL, this, ID_PATH, FRAME_RAISED|FRAME_THICK);
+    m_pathText = new FXTextField(pathframe, 25, NULL, 0, TEXTFIELD_READONLY|FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_X);
+    m_pathText->setBackColor(getApp()->getBaseColor());
+    if(!path.empty()) m_pathText->setText(path);
+    m_pathButton = new FXButton(pathframe, "...", NULL, this, ID_PATH, FRAME_RAISED|FRAME_THICK);
     new FXLabel(matrix, _("Preview:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    previewLabel = new FXLabel(matrix, "", path.empty() ? NULL : createIconFromName(getApp(), path), JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    m_previewLabel = new FXLabel(matrix, "", path.empty() ? NULL : createIconFromName(getApp(), path), JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
 }
 
 SmileyDialog::~SmileyDialog()
@@ -143,238 +143,238 @@ SmileyDialog::~SmileyDialog()
 
 }
 
-long SmileyDialog::OnAccept(FXObject*, FXSelector, void*)
+long SmileyDialog::onAccept(FXObject*, FXSelector, void*)
 {
     getApp()->stopModal(this,TRUE);
     hide();
     return 1;
 }
 
-long SmileyDialog::OnCancel(FXObject*, FXSelector, void*)
+long SmileyDialog::onCancel(FXObject*, FXSelector, void*)
 {
     getApp()->stopModal(this,FALSE);
     hide();
     return 1;
 }
 
-long SmileyDialog::OnPath(FXObject*, FXSelector, void*)
+long SmileyDialog::onPath(FXObject*, FXSelector, void*)
 {
     FXFileDialog dialog(this, _("Select file"));
-    if(!pathText->getText().empty()) dialog.setFilename(pathText->getText());
+    if(!m_pathText->getText().empty()) dialog.setFilename(m_pathText->getText());
     else dialog.setFilename((FXString)DXIRC_DATADIR+PATHSEPSTRING+"icons"+PATHSEPSTRING+"smileys"+PATHSEPSTRING);
     if(dialog.execute())
     {
-        pathText->setText(dialog.getFilename());
-        updateLabelIcon(getApp(), previewLabel, dialog.getFilename());
+        m_pathText->setText(dialog.getFilename());
+        updateLabelIcon(getApp(), m_previewLabel, dialog.getFilename());
     }
     return 1;
 }
 
-FXbool SmileyDialog::IconExist()
+FXbool SmileyDialog::iconExist()
 {
-    if(previewLabel->getIcon()) return TRUE;
+    if(m_previewLabel->getIcon()) return TRUE;
     return FALSE;
 }
 
 FXDEFMAP(ConfigDialog) ConfigDialogMap[] = {
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_ACCEPT, ConfigDialog::OnAccept),
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_CANCEL, ConfigDialog::OnCancel),
-    FXMAPFUNC(SEL_SELECTED, ConfigDialog::ID_COMMAND, ConfigDialog::OnCommandsSelected),
-    FXMAPFUNC(SEL_DESELECTED, ConfigDialog::ID_COMMAND, ConfigDialog::OnCommandsDeselected),
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_ADDCOMMAND, ConfigDialog::OnAddCommand),
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_DELETECOMMAND, ConfigDialog::OnDeleteCommand),
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_ADDUSER, ConfigDialog::OnAddUser),
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_MODIFYUSER, ConfigDialog::OnModifyUser),
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_DELETEUSER, ConfigDialog::OnDeleteUser),
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_ADDFRIEND, ConfigDialog::OnAddFriend),
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_MODIFYFRIEND, ConfigDialog::OnModifyFriend),
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_DELETEFRIEND, ConfigDialog::OnDeleteFriend),
-    FXMAPFUNC(SEL_CHANGED, ConfigDialog::ID_ICONS, ConfigDialog::OnIconsChanged),
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_ADDICONS, ConfigDialog::OnAddIcons),
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_DELETEICONS, ConfigDialog::OnDeleteIcons),
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_TRAY, ConfigDialog::OnTray),
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_LOG, ConfigDialog::OnLogChanged),
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_LOGPATH, ConfigDialog::OnPathSelect),
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_AUTOLOAD, ConfigDialog::OnAutoloadChanged),
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_AUTOLOADPATH, ConfigDialog::OnAutoloadPathSelect),
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_DCCPATH, ConfigDialog::OnDccPathSelect),
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_SERVERWINDOW, ConfigDialog::OnServerWindow),
-    FXMAPFUNC(SEL_CHANGED, ConfigDialog::ID_NICK, ConfigDialog::OnNickCharChanged),
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_RECONNECT, ConfigDialog::OnReconnect),
-    FXMAPFUNC(SEL_KEYPRESS, 0, ConfigDialog::OnKeyPress),
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_IRCCOLORS, ConfigDialog::OnColor),
-    FXMAPFUNC(SEL_CHANGED, ConfigDialog::ID_IRCCOLORS, ConfigDialog::OnColor),
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_COLORS, ConfigDialog::OnThemeColorChanged),
-    FXMAPFUNC(SEL_CHANGED, ConfigDialog::ID_COLORS, ConfigDialog::OnThemeColorChanged),
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_THEME, ConfigDialog::OnTheme),
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_FONT, ConfigDialog::OnFont),
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_IRCFONT, ConfigDialog::OnIrcFont),
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_TABPOS, ConfigDialog::OnTabPosition),
-    FXMAPFUNC(SEL_SELECTED, ConfigDialog::ID_USER, ConfigDialog::OnUsersSelected),
-    FXMAPFUNC(SEL_DESELECTED, ConfigDialog::ID_USER, ConfigDialog::OnUsersDeselected),
-    FXMAPFUNC(SEL_CHANGED, ConfigDialog::ID_USER, ConfigDialog::OnUsersChanged),
-    FXMAPFUNC(SEL_SELECTED, ConfigDialog::ID_FRIEND, ConfigDialog::OnFriendsSelected),
-    FXMAPFUNC(SEL_DESELECTED, ConfigDialog::ID_FRIEND, ConfigDialog::OnFriendsDeselected),
-    FXMAPFUNC(SEL_CHANGED, ConfigDialog::ID_FRIEND, ConfigDialog::OnFriendsChanged),
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_DCCPORTD, ConfigDialog::OnDccPortD),
-    FXMAPFUNC(SEL_CHANGED, ConfigDialog::ID_DCCPORTD, ConfigDialog::OnDccPortD),
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_DCCPORTH, ConfigDialog::OnDccPortH),
-    FXMAPFUNC(SEL_CHANGED, ConfigDialog::ID_DCCPORTH, ConfigDialog::OnDccPortH),
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_SOUNDS, ConfigDialog::OnSounds),
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_SOUNDCONNECT, ConfigDialog::OnSoundConnect),
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_SOUNDDISCONNECT, ConfigDialog::OnSoundDisconnect),
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_SOUNDMESSAGE, ConfigDialog::OnSoundMessage),
-    FXMAPFUNCS(SEL_COMMAND, ConfigDialog::ID_PLAYCONNECT, ConfigDialog::ID_PLAYMESSAGE, ConfigDialog::OnPlay),
-    FXMAPFUNCS(SEL_COMMAND, ConfigDialog::ID_SELECTCONNECT, ConfigDialog::ID_SELECTMESSAGE, ConfigDialog::OnSelectPath),
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_USESMILEYS, ConfigDialog::OnUseSmileys),
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_ADDSMILEY, ConfigDialog::OnAddSmiley),
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_MODIFYSMILEY, ConfigDialog::OnModifySmiley),
-    FXMAPFUNC(SEL_DOUBLECLICKED, ConfigDialog::ID_SMILEY, ConfigDialog::OnModifySmiley),
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_DELETESMILEY, ConfigDialog::OnDeleteSmiley),
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_IMPORTSMILEY, ConfigDialog::OnImportSmiley),
-    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_EXPORTSMILEY, ConfigDialog::OnExportSmiley)
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_ACCEPT, ConfigDialog::onAccept),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_CANCEL, ConfigDialog::onCancel),
+    FXMAPFUNC(SEL_SELECTED, ConfigDialog::ID_COMMAND, ConfigDialog::onCommandsSelected),
+    FXMAPFUNC(SEL_DESELECTED, ConfigDialog::ID_COMMAND, ConfigDialog::onCommandsDeselected),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_ADDCOMMAND, ConfigDialog::onAddCommand),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_DELETECOMMAND, ConfigDialog::onDeleteCommand),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_ADDUSER, ConfigDialog::onAddUser),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_MODIFYUSER, ConfigDialog::onModifyUser),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_DELETEUSER, ConfigDialog::onDeleteUser),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_ADDFRIEND, ConfigDialog::onAddFriend),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_MODIFYFRIEND, ConfigDialog::onModifyFriend),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_DELETEFRIEND, ConfigDialog::onDeleteFriend),
+    FXMAPFUNC(SEL_CHANGED, ConfigDialog::ID_ICONS, ConfigDialog::onIconsChanged),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_ADDICONS, ConfigDialog::onAddIcons),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_DELETEICONS, ConfigDialog::onDeleteIcons),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_TRAY, ConfigDialog::onTray),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_LOG, ConfigDialog::onLogChanged),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_LOGPATH, ConfigDialog::onPathSelect),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_AUTOLOAD, ConfigDialog::onAutoloadChanged),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_AUTOLOADPATH, ConfigDialog::onAutoloadPathSelect),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_DCCPATH, ConfigDialog::onDccPathSelect),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_SERVERWINDOW, ConfigDialog::onServerWindow),
+    FXMAPFUNC(SEL_CHANGED, ConfigDialog::ID_NICK, ConfigDialog::onNickCharChanged),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_RECONNECT, ConfigDialog::onReconnect),
+    FXMAPFUNC(SEL_KEYPRESS, 0, ConfigDialog::onKeyPress),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_IRCCOLORS, ConfigDialog::onColor),
+    FXMAPFUNC(SEL_CHANGED, ConfigDialog::ID_IRCCOLORS, ConfigDialog::onColor),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_COLORS, ConfigDialog::onThemeColorChanged),
+    FXMAPFUNC(SEL_CHANGED, ConfigDialog::ID_COLORS, ConfigDialog::onThemeColorChanged),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_THEME, ConfigDialog::onTheme),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_FONT, ConfigDialog::onFont),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_IRCFONT, ConfigDialog::onIrcFont),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_TABPOS, ConfigDialog::onTabPosition),
+    FXMAPFUNC(SEL_SELECTED, ConfigDialog::ID_USER, ConfigDialog::onUsersSelected),
+    FXMAPFUNC(SEL_DESELECTED, ConfigDialog::ID_USER, ConfigDialog::onUsersDeselected),
+    FXMAPFUNC(SEL_CHANGED, ConfigDialog::ID_USER, ConfigDialog::onUsersChanged),
+    FXMAPFUNC(SEL_SELECTED, ConfigDialog::ID_FRIEND, ConfigDialog::onFriendsSelected),
+    FXMAPFUNC(SEL_DESELECTED, ConfigDialog::ID_FRIEND, ConfigDialog::onFriendsDeselected),
+    FXMAPFUNC(SEL_CHANGED, ConfigDialog::ID_FRIEND, ConfigDialog::onFriendsChanged),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_DCCPORTD, ConfigDialog::onDccPortD),
+    FXMAPFUNC(SEL_CHANGED, ConfigDialog::ID_DCCPORTD, ConfigDialog::onDccPortD),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_DCCPORTH, ConfigDialog::onDccPortH),
+    FXMAPFUNC(SEL_CHANGED, ConfigDialog::ID_DCCPORTH, ConfigDialog::onDccPortH),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_SOUNDS, ConfigDialog::onSounds),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_SOUNDCONNECT, ConfigDialog::onSoundConnect),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_SOUNDDISCONNECT, ConfigDialog::onSoundDisconnect),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_SOUNDMESSAGE, ConfigDialog::onSoundMessage),
+    FXMAPFUNCS(SEL_COMMAND, ConfigDialog::ID_PLAYCONNECT, ConfigDialog::ID_PLAYMESSAGE, ConfigDialog::onPlay),
+    FXMAPFUNCS(SEL_COMMAND, ConfigDialog::ID_SELECTCONNECT, ConfigDialog::ID_SELECTMESSAGE, ConfigDialog::onSelectPath),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_USESMILEYS, ConfigDialog::onUseSmileys),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_ADDSMILEY, ConfigDialog::onAddSmiley),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_MODIFYSMILEY, ConfigDialog::onModifySmiley),
+    FXMAPFUNC(SEL_DOUBLECLICKED, ConfigDialog::ID_SMILEY, ConfigDialog::onModifySmiley),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_DELETESMILEY, ConfigDialog::onDeleteSmiley),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_IMPORTSMILEY, ConfigDialog::onImportSmiley),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_EXPORTSMILEY, ConfigDialog::onExportSmiley)
 };
 
 FXIMPLEMENT(ConfigDialog, FXDialogBox, ConfigDialogMap, ARRAYNUMBER(ConfigDialogMap))
 
 ConfigDialog::ConfigDialog(FXMainWindow *owner)
-    : FXDialogBox(owner, _("Preferences"), DECOR_RESIZE|DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0), owner(owner)
+    : FXDialogBox(owner, _("Preferences"), DECOR_RESIZE|DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0), m_owner(owner)
 {
-    ReadConfig();
-    showImportwarning = TRUE;
-    showWarning = TRUE;
+    readConfig();
+    m_showImportwarning = TRUE;
+    m_showWarning = TRUE;
 
-    textTarget.connect(colors.text);
-    textTarget.setTarget(this);
-    textTarget.setSelector(ID_IRCCOLORS);
-    backTarget.connect(colors.back);
-    backTarget.setTarget(this);
-    backTarget.setSelector(ID_IRCCOLORS);
-    userTarget.connect(colors.user);
-    userTarget.setTarget(this);
-    userTarget.setSelector(ID_IRCCOLORS);
-    actionTarget.connect(colors.action);
-    actionTarget.setTarget(this);
-    actionTarget.setSelector(ID_IRCCOLORS);
-    noticeTarget.connect(colors.notice);
-    noticeTarget.setTarget(this);
-    noticeTarget.setSelector(ID_IRCCOLORS);
-    errorTarget.connect(colors.error);
-    errorTarget.setTarget(this);
-    errorTarget.setSelector(ID_IRCCOLORS);
-    hilightTarget.connect(colors.hilight);
-    hilightTarget.setTarget(this);
-    hilightTarget.setSelector(ID_IRCCOLORS);
-    linkTarget.connect(colors.link);
-    linkTarget.setTarget(this);
-    linkTarget.setSelector(ID_IRCCOLORS);
+    m_textTarget.connect(m_colors.text);
+    m_textTarget.setTarget(this);
+    m_textTarget.setSelector(ID_IRCCOLORS);
+    m_backTarget.connect(m_colors.back);
+    m_backTarget.setTarget(this);
+    m_backTarget.setSelector(ID_IRCCOLORS);
+    m_userTarget.connect(m_colors.user);
+    m_userTarget.setTarget(this);
+    m_userTarget.setSelector(ID_IRCCOLORS);
+    m_actionTarget.connect(m_colors.action);
+    m_actionTarget.setTarget(this);
+    m_actionTarget.setSelector(ID_IRCCOLORS);
+    m_noticeTarget.connect(m_colors.notice);
+    m_noticeTarget.setTarget(this);
+    m_noticeTarget.setSelector(ID_IRCCOLORS);
+    m_errorTarget.connect(m_colors.error);
+    m_errorTarget.setTarget(this);
+    m_errorTarget.setSelector(ID_IRCCOLORS);
+    m_hilightTarget.connect(m_colors.hilight);
+    m_hilightTarget.setTarget(this);
+    m_hilightTarget.setSelector(ID_IRCCOLORS);
+    m_linkTarget.connect(m_colors.link);
+    m_linkTarget.setTarget(this);
+    m_linkTarget.setSelector(ID_IRCCOLORS);
 
-    targetSameCmd.connect(sameCmd);
-    targetSameList.connect(sameList);
-    targetColoredNick.connect(coloredNick);
-    targetCloseToTray.connect(closeToTray);
+    m_targetSameCmd.connect(m_sameCmd);
+    m_targetSameList.connect(m_sameList);
+    m_targetColoredNick.connect(m_coloredNick);
+    m_targetCloseToTray.connect(m_closeToTray);
 
-    targetBack.connect(themeCurrent.back);
-    targetBack.setTarget(this);
-    targetBack.setSelector(ID_COLORS);
-    targetBase.connect(themeCurrent.base);
-    targetBase.setTarget(this);
-    targetBase.setSelector(ID_COLORS);
-    targetBorder.connect(themeCurrent.border);
-    targetBorder.setTarget(this);
-    targetBorder.setSelector(ID_COLORS);
-    targetFore.connect(themeCurrent.fore);
-    targetFore.setTarget(this);
-    targetFore.setSelector(ID_COLORS);
-    targetMenuback.connect(themeCurrent.menuback);
-    targetMenuback.setTarget(this);
-    targetMenuback.setSelector(ID_COLORS);
-    targetMenufore.connect(themeCurrent.menufore);
-    targetMenufore.setTarget(this);
-    targetMenufore.setSelector(ID_COLORS);
-    targetSelback.connect(themeCurrent.selback);
-    targetSelback.setTarget(this);
-    targetSelback.setSelector(ID_COLORS);
-    targetSelfore.connect(themeCurrent.selfore);
-    targetSelfore.setTarget(this);
-    targetSelfore.setSelector(ID_COLORS);
-    targetTipback.connect(themeCurrent.tipback);
-    targetTipback.setTarget(this);
-    targetTipback.setSelector(ID_COLORS);
-    targetTipfore.connect(themeCurrent.tipfore);
-    targetTipfore.setTarget(this);
-    targetTipfore.setSelector(ID_COLORS);
+    m_targetBack.connect(m_themeCurrent.back);
+    m_targetBack.setTarget(this);
+    m_targetBack.setSelector(ID_COLORS);
+    m_targetBase.connect(m_themeCurrent.base);
+    m_targetBase.setTarget(this);
+    m_targetBase.setSelector(ID_COLORS);
+    m_targetBorder.connect(m_themeCurrent.border);
+    m_targetBorder.setTarget(this);
+    m_targetBorder.setSelector(ID_COLORS);
+    m_targetFore.connect(m_themeCurrent.fore);
+    m_targetFore.setTarget(this);
+    m_targetFore.setSelector(ID_COLORS);
+    m_targetMenuback.connect(m_themeCurrent.menuback);
+    m_targetMenuback.setTarget(this);
+    m_targetMenuback.setSelector(ID_COLORS);
+    m_targetMenufore.connect(m_themeCurrent.menufore);
+    m_targetMenufore.setTarget(this);
+    m_targetMenufore.setSelector(ID_COLORS);
+    m_targetSelback.connect(m_themeCurrent.selback);
+    m_targetSelback.setTarget(this);
+    m_targetSelback.setSelector(ID_COLORS);
+    m_targetSelfore.connect(m_themeCurrent.selfore);
+    m_targetSelfore.setTarget(this);
+    m_targetSelfore.setSelector(ID_COLORS);
+    m_targetTipback.connect(m_themeCurrent.tipback);
+    m_targetTipback.setTarget(this);
+    m_targetTipback.setSelector(ID_COLORS);
+    m_targetTipfore.connect(m_themeCurrent.tipfore);
+    m_targetTipfore.setTarget(this);
+    m_targetTipfore.setSelector(ID_COLORS);
 
-    trayTarget.connect(useTray);
-    trayTarget.setTarget(this);
-    trayTarget.setSelector(ID_TRAY);
-    serverTarget.connect(serverWindow);
-    serverTarget.setTarget(this);
-    serverTarget.setSelector(ID_SERVERWINDOW);
-    logTarget.connect(logging);
-    logTarget.setTarget(this);
-    logTarget.setSelector(ID_LOG);
-    autoloadTarget.connect(autoload);
-    autoloadTarget.setTarget(this);
-    autoloadTarget.setSelector(ID_AUTOLOAD);
+    m_trayTarget.connect(m_useTray);
+    m_trayTarget.setTarget(this);
+    m_trayTarget.setSelector(ID_TRAY);
+    m_serverTarget.connect(m_serverWindow);
+    m_serverTarget.setTarget(this);
+    m_serverTarget.setSelector(ID_SERVERWINDOW);
+    m_logTarget.connect(m_logging);
+    m_logTarget.setTarget(this);
+    m_logTarget.setSelector(ID_LOG);
+    m_autoloadTarget.connect(m_autoload);
+    m_autoloadTarget.setTarget(this);
+    m_autoloadTarget.setSelector(ID_AUTOLOAD);
 
-    targetReconnect.connect(reconnect);
-    targetReconnect.setTarget(this);
-    targetReconnect.setSelector(ID_RECONNECT);
-    targetNumberAttempt.connect(numberAttempt);
-    targetDelayAttempt.connect(delayAttempt);
-    targetMaxAway.connect(maxAway);
+    m_targetReconnect.connect(m_reconnect);
+    m_targetReconnect.setTarget(this);
+    m_targetReconnect.setSelector(ID_RECONNECT);
+    m_targetNumberAttempt.connect(m_numberAttempt);
+    m_targetDelayAttempt.connect(m_delayAttempt);
+    m_targetMaxAway.connect(m_maxAway);
 
-    targetLogPath.connect(logPath);
-    targetDccPath.connect(dccPath);
-    targetAutoloadPath.connect(autoloadPath);
+    m_targetLogPath.connect(m_logPath);
+    m_targetDccPath.connect(m_dccPath);
+    m_targetAutoloadPath.connect(m_autoloadPath);
 
-    targetDccIP1.connect(dccIP1);
-    targetDccIP2.connect(dccIP2);
-    targetDccIP3.connect(dccIP3);
-    targetDccIP4.connect(dccIP4);
+    m_targetDccIP1.connect(m_dccIP1);
+    m_targetDccIP2.connect(m_dccIP2);
+    m_targetDccIP3.connect(m_dccIP3);
+    m_targetDccIP4.connect(m_dccIP4);
 
-    targetDccPortD.connect(dccPortD);
-    targetDccPortD.setTarget(this);
-    targetDccPortD.setSelector(ID_DCCPORTD);
-    targetDccPortH.connect(dccPortH);
-    targetDccPortH.setTarget(this);
-    targetDccPortH.setSelector(ID_DCCPORTH);
+    m_targetDccPortD.connect(m_dccPortD);
+    m_targetDccPortD.setTarget(this);
+    m_targetDccPortD.setSelector(ID_DCCPORTD);
+    m_targetDccPortH.connect(m_dccPortH);
+    m_targetDccPortH.setTarget(this);
+    m_targetDccPortH.setSelector(ID_DCCPORTH);
 
-    targetDccTimeout.connect(dccTimeout);
+    m_targetDccTimeout.connect(m_dccTimeout);
 
-    targetAutoDccChat.connect(autoDccChat);
-    targetAutoDccFile.connect(autoDccFile);
+    m_targetAutoDccChat.connect(m_autoDccChat);
+    m_targetAutoDccFile.connect(m_autoDccFile);
 
-    targetSound.connect(sounds);
-    targetSound.setTarget(this);
-    targetSound.setSelector(ID_SOUNDS);
-    targetSoundConnect.connect(soundConnect);
-    targetSoundConnect.setTarget(this);
-    targetSoundConnect.setSelector(ID_SOUNDCONNECT);
-    targetSoundDisconnect.connect(soundDisconnect);
-    targetSoundDisconnect.setTarget(this);
-    targetSoundDisconnect.setSelector(ID_SOUNDDISCONNECT);
-    targetSoundMessage.connect(soundMessage);
-    targetSoundMessage.setTarget(this);
-    targetSoundMessage.setSelector(ID_SOUNDMESSAGE);
-    targetPathConnect.connect(pathConnect);
-    targetPathDisconnect.connect(pathDisconnect);
-    targetPathMessage.connect(pathMessage);
+    m_targetSound.connect(m_sounds);
+    m_targetSound.setTarget(this);
+    m_targetSound.setSelector(ID_SOUNDS);
+    m_targetSoundConnect.connect(m_soundConnect);
+    m_targetSoundConnect.setTarget(this);
+    m_targetSoundConnect.setSelector(ID_SOUNDCONNECT);
+    m_targetSoundDisconnect.connect(m_soundDisconnect);
+    m_targetSoundDisconnect.setTarget(this);
+    m_targetSoundDisconnect.setSelector(ID_SOUNDDISCONNECT);
+    m_targetSoundMessage.connect(m_soundMessage);
+    m_targetSoundMessage.setTarget(this);
+    m_targetSoundMessage.setSelector(ID_SOUNDMESSAGE);
+    m_targetPathConnect.connect(m_pathConnect);
+    m_targetPathDisconnect.connect(m_pathDisconnect);
+    m_targetPathMessage.connect(m_pathMessage);
 
-    targetStripColors.connect(stripColors);
+    m_targetStripColors.connect(m_stripColors);
 
-    targetUseSmileys.connect(useSmileys);
-    targetUseSmileys.setTarget(this);
-    targetUseSmileys.setSelector(ID_USESMILEYS);
+    m_targetUseSmileys.connect(m_useSmileys);
+    m_targetUseSmileys.setTarget(this);
+    m_targetUseSmileys.setSelector(ID_USESMILEYS);
 
-    targetTrayColor.connect(trayColor);
+    m_targetTrayColor.connect(m_trayColor);
 
     getApp()->getNormalFont()->create();
     FXFontDesc fontdescription;
     getApp()->getNormalFont()->getFontDesc(fontdescription);
-    font = new FXFont(getApp(),fontdescription);
-    font->create();
+    m_font = new FXFont(getApp(),fontdescription);
+    m_font->create();
 
     FXHorizontalFrame *closeframe = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X|PACK_UNIFORM_WIDTH);
     FXButton *ok = new FXButton(closeframe, _("&Save&&Close"), NULL, this, ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|LAYOUT_RIGHT|FRAME_RAISED|FRAME_THICK, 0,0,0,0, 10,10,2,5);
@@ -391,64 +391,64 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     FXHorizontalFrame *hframe = new FXHorizontalFrame(colorpane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     FXVerticalFrame *cframe = new FXVerticalFrame(hframe, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     FXMatrix *colormatrix = new FXMatrix(cframe, 2, MATRIX_BY_COLUMNS, 0,0,0,0, DEFAULT_SPACING,DEFAULT_SPACING,DEFAULT_SPACING,DEFAULT_SPACING, 1,1);
-    new FXColorWell(colormatrix, FXRGB(0,0,255), &backTarget, FXDataTarget::ID_VALUE, COLORWELL_OPAQUEONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_LEFT|LAYOUT_CENTER_Y|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW, 0,0,40,24);
+    new FXColorWell(colormatrix, FXRGB(0,0,255), &m_backTarget, FXDataTarget::ID_VALUE, COLORWELL_OPAQUEONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_LEFT|LAYOUT_CENTER_Y|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW, 0,0,40,24);
     new FXLabel(colormatrix, _("Text backround color"), NULL, JUSTIFY_LEFT|LAYOUT_CENTER_Y|LAYOUT_FILL_X|LAYOUT_FILL_ROW);
-    new FXColorWell(colormatrix, FXRGB(0,0,255), &textTarget, FXDataTarget::ID_VALUE, COLORWELL_OPAQUEONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_LEFT|LAYOUT_CENTER_Y|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW, 0,0,40,24);
+    new FXColorWell(colormatrix, FXRGB(0,0,255), &m_textTarget, FXDataTarget::ID_VALUE, COLORWELL_OPAQUEONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_LEFT|LAYOUT_CENTER_Y|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW, 0,0,40,24);
     new FXLabel(colormatrix, _("Text color"), NULL, JUSTIFY_LEFT|LAYOUT_CENTER_Y|LAYOUT_FILL_X|LAYOUT_FILL_ROW);
-    new FXColorWell(colormatrix, FXRGB(0,0,255), &userTarget, FXDataTarget::ID_VALUE, COLORWELL_OPAQUEONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_LEFT|LAYOUT_CENTER_Y|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW, 0,0,40,24);
+    new FXColorWell(colormatrix, FXRGB(0,0,255), &m_userTarget, FXDataTarget::ID_VALUE, COLORWELL_OPAQUEONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_LEFT|LAYOUT_CENTER_Y|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW, 0,0,40,24);
     new FXLabel(colormatrix, _("User events text color"), NULL, JUSTIFY_LEFT|LAYOUT_CENTER_Y|LAYOUT_FILL_X|LAYOUT_FILL_ROW);
-    new FXColorWell(colormatrix, FXRGB(0,0,255), &actionTarget, FXDataTarget::ID_VALUE, COLORWELL_OPAQUEONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_LEFT|LAYOUT_CENTER_Y|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW, 0,0,40,24);
+    new FXColorWell(colormatrix, FXRGB(0,0,255), &m_actionTarget, FXDataTarget::ID_VALUE, COLORWELL_OPAQUEONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_LEFT|LAYOUT_CENTER_Y|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW, 0,0,40,24);
     new FXLabel(colormatrix, _("Actions message text color"), NULL, JUSTIFY_LEFT|LAYOUT_CENTER_Y|LAYOUT_FILL_X|LAYOUT_FILL_ROW);
-    new FXColorWell(colormatrix, FXRGB(0,0,255), &noticeTarget, FXDataTarget::ID_VALUE, COLORWELL_OPAQUEONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_LEFT|LAYOUT_CENTER_Y|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW, 0,0,40,24);
+    new FXColorWell(colormatrix, FXRGB(0,0,255), &m_noticeTarget, FXDataTarget::ID_VALUE, COLORWELL_OPAQUEONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_LEFT|LAYOUT_CENTER_Y|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW, 0,0,40,24);
     new FXLabel(colormatrix, _("Notice text color"), NULL, JUSTIFY_LEFT|LAYOUT_CENTER_Y|LAYOUT_FILL_X|LAYOUT_FILL_ROW);
-    new FXColorWell(colormatrix, FXRGB(0,0,255), &errorTarget, FXDataTarget::ID_VALUE, COLORWELL_OPAQUEONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_LEFT|LAYOUT_CENTER_Y|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW, 0,0,40,24);
+    new FXColorWell(colormatrix, FXRGB(0,0,255), &m_errorTarget, FXDataTarget::ID_VALUE, COLORWELL_OPAQUEONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_LEFT|LAYOUT_CENTER_Y|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW, 0,0,40,24);
     new FXLabel(colormatrix, _("Error text color"), NULL, JUSTIFY_LEFT|LAYOUT_CENTER_Y|LAYOUT_FILL_X|LAYOUT_FILL_ROW);
-    new FXColorWell(colormatrix, FXRGB(0,0,255), &hilightTarget, FXDataTarget::ID_VALUE, COLORWELL_OPAQUEONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_LEFT|LAYOUT_CENTER_Y|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW, 0,0,40,24);
+    new FXColorWell(colormatrix, FXRGB(0,0,255), &m_hilightTarget, FXDataTarget::ID_VALUE, COLORWELL_OPAQUEONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_LEFT|LAYOUT_CENTER_Y|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW, 0,0,40,24);
     new FXLabel(colormatrix, _("Highlight message text color"), NULL, JUSTIFY_LEFT|LAYOUT_CENTER_Y|LAYOUT_FILL_X|LAYOUT_FILL_ROW);
-    new FXColorWell(colormatrix, FXRGB(0,0,255), &linkTarget, FXDataTarget::ID_VALUE, COLORWELL_OPAQUEONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_LEFT|LAYOUT_CENTER_Y|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW, 0,0,40,24);
+    new FXColorWell(colormatrix, FXRGB(0,0,255), &m_linkTarget, FXDataTarget::ID_VALUE, COLORWELL_OPAQUEONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_LEFT|LAYOUT_CENTER_Y|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW, 0,0,40,24);
     new FXLabel(colormatrix, _("Link color"), NULL, JUSTIFY_LEFT|LAYOUT_CENTER_Y|LAYOUT_FILL_X|LAYOUT_FILL_ROW);
     new FXLabel(colormatrix, _("Font"));
-    ircfontButton = new FXButton(colormatrix, " ", NULL, this, ID_IRCFONT, LAYOUT_CENTER_Y|FRAME_RAISED|JUSTIFY_CENTER_X|JUSTIFY_CENTER_Y|LAYOUT_FILL_X, 0,0,0,0, 10,10,2,5);
-    new FXCheckButton(cframe, _("Use same font for commandline"), &targetSameCmd, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
-    new FXCheckButton(cframe, _("Use same font for user list"), &targetSameList, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
-    new FXCheckButton(cframe, _("Use colored nick"), &targetColoredNick, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
-    new FXCheckButton(cframe, _("Strip colors in text"), &targetStripColors, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
+    m_ircfontButton = new FXButton(colormatrix, " ", NULL, this, ID_IRCFONT, LAYOUT_CENTER_Y|FRAME_RAISED|JUSTIFY_CENTER_X|JUSTIFY_CENTER_Y|LAYOUT_FILL_X, 0,0,0,0, 10,10,2,5);
+    new FXCheckButton(cframe, _("Use same font for commandline"), &m_targetSameCmd, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
+    new FXCheckButton(cframe, _("Use same font for user list"), &m_targetSameList, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
+    new FXCheckButton(cframe, _("Use colored nick"), &m_targetColoredNick, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
+    new FXCheckButton(cframe, _("Strip colors in text"), &m_targetStripColors, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
     FXVerticalFrame *tframe = new FXVerticalFrame(hframe, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    text = new FXText(tframe, NULL, 0, LAYOUT_FILL_X|LAYOUT_FILL_Y|TEXT_READONLY);
-    text->setScrollStyle(HSCROLLING_OFF);
+    m_text = new FXText(tframe, NULL, 0, LAYOUT_FILL_X|LAYOUT_FILL_Y|TEXT_READONLY);
+    m_text->setScrollStyle(HSCROLLING_OFF);
 
     FXVerticalFrame *ignorepane = new FXVerticalFrame(switcher, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     new FXLabel(ignorepane, _("Ignore commands and users"), NULL, LAYOUT_LEFT);
     new FXHorizontalSeparator(ignorepane, SEPARATOR_LINE|LAYOUT_FILL_X);
     FXGroupBox *commandsgroup = new FXGroupBox(ignorepane, _("Commands"), FRAME_GROOVE|LAYOUT_FILL_X|LAYOUT_FILL_Y|LAYOUT_SIDE_TOP);
     FXVerticalFrame *commandsbuttons = new FXVerticalFrame(commandsgroup, LAYOUT_SIDE_RIGHT|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
-    addCommand = new FXButton(commandsbuttons, _("Add"), NULL, this, ID_ADDCOMMAND, FRAME_RAISED|FRAME_THICK);
-    deleteCommand = new FXButton(commandsbuttons, _("Delete"), NULL, this, ID_DELETECOMMAND, FRAME_RAISED|FRAME_THICK);
+    m_addCommand = new FXButton(commandsbuttons, _("Add"), NULL, this, ID_ADDCOMMAND, FRAME_RAISED|FRAME_THICK);
+    m_deleteCommand = new FXButton(commandsbuttons, _("Delete"), NULL, this, ID_DELETECOMMAND, FRAME_RAISED|FRAME_THICK);
     FXVerticalFrame *commandslist = new FXVerticalFrame(commandsgroup, LAYOUT_FILL_X|LAYOUT_FILL_Y|FRAME_SUNKEN|FRAME_THICK);
-    commands = new FXList(commandslist, this, ID_COMMAND, LIST_BROWSESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    m_commands = new FXList(commandslist, this, ID_COMMAND, LIST_BROWSESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     FXGroupBox *usersgroup = new FXGroupBox(ignorepane, _("Users"), FRAME_GROOVE|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     FXVerticalFrame *usersbuttons = new FXVerticalFrame(usersgroup, LAYOUT_SIDE_RIGHT|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
-    addUser = new FXButton(usersbuttons, _("Add"), NULL, this, ID_ADDUSER, FRAME_RAISED|FRAME_THICK);
-    modifyUser = new FXButton(usersbuttons, _("Modify"), NULL, this, ID_MODIFYUSER, FRAME_RAISED|FRAME_THICK);
-    deleteUser = new FXButton(usersbuttons, _("Delete"), NULL, this, ID_DELETEUSER, FRAME_RAISED|FRAME_THICK);
+    m_addUser = new FXButton(usersbuttons, _("Add"), NULL, this, ID_ADDUSER, FRAME_RAISED|FRAME_THICK);
+    m_modifyUser = new FXButton(usersbuttons, _("Modify"), NULL, this, ID_MODIFYUSER, FRAME_RAISED|FRAME_THICK);
+    m_deleteUser = new FXButton(usersbuttons, _("Delete"), NULL, this, ID_DELETEUSER, FRAME_RAISED|FRAME_THICK);
     FXVerticalFrame *userspane = new FXVerticalFrame(usersgroup, LAYOUT_FILL_X|LAYOUT_FILL_Y|FRAME_SUNKEN|FRAME_THICK);
     FXHorizontalFrame *usersframe = new FXHorizontalFrame(userspane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    users = new FXIconList(usersframe, this, ID_USER, ICONLIST_AUTOSIZE|ICONLIST_DETAILED|ICONLIST_BROWSESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    users->appendHeader(_("User"), NULL, 200);
-    users->appendHeader(_("Channel(s)"), NULL, 150);
-    users->appendHeader(_("Server(s)"), NULL, 150);
-    FillCommnads();
-    FillUsers();
-    commands->getNumItems() ? deleteCommand->enable() : deleteCommand->disable();
-    if(usersList.no())
+    m_users = new FXIconList(usersframe, this, ID_USER, ICONLIST_AUTOSIZE|ICONLIST_DETAILED|ICONLIST_BROWSESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    m_users->appendHeader(_("User"), NULL, 200);
+    m_users->appendHeader(_("Channel(s)"), NULL, 150);
+    m_users->appendHeader(_("Server(s)"), NULL, 150);
+    fillCommnads();
+    fillUsers();
+    m_commands->getNumItems() ? m_deleteCommand->enable() : m_deleteCommand->disable();
+    if(m_usersList.no())
     {
-        deleteUser->enable();
-        modifyUser->enable();
+        m_deleteUser->enable();
+        m_modifyUser->enable();
     }
     else
     {
-        deleteUser->disable();
-        modifyUser->disable();
+        m_deleteUser->disable();
+        m_modifyUser->disable();
     }
 
     FXVerticalFrame *otherpane = new FXVerticalFrame(switcher, LAYOUT_FILL_X|LAYOUT_FILL_Y);
@@ -456,87 +456,87 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     new FXHorizontalSeparator(otherpane, SEPARATOR_LINE|LAYOUT_FILL_X);
     FXGroupBox *themesgroup = new FXGroupBox(otherpane, _("Nick icons themes"), FRAME_GROOVE|LAYOUT_FILL_X|LAYOUT_FILL_Y|LAYOUT_SIDE_TOP);
     FXVerticalFrame *themesbuttons = new FXVerticalFrame(themesgroup, LAYOUT_SIDE_RIGHT|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
-    addTheme = new FXButton(themesbuttons, _("Add"), NULL, this, ID_ADDICONS, FRAME_RAISED|FRAME_THICK);
-    deleteTheme = new FXButton(themesbuttons, _("Delete"), NULL, this, ID_DELETEICONS, FRAME_RAISED|FRAME_THICK);
+    m_addTheme = new FXButton(themesbuttons, _("Add"), NULL, this, ID_ADDICONS, FRAME_RAISED|FRAME_THICK);
+    m_deleteTheme = new FXButton(themesbuttons, _("Delete"), NULL, this, ID_DELETEICONS, FRAME_RAISED|FRAME_THICK);
     FXVerticalFrame *themeslist = new FXVerticalFrame(themesgroup, LAYOUT_FILL_X|LAYOUT_FILL_Y|FRAME_SUNKEN|FRAME_THICK);
-    icons = new FXList(themeslist, this, ID_ICONS, LIST_BROWSESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);    
-    FillIcons();
-    for(FXint i=0; i<icons->getNumItems(); i++)
+    m_icons = new FXList(themeslist, this, ID_ICONS, LIST_BROWSESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    fillIcons();
+    for(FXint i=0; i<m_icons->getNumItems(); i++)
     {
-        if(icons->getItemText(i) == themePath)
+        if(m_icons->getItemText(i) == m_themePath)
         {
-            icons->setCurrentItem(i);
+            m_icons->setCurrentItem(i);
             break;
         }
     }
-    icons->getNumItems()>1 ? deleteTheme->enable() : deleteTheme->disable();
-    iconsBar = new FXToolBar(themeslist, LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    icon1 = new FXButton(iconsBar, _("\tAdmin"), MakeIcon(getApp(), themePath, "irc_admin.png", TRUE), NULL, 0, BUTTON_TOOLBAR);
-    icon2 = new FXButton(iconsBar, _("\tOwner"), MakeIcon(getApp(), themePath, "irc_owner.png", TRUE), NULL, 0, BUTTON_TOOLBAR);
-    icon3 = new FXButton(iconsBar, _("\tOp"), MakeIcon(getApp(), themePath, "irc_op.png", TRUE), NULL, 0, BUTTON_TOOLBAR);
-    icon4 = new FXButton(iconsBar, _("\tHalfop"), MakeIcon(getApp(), themePath, "irc_halfop.png", TRUE), NULL, 0, BUTTON_TOOLBAR);
-    icon5 = new FXButton(iconsBar, _("\tVoice"), MakeIcon(getApp(), themePath, "irc_voice.png", TRUE), NULL, 0, BUTTON_TOOLBAR);
-    icon6 = new FXButton(iconsBar, _("\tNormal"), MakeIcon(getApp(), themePath, "irc_normal.png", TRUE), NULL, 0, BUTTON_TOOLBAR);
-    icon7 = new FXButton(iconsBar, _("\tAway"), MakeAwayIcon(getApp(), themePath, "irc_normal.png"), NULL, 0, BUTTON_TOOLBAR);
-    new FXCheckButton(otherpane, _("Reconnect after disconnection"), &targetReconnect, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
+    m_icons->getNumItems()>1 ? m_deleteTheme->enable() : m_deleteTheme->disable();
+    m_iconsBar = new FXToolBar(themeslist, LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    m_icon1 = new FXButton(m_iconsBar, _("\tAdmin"), makeIcon(getApp(), m_themePath, "irc_admin.png", TRUE), NULL, 0, BUTTON_TOOLBAR);
+    m_icon2 = new FXButton(m_iconsBar, _("\tOwner"), makeIcon(getApp(), m_themePath, "irc_owner.png", TRUE), NULL, 0, BUTTON_TOOLBAR);
+    m_icon3 = new FXButton(m_iconsBar, _("\tOp"), makeIcon(getApp(), m_themePath, "irc_op.png", TRUE), NULL, 0, BUTTON_TOOLBAR);
+    m_icon4 = new FXButton(m_iconsBar, _("\tHalfop"), makeIcon(getApp(), m_themePath, "irc_halfop.png", TRUE), NULL, 0, BUTTON_TOOLBAR);
+    m_icon5 = new FXButton(m_iconsBar, _("\tVoice"), makeIcon(getApp(), m_themePath, "irc_voice.png", TRUE), NULL, 0, BUTTON_TOOLBAR);
+    m_icon6 = new FXButton(m_iconsBar, _("\tNormal"), makeIcon(getApp(), m_themePath, "irc_normal.png", TRUE), NULL, 0, BUTTON_TOOLBAR);
+    m_icon7 = new FXButton(m_iconsBar, _("\tAway"), makeAwayIcon(getApp(), m_themePath, "irc_normal.png"), NULL, 0, BUTTON_TOOLBAR);
+    new FXCheckButton(otherpane, _("Reconnect after disconnection"), &m_targetReconnect, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
     FXHorizontalFrame *napane = new FXHorizontalFrame(otherpane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    numberAttemptLabel = new FXLabel(napane, _("Number of attempts"), NULL, LAYOUT_LEFT);
-    if(!reconnect) numberAttemptLabel->disable();
-    numberAttemptSpinner = new FXSpinner(napane, 4, &targetNumberAttempt, FXDataTarget::ID_VALUE, SPIN_CYCLIC|FRAME_GROOVE);
-    numberAttemptSpinner->setRange(1,20);
-    if(!reconnect) numberAttemptSpinner->disable();
+    m_numberAttemptLabel = new FXLabel(napane, _("Number of attempts"), NULL, LAYOUT_LEFT);
+    if(!m_reconnect) m_numberAttemptLabel->disable();
+    m_numberAttemptSpinner = new FXSpinner(napane, 4, &m_targetNumberAttempt, FXDataTarget::ID_VALUE, SPIN_CYCLIC|FRAME_GROOVE);
+    m_numberAttemptSpinner->setRange(1,20);
+    if(!m_reconnect) m_numberAttemptSpinner->disable();
     FXHorizontalFrame *dapane = new FXHorizontalFrame(otherpane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    delayAttemptLabel = new FXLabel(dapane, _("Delay between two attempts in seconds"), NULL, LAYOUT_LEFT);
-    if(!reconnect) delayAttemptLabel->disable();
-    delayAttemptSpinner = new FXSpinner(dapane, 4, &targetDelayAttempt, FXDataTarget::ID_VALUE, SPIN_CYCLIC|FRAME_GROOVE);
-    delayAttemptSpinner->setRange(10,120);
-    if(!reconnect) delayAttemptSpinner->disable();
+    m_delayAttemptLabel = new FXLabel(dapane, _("Delay between two attempts in seconds"), NULL, LAYOUT_LEFT);
+    if(!m_reconnect) m_delayAttemptLabel->disable();
+    m_delayAttemptSpinner = new FXSpinner(dapane, 4, &m_targetDelayAttempt, FXDataTarget::ID_VALUE, SPIN_CYCLIC|FRAME_GROOVE);
+    m_delayAttemptSpinner->setRange(10,120);
+    if(!m_reconnect) m_delayAttemptSpinner->disable();
     FXHorizontalFrame *maxpane = new FXHorizontalFrame(otherpane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     new FXLabel(maxpane, _("Max. users number for checking away\tToo high number can be reason for ban"), NULL, LAYOUT_LEFT);
-    new FXSpinner(maxpane, 4, &targetMaxAway, FXDataTarget::ID_VALUE, SPIN_NOMAX|FRAME_GROOVE);
+    new FXSpinner(maxpane, 4, &m_targetMaxAway, FXDataTarget::ID_VALUE, SPIN_NOMAX|FRAME_GROOVE);
     FXHorizontalFrame *nickpane = new FXHorizontalFrame(otherpane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     new FXLabel(nickpane, _("Nick completion char"), NULL, LAYOUT_LEFT);
-    nickCharField = new FXTextField(nickpane, 1, this, ID_NICK, TEXTFIELD_LIMITED|FRAME_THICK|FRAME_SUNKEN/*|LAYOUT_FILL_X*/);
-    nickCharField->setText(nickChar);
+    m_nickCharField = new FXTextField(nickpane, 1, this, ID_NICK, TEXTFIELD_LIMITED|FRAME_THICK|FRAME_SUNKEN/*|LAYOUT_FILL_X*/);
+    m_nickCharField->setText(m_nickChar);
 #ifdef HAVE_TRAY
-    new FXCheckButton(otherpane, _("Use trayicon"), &trayTarget, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
-    closeToTrayButton = new FXCheckButton(otherpane, _("Close button hides application"), &targetCloseToTray, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
+    new FXCheckButton(otherpane, _("Use trayicon"), &m_trayTarget, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
+    m_closeToTrayButton = new FXCheckButton(otherpane, _("Close button hides application"), &m_targetCloseToTray, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
 #endif
-    new FXCheckButton(otherpane, _("Special tab for server messages"), &serverTarget, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
-    new FXCheckButton(otherpane, _("Logging chats"), &logTarget, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
+    new FXCheckButton(otherpane, _("Special tab for server messages"), &m_serverTarget, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
+    new FXCheckButton(otherpane, _("Logging chats"), &m_logTarget, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
     FXHorizontalFrame *logpane = new FXHorizontalFrame(otherpane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     new FXLabel(logpane, _("Log path"), NULL, LAYOUT_LEFT);
-    (new FXTextField(logpane, 25, &targetLogPath, FXDataTarget::ID_VALUE, TEXTFIELD_READONLY|FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_X))->disable();
-    if(!FXStat::exists(logPath)) logPath = FXSystem::getHomeDirectory();
-    selectPath = new FXButton(logpane, "...", NULL, this, ID_LOGPATH, FRAME_RAISED|FRAME_THICK);
-    if(logging) selectPath->enable();
-    else selectPath->disable();
+    (new FXTextField(logpane, 25, &m_targetLogPath, FXDataTarget::ID_VALUE, TEXTFIELD_READONLY|FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_X))->disable();
+    if(!FXStat::exists(m_logPath)) m_logPath = FXSystem::getHomeDirectory();
+    m_selectPath = new FXButton(logpane, "...", NULL, this, ID_LOGPATH, FRAME_RAISED|FRAME_THICK);
+    if(m_logging) m_selectPath->enable();
+    else m_selectPath->disable();
 #ifdef HAVE_LUA
-    new FXCheckButton(otherpane, _("Automatically load scripts"), &autoloadTarget, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
+    new FXCheckButton(otherpane, _("Automatically load scripts"), &m_autoloadTarget, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
     FXHorizontalFrame *aloadpane = new FXHorizontalFrame(otherpane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     new FXLabel(aloadpane, _("Path"), NULL, LAYOUT_LEFT);
-    (new FXTextField(aloadpane, 25, &targetAutoloadPath, FXDataTarget::ID_VALUE, TEXTFIELD_READONLY|FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_X))->disable();
-    if(!FXStat::exists(autoloadPath))
+    (new FXTextField(aloadpane, 25, &m_targetAutoloadPath, FXDataTarget::ID_VALUE, TEXTFIELD_READONLY|FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_X))->disable();
+    if(!FXStat::exists(m_autoloadPath))
     {
 #ifdef WIN32
-        autoloadPath = utils::LocaleToUtf8(FXSystem::getHomeDirectory()+PATHSEPSTRING+"scripts");
+        m_autoloadPath = utils::LocaleToUtf8(FXSystem::getHomeDirectory()+PATHSEPSTRING+"scripts");
 #else
-        autoloadPath = FXSystem::getHomeDirectory()+PATHSEPSTRING+".dxirc"+PATHSEPSTRING+"scripts";
+        m_autoloadPath = FXSystem::getHomeDirectory()+PATHSEPSTRING+".dxirc"+PATHSEPSTRING+"scripts";
 #endif
     }
-    selectAutoloadPath = new FXButton(aloadpane, "...", NULL, this, ID_AUTOLOADPATH, FRAME_RAISED|FRAME_THICK);
-    if(autoload) selectAutoloadPath->enable();
-    else selectAutoloadPath->disable();
+    m_selectAutoloadPath = new FXButton(aloadpane, "...", NULL, this, ID_AUTOLOADPATH, FRAME_RAISED|FRAME_THICK);
+    if(m_autoload) m_selectAutoloadPath->enable();
+    else m_selectAutoloadPath->disable();
 #endif
     FXHorizontalFrame *tabpane = new FXHorizontalFrame(otherpane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     new FXLabel(tabpane, _("Tab position"), NULL, LAYOUT_LEFT);
-    listTabs = new FXListBox(tabpane, this, ID_TABPOS);
-    listTabs->appendItem(_("Bottom"));
-    listTabs->appendItem(_("Left"));
-    listTabs->appendItem(_("Top"));
-    listTabs->appendItem(_("Right"));
-    listTabs->setNumVisible(4);
-    if(tabPosition>=0 && tabPosition<4) listTabs->setCurrentItem(tabPosition);
+    m_listTabs = new FXListBox(tabpane, this, ID_TABPOS);
+    m_listTabs->appendItem(_("Bottom"));
+    m_listTabs->appendItem(_("Left"));
+    m_listTabs->appendItem(_("Top"));
+    m_listTabs->appendItem(_("Right"));
+    m_listTabs->setNumVisible(4);
+    if(m_tabPosition>=0 && m_tabPosition<4) m_listTabs->setCurrentItem(m_tabPosition);
 
 
     FXVerticalFrame *lookpane = new FXVerticalFrame(switcher, LAYOUT_FILL_X|LAYOUT_FILL_Y);
@@ -544,206 +544,206 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     new FXHorizontalSeparator(lookpane, SEPARATOR_LINE|LAYOUT_FILL_X);
     FXHorizontalFrame *hframe1 = new FXHorizontalFrame(lookpane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     FXVerticalFrame *vframe1 = new FXVerticalFrame(hframe1, LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    vframe2 = new FXVerticalFrame(hframe1, LAYOUT_FILL_X|LAYOUT_FILL_Y|FRAME_THICK|FRAME_RAISED);
+    m_vframe2 = new FXVerticalFrame(hframe1, LAYOUT_FILL_X|LAYOUT_FILL_Y|FRAME_THICK|FRAME_RAISED);
     new FXLabel(vframe1, _("Theme:"), NULL, LAYOUT_CENTER_Y);
-    themes = new FXListBox(vframe1,this,ID_THEME,LAYOUT_FILL_X|FRAME_SUNKEN|FRAME_THICK);
-    themes->setNumVisible(9);
-    FillThemes();
+    m_themes = new FXListBox(vframe1,this,ID_THEME,LAYOUT_FILL_X|FRAME_SUNKEN|FRAME_THICK);
+    m_themes->setNumVisible(9);
+    fillThemes();
     new FXSeparator(vframe1, SEPARATOR_GROOVE|LAYOUT_FILL_X);
     FXMatrix *themeMatrix = new FXMatrix(vframe1, 2, LAYOUT_FILL_Y|MATRIX_BY_COLUMNS, 0,0,0,0, DEFAULT_SPACING,DEFAULT_SPACING,DEFAULT_SPACING,DEFAULT_SPACING, 1,1);
-    new FXColorWell(themeMatrix, FXRGB(0,0,255), &targetBase, FXDataTarget::ID_VALUE);
+    new FXColorWell(themeMatrix, FXRGB(0,0,255), &m_targetBase, FXDataTarget::ID_VALUE);
     new FXLabel(themeMatrix, _("Base Color"));
-    new FXColorWell(themeMatrix, FXRGB(0,0,255), &targetBorder, FXDataTarget::ID_VALUE);
+    new FXColorWell(themeMatrix, FXRGB(0,0,255), &m_targetBorder, FXDataTarget::ID_VALUE);
     new FXLabel(themeMatrix, _("Border Color"));
-    new FXColorWell(themeMatrix, FXRGB(0,0,255), &targetFore,FXDataTarget::ID_VALUE);
+    new FXColorWell(themeMatrix, FXRGB(0,0,255), &m_targetFore,FXDataTarget::ID_VALUE);
     new FXLabel(themeMatrix, _("Text Color"));
-    new FXColorWell(themeMatrix, FXRGB(0,0,255), &targetBack, FXDataTarget::ID_VALUE);
+    new FXColorWell(themeMatrix, FXRGB(0,0,255), &m_targetBack, FXDataTarget::ID_VALUE);
     new FXLabel(themeMatrix, _("Background Color"));
-    new FXColorWell(themeMatrix, FXRGB(0,0,255), &targetSelfore, FXDataTarget::ID_VALUE);
+    new FXColorWell(themeMatrix, FXRGB(0,0,255), &m_targetSelfore, FXDataTarget::ID_VALUE);
     new FXLabel(themeMatrix, _("Selected Text Color"));
-    new FXColorWell(themeMatrix, FXRGB(0,0,255), &targetSelback, FXDataTarget::ID_VALUE);
+    new FXColorWell(themeMatrix, FXRGB(0,0,255), &m_targetSelback, FXDataTarget::ID_VALUE);
     new FXLabel(themeMatrix, _("Selected Background Color"));
-    new FXColorWell(themeMatrix, FXRGB(0,0,255), &targetMenufore, FXDataTarget::ID_VALUE);
+    new FXColorWell(themeMatrix, FXRGB(0,0,255), &m_targetMenufore, FXDataTarget::ID_VALUE);
     new FXLabel(themeMatrix, _("Selected Menu Text Color"));
-    new FXColorWell(themeMatrix, FXRGB(0,0,255), &targetMenuback, FXDataTarget::ID_VALUE);
+    new FXColorWell(themeMatrix, FXRGB(0,0,255), &m_targetMenuback, FXDataTarget::ID_VALUE);
     new FXLabel(themeMatrix, _("Selected Menu Background Color"));
-    new FXColorWell(themeMatrix, FXRGB(0,0,255), &targetTipfore, FXDataTarget::ID_VALUE);
+    new FXColorWell(themeMatrix, FXRGB(0,0,255), &m_targetTipfore, FXDataTarget::ID_VALUE);
     new FXLabel(themeMatrix, _("Tip Text Color"));
-    new FXColorWell(themeMatrix, FXRGB(0,0,255), &targetTipback, FXDataTarget::ID_VALUE);
+    new FXColorWell(themeMatrix, FXRGB(0,0,255), &m_targetTipback, FXDataTarget::ID_VALUE);
     new FXLabel(themeMatrix, _("Tip Background Color"));
 #ifndef WIN32
-    new FXColorWell(themeMatrix, FXRGB(0,0,255), &targetTrayColor, FXDataTarget::ID_VALUE);
+    new FXColorWell(themeMatrix, FXRGB(0,0,255), &m_targetTrayColor, FXDataTarget::ID_VALUE);
     new FXLabel(themeMatrix, _("Tray Color"));
 #endif
-    label = new FXLabel(vframe2, "Label");
-    textFrame1 = new FXHorizontalFrame(vframe2, LAYOUT_FILL_X);
-    textTest = new FXTextField(textFrame1, 30, NULL, 0, LAYOUT_FILL_X|FRAME_THICK|FRAME_SUNKEN);
-    textTest->setText(_("Select this text, to see the selected colors"));
-    textFrame2 = new FXHorizontalFrame(vframe2, LAYOUT_FILL_X|FRAME_THICK|FRAME_SUNKEN, 0,0,0,0,2,2,2,2,0,0);
-    labelSelected = new FXLabel(textFrame2, _("Selected Text (with focus)"), NULL, LAYOUT_FILL_X, 0,0,0,0,1,1,1,1);
-    textFrame3 = new FXHorizontalFrame(vframe2, LAYOUT_FILL_X|FRAME_THICK|FRAME_SUNKEN, 0,0,0,0,2,2,2,2,0,0);
-    labelNocurrent = new FXLabel(textFrame3, _("Selected Text (no focus)"), NULL, LAYOUT_FILL_X, 0,0,0,0,1,1,1,1);
-    sep1 = new FXSeparator(vframe2, LAYOUT_FILL_X|SEPARATOR_LINE);
-    labelTip = new FXLabel(vframe2, _("Tooltip example"), NULL, FRAME_LINE|LAYOUT_CENTER_X);
-    menuGroup = new FXGroupBox(vframe2, _("Menu example"), FRAME_GROOVE|LAYOUT_FILL_Y|LAYOUT_FILL_X);
-    menuFrame = new FXVerticalFrame(menuGroup, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X|LAYOUT_CENTER_Y, 0,0,0,0,0,0,0,0,0,0);
-    menuLabels[0]=new FXLabel(menuFrame, _("&Server list"), NULL, LABEL_NORMAL, 0,0,0,0,16,4);
-    menuLabels[1]=new FXLabel(menuFrame, _("Selected Menu Entry"), NULL, LABEL_NORMAL, 0,0,0,0,16,4);
-    sep2 = new FXSeparator(menuFrame, LAYOUT_FILL_X|SEPARATOR_LINE);
-    menuLabels[2]=new FXLabel(menuFrame, _("&Quit"), NULL, LABEL_NORMAL, 0,0,0,0,16,4);
+    m_label = new FXLabel(m_vframe2, "Label");
+    m_textFrame1 = new FXHorizontalFrame(m_vframe2, LAYOUT_FILL_X);
+    m_textTest = new FXTextField(m_textFrame1, 30, NULL, 0, LAYOUT_FILL_X|FRAME_THICK|FRAME_SUNKEN);
+    m_textTest->setText(_("Select this text, to see the selected colors"));
+    m_textFrame2 = new FXHorizontalFrame(m_vframe2, LAYOUT_FILL_X|FRAME_THICK|FRAME_SUNKEN, 0,0,0,0,2,2,2,2,0,0);
+    m_labelSelected = new FXLabel(m_textFrame2, _("Selected Text (with focus)"), NULL, LAYOUT_FILL_X, 0,0,0,0,1,1,1,1);
+    m_textFrame3 = new FXHorizontalFrame(m_vframe2, LAYOUT_FILL_X|FRAME_THICK|FRAME_SUNKEN, 0,0,0,0,2,2,2,2,0,0);
+    m_labelNocurrent = new FXLabel(m_textFrame3, _("Selected Text (no focus)"), NULL, LAYOUT_FILL_X, 0,0,0,0,1,1,1,1);
+    m_sep1 = new FXSeparator(m_vframe2, LAYOUT_FILL_X|SEPARATOR_LINE);
+    m_labelTip = new FXLabel(m_vframe2, _("Tooltip example"), NULL, FRAME_LINE|LAYOUT_CENTER_X);
+    m_menuGroup = new FXGroupBox(m_vframe2, _("Menu example"), FRAME_GROOVE|LAYOUT_FILL_Y|LAYOUT_FILL_X);
+    m_menuFrame = new FXVerticalFrame(m_menuGroup, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X|LAYOUT_CENTER_Y, 0,0,0,0,0,0,0,0,0,0);
+    m_menuLabels[0]=new FXLabel(m_menuFrame, _("&Server list"), NULL, LABEL_NORMAL, 0,0,0,0,16,4);
+    m_menuLabels[1]=new FXLabel(m_menuFrame, _("Selected Menu Entry"), NULL, LABEL_NORMAL, 0,0,0,0,16,4);
+    m_sep2 = new FXSeparator(m_menuFrame, LAYOUT_FILL_X|SEPARATOR_LINE);
+    m_menuLabels[2]=new FXLabel(m_menuFrame, _("&Quit"), NULL, LABEL_NORMAL, 0,0,0,0,16,4);
     FXHorizontalFrame *fontframe = new FXHorizontalFrame(lookpane, LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, DEFAULT_SPACING,DEFAULT_SPACING,DEFAULT_SPACING,DEFAULT_SPACING);
     new FXLabel(fontframe, _("Font"));
-    fontButton = new FXButton(fontframe, " ", NULL, this, ID_FONT, LAYOUT_CENTER_Y|FRAME_RAISED|JUSTIFY_CENTER_X|JUSTIFY_CENTER_Y|LAYOUT_FILL_X);
+    m_fontButton = new FXButton(fontframe, " ", NULL, this, ID_FONT, LAYOUT_CENTER_Y|FRAME_RAISED|JUSTIFY_CENTER_X|JUSTIFY_CENTER_Y|LAYOUT_FILL_X);
 
     FXVerticalFrame *dccpane = new FXVerticalFrame(switcher, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     new FXLabel(dccpane, _("DCC settings"), NULL, LAYOUT_LEFT);
     new FXHorizontalSeparator(dccpane, SEPARATOR_LINE|LAYOUT_FILL_X);
     new FXLabel(dccpane, _("Directory for saving files:"), NULL, LAYOUT_LEFT);
     FXHorizontalFrame *pathframe = new FXHorizontalFrame(dccpane, LAYOUT_FILL_X);
-    (new FXTextField(pathframe, 30, &targetDccPath, FXDataTarget::ID_VALUE, TEXTFIELD_READONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X))->disable();
+    (new FXTextField(pathframe, 30, &m_targetDccPath, FXDataTarget::ID_VALUE, TEXTFIELD_READONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X))->disable();
     new FXButton(pathframe, "...", NULL, this, ID_DCCPATH, FRAME_RAISED|FRAME_THICK);
     FXHorizontalFrame *ipframe = new FXHorizontalFrame(dccpane, LAYOUT_FILL_X);
     new FXLabel(ipframe, _("DCC IP address:"), NULL, LAYOUT_LEFT);
-    new FXTextField(ipframe, 3, &targetDccIP1, FXDataTarget::ID_VALUE, TEXTFIELD_INTEGER|TEXTFIELD_LIMITED|FRAME_SUNKEN|FRAME_THICK);
+    new FXTextField(ipframe, 3, &m_targetDccIP1, FXDataTarget::ID_VALUE, TEXTFIELD_INTEGER|TEXTFIELD_LIMITED|FRAME_SUNKEN|FRAME_THICK);
     new FXLabel(ipframe, ".", NULL, LAYOUT_LEFT);
-    new FXTextField(ipframe, 3, &targetDccIP2, FXDataTarget::ID_VALUE, TEXTFIELD_INTEGER|TEXTFIELD_LIMITED|FRAME_SUNKEN|FRAME_THICK);
+    new FXTextField(ipframe, 3, &m_targetDccIP2, FXDataTarget::ID_VALUE, TEXTFIELD_INTEGER|TEXTFIELD_LIMITED|FRAME_SUNKEN|FRAME_THICK);
     new FXLabel(ipframe, ".", NULL, LAYOUT_LEFT);
-    new FXTextField(ipframe, 3, &targetDccIP3, FXDataTarget::ID_VALUE, TEXTFIELD_INTEGER|TEXTFIELD_LIMITED|FRAME_SUNKEN|FRAME_THICK);
+    new FXTextField(ipframe, 3, &m_targetDccIP3, FXDataTarget::ID_VALUE, TEXTFIELD_INTEGER|TEXTFIELD_LIMITED|FRAME_SUNKEN|FRAME_THICK);
     new FXLabel(ipframe, ".", NULL, LAYOUT_LEFT);
-    new FXTextField(ipframe, 3, &targetDccIP4, FXDataTarget::ID_VALUE, TEXTFIELD_INTEGER|TEXTFIELD_LIMITED|FRAME_SUNKEN|FRAME_THICK);
+    new FXTextField(ipframe, 3, &m_targetDccIP4, FXDataTarget::ID_VALUE, TEXTFIELD_INTEGER|TEXTFIELD_LIMITED|FRAME_SUNKEN|FRAME_THICK);
     new FXLabel(dccpane, _("(Leave blank for use IP address from server)"), NULL, LAYOUT_LEFT);
     new FXSeparator(dccpane, LAYOUT_FILL_X);
     FXHorizontalFrame *portframe = new FXHorizontalFrame(dccpane, LAYOUT_FILL_X);
     new FXLabel(portframe, _("DCC ports:"), NULL, LAYOUT_LEFT);
-    FXSpinner *dspinner = new FXSpinner(portframe, 6, &targetDccPortD, FXDataTarget::ID_VALUE, FRAME_SUNKEN|FRAME_THICK);
+    FXSpinner *dspinner = new FXSpinner(portframe, 6, &m_targetDccPortD, FXDataTarget::ID_VALUE, FRAME_SUNKEN|FRAME_THICK);
     dspinner->setRange(0, 65536);
     new FXLabel(portframe, "-");
-    FXSpinner *hspinner = new FXSpinner(portframe, 6, &targetDccPortH, FXDataTarget::ID_VALUE, FRAME_SUNKEN|FRAME_THICK);
+    FXSpinner *hspinner = new FXSpinner(portframe, 6, &m_targetDccPortH, FXDataTarget::ID_VALUE, FRAME_SUNKEN|FRAME_THICK);
     hspinner->setRange(0, 65536);
     new FXLabel(dccpane, _("(Set 0 for use ports from OS)"), NULL, LAYOUT_LEFT);
     FXHorizontalFrame *timeframe = new FXHorizontalFrame(dccpane, LAYOUT_FILL_X);
     new FXLabel(timeframe, _("Time for waiting for connection in seconds"), NULL, LAYOUT_LEFT);
-    new FXSpinner(timeframe, 4, &targetDccTimeout, FXDataTarget::ID_VALUE, SPIN_NOMAX|SPIN_CYCLIC|FRAME_SUNKEN|FRAME_THICK);
-    new FXCheckButton(dccpane, _("Automatically connect offered chat"), &targetAutoDccChat, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
-    new FXCheckButton(dccpane, _("Automatically receive offered file"), &targetAutoDccFile, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
+    new FXSpinner(timeframe, 4, &m_targetDccTimeout, FXDataTarget::ID_VALUE, SPIN_NOMAX|SPIN_CYCLIC|FRAME_SUNKEN|FRAME_THICK);
+    new FXCheckButton(dccpane, _("Automatically connect offered chat"), &m_targetAutoDccChat, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
+    new FXCheckButton(dccpane, _("Automatically receive offered file"), &m_targetAutoDccFile, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
 
     FXVerticalFrame *soundpane = new FXVerticalFrame(switcher, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     new FXLabel(soundpane, _("Sound settings"), NULL, LAYOUT_LEFT);
     new FXHorizontalSeparator(soundpane, SEPARATOR_LINE|LAYOUT_FILL_X);
-    new FXCheckButton(soundpane, _("Use sounds"), &targetSound, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
+    new FXCheckButton(soundpane, _("Use sounds"), &m_targetSound, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
     FXGroupBox *eventsgroup = new FXGroupBox(soundpane, _("Events"), FRAME_GROOVE|LAYOUT_FILL_X|LAYOUT_FILL_Y|LAYOUT_SIDE_TOP);
     FXVerticalFrame *eventsframe = new FXVerticalFrame(eventsgroup, LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    checkConnect = new FXCheckButton(eventsframe, _("Friend connected"), &targetSoundConnect, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
-    if(!sounds)
-        checkConnect->disable();
+    m_checkConnect = new FXCheckButton(eventsframe, _("Friend connected"), &m_targetSoundConnect, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
+    if(!m_sounds)
+        m_checkConnect->disable();
     FXHorizontalFrame *connectframe = new FXHorizontalFrame(eventsframe, LAYOUT_FILL_X|PACK_UNIFORM_HEIGHT);
-    (new FXTextField(connectframe, 30, &targetPathConnect, FXDataTarget::ID_VALUE, TEXTFIELD_READONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X))->disable();
-    selectConnect = new FXButton(connectframe, "...", NULL, this, ID_SELECTCONNECT, FRAME_RAISED|FRAME_THICK);
-    playConnect = new FXButton(connectframe, _("\tPlay"), playicon, this, ID_PLAYCONNECT, FRAME_RAISED|FRAME_THICK);
-    if(!soundConnect || !sounds)
+    (new FXTextField(connectframe, 30, &m_targetPathConnect, FXDataTarget::ID_VALUE, TEXTFIELD_READONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X))->disable();
+    m_selectConnect = new FXButton(connectframe, "...", NULL, this, ID_SELECTCONNECT, FRAME_RAISED|FRAME_THICK);
+    m_playConnect = new FXButton(connectframe, _("\tPlay"), ICO_PLAY, this, ID_PLAYCONNECT, FRAME_RAISED|FRAME_THICK);
+    if(!m_soundConnect || !m_sounds)
     {
-        selectConnect->disable();
-        playConnect->disable();
+        m_selectConnect->disable();
+        m_playConnect->disable();
     }
-    if(!FXStat::exists(pathConnect))
-        playConnect->disable();
-    checkDisconnect = new FXCheckButton(eventsframe, _("Friend disconnected"), &targetSoundDisconnect, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
-    if(!sounds)
-        checkDisconnect->disable();
+    if(!FXStat::exists(m_pathConnect))
+        m_playConnect->disable();
+    m_checkDisconnect = new FXCheckButton(eventsframe, _("Friend disconnected"), &m_targetSoundDisconnect, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
+    if(!m_sounds)
+        m_checkDisconnect->disable();
     FXHorizontalFrame *disconnectframe = new FXHorizontalFrame(eventsframe, LAYOUT_FILL_X|PACK_UNIFORM_HEIGHT);
-    (new FXTextField(disconnectframe, 30, &targetPathDisconnect, FXDataTarget::ID_VALUE, TEXTFIELD_READONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X))->disable();
-    selectDisconnect = new FXButton(disconnectframe, "...", NULL, this, ID_SELECTDISCONNECT, FRAME_RAISED|FRAME_THICK);
-    playDisconnect = new FXButton(disconnectframe, _("\tPlay"), playicon, this, ID_PLAYDISCONNECT, FRAME_RAISED|FRAME_THICK);
-    if(!soundDisconnect || !sounds)
+    (new FXTextField(disconnectframe, 30, &m_targetPathDisconnect, FXDataTarget::ID_VALUE, TEXTFIELD_READONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X))->disable();
+    m_selectDisconnect = new FXButton(disconnectframe, "...", NULL, this, ID_SELECTDISCONNECT, FRAME_RAISED|FRAME_THICK);
+    m_playDisconnect = new FXButton(disconnectframe, _("\tPlay"), ICO_PLAY, this, ID_PLAYDISCONNECT, FRAME_RAISED|FRAME_THICK);
+    if(!m_soundDisconnect || !m_sounds)
     {
-        selectDisconnect->disable();
-        playDisconnect->disable();
+        m_selectDisconnect->disable();
+        m_playDisconnect->disable();
     }
-    if(!FXStat::exists(pathDisconnect))
-        playDisconnect->disable();
+    if(!FXStat::exists(m_pathDisconnect))
+        m_playDisconnect->disable();
     FXGroupBox *friendsgroup = new FXGroupBox(eventsframe, _("Friends"), FRAME_GROOVE|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     FXVerticalFrame *friendsbuttons = new FXVerticalFrame(friendsgroup, LAYOUT_SIDE_RIGHT|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
-    addFriend = new FXButton(friendsbuttons, _("Add"), NULL, this, ID_ADDFRIEND, FRAME_RAISED|FRAME_THICK);
-    modifyFriend = new FXButton(friendsbuttons, _("Modify"), NULL, this, ID_MODIFYFRIEND, FRAME_RAISED|FRAME_THICK);
-    deleteFriend = new FXButton(friendsbuttons, _("Delete"), NULL, this, ID_DELETEFRIEND, FRAME_RAISED|FRAME_THICK);
+    m_addFriend = new FXButton(friendsbuttons, _("Add"), NULL, this, ID_ADDFRIEND, FRAME_RAISED|FRAME_THICK);
+    m_modifyFriend = new FXButton(friendsbuttons, _("Modify"), NULL, this, ID_MODIFYFRIEND, FRAME_RAISED|FRAME_THICK);
+    m_deleteFriend = new FXButton(friendsbuttons, _("Delete"), NULL, this, ID_DELETEFRIEND, FRAME_RAISED|FRAME_THICK);
     FXVerticalFrame *friendspane = new FXVerticalFrame(friendsgroup, LAYOUT_FILL_X|LAYOUT_FILL_Y|FRAME_SUNKEN|FRAME_THICK);
     FXHorizontalFrame *friendsframe = new FXHorizontalFrame(friendspane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    friends = new FXIconList(friendsframe, this, ID_FRIEND, ICONLIST_AUTOSIZE|ICONLIST_DETAILED|ICONLIST_BROWSESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    friends->appendHeader(_("Friend"), NULL, 150);
-    friends->appendHeader(_("Channel(s)"), NULL, 150);
-    friends->appendHeader(_("Server(s)"), NULL, 150);
-    FillFriends();
-    if(friendsList.no())
+    m_friends = new FXIconList(friendsframe, this, ID_FRIEND, ICONLIST_AUTOSIZE|ICONLIST_DETAILED|ICONLIST_BROWSESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    m_friends->appendHeader(_("Friend"), NULL, 150);
+    m_friends->appendHeader(_("Channel(s)"), NULL, 150);
+    m_friends->appendHeader(_("Server(s)"), NULL, 150);
+    fillFriends();
+    if(m_friendsList.no())
     {
-        deleteFriend->enable();
-        modifyFriend->enable();
+        m_deleteFriend->enable();
+        m_modifyFriend->enable();
     }
     else
     {
-        deleteFriend->disable();
-        modifyFriend->disable();
+        m_deleteFriend->disable();
+        m_modifyFriend->disable();
     }
-    if(!sounds)
+    if(!m_sounds)
     {
-        addFriend->disable();
-        deleteFriend->disable();
-        modifyFriend->disable();
+        m_addFriend->disable();
+        m_deleteFriend->disable();
+        m_modifyFriend->disable();
     }
-    checkMessage = new FXCheckButton(eventsframe, _("Highlighted message or query message"), &targetSoundMessage, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
-    if(!sounds)
-        checkMessage->disable();
+    m_checkMessage = new FXCheckButton(eventsframe, _("Highlighted message or query message"), &m_targetSoundMessage, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
+    if(!m_sounds)
+        m_checkMessage->disable();
     FXHorizontalFrame *messageframe = new FXHorizontalFrame(eventsframe, LAYOUT_FILL_X|PACK_UNIFORM_HEIGHT);
-    (new FXTextField(messageframe, 30, &targetPathMessage, FXDataTarget::ID_VALUE, TEXTFIELD_READONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X))->disable();
-    selectMessage = new FXButton(messageframe, "...", NULL, this, ID_SELECTMESSAGE, FRAME_RAISED|FRAME_THICK);
-    playMessage = new FXButton(messageframe, _("\tPlay"), playicon, this, ID_PLAYMESSAGE, FRAME_RAISED|FRAME_THICK);
-    if(!soundMessage || !sounds)
+    (new FXTextField(messageframe, 30, &m_targetPathMessage, FXDataTarget::ID_VALUE, TEXTFIELD_READONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X))->disable();
+    m_selectMessage = new FXButton(messageframe, "...", NULL, this, ID_SELECTMESSAGE, FRAME_RAISED|FRAME_THICK);
+    m_playMessage = new FXButton(messageframe, _("\tPlay"), ICO_PLAY, this, ID_PLAYMESSAGE, FRAME_RAISED|FRAME_THICK);
+    if(!m_soundMessage || !m_sounds)
     {
-        selectMessage->disable();
-        playMessage->disable();
+        m_selectMessage->disable();
+        m_playMessage->disable();
     }
-    if(!FXStat::exists(pathMessage))
-        playMessage->disable();
+    if(!FXStat::exists(m_pathMessage))
+        m_playMessage->disable();
 
     FXVerticalFrame *smileypane = new FXVerticalFrame(switcher, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     new FXLabel(smileypane, _("Smileys settings"), NULL, LAYOUT_LEFT);
     new FXHorizontalSeparator(smileypane, SEPARATOR_LINE|LAYOUT_FILL_X);
-    new FXCheckButton(smileypane, _("Use smileys"), &targetUseSmileys, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
+    new FXCheckButton(smileypane, _("Use smileys"), &m_targetUseSmileys, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
     FXGroupBox *smileysgroup = new FXGroupBox(smileypane, _("Smileys"), FRAME_GROOVE|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     FXVerticalFrame *smileysbuttons = new FXVerticalFrame(smileysgroup, LAYOUT_SIDE_RIGHT|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
-    addSmiley = new FXButton(smileysbuttons, _("Add"), NULL, this, ID_ADDSMILEY, FRAME_RAISED|FRAME_THICK);
-    modifySmiley = new FXButton(smileysbuttons, _("Modify"), NULL, this, ID_MODIFYSMILEY, FRAME_RAISED|FRAME_THICK);
-    deleteSmiley = new FXButton(smileysbuttons, _("Delete"), NULL, this, ID_DELETESMILEY, FRAME_RAISED|FRAME_THICK);
-    importSmiley = new FXButton(smileysbuttons, _("Import"), NULL, this, ID_IMPORTSMILEY, FRAME_RAISED|FRAME_THICK);
-    exportSmiley = new FXButton(smileysbuttons, _("Export"), NULL, this, ID_EXPORTSMILEY, FRAME_RAISED|FRAME_THICK);
-    if(useSmileys)
+    m_addSmiley = new FXButton(smileysbuttons, _("Add"), NULL, this, ID_ADDSMILEY, FRAME_RAISED|FRAME_THICK);
+    m_modifySmiley = new FXButton(smileysbuttons, _("Modify"), NULL, this, ID_MODIFYSMILEY, FRAME_RAISED|FRAME_THICK);
+    m_deleteSmiley = new FXButton(smileysbuttons, _("Delete"), NULL, this, ID_DELETESMILEY, FRAME_RAISED|FRAME_THICK);
+    m_importSmiley = new FXButton(smileysbuttons, _("Import"), NULL, this, ID_IMPORTSMILEY, FRAME_RAISED|FRAME_THICK);
+    m_exportSmiley = new FXButton(smileysbuttons, _("Export"), NULL, this, ID_EXPORTSMILEY, FRAME_RAISED|FRAME_THICK);
+    if(m_useSmileys)
     {
-        addSmiley->enable();
-        importSmiley->enable();
-        if((FXint)smileysMap.size())
+        m_addSmiley->enable();
+        m_importSmiley->enable();
+        if((FXint)m_smileysMap.size())
         {
-            modifySmiley->enable();
-            deleteSmiley->enable();
-            exportSmiley->enable();
+            m_modifySmiley->enable();
+            m_deleteSmiley->enable();
+            m_exportSmiley->enable();
         }
         else
         {
-            modifySmiley->disable();
-            deleteSmiley->disable();
-            exportSmiley->disable();
+            m_modifySmiley->disable();
+            m_deleteSmiley->disable();
+            m_exportSmiley->disable();
         }
     }
     else
     {
-        addSmiley->disable();
-        modifySmiley->disable();
-        deleteSmiley->disable();
-        importSmiley->disable();
-        exportSmiley->disable();
+        m_addSmiley->disable();
+        m_modifySmiley->disable();
+        m_deleteSmiley->disable();
+        m_importSmiley->disable();
+        m_exportSmiley->disable();
     }
     FXVerticalFrame *smileyspane = new FXVerticalFrame(smileysgroup, LAYOUT_FILL_X|LAYOUT_FILL_Y|FRAME_SUNKEN|FRAME_THICK);
     FXHorizontalFrame *smileysframe = new FXHorizontalFrame(smileyspane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    smileys = new FXList(smileysframe, this, ID_SMILEY, LIST_BROWSESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    FillSmileys();
+    m_smileys = new FXList(smileysframe, this, ID_SMILEY, LIST_BROWSESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    fillSmileys();
     
     new FXButton(buttonframe, _("&General"), NULL, switcher, FXSwitcher::ID_OPEN_THIRD, FRAME_RAISED);
     new FXButton(buttonframe, _("&Look"), NULL, switcher, FXSwitcher::ID_OPEN_FOURTH, FRAME_RAISED);
@@ -756,154 +756,154 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
 
     for(int i=0; i<6; i++)
     {
-        textStyle[i].normalForeColor = colors.text;
-        textStyle[i].normalBackColor = colors.back;
-        textStyle[i].selectForeColor = getApp()->getSelforeColor();
-        textStyle[i].selectBackColor = getApp()->getSelbackColor();
-        textStyle[i].hiliteForeColor = getApp()->getHiliteColor();
-        textStyle[i].hiliteBackColor = FXRGB(255, 128, 128); // from FXText.cpp
-        textStyle[i].activeBackColor = colors.back;
-        textStyle[i].style = 0;
+        m_textStyle[i].normalForeColor = m_colors.text;
+        m_textStyle[i].normalBackColor = m_colors.back;
+        m_textStyle[i].selectForeColor = getApp()->getSelforeColor();
+        m_textStyle[i].selectBackColor = getApp()->getSelbackColor();
+        m_textStyle[i].hiliteForeColor = getApp()->getHiliteColor();
+        m_textStyle[i].hiliteBackColor = FXRGB(255, 128, 128); // from FXText.cpp
+        m_textStyle[i].activeBackColor = m_colors.back;
+        m_textStyle[i].style = 0;
     }
     //user commands
-    textStyle[0].normalForeColor = colors.user;
+    m_textStyle[0].normalForeColor = m_colors.user;
     //Actions
-    textStyle[1].normalForeColor = colors.action;
+    m_textStyle[1].normalForeColor = m_colors.action;
     //Notice
-    textStyle[2].normalForeColor = colors.notice;
+    m_textStyle[2].normalForeColor = m_colors.notice;
     //Errors
-    textStyle[3].normalForeColor = colors.error;
+    m_textStyle[3].normalForeColor = m_colors.error;
     //Highlight
-    textStyle[4].normalForeColor = colors.hilight;
+    m_textStyle[4].normalForeColor = m_colors.hilight;
     //link
-    textStyle[5].normalForeColor = colors.link;
-    textStyle[5].style = FXText::STYLE_UNDERLINE;
+    m_textStyle[5].normalForeColor = m_colors.link;
+    m_textStyle[5].style = FXText::STYLE_UNDERLINE;
 
-    text->setStyled(TRUE);
-    text->setHiliteStyles(textStyle);
-    text->setTextColor(colors.text);
-    text->setBackColor(colors.back);
-    text->appendText("[00:00:00] ");
-    text->appendStyledText(FXString("dvx has joined to #dxirc\n"), 1);
-    text->appendText("[00:00:00] <dvx> Welcome in dxirc\n");
-    text->appendText("[00:00:00] ");
-    text->appendStyledText(FXString("<bm> dvx, dxirc is nice\n"), 5);
-    text->appendText("[00:00:00] ");
-    text->appendStyledText(FXString("dvx is online\n"), 2);
-    text->appendText("[00:00:00] ");
-    text->appendStyledText(FXString("server's NOTICE: nice notice\n"), 3);
-    text->appendText("[00:00:00] ");
-    text->appendStyledText(FXString("No error\n"), 4);
-    text->appendText("[00:00:00] <dvx> ");
-    text->appendStyledText(FXString("http://dxirc.org"), 6);
-    text->appendText(" \n");
+    m_text->setStyled(TRUE);
+    m_text->setHiliteStyles(m_textStyle);
+    m_text->setTextColor(m_colors.text);
+    m_text->setBackColor(m_colors.back);
+    m_text->appendText("[00:00:00] ");
+    m_text->appendStyledText(FXString("dvx has joined to #dxirc\n"), 1);
+    m_text->appendText("[00:00:00] <dvx> Welcome in dxirc\n");
+    m_text->appendText("[00:00:00] ");
+    m_text->appendStyledText(FXString("<bm> dvx, dxirc is nice\n"), 5);
+    m_text->appendText("[00:00:00] ");
+    m_text->appendStyledText(FXString("dvx is online\n"), 2);
+    m_text->appendText("[00:00:00] ");
+    m_text->appendStyledText(FXString("server's NOTICE: nice notice\n"), 3);
+    m_text->appendText("[00:00:00] ");
+    m_text->appendStyledText(FXString("No error\n"), 4);
+    m_text->appendText("[00:00:00] <dvx> ");
+    m_text->appendStyledText(FXString("http://dxirc.org"), 6);
+    m_text->appendText(" \n");
 
-    UpdateColors();
-    UpdateFont();
-    UpdateIrcFont();
+    updateColors();
+    updateFont();
+    updateIrcFont();
 }
 
 
 ConfigDialog::~ConfigDialog()
 {
-    delete font;
-    delete ircFont;
+    delete m_font;
+    delete m_ircFont;
 }
 
-long ConfigDialog::OnCommandsSelected(FXObject*, FXSelector, void*)
+long ConfigDialog::onCommandsSelected(FXObject*, FXSelector, void*)
 {
-    deleteCommand->enable();
+    m_deleteCommand->enable();
     return 1;
 }
 
-long ConfigDialog::OnCommandsDeselected(FXObject*, FXSelector, void*)
+long ConfigDialog::onCommandsDeselected(FXObject*, FXSelector, void*)
 {
-    deleteCommand->disable();
+    m_deleteCommand->disable();
     return 1;
 }
 
-long ConfigDialog::OnUsersSelected(FXObject*, FXSelector, void *ptr)
+long ConfigDialog::onUsersSelected(FXObject*, FXSelector, void *ptr)
 {
     FXint i = (FXint)(FXival)ptr;
-    users->selectItem(i);
-    deleteUser->enable();
+    m_users->selectItem(i);
+    m_deleteUser->enable();
     return 1;
 }
 
-long ConfigDialog::OnUsersDeselected(FXObject*, FXSelector, void*)
+long ConfigDialog::onUsersDeselected(FXObject*, FXSelector, void*)
 {
-    deleteUser->disable();
+    m_deleteUser->disable();
     return 1;
 }
 
-long ConfigDialog::OnUsersChanged(FXObject*, FXSelector, void *ptr)
-{
-    FXint i = (FXint)(FXival)ptr;
-    users->selectItem(i);
-    return 1;
-}
-
-long ConfigDialog::OnFriendsSelected(FXObject*, FXSelector, void *ptr)
+long ConfigDialog::onUsersChanged(FXObject*, FXSelector, void *ptr)
 {
     FXint i = (FXint)(FXival)ptr;
-    friends->selectItem(i);
-    deleteFriend->enable();
+    m_users->selectItem(i);
     return 1;
 }
 
-long ConfigDialog::OnFriendsDeselected(FXObject*, FXSelector, void*)
-{
-    deleteFriend->disable();
-    return 1;
-}
-
-long ConfigDialog::OnFriendsChanged(FXObject*, FXSelector, void *ptr)
+long ConfigDialog::onFriendsSelected(FXObject*, FXSelector, void *ptr)
 {
     FXint i = (FXint)(FXival)ptr;
-    friends->selectItem(i);
+    m_friends->selectItem(i);
+    m_deleteFriend->enable();
     return 1;
 }
 
-long ConfigDialog::OnColor(FXObject*, FXSelector, void*)
+long ConfigDialog::onFriendsDeselected(FXObject*, FXSelector, void*)
 {
-    text->setTextColor(colors.text);
-    text->setBackColor(colors.back);
+    m_deleteFriend->disable();
+    return 1;
+}
+
+long ConfigDialog::onFriendsChanged(FXObject*, FXSelector, void *ptr)
+{
+    FXint i = (FXint)(FXival)ptr;
+    m_friends->selectItem(i);
+    return 1;
+}
+
+long ConfigDialog::onColor(FXObject*, FXSelector, void*)
+{
+    m_text->setTextColor(m_colors.text);
+    m_text->setBackColor(m_colors.back);
     for(int i=0; i<6; i++)
     {
-        textStyle[i].normalBackColor = colors.back;
+        m_textStyle[i].normalBackColor = m_colors.back;
     }
-    textStyle[0].normalForeColor = colors.user;
-    textStyle[1].normalForeColor = colors.action;
-    textStyle[2].normalForeColor = colors.notice;
-    textStyle[3].normalForeColor = colors.error;
-    textStyle[4].normalForeColor = colors.hilight;
-    textStyle[5].normalForeColor = colors.link;
-    text->update();
+    m_textStyle[0].normalForeColor = m_colors.user;
+    m_textStyle[1].normalForeColor = m_colors.action;
+    m_textStyle[2].normalForeColor = m_colors.notice;
+    m_textStyle[3].normalForeColor = m_colors.error;
+    m_textStyle[4].normalForeColor = m_colors.hilight;
+    m_textStyle[5].normalForeColor = m_colors.link;
+    m_text->update();
     return 1;
 }
 
-long ConfigDialog::OnTabPosition(FX::FXObject *, FX::FXSelector, void *ptr)
+long ConfigDialog::onTabPosition(FX::FXObject *, FX::FXSelector, void *ptr)
 {
-    tabPosition = (FXint)(FXival)ptr;
+    m_tabPosition = (FXint)(FXival)ptr;
     return 1;
 }
 
-long ConfigDialog::OnAccept(FXObject*, FXSelector, void*)
+long ConfigDialog::onAccept(FXObject*, FXSelector, void*)
 {
     getApp()->stopModal(this,TRUE);
-    SaveConfig();
+    saveConfig();
     hide();
     return 1;
 }
 
-long ConfigDialog::OnCancel(FXObject*,FXSelector,void*)
+long ConfigDialog::onCancel(FXObject*,FXSelector,void*)
 {
     getApp()->stopModal(this,FALSE);
     hide();
     return 1;
 }
 
-long ConfigDialog::OnKeyPress(FXObject *sender,FXSelector sel,void *ptr)
+long ConfigDialog::onKeyPress(FXObject *sender,FXSelector sel,void *ptr)
 {
     if(FXTopWindow::onKeyPress(sender,sel,ptr)) return 1;
     if(((FXEvent*)ptr)->code == KEY_Escape)
@@ -915,7 +915,7 @@ long ConfigDialog::OnKeyPress(FXObject *sender,FXSelector sel,void *ptr)
     return 0;
 }
 
-long ConfigDialog::OnAddCommand(FXObject*, FXSelector, void*)
+long ConfigDialog::onAddCommand(FXObject*, FXSelector, void*)
 {
     FXDialogBox dialog(this, _("Select ignore command"), DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0);
     FXVerticalFrame *contents = new FXVerticalFrame(&dialog, LAYOUT_SIDE_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 10,10,10,10, 0,0);
@@ -923,7 +923,7 @@ long ConfigDialog::OnAddCommand(FXObject*, FXSelector, void*)
 
     new FXLabel(matrix, _("Command:"),NULL,JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     FXComboBox *command = new FXComboBox(matrix, 1, NULL, 0, COMBOBOX_STATIC|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW|FRAME_GROOVE);
-    command->fillItems(FillCommandsCombo());
+    command->fillItems(fillCommandsCombo());
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
     new FXButton(buttonframe, _("&Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
@@ -931,22 +931,22 @@ long ConfigDialog::OnAddCommand(FXObject*, FXSelector, void*)
 
     if(dialog.execute(PLACEMENT_CURSOR))
     {
-        commands->appendItem(command->getItemText(command->getCurrentItem()));
+        m_commands->appendItem(command->getItemText(command->getCurrentItem()));
     }
-    UpdateCommands();
+    updateCommands();
     return 1;
 }
 
-long ConfigDialog::OnDeleteCommand(FXObject*, FXSelector, void*)
+long ConfigDialog::onDeleteCommand(FXObject*, FXSelector, void*)
 {
-    FXint i = commands->getCurrentItem();
-    commands->removeItem(i);
-    commands->getNumItems() ? deleteCommand->enable() : deleteCommand->disable();
-    UpdateCommands();
+    FXint i = m_commands->getCurrentItem();
+    m_commands->removeItem(i);
+    m_commands->getNumItems() ? m_deleteCommand->enable() : m_deleteCommand->disable();
+    updateCommands();
     return 1;
 }
 
-long ConfigDialog::OnAddUser(FXObject*, FXSelector, void*)
+long ConfigDialog::onAddUser(FXObject*, FXSelector, void*)
 {
     FXDialogBox dialog(this, _("Add ignore user"), DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0);
     FXVerticalFrame *contents = new FXVerticalFrame(&dialog, LAYOUT_SIDE_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 10,10,10,10, 0,0);
@@ -969,25 +969,25 @@ long ConfigDialog::OnAddUser(FXObject*, FXSelector, void*)
 
     if(dialog.execute(PLACEMENT_CURSOR))
     {
-        if(!nick->getText().empty() && !NickExist(nick->getText()))
+        if(!nick->getText().empty() && !nickExist(nick->getText()))
         {
             IgnoreUser user;
             user.nick = nick->getText();
             channel->getText().empty() ? user.channel = "all" : user.channel = channel->getText();
             server->getText().empty() ? user.server = "all" : user.server = server->getText();
-            usersList.append(user);
-            users->appendItem(user.nick+"\t"+user.channel+"\t"+user.server);
-            if(!deleteUser->isEnabled()) deleteUser->enable();
-            if(!modifyUser->isEnabled()) modifyUser->enable();
+            m_usersList.append(user);
+            m_users->appendItem(user.nick+"\t"+user.channel+"\t"+user.server);
+            if(!m_deleteUser->isEnabled()) m_deleteUser->enable();
+            if(!m_modifyUser->isEnabled()) m_modifyUser->enable();
         }
     }
     return 1;
 }
 
-long ConfigDialog::OnModifyUser(FXObject*, FXSelector, void*)
+long ConfigDialog::onModifyUser(FXObject*, FXSelector, void*)
 {
-    FXint i = users->getCurrentItem();
-    FXString oldnick = usersList[i].nick;
+    FXint i = m_users->getCurrentItem();
+    FXString oldnick = m_usersList[i].nick;
 
     FXDialogBox dialog(this, _("Modify ignore user"), DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0);
     FXVerticalFrame *contents = new FXVerticalFrame(&dialog, LAYOUT_SIDE_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 10,10,10,10, 0,0);
@@ -998,10 +998,10 @@ long ConfigDialog::OnModifyUser(FXObject*, FXSelector, void*)
     nick->setText(oldnick);
     new FXLabel(matrix, _("Channel(s):\tChannels need to be comma separated"), NULL,JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     FXTextField *channel = new FXTextField(matrix, 25, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    channel->setText(usersList[i].channel);
+    channel->setText(m_usersList[i].channel);
     new FXLabel(matrix, _("Server:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     FXTextField *server = new FXTextField(matrix, 25, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    server->setText(usersList[i].server);
+    server->setText(m_usersList[i].server);
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
     new FXButton(buttonframe, _("&Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
@@ -1009,45 +1009,45 @@ long ConfigDialog::OnModifyUser(FXObject*, FXSelector, void*)
 
     if(dialog.execute(PLACEMENT_CURSOR))
     {
-        if(!nick->getText().empty() && (!NickExist(nick->getText()) || oldnick == nick->getText()))
+        if(!nick->getText().empty() && (!nickExist(nick->getText()) || oldnick == nick->getText()))
         {
-            usersList[i].nick = nick->getText();
-            channel->getText().empty() ? usersList[i].channel = "all" : usersList[i].channel = channel->getText();
-            server->getText().empty() ? usersList[i].server = "all" : usersList[i].server = server->getText();
-            users->setItemText(i, usersList[i].nick+"\t"+usersList[i].channel+"\t"+usersList[i].server);
+            m_usersList[i].nick = nick->getText();
+            channel->getText().empty() ? m_usersList[i].channel = "all" : m_usersList[i].channel = channel->getText();
+            server->getText().empty() ? m_usersList[i].server = "all" : m_usersList[i].server = server->getText();
+            m_users->setItemText(i, m_usersList[i].nick+"\t"+m_usersList[i].channel+"\t"+m_usersList[i].server);
         }
     }
     return 1;
 }
 
-long ConfigDialog::OnDeleteUser(FXObject*, FXSelector, void*)
+long ConfigDialog::onDeleteUser(FXObject*, FXSelector, void*)
 {
-    FXint i = users->getCurrentItem();
-    users->removeItem(i);
-    usersList.erase(i);
-    if(usersList.no())
+    FXint i = m_users->getCurrentItem();
+    m_users->removeItem(i);
+    m_usersList.erase(i);
+    if(m_usersList.no())
     {
-        deleteUser->enable();
-        modifyUser->enable();
+        m_deleteUser->enable();
+        m_modifyUser->enable();
     }
     else
     {
-        deleteUser->disable();
-        modifyUser->disable();
+        m_deleteUser->disable();
+        m_modifyUser->disable();
     }
     return 1;
 }
 
-long ConfigDialog::OnImportSmiley(FXObject*, FXSelector, void*)
+long ConfigDialog::onImportSmiley(FXObject*, FXSelector, void*)
 {
-    if(showImportwarning && smileysMap.size())
-        if(FXMessageBox::warning(this, MBOX_OK_CANCEL, _("Warning"), _("File import overwrites current settings"))==4) {showImportwarning=FALSE; return 1;}
+    if(m_showImportwarning && m_smileysMap.size())
+        if(FXMessageBox::warning(this, MBOX_OK_CANCEL, _("Warning"), _("File import overwrites current settings"))==4) {m_showImportwarning=FALSE; return 1;}
     FXFileDialog dialog(this, _("Select file"));
-    if(showImportwarning) dialog.setFilename((FXString)DXIRC_DATADIR+PATHSEPSTRING+"icons"+PATHSEPSTRING+"smileys"+PATHSEPSTRING+"dxirc.smiley");
+    if(m_showImportwarning) dialog.setFilename((FXString)DXIRC_DATADIR+PATHSEPSTRING+"icons"+PATHSEPSTRING+"smileys"+PATHSEPSTRING+"dxirc.smiley");
     if(dialog.execute())
     {
-        smileys->clearItems();
-        smileysMap.clear();
+        m_smileys->clearItems();
+        m_smileysMap.clear();
         FXFile file(dialog.getFilename(), FXIO::Reading);
         if(file.isOpen())
         {
@@ -1080,29 +1080,29 @@ long ConfigDialog::OnImportSmiley(FXObject*, FXSelector, void*)
                 // Terminate smiley
                 line[p]='\0';
                 //Fill smiley map
-                pathstr = Dequote(line+path);
+                pathstr = dequote(line+path);
                 if(pathstr.empty()) goto next;
-                smileystr = Dequote(line+smiley);
+                smileystr = dequote(line+smiley);
                 if(smileystr.empty()) goto next;
                 pathstr = FXPath::absolute(FXPath::directory(dialog.getFilename()), pathstr);
-                smileysMap.insert(StringPair(smileystr,pathstr));
+                m_smileysMap.insert(StringPair(smileystr,pathstr));
 
 next:           bol=eol;
             }
         }
-        FillSmileys();
-        if(smileysMap.size())
+        fillSmileys();
+        if(m_smileysMap.size())
         {
-            modifySmiley->enable();
-            deleteSmiley->enable();
-            exportSmiley->enable();
+            m_modifySmiley->enable();
+            m_deleteSmiley->enable();
+            m_exportSmiley->enable();
         }
     }
-    showImportwarning=FALSE;    
+    m_showImportwarning=FALSE;
     return 1;
 }
 
-long ConfigDialog::OnExportSmiley(FXObject*, FXSelector, void*)
+long ConfigDialog::onExportSmiley(FXObject*, FXSelector, void*)
 {
     FXFileDialog dialog(this, _("Save smiley settings as"));
     if(dialog.execute())
@@ -1112,15 +1112,15 @@ long ConfigDialog::OnExportSmiley(FXObject*, FXSelector, void*)
         if(file.isOpen())
         {
             writeString(file, HEADER);
-            if((FXint)smileysMap.size())
+            if((FXint)m_smileysMap.size())
             {
                 StringIt it;
                 FXint i;
-                for(i=0, it=smileysMap.begin(); it!=smileysMap.end(); it++,i++)
+                for(i=0, it=m_smileysMap.begin(); it!=m_smileysMap.end(); it++,i++)
                 {
-                    writeString(file, Enquote(line, FXPath::relative(FXPath::directory(dialog.getFilename()),(*it).second).text()));
+                    writeString(file, enquote(line, FXPath::relative(FXPath::directory(dialog.getFilename()),(*it).second).text()));
                     writeString(file, "=");
-                    writeString(file, Enquote(line, (*it).first.text()));
+                    writeString(file, enquote(line, (*it).first.text()));
                     writeString(file, ENDLINE);
                 }
             }
@@ -1130,7 +1130,7 @@ long ConfigDialog::OnExportSmiley(FXObject*, FXSelector, void*)
 }
 
 // Enquote a value
-FXchar* ConfigDialog::Enquote(FXchar* result, const FXchar* text)
+FXchar* ConfigDialog::enquote(FXchar* result, const FXchar* text)
 {
     register FXchar *end = result + MAXVALUE - 6;
     register FXchar *ptr = result;
@@ -1210,7 +1210,7 @@ FXchar* ConfigDialog::Enquote(FXchar* result, const FXchar* text)
 }
 
 // Dequote a value, in situ
-FXchar* ConfigDialog::Dequote(FXchar* text) const
+FXchar* ConfigDialog::dequote(FXchar* text) const
 {
     register FXchar *result = text;
     register FXchar *ptr = text;
@@ -1292,7 +1292,7 @@ FXchar* ConfigDialog::Dequote(FXchar* text) const
     return result;
 }
 
-long ConfigDialog::OnAddFriend(FXObject*, FXSelector, void*)
+long ConfigDialog::onAddFriend(FXObject*, FXSelector, void*)
 {
     FXDialogBox dialog(this, _("Add friend"), DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0);
     FXVerticalFrame *contents = new FXVerticalFrame(&dialog, LAYOUT_SIDE_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 10,10,10,10, 0,0);
@@ -1315,25 +1315,25 @@ long ConfigDialog::OnAddFriend(FXObject*, FXSelector, void*)
 
     if(dialog.execute(PLACEMENT_CURSOR))
     {
-        if(!nick->getText().empty() && !NickExist(nick->getText(), FALSE))
+        if(!nick->getText().empty() && !nickExist(nick->getText(), FALSE))
         {
             IgnoreUser user;
             user.nick = nick->getText();
             channel->getText().empty() ? user.channel = "all" : user.channel = channel->getText();
             server->getText().empty() ? user.server = "all" : user.server = server->getText();
-            friendsList.append(user);
-            friends->appendItem(user.nick+"\t"+user.channel+"\t"+user.server);
-            if(!deleteFriend->isEnabled()) deleteFriend->enable();
-            if(!modifyFriend->isEnabled()) modifyFriend->enable();
+            m_friendsList.append(user);
+            m_friends->appendItem(user.nick+"\t"+user.channel+"\t"+user.server);
+            if(!m_deleteFriend->isEnabled()) m_deleteFriend->enable();
+            if(!m_modifyFriend->isEnabled()) m_modifyFriend->enable();
         }
     }
     return 1;
 }
 
-long ConfigDialog::OnModifyFriend(FXObject*, FXSelector, void*)
+long ConfigDialog::onModifyFriend(FXObject*, FXSelector, void*)
 {
-    FXint i = friends->getCurrentItem();
-    FXString oldnick = friendsList[i].nick;
+    FXint i = m_friends->getCurrentItem();
+    FXString oldnick = m_friendsList[i].nick;
 
     FXDialogBox dialog(this, _("Modify friend"), DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0);
     FXVerticalFrame *contents = new FXVerticalFrame(&dialog, LAYOUT_SIDE_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 10,10,10,10, 0,0);
@@ -1344,10 +1344,10 @@ long ConfigDialog::OnModifyFriend(FXObject*, FXSelector, void*)
     nick->setText(oldnick);
     new FXLabel(matrix, _("Channel(s):\tChannels need to be comma separated"), NULL,JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     FXTextField *channel = new FXTextField(matrix, 25, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    channel->setText(friendsList[i].channel);
+    channel->setText(m_friendsList[i].channel);
     new FXLabel(matrix, _("Server:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     FXTextField *server = new FXTextField(matrix, 25, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    server->setText(friendsList[i].server);
+    server->setText(m_friendsList[i].server);
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
     new FXButton(buttonframe, _("&Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
@@ -1355,247 +1355,247 @@ long ConfigDialog::OnModifyFriend(FXObject*, FXSelector, void*)
 
     if(dialog.execute(PLACEMENT_CURSOR))
     {
-        if(!nick->getText().empty() && (!NickExist(nick->getText(), FALSE) || oldnick == nick->getText()))
+        if(!nick->getText().empty() && (!nickExist(nick->getText(), FALSE) || oldnick == nick->getText()))
         {
-            friendsList[i].nick = nick->getText();
-            channel->getText().empty() ? friendsList[i].channel = "all" : friendsList[i].channel = channel->getText();
-            server->getText().empty() ? friendsList[i].server = "all" : friendsList[i].server = server->getText();
-            friends->setItemText(i, friendsList[i].nick+"\t"+friendsList[i].channel+"\t"+friendsList[i].server);
+            m_friendsList[i].nick = nick->getText();
+            channel->getText().empty() ? m_friendsList[i].channel = "all" : m_friendsList[i].channel = channel->getText();
+            server->getText().empty() ? m_friendsList[i].server = "all" : m_friendsList[i].server = server->getText();
+            m_friends->setItemText(i, m_friendsList[i].nick+"\t"+m_friendsList[i].channel+"\t"+m_friendsList[i].server);
         }
     }
     return 1;
 }
 
-long ConfigDialog::OnDeleteFriend(FXObject*, FXSelector, void*)
+long ConfigDialog::onDeleteFriend(FXObject*, FXSelector, void*)
 {
-    FXint i = friends->getCurrentItem();
-    friends->removeItem(i);
-    friendsList.erase(i);
-    if(friendsList.no())
+    FXint i = m_friends->getCurrentItem();
+    m_friends->removeItem(i);
+    m_friendsList.erase(i);
+    if(m_friendsList.no())
     {
-        deleteFriend->enable();
-        modifyFriend->enable();
+        m_deleteFriend->enable();
+        m_modifyFriend->enable();
     }
     else
     {
-        deleteFriend->disable();
-        modifyFriend->disable();
+        m_deleteFriend->disable();
+        m_modifyFriend->disable();
     }
     return 1;
 }
 
-long ConfigDialog::OnAddIcons(FXObject*, FXSelector, void*)
+long ConfigDialog::onAddIcons(FXObject*, FXSelector, void*)
 {
     FXDirDialog dirdialog(this, _("Select theme directory"));
     if(dirdialog.execute(PLACEMENT_CURSOR))
     {
-        if(!FXPath::search(dirdialog.getDirectory(), "irc_normal.png").empty() && !ThemeExist(dirdialog.getDirectory())) icons->appendItem(dirdialog.getDirectory());
+        if(!FXPath::search(dirdialog.getDirectory(), "irc_normal.png").empty() && !themeExist(dirdialog.getDirectory())) m_icons->appendItem(dirdialog.getDirectory());
     }
-    icons->getNumItems()>1 ? deleteTheme->enable() : deleteTheme->disable();
-    UpdateIcons();
+    m_icons->getNumItems()>1 ? m_deleteTheme->enable() : m_deleteTheme->disable();
+    updateIcons();
     return 1;
 }
 
-long ConfigDialog::OnDeleteIcons(FXObject*, FXSelector, void*)
+long ConfigDialog::onDeleteIcons(FXObject*, FXSelector, void*)
 {
-    FXint i = icons->getCurrentItem();
-    icons->removeItem(i);
-    i = icons->getCurrentItem();
-    themePath = icons->getItemText(i);
-    icon1->setIcon(MakeIcon(getApp(), themePath, "irc_admin.png", TRUE));
-    icon2->setIcon(MakeIcon(getApp(), themePath, "irc_owner.png", TRUE));
-    icon3->setIcon(MakeIcon(getApp(), themePath, "irc_op.png", TRUE));
-    icon4->setIcon(MakeIcon(getApp(), themePath, "irc_halfop.png", TRUE));
-    icon5->setIcon(MakeIcon(getApp(), themePath, "irc_voice.png", TRUE));
-    icon6->setIcon(MakeIcon(getApp(), themePath, "irc_normal.png", TRUE));
-    icon7->setIcon(MakeAwayIcon(getApp(), themePath, "irc_normal.png"));
-    icons->getNumItems()>1 ? deleteTheme->enable() : deleteTheme->disable();
-    UpdateIcons();
+    FXint i = m_icons->getCurrentItem();
+    m_icons->removeItem(i);
+    i = m_icons->getCurrentItem();
+    m_themePath = m_icons->getItemText(i);
+    m_icon1->setIcon(makeIcon(getApp(), m_themePath, "irc_admin.png", TRUE));
+    m_icon2->setIcon(makeIcon(getApp(), m_themePath, "irc_owner.png", TRUE));
+    m_icon3->setIcon(makeIcon(getApp(), m_themePath, "irc_op.png", TRUE));
+    m_icon4->setIcon(makeIcon(getApp(), m_themePath, "irc_halfop.png", TRUE));
+    m_icon5->setIcon(makeIcon(getApp(), m_themePath, "irc_voice.png", TRUE));
+    m_icon6->setIcon(makeIcon(getApp(), m_themePath, "irc_normal.png", TRUE));
+    m_icon7->setIcon(makeAwayIcon(getApp(), m_themePath, "irc_normal.png"));
+    m_icons->getNumItems()>1 ? m_deleteTheme->enable() : m_deleteTheme->disable();
+    updateIcons();
     return 1;
 }
 
-long ConfigDialog::OnIconsChanged(FXObject*, FXSelector, void *ptr)
+long ConfigDialog::onIconsChanged(FXObject*, FXSelector, void *ptr)
 {
     FXint i = (FXint)(FXival)ptr;
-    themePath = icons->getItemText(i);
-    icon1->setIcon(MakeIcon(getApp(), themePath, "irc_admin.png", TRUE));
-    icon2->setIcon(MakeIcon(getApp(), themePath, "irc_owner.png", TRUE));
-    icon3->setIcon(MakeIcon(getApp(), themePath, "irc_op.png", TRUE));
-    icon4->setIcon(MakeIcon(getApp(), themePath, "irc_halfop.png", TRUE));
-    icon5->setIcon(MakeIcon(getApp(), themePath, "irc_voice.png", TRUE));
-    icon6->setIcon(MakeIcon(getApp(), themePath, "irc_normal.png", TRUE));
-    icon7->setIcon(MakeAwayIcon(getApp(), themePath, "irc_normal.png"));
-    ShowMessage();
+    m_themePath = m_icons->getItemText(i);
+    m_icon1->setIcon(makeIcon(getApp(), m_themePath, "irc_admin.png", TRUE));
+    m_icon2->setIcon(makeIcon(getApp(), m_themePath, "irc_owner.png", TRUE));
+    m_icon3->setIcon(makeIcon(getApp(), m_themePath, "irc_op.png", TRUE));
+    m_icon4->setIcon(makeIcon(getApp(), m_themePath, "irc_halfop.png", TRUE));
+    m_icon5->setIcon(makeIcon(getApp(), m_themePath, "irc_voice.png", TRUE));
+    m_icon6->setIcon(makeIcon(getApp(), m_themePath, "irc_normal.png", TRUE));
+    m_icon7->setIcon(makeAwayIcon(getApp(), m_themePath, "irc_normal.png"));
+    showMessage();
     return 1;
 }
 
-long ConfigDialog::OnTheme(FXObject*, FXSelector, void *ptr)
+long ConfigDialog::onTheme(FXObject*, FXSelector, void *ptr)
 {
     FXint no = (FXint)(FXival)ptr;
-    ColorTheme *themeSelected = reinterpret_cast<ColorTheme*>(themes->getItemData(no));
+    ColorTheme *themeSelected = reinterpret_cast<ColorTheme*>(m_themes->getItemData(no));
     if(themeSelected)
     {
-        themeCurrent.back = themeSelected->back;
-        themeCurrent.base = themeSelected->base;
-        themeCurrent.border = themeSelected->border;
-        themeCurrent.fore = themeSelected->fore;
-        themeCurrent.menuback = themeSelected->menuback;
-        themeCurrent.menufore = themeSelected->menufore;
-        themeCurrent.selback = themeSelected->selback;
-        themeCurrent.selfore = themeSelected->selfore;
-        themeCurrent.tipback = themeSelected->tipback;
-        themeCurrent.tipfore = themeSelected->tipfore;
-        UpdateColors();
+        m_themeCurrent.back = themeSelected->back;
+        m_themeCurrent.base = themeSelected->base;
+        m_themeCurrent.border = themeSelected->border;
+        m_themeCurrent.fore = themeSelected->fore;
+        m_themeCurrent.menuback = themeSelected->menuback;
+        m_themeCurrent.menufore = themeSelected->menufore;
+        m_themeCurrent.selback = themeSelected->selback;
+        m_themeCurrent.selfore = themeSelected->selfore;
+        m_themeCurrent.tipback = themeSelected->tipback;
+        m_themeCurrent.tipfore = themeSelected->tipfore;
+        updateColors();
     }
     return 1;
 }
 
-long ConfigDialog::OnFont(FXObject*, FXSelector, void*)
+long ConfigDialog::onFont(FXObject*, FXSelector, void*)
 {
     FXFontDialog dialog(this, _("Select font"));
     FXFontDesc fontdescription;
-    font->getFontDesc(fontdescription);
-    strncpy(fontdescription.face,font->getActualName().text(),sizeof(fontdescription.face));
+    m_font->getFontDesc(fontdescription);
+    strncpy(fontdescription.face,m_font->getActualName().text(),sizeof(fontdescription.face));
     dialog.setFontSelection(fontdescription);
     if(dialog.execute(PLACEMENT_SCREEN))
     {
-        FXFont *oldfont = font;
+        FXFont *oldfont = m_font;
         dialog.getFontSelection(fontdescription);
-        font = new FXFont(getApp(),fontdescription);
-        font->create();
+        m_font = new FXFont(getApp(),fontdescription);
+        m_font->create();
         delete oldfont;
-        UpdateFont();
+        updateFont();
     }
     return 1;
 }
 
-long ConfigDialog::OnIrcFont(FXObject*, FXSelector, void*)
+long ConfigDialog::onIrcFont(FXObject*, FXSelector, void*)
 {
     FXFontDialog dialog(this, _("Select font"));
     FXFontDesc fontdescription;
-    ircFont->getFontDesc(fontdescription);
-    strncpy(fontdescription.face,ircFont->getActualName().text(),sizeof(fontdescription.face));
+    m_ircFont->getFontDesc(fontdescription);
+    strncpy(fontdescription.face,m_ircFont->getActualName().text(),sizeof(fontdescription.face));
     dialog.setFontSelection(fontdescription);
     if(dialog.execute(PLACEMENT_SCREEN))
     {
-        FXFont *oldfont = ircFont;
+        FXFont *oldfont = m_ircFont;
         dialog.getFontSelection(fontdescription);
-        ircFont = new FXFont(getApp(),fontdescription);
-        ircFont->create();
+        m_ircFont = new FXFont(getApp(),fontdescription);
+        m_ircFont->create();
         delete oldfont;
-        UpdateIrcFont();
+        updateIrcFont();
     }
     return 1;
 }
 
-long ConfigDialog::OnThemeColorChanged(FXObject*, FXSelector, void*)
+long ConfigDialog::onThemeColorChanged(FXObject*, FXSelector, void*)
 {
-    themes->setCurrentItem(themes->getNumItems()-1);
-    UpdateColors();
+    m_themes->setCurrentItem(m_themes->getNumItems()-1);
+    updateColors();
     return 1;
 }
 
-void ConfigDialog::UpdateColors()
+void ConfigDialog::updateColors()
 {
-    themeCurrent.shadow = makeShadowColor(themeCurrent.base);
-    themeCurrent.hilite = makeHiliteColor(themeCurrent.base);
+    m_themeCurrent.shadow = makeShadowColor(m_themeCurrent.base);
+    m_themeCurrent.hilite = makeHiliteColor(m_themeCurrent.base);
 
-    vframe2->setBorderColor(themeCurrent.border);
-    vframe2->setBaseColor(themeCurrent.base);
-    vframe2->setBackColor(themeCurrent.base);
-    vframe2->setShadowColor(themeCurrent.shadow);
-    vframe2->setHiliteColor(themeCurrent.hilite);
+    m_vframe2->setBorderColor(m_themeCurrent.border);
+    m_vframe2->setBaseColor(m_themeCurrent.base);
+    m_vframe2->setBackColor(m_themeCurrent.base);
+    m_vframe2->setShadowColor(m_themeCurrent.shadow);
+    m_vframe2->setHiliteColor(m_themeCurrent.hilite);
 
-    label->setBorderColor(themeCurrent.border);
-    label->setBaseColor(themeCurrent.base);
-    label->setBackColor(themeCurrent.base);
-    label->setTextColor(themeCurrent.fore);
-    label->setShadowColor(themeCurrent.shadow);
-    label->setHiliteColor(themeCurrent.hilite);
+    m_label->setBorderColor(m_themeCurrent.border);
+    m_label->setBaseColor(m_themeCurrent.base);
+    m_label->setBackColor(m_themeCurrent.base);
+    m_label->setTextColor(m_themeCurrent.fore);
+    m_label->setShadowColor(m_themeCurrent.shadow);
+    m_label->setHiliteColor(m_themeCurrent.hilite);
 
-    textFrame1->setBorderColor(themeCurrent.border);
-    textFrame1->setBaseColor(themeCurrent.base);
-    textFrame1->setBackColor(themeCurrent.base);
-    textFrame1->setShadowColor(themeCurrent.shadow);
-    textFrame1->setHiliteColor(themeCurrent.hilite);
-    textTest->setBorderColor(themeCurrent.border);
-    textTest->setBackColor(themeCurrent.back);
-    textTest->setBaseColor(themeCurrent.base);
-    textTest->setTextColor(themeCurrent.fore);
-    textTest->setSelTextColor(themeCurrent.selfore);
-    textTest->setSelBackColor(themeCurrent.selback);
-    textTest->setCursorColor(themeCurrent.fore);
-    textTest->setShadowColor(themeCurrent.shadow);
-    textTest->setHiliteColor(themeCurrent.hilite);
+    m_textFrame1->setBorderColor(m_themeCurrent.border);
+    m_textFrame1->setBaseColor(m_themeCurrent.base);
+    m_textFrame1->setBackColor(m_themeCurrent.base);
+    m_textFrame1->setShadowColor(m_themeCurrent.shadow);
+    m_textFrame1->setHiliteColor(m_themeCurrent.hilite);
+    m_textTest->setBorderColor(m_themeCurrent.border);
+    m_textTest->setBackColor(m_themeCurrent.back);
+    m_textTest->setBaseColor(m_themeCurrent.base);
+    m_textTest->setTextColor(m_themeCurrent.fore);
+    m_textTest->setSelTextColor(m_themeCurrent.selfore);
+    m_textTest->setSelBackColor(m_themeCurrent.selback);
+    m_textTest->setCursorColor(m_themeCurrent.fore);
+    m_textTest->setShadowColor(m_themeCurrent.shadow);
+    m_textTest->setHiliteColor(m_themeCurrent.hilite);
 
-    textFrame2->setBorderColor(themeCurrent.border);
-    textFrame2->setBaseColor(themeCurrent.base);
-    textFrame2->setBackColor(themeCurrent.back);
-    textFrame2->setShadowColor(themeCurrent.shadow);
-    textFrame2->setHiliteColor(themeCurrent.hilite);
-    labelSelected->setBorderColor(themeCurrent.border);
-    labelSelected->setBaseColor(themeCurrent.base);
-    labelSelected->setBackColor(themeCurrent.selback);
-    labelSelected->setTextColor(themeCurrent.selfore);
-    labelSelected->setShadowColor(themeCurrent.shadow);
-    labelSelected->setHiliteColor(themeCurrent.hilite);
+    m_textFrame2->setBorderColor(m_themeCurrent.border);
+    m_textFrame2->setBaseColor(m_themeCurrent.base);
+    m_textFrame2->setBackColor(m_themeCurrent.back);
+    m_textFrame2->setShadowColor(m_themeCurrent.shadow);
+    m_textFrame2->setHiliteColor(m_themeCurrent.hilite);
+    m_labelSelected->setBorderColor(m_themeCurrent.border);
+    m_labelSelected->setBaseColor(m_themeCurrent.base);
+    m_labelSelected->setBackColor(m_themeCurrent.selback);
+    m_labelSelected->setTextColor(m_themeCurrent.selfore);
+    m_labelSelected->setShadowColor(m_themeCurrent.shadow);
+    m_labelSelected->setHiliteColor(m_themeCurrent.hilite);
 
-    textFrame3->setBorderColor(themeCurrent.border);
-    textFrame3->setBaseColor(themeCurrent.base);
-    textFrame3->setBackColor(themeCurrent.back);
-    textFrame3->setShadowColor(themeCurrent.shadow);
-    textFrame3->setHiliteColor(themeCurrent.hilite);
-    labelNocurrent->setBorderColor(themeCurrent.border);
-    labelNocurrent->setBaseColor(themeCurrent.base);
-    labelNocurrent->setBackColor(themeCurrent.base);
-    labelNocurrent->setTextColor(themeCurrent.fore);
-    labelNocurrent->setShadowColor(themeCurrent.shadow);
-    labelNocurrent->setHiliteColor(themeCurrent.hilite);
+    m_textFrame3->setBorderColor(m_themeCurrent.border);
+    m_textFrame3->setBaseColor(m_themeCurrent.base);
+    m_textFrame3->setBackColor(m_themeCurrent.back);
+    m_textFrame3->setShadowColor(m_themeCurrent.shadow);
+    m_textFrame3->setHiliteColor(m_themeCurrent.hilite);
+    m_labelNocurrent->setBorderColor(m_themeCurrent.border);
+    m_labelNocurrent->setBaseColor(m_themeCurrent.base);
+    m_labelNocurrent->setBackColor(m_themeCurrent.base);
+    m_labelNocurrent->setTextColor(m_themeCurrent.fore);
+    m_labelNocurrent->setShadowColor(m_themeCurrent.shadow);
+    m_labelNocurrent->setHiliteColor(m_themeCurrent.hilite);
 
-    sep1->setBorderColor(themeCurrent.border);
-    sep1->setBaseColor(themeCurrent.base);
-    sep1->setBackColor(themeCurrent.base);
-    sep1->setShadowColor(themeCurrent.shadow);
-    sep1->setHiliteColor(themeCurrent.hilite);
+    m_sep1->setBorderColor(m_themeCurrent.border);
+    m_sep1->setBaseColor(m_themeCurrent.base);
+    m_sep1->setBackColor(m_themeCurrent.base);
+    m_sep1->setShadowColor(m_themeCurrent.shadow);
+    m_sep1->setHiliteColor(m_themeCurrent.hilite);
 
-    labelTip->setBorderColor(themeCurrent.tipfore);
-    labelTip->setBaseColor(themeCurrent.tipback);
-    labelTip->setBackColor(themeCurrent.tipback);
-    labelTip->setTextColor(themeCurrent.tipfore);
-    labelTip->setShadowColor(themeCurrent.shadow);
-    labelTip->setHiliteColor(themeCurrent.hilite);
+    m_labelTip->setBorderColor(m_themeCurrent.tipfore);
+    m_labelTip->setBaseColor(m_themeCurrent.tipback);
+    m_labelTip->setBackColor(m_themeCurrent.tipback);
+    m_labelTip->setTextColor(m_themeCurrent.tipfore);
+    m_labelTip->setShadowColor(m_themeCurrent.shadow);
+    m_labelTip->setHiliteColor(m_themeCurrent.hilite);
     
-    menuGroup->setBorderColor(themeCurrent.border);
-    menuGroup->setBaseColor(themeCurrent.base);
-    menuGroup->setBackColor(themeCurrent.base);
-    menuGroup->setShadowColor(themeCurrent.shadow);
-    menuGroup->setHiliteColor(themeCurrent.hilite);
-    menuGroup->setTextColor(themeCurrent.fore);
-    menuFrame->setBorderColor(themeCurrent.border);
-    menuFrame->setBaseColor(themeCurrent.base);
-    menuFrame->setBackColor(themeCurrent.base);
-    menuFrame->setShadowColor(themeCurrent.shadow);
-    menuFrame->setHiliteColor(themeCurrent.hilite);
-    sep2->setBorderColor(themeCurrent.border);
-    sep2->setBaseColor(themeCurrent.base);
-    sep2->setBackColor(themeCurrent.base);
-    sep2->setShadowColor(themeCurrent.shadow);
-    sep2->setHiliteColor(themeCurrent.hilite);
+    m_menuGroup->setBorderColor(m_themeCurrent.border);
+    m_menuGroup->setBaseColor(m_themeCurrent.base);
+    m_menuGroup->setBackColor(m_themeCurrent.base);
+    m_menuGroup->setShadowColor(m_themeCurrent.shadow);
+    m_menuGroup->setHiliteColor(m_themeCurrent.hilite);
+    m_menuGroup->setTextColor(m_themeCurrent.fore);
+    m_menuFrame->setBorderColor(m_themeCurrent.border);
+    m_menuFrame->setBaseColor(m_themeCurrent.base);
+    m_menuFrame->setBackColor(m_themeCurrent.base);
+    m_menuFrame->setShadowColor(m_themeCurrent.shadow);
+    m_menuFrame->setHiliteColor(m_themeCurrent.hilite);
+    m_sep2->setBorderColor(m_themeCurrent.border);
+    m_sep2->setBaseColor(m_themeCurrent.base);
+    m_sep2->setBackColor(m_themeCurrent.base);
+    m_sep2->setShadowColor(m_themeCurrent.shadow);
+    m_sep2->setHiliteColor(m_themeCurrent.hilite);
     for(int i=0; i<3; i++)
     {
-        menuLabels[i]->setBorderColor(themeCurrent.border);
-        menuLabels[i]->setBaseColor(themeCurrent.base);
-        menuLabels[i]->setBackColor(themeCurrent.base);
-        menuLabels[i]->setTextColor(themeCurrent.fore);
-        menuLabels[i]->setShadowColor(themeCurrent.shadow);
-        menuLabels[i]->setHiliteColor(themeCurrent.hilite);
+        m_menuLabels[i]->setBorderColor(m_themeCurrent.border);
+        m_menuLabels[i]->setBaseColor(m_themeCurrent.base);
+        m_menuLabels[i]->setBackColor(m_themeCurrent.base);
+        m_menuLabels[i]->setTextColor(m_themeCurrent.fore);
+        m_menuLabels[i]->setShadowColor(m_themeCurrent.shadow);
+        m_menuLabels[i]->setHiliteColor(m_themeCurrent.hilite);
     }
-    menuLabels[1]->setBorderColor(themeCurrent.border);
-    menuLabels[1]->setBaseColor(themeCurrent.menuback);
-    menuLabels[1]->setBackColor(themeCurrent.menuback);
-    menuLabels[1]->setTextColor(themeCurrent.menufore);
-    menuLabels[1]->setShadowColor(themeCurrent.shadow);
-    menuLabels[1]->setHiliteColor(themeCurrent.hilite);
+    m_menuLabels[1]->setBorderColor(m_themeCurrent.border);
+    m_menuLabels[1]->setBaseColor(m_themeCurrent.menuback);
+    m_menuLabels[1]->setBackColor(m_themeCurrent.menuback);
+    m_menuLabels[1]->setTextColor(m_themeCurrent.menufore);
+    m_menuLabels[1]->setShadowColor(m_themeCurrent.shadow);
+    m_menuLabels[1]->setHiliteColor(m_themeCurrent.hilite);
 }
 
 static FXString weightToString(FXuint weight){
@@ -1629,252 +1629,252 @@ static FXString slantToString(FXuint slant)
     return "";
 }
 
-void ConfigDialog::UpdateFont()
+void ConfigDialog::updateFont()
 {
-    FXString fontname = font->getActualName() +", " + FXStringVal(font->getSize()/10);
-    if(font->getWeight()!=0 && font->getWeight()!=FXFont::Normal)
+    FXString fontname = m_font->getActualName() +", " + FXStringVal(m_font->getSize()/10);
+    if(m_font->getWeight()!=0 && m_font->getWeight()!=FXFont::Normal)
     {
-        fontname += ", " + weightToString(font->getWeight());
+        fontname += ", " + weightToString(m_font->getWeight());
     }
-    if (font->getSlant()!=0 && font->getSlant()!=FXFont::Straight)
+    if (m_font->getSlant()!=0 && m_font->getSlant()!=FXFont::Straight)
     {
-        fontname += ", " + slantToString(font->getSlant());
+        fontname += ", " + slantToString(m_font->getSlant());
     }
-    fontButton->setText(fontname);
+    m_fontButton->setText(fontname);
     
-    labelSelected->setFont(font);
-    labelNocurrent->setFont(font);
-    labelTip->setFont(font);
-    label->setFont(font);
-    textTest->setFont(font);
-    menuGroup->setFont(font);
-    menuLabels[0]->setFont(font);
-    menuLabels[1]->setFont(font);
-    menuLabels[2]->setFont(font);
+    m_labelSelected->setFont(m_font);
+    m_labelNocurrent->setFont(m_font);
+    m_labelTip->setFont(m_font);
+    m_label->setFont(m_font);
+    m_textTest->setFont(m_font);
+    m_menuGroup->setFont(m_font);
+    m_menuLabels[0]->setFont(m_font);
+    m_menuLabels[1]->setFont(m_font);
+    m_menuLabels[2]->setFont(m_font);
 }
 
-void ConfigDialog::UpdateIrcFont()
+void ConfigDialog::updateIrcFont()
 {
-    FXString fontname = ircFont->getActualName() +", " + FXStringVal(ircFont->getSize()/10);
-    if(ircFont->getWeight()!=0 && ircFont->getWeight()!=FXFont::Normal)
+    FXString fontname = m_ircFont->getActualName() +", " + FXStringVal(m_ircFont->getSize()/10);
+    if(m_ircFont->getWeight()!=0 && m_ircFont->getWeight()!=FXFont::Normal)
     {
-        fontname += ", " + weightToString(ircFont->getWeight());
+        fontname += ", " + weightToString(m_ircFont->getWeight());
     }
-    if (ircFont->getSlant()!=0 && ircFont->getSlant()!=FXFont::Straight)
+    if (m_ircFont->getSlant()!=0 && m_ircFont->getSlant()!=FXFont::Straight)
     {
-        fontname += ", " + slantToString(ircFont->getSlant());
+        fontname += ", " + slantToString(m_ircFont->getSlant());
     }
-    ircfontButton->setText(fontname);
+    m_ircfontButton->setText(fontname);
 
-    text->setFont(ircFont);
+    m_text->setFont(m_ircFont);
 }
 
-long ConfigDialog::OnLogChanged(FXObject*, FXSelector, void*)
+long ConfigDialog::onLogChanged(FXObject*, FXSelector, void*)
 {
-    if(logging) selectPath->enable();
-    else selectPath->disable();
+    if(m_logging) m_selectPath->enable();
+    else m_selectPath->disable();
     return 1;
 }
 
-long ConfigDialog::OnAutoloadChanged(FXObject*, FXSelector, void*)
+long ConfigDialog::onAutoloadChanged(FXObject*, FXSelector, void*)
 {
-    if(autoload) selectAutoloadPath->enable();
-    else selectAutoloadPath->disable();
+    if(m_autoload) m_selectAutoloadPath->enable();
+    else m_selectAutoloadPath->disable();
     return 1;
 }
 
-long ConfigDialog::OnNickCharChanged(FXObject*, FXSelector, void*)
+long ConfigDialog::onNickCharChanged(FXObject*, FXSelector, void*)
 {
-    nickChar = nickCharField->getText().left(1);
-    nickCharField->setText(nickChar);
+    m_nickChar = m_nickCharField->getText().left(1);
+    m_nickCharField->setText(m_nickChar);
     return 1;
 }
 
-long ConfigDialog::OnServerWindow(FXObject*, FXSelector, void*)
+long ConfigDialog::onServerWindow(FXObject*, FXSelector, void*)
 {
-    ShowMessage();
+    showMessage();
     return 1;
 }
 
-long ConfigDialog::OnTray(FXObject*, FXSelector, void*)
+long ConfigDialog::onTray(FXObject*, FXSelector, void*)
 {
-    if(useTray)
-        closeToTrayButton->enable();
+    if(m_useTray)
+        m_closeToTrayButton->enable();
     else
     {
-        closeToTray = FALSE;
-        closeToTrayButton->disable();
+        m_closeToTray = FALSE;
+        m_closeToTrayButton->disable();
     }
-    ShowMessage();
+    showMessage();
     return 1;
 }
 
-long ConfigDialog::OnReconnect(FXObject*, FXSelector, void*)
+long ConfigDialog::onReconnect(FXObject*, FXSelector, void*)
 {
-    if(reconnect)
+    if(m_reconnect)
     {
-        numberAttemptLabel->enable();
-        numberAttemptSpinner->enable();
-        delayAttemptLabel->enable();
-        delayAttemptSpinner->enable();
+        m_numberAttemptLabel->enable();
+        m_numberAttemptSpinner->enable();
+        m_delayAttemptLabel->enable();
+        m_delayAttemptSpinner->enable();
     }
     else
     {
-        numberAttemptLabel->disable();
-        numberAttemptSpinner->disable();
-        delayAttemptLabel->disable();
-        delayAttemptSpinner->disable();
+        m_numberAttemptLabel->disable();
+        m_numberAttemptSpinner->disable();
+        m_delayAttemptLabel->disable();
+        m_delayAttemptSpinner->disable();
     }
     return 1;
 }
 
-long ConfigDialog::OnPathSelect(FXObject*, FXSelector, void*)
+long ConfigDialog::onPathSelect(FXObject*, FXSelector, void*)
 {
     FXDirDialog dirdialog(this,_("Select log directory"));
-    dirdialog.setDirectory(logPath);
+    dirdialog.setDirectory(m_logPath);
     if(dirdialog.execute(PLACEMENT_CURSOR))
     {
-        logPath = dirdialog.getDirectory();
+        m_logPath = dirdialog.getDirectory();
     }
     return 1;
 }
 
-long ConfigDialog::OnAutoloadPathSelect(FXObject*, FXSelector, void*)
+long ConfigDialog::onAutoloadPathSelect(FXObject*, FXSelector, void*)
 {
     FXDirDialog dirdialog(this,_("Select autoload directory"));
-    dirdialog.setDirectory(autoloadPath);
+    dirdialog.setDirectory(m_autoloadPath);
     if(dirdialog.execute(PLACEMENT_CURSOR))
     {
-        autoloadPath = dirdialog.getDirectory();
+        m_autoloadPath = dirdialog.getDirectory();
     }
     return 1;
 }
 
-long ConfigDialog::OnDccPathSelect(FXObject*, FXSelector, void*)
+long ConfigDialog::onDccPathSelect(FXObject*, FXSelector, void*)
 {
     FXDirDialog dirdialog(this,_("Select directory"));
-    dirdialog.setDirectory(dccPath);
+    dirdialog.setDirectory(m_dccPath);
     if(dirdialog.execute(PLACEMENT_CURSOR))
     {
-        dccPath = dirdialog.getDirectory();
+        m_dccPath = dirdialog.getDirectory();
     }
     return 1;
 }
 
-long ConfigDialog::OnDccPortD(FXObject*, FXSelector, void*)
+long ConfigDialog::onDccPortD(FXObject*, FXSelector, void*)
 {
-    if(dccPortD<0 || dccPortD>65536) dccPortD = 0;
-    if(dccPortH<dccPortD) dccPortH = dccPortD;
+    if(m_dccPortD<0 || m_dccPortD>65536) m_dccPortD = 0;
+    if(m_dccPortH<m_dccPortD) m_dccPortH = m_dccPortD;
     return 1;
 }
 
-long ConfigDialog::OnDccPortH(FXObject*, FXSelector, void*)
+long ConfigDialog::onDccPortH(FXObject*, FXSelector, void*)
 {
-    if(dccPortH<0 || dccPortH>65536) dccPortH = 0;
-    if(dccPortD>dccPortH) dccPortD = dccPortH;
+    if(m_dccPortH<0 || m_dccPortH>65536) m_dccPortH = 0;
+    if(m_dccPortD>m_dccPortH) m_dccPortD = m_dccPortH;
     return 1;
 }
 
-long ConfigDialog::OnSounds(FXObject*, FXSelector, void*)
+long ConfigDialog::onSounds(FXObject*, FXSelector, void*)
 {
-    if(sounds)
+    if(m_sounds)
     {
-        checkConnect->enable();
-        selectConnect->enable();
-        if(FXStat::exists(pathConnect)) playConnect->enable();
-        checkDisconnect->enable();
-        selectDisconnect->enable();
-        if(FXStat::exists(pathDisconnect)) playDisconnect->enable();
-        checkMessage->enable();
-        selectMessage->enable();
-        if(FXStat::exists(pathMessage)) playMessage->enable();
-        addFriend->enable();
-        if(friendsList.no())
+        m_checkConnect->enable();
+        m_selectConnect->enable();
+        if(FXStat::exists(m_pathConnect)) m_playConnect->enable();
+        m_checkDisconnect->enable();
+        m_selectDisconnect->enable();
+        if(FXStat::exists(m_pathDisconnect)) m_playDisconnect->enable();
+        m_checkMessage->enable();
+        m_selectMessage->enable();
+        if(FXStat::exists(m_pathMessage)) m_playMessage->enable();
+        m_addFriend->enable();
+        if(m_friendsList.no())
         {
-            deleteFriend->enable();
-            modifyFriend->enable();
+            m_deleteFriend->enable();
+            m_modifyFriend->enable();
         }
     }
     else
     {
-        checkConnect->disable();
-        selectConnect->disable();
-        playConnect->disable();
-        checkDisconnect->disable();
-        selectDisconnect->disable();
-        playDisconnect->disable();
-        checkMessage->disable();
-        selectMessage->disable();
-        playMessage->disable();
-        addFriend->disable();
-        modifyFriend->disable();
-        deleteFriend->disable();
+        m_checkConnect->disable();
+        m_selectConnect->disable();
+        m_playConnect->disable();
+        m_checkDisconnect->disable();
+        m_selectDisconnect->disable();
+        m_playDisconnect->disable();
+        m_checkMessage->disable();
+        m_selectMessage->disable();
+        m_playMessage->disable();
+        m_addFriend->disable();
+        m_modifyFriend->disable();
+        m_deleteFriend->disable();
     }
     return 1;
 }
 
-long ConfigDialog::OnSoundConnect(FXObject*, FXSelector, void*)
+long ConfigDialog::onSoundConnect(FXObject*, FXSelector, void*)
 {
-    if(soundConnect)
+    if(m_soundConnect)
     {
-        selectConnect->enable();
-        if(FXStat::exists(pathConnect)) playConnect->enable();
+        m_selectConnect->enable();
+        if(FXStat::exists(m_pathConnect)) m_playConnect->enable();
     }
     else
     {
-        selectConnect->disable();
-        playConnect->enable();
+        m_selectConnect->disable();
+        m_playConnect->enable();
     }
     return 1;
 }
 
-long ConfigDialog::OnSoundDisconnect(FXObject*, FXSelector, void*)
+long ConfigDialog::onSoundDisconnect(FXObject*, FXSelector, void*)
 {
-    if(soundDisconnect)
+    if(m_soundDisconnect)
     {
-        selectDisconnect->enable();
-        if(FXStat::exists(pathDisconnect)) playDisconnect->enable();
+        m_selectDisconnect->enable();
+        if(FXStat::exists(m_pathDisconnect)) m_playDisconnect->enable();
     }
     else
     {
-        selectDisconnect->disable();
-        playDisconnect->enable();
+        m_selectDisconnect->disable();
+        m_playDisconnect->enable();
     }
     return 1;
 }
 
-long ConfigDialog::OnSoundMessage(FXObject*, FXSelector, void*)
+long ConfigDialog::onSoundMessage(FXObject*, FXSelector, void*)
 {
-    if(soundMessage)
+    if(m_soundMessage)
     {
-        selectMessage->enable();
-        if(FXStat::exists(pathMessage)) playMessage->enable();
+        m_selectMessage->enable();
+        if(FXStat::exists(m_pathMessage)) m_playMessage->enable();
     }
     else
     {
-        selectMessage->disable();
-        playMessage->enable();
+        m_selectMessage->disable();
+        m_playMessage->enable();
     }
     return 1;
 }
 
-long ConfigDialog::OnPlay(FXObject*, FXSelector sel, void*)
+long ConfigDialog::onPlay(FXObject*, FXSelector sel, void*)
 {
     switch(FXSELID(sel)) {
         case ID_PLAYCONNECT:
-            utils::PlayFile(pathConnect);
+            utils::playFile(m_pathConnect);
             return 1;
         case ID_PLAYDISCONNECT:
-            utils::PlayFile(pathDisconnect);
+            utils::playFile(m_pathDisconnect);
             return 1;
         case ID_PLAYMESSAGE:
-            utils::PlayFile(pathMessage);
+            utils::playFile(m_pathMessage);
             return 1;
     }
     return 1;
 }
 
-long ConfigDialog::OnSelectPath(FXObject*, FXSelector sel, void*)
+long ConfigDialog::onSelectPath(FXObject*, FXSelector sel, void*)
 {
     FXFileDialog file(this, _("Select file"));
     file.setPatternList(_("Sound file (*.wav)"));
@@ -1882,61 +1882,61 @@ long ConfigDialog::OnSelectPath(FXObject*, FXSelector sel, void*)
         case ID_SELECTCONNECT:
             if(file.execute(PLACEMENT_CURSOR))
             {
-                pathConnect = file.getFilename();
-                playConnect->enable();
+                m_pathConnect = file.getFilename();
+                m_playConnect->enable();
             }
             return 1;
         case ID_SELECTDISCONNECT:
             if(file.execute(PLACEMENT_CURSOR))
             {
-                pathDisconnect = file.getFilename();
-                playDisconnect->enable();
+                m_pathDisconnect = file.getFilename();
+                m_playDisconnect->enable();
             }
             return 1;
         case ID_SELECTMESSAGE:
             if(file.execute(PLACEMENT_CURSOR))
             {
-                pathMessage = file.getFilename();
-                playMessage->enable();
+                m_pathMessage = file.getFilename();
+                m_playMessage->enable();
             }
             return 1;
     }
     return 1;
 }
 
-long ConfigDialog::OnUseSmileys(FXObject*, FXSelector, void*)
+long ConfigDialog::onUseSmileys(FXObject*, FXSelector, void*)
 {
-    if(useSmileys)
+    if(m_useSmileys)
     {
-        addSmiley->enable();
-        importSmiley->enable();
-        if((FXint)smileysMap.size())
+        m_addSmiley->enable();
+        m_importSmiley->enable();
+        if((FXint)m_smileysMap.size())
         {
-            modifySmiley->enable();
-            deleteSmiley->enable();
-            exportSmiley->enable();
+            m_modifySmiley->enable();
+            m_deleteSmiley->enable();
+            m_exportSmiley->enable();
         }
         else
         {
-            modifySmiley->disable();
-            deleteSmiley->disable();
-            exportSmiley->disable();
+            m_modifySmiley->disable();
+            m_deleteSmiley->disable();
+            m_exportSmiley->disable();
         }
     }
     else
     {
-        addSmiley->disable();
-        modifySmiley->disable();
-        deleteSmiley->disable();
-        importSmiley->disable();
-        exportSmiley->disable();
+        m_addSmiley->disable();
+        m_modifySmiley->disable();
+        m_deleteSmiley->disable();
+        m_importSmiley->disable();
+        m_exportSmiley->disable();
     }
     return 1;
 }
 
-long ConfigDialog::OnAddSmiley(FXObject*, FXSelector, void*)
+long ConfigDialog::onAddSmiley(FXObject*, FXSelector, void*)
 {
-    if((FXint)smileysMap.size()>=256)
+    if((FXint)m_smileysMap.size()>=256)
     {
         FXMessageBox::information(this, MBOX_OK, _("Information"), _("Maximum number of 256 smileys is reached"));
         return 1;
@@ -1944,112 +1944,112 @@ long ConfigDialog::OnAddSmiley(FXObject*, FXSelector, void*)
     SmileyDialog dialog(this, _("Add smiley"), "", "");
     if(dialog.execute())
     {
-        if(!dialog.IconExist())
+        if(!dialog.iconExist())
         {
-            FXMessageBox::information(this, MBOX_OK, _("Information"), _("Icon file '%s' doesn't exist or isn't image file"), dialog.GetPath().text());
+            FXMessageBox::information(this, MBOX_OK, _("Information"), _("Icon file '%s' doesn't exist or isn't image file"), dialog.getPath().text());
             return 1;
         }
-        if(dialog.GetSmiley().empty())
+        if(dialog.getSmiley().empty())
         {
             FXMessageBox::information(this, MBOX_OK, _("Information"), _("Smiley text is empty"));
             return 1;
         }
-        if(SmileyExist(dialog.GetSmiley()))
+        if(smileyExist(dialog.getSmiley()))
         {
-            FXMessageBox::information(this, MBOX_OK, _("Information"), _("Smiley '%s' already exist"), dialog.GetSmiley().text());
+            FXMessageBox::information(this, MBOX_OK, _("Information"), _("Smiley '%s' already exist"), dialog.getSmiley().text());
             return 1;
         }
-        smileysMap.insert(StringPair(dialog.GetSmiley(), dialog.GetPath()));
-        smileys->appendItem(new FXListItem(dialog.GetSmiley(), dialog.GetIcon()));
-        modifySmiley->enable();
-        deleteSmiley->enable();
-        exportSmiley->enable();
+        m_smileysMap.insert(StringPair(dialog.getSmiley(), dialog.getPath()));
+        m_smileys->appendItem(new FXListItem(dialog.getSmiley(), dialog.getIcon()));
+        m_modifySmiley->enable();
+        m_deleteSmiley->enable();
+        m_exportSmiley->enable();
     }
     return 1;
 }
 
-long ConfigDialog::OnModifySmiley(FXObject*, FXSelector, void*)
+long ConfigDialog::onModifySmiley(FXObject*, FXSelector, void*)
 {
-    FXint index = smileys->getCurrentItem();
-    FXString oldkey = smileys->getItemText(index);
-    SmileyDialog dialog(this, _("Modify smiley"), oldkey, smileysMap[oldkey]);
+    FXint index = m_smileys->getCurrentItem();
+    FXString oldkey = m_smileys->getItemText(index);
+    SmileyDialog dialog(this, _("Modify smiley"), oldkey, m_smileysMap[oldkey]);
     if(dialog.execute())
     {
-        if(!dialog.IconExist())
+        if(!dialog.iconExist())
         {
-            FXMessageBox::information(this, MBOX_OK, _("Information"), _("Icon file '%s' doesn't exist or isn't image file"), dialog.GetPath().text());
+            FXMessageBox::information(this, MBOX_OK, _("Information"), _("Icon file '%s' doesn't exist or isn't image file"), dialog.getPath().text());
             return 1;
         }
-        if(dialog.GetSmiley().empty())
+        if(dialog.getSmiley().empty())
         {
             FXMessageBox::information(this, MBOX_OK, _("Information"), _("Smiley text is empty"));
             return 1;
         }
-        if(SmileyExist(dialog.GetSmiley()) && dialog.GetSmiley()!=oldkey)
+        if(smileyExist(dialog.getSmiley()) && dialog.getSmiley()!=oldkey)
         {
-            FXMessageBox::information(this, MBOX_OK, _("Information"), _("Smiley '%s' already exist"), dialog.GetSmiley().text());
+            FXMessageBox::information(this, MBOX_OK, _("Information"), _("Smiley '%s' already exist"), dialog.getSmiley().text());
             return 1;
         }
-        smileysMap.erase(oldkey);
-        smileys->removeItem(index, TRUE);
-        smileysMap.insert(StringPair(dialog.GetSmiley(), dialog.GetPath()));
-        smileys->insertItem(index, new FXListItem(dialog.GetSmiley(), dialog.GetIcon()), TRUE);
-        smileys->setCurrentItem(index, TRUE);
+        m_smileysMap.erase(oldkey);
+        m_smileys->removeItem(index, TRUE);
+        m_smileysMap.insert(StringPair(dialog.getSmiley(), dialog.getPath()));
+        m_smileys->insertItem(index, new FXListItem(dialog.getSmiley(), dialog.getIcon()), TRUE);
+        m_smileys->setCurrentItem(index, TRUE);
     }
     return 1;
 }
 
-long ConfigDialog::OnDeleteSmiley(FXObject*, FXSelector, void*)
+long ConfigDialog::onDeleteSmiley(FXObject*, FXSelector, void*)
 {
-    smileysMap.erase(smileys->getItemText(smileys->getCurrentItem()));
-    smileys->removeItem(smileys->getCurrentItem(), TRUE);
-    if(!(FXint)smileysMap.size())
+    m_smileysMap.erase(m_smileys->getItemText(m_smileys->getCurrentItem()));
+    m_smileys->removeItem(m_smileys->getCurrentItem(), TRUE);
+    if(!(FXint)m_smileysMap.size())
     {
-        modifySmiley->disable();
-        deleteSmiley->disable();
-        exportSmiley->disable();
+        m_modifySmiley->disable();
+        m_deleteSmiley->disable();
+        m_exportSmiley->disable();
     }
     return 1;
 }
 
-void ConfigDialog::FillCommnads()
+void ConfigDialog::fillCommnads()
 {
-    if(!commandsList.empty())
+    if(!m_commandsList.empty())
     {
-        for(FXint i=0; i<commandsList.contains(';'); i++)
+        for(FXint i=0; i<m_commandsList.contains(';'); i++)
         {
-            commands->appendItem(commandsList.before(';', i+1).rafter(';'));
+            m_commands->appendItem(m_commandsList.before(';', i+1).rafter(';'));
         }
     }
 }
 
-void ConfigDialog::FillIcons()
+void ConfigDialog::fillIcons()
 {
-    if(!themesList.empty())
+    if(!m_themesList.empty())
     {
-        for(FXint i=0; i<themesList.contains(';'); i++)
+        for(FXint i=0; i<m_themesList.contains(';'); i++)
         {
-            icons->appendItem(themesList.before(';', i+1).rafter(';'));
+            m_icons->appendItem(m_themesList.before(';', i+1).rafter(';'));
         }
     }
 }
 
-void ConfigDialog::FillThemes()
+void ConfigDialog::fillThemes()
 {
     FXint i, scheme=-1;
 
     for(i=0; i<numThemes; i++)
     {
-        if((themeCurrent.back == ColorThemes[i].back) &&
-                (themeCurrent.base == ColorThemes[i].base) &&
-                (themeCurrent.border == ColorThemes[i].border) &&
-                (themeCurrent.fore == ColorThemes[i].fore) &&
-                (themeCurrent.menuback == ColorThemes[i].menuback) &&
-                (themeCurrent.menufore == ColorThemes[i].menufore) &&
-                (themeCurrent.selback == ColorThemes[i].selback) &&
-                (themeCurrent.selfore == ColorThemes[i].selfore) &&
-                (themeCurrent.tipback == ColorThemes[i].tipback) &&
-                (themeCurrent.tipfore == ColorThemes[i].tipfore))
+        if((m_themeCurrent.back == ColorThemes[i].back) &&
+                (m_themeCurrent.base == ColorThemes[i].base) &&
+                (m_themeCurrent.border == ColorThemes[i].border) &&
+                (m_themeCurrent.fore == ColorThemes[i].fore) &&
+                (m_themeCurrent.menuback == ColorThemes[i].menuback) &&
+                (m_themeCurrent.menufore == ColorThemes[i].menufore) &&
+                (m_themeCurrent.selback == ColorThemes[i].selback) &&
+                (m_themeCurrent.selfore == ColorThemes[i].selfore) &&
+                (m_themeCurrent.tipback == ColorThemes[i].tipback) &&
+                (m_themeCurrent.tipfore == ColorThemes[i].tipfore))
         {
             scheme = i;
             break;
@@ -2058,37 +2058,37 @@ void ConfigDialog::FillThemes()
 
     if(scheme == -1)
     {
-        themeUser.back = themeCurrent.back;
-        themeUser.base = themeCurrent.base;
-        themeUser.border = themeCurrent.border;
-        themeUser.fore = themeCurrent.fore;
-        themeUser.menuback = themeCurrent.menuback;
-        themeUser.menufore = themeCurrent.menufore;
-        themeUser.selback = themeCurrent.selback;
-        themeUser.selfore = themeCurrent.selfore;
-        themeUser.tipback = themeCurrent.tipback;
-        themeUser.tipfore = themeCurrent.tipfore;
-        themes->appendItem(_("Current"), NULL, &themeUser);
+        m_themeUser.back = m_themeCurrent.back;
+        m_themeUser.base = m_themeCurrent.base;
+        m_themeUser.border = m_themeCurrent.border;
+        m_themeUser.fore = m_themeCurrent.fore;
+        m_themeUser.menuback = m_themeCurrent.menuback;
+        m_themeUser.menufore = m_themeCurrent.menufore;
+        m_themeUser.selback = m_themeCurrent.selback;
+        m_themeUser.selfore = m_themeCurrent.selfore;
+        m_themeUser.tipback = m_themeCurrent.tipback;
+        m_themeUser.tipfore = m_themeCurrent.tipfore;
+        m_themes->appendItem(_("Current"), NULL, &m_themeUser);
     }
 
     for(i=0; i<numThemes; i++)
     {
-        themes->appendItem(ColorThemes[i].name,NULL,(void*)&ColorThemes[i]);
+        m_themes->appendItem(ColorThemes[i].name,NULL,(void*)&ColorThemes[i]);
     }
-    themes->appendItem(_("User Defined"));
-    themes->setCurrentItem(scheme);
+    m_themes->appendItem(_("User Defined"));
+    m_themes->setCurrentItem(scheme);
 }
 
-FXString ConfigDialog::FillCommandsCombo()
+FXString ConfigDialog::fillCommandsCombo()
 {
     FXString combo;
     FXString available[10] = { "away", "ban", "ctcp", "join", "me", "nick", "notice", "mode", "part", "quit"};
     for(FXint i=0; i<10; i++)
     {
         FXbool exist = FALSE;
-        for(FXint j=0; j<commands->getNumItems(); j++)
+        for(FXint j=0; j<m_commands->getNumItems(); j++)
         {
-            if(commands->getItemText(j) == available[i])
+            if(m_commands->getItemText(j) == available[i])
             {
                 exist = TRUE;
                 break;
@@ -2099,72 +2099,72 @@ FXString ConfigDialog::FillCommandsCombo()
     return combo;
 }
 
-void ConfigDialog::FillUsers()
+void ConfigDialog::fillUsers()
 {
-    if(usersList.no())
+    if(m_usersList.no())
     {
-        for(FXint i=0; i<usersList.no(); i++)
+        for(FXint i=0; i<m_usersList.no(); i++)
         {
-            users->appendItem(usersList[i].nick+"\t"+usersList[i].channel+"\t"+usersList[i].server);
+            m_users->appendItem(m_usersList[i].nick+"\t"+m_usersList[i].channel+"\t"+m_usersList[i].server);
         }
     }
 }
 
-void ConfigDialog::FillFriends()
+void ConfigDialog::fillFriends()
 {
-    if(friendsList.no())
+    if(m_friendsList.no())
     {
-        for(FXint i=0; i<friendsList.no(); i++)
+        for(FXint i=0; i<m_friendsList.no(); i++)
         {
-            friends->appendItem(friendsList[i].nick+"\t"+friendsList[i].channel+"\t"+friendsList[i].server);
+            m_friends->appendItem(m_friendsList[i].nick+"\t"+m_friendsList[i].channel+"\t"+m_friendsList[i].server);
         }
     }
 }
 
-void ConfigDialog::FillSmileys()
+void ConfigDialog::fillSmileys()
 {
-    if((FXint)smileysMap.size())
+    if((FXint)m_smileysMap.size())
     {
         StringIt it;
-        for(it=smileysMap.begin(); it!=smileysMap.end(); it++)
+        for(it=m_smileysMap.begin(); it!=m_smileysMap.end(); it++)
         {
-            smileys->appendItem(new FXListItem((*it).first, createIconFromName(getApp(), (*it).second)));
+            m_smileys->appendItem(new FXListItem((*it).first, createIconFromName(getApp(), (*it).second)));
         }
     }
 }
 
-void ConfigDialog::UpdateCommands()
+void ConfigDialog::updateCommands()
 {
-    commandsList.clear();
-    for(FXint i=0; i<commands->getNumItems(); i++)
+    m_commandsList.clear();
+    for(FXint i=0; i<m_commands->getNumItems(); i++)
     {
-        commandsList.append(commands->getItemText(i)+';');
+        m_commandsList.append(m_commands->getItemText(i)+';');
     }
 }
 
-void ConfigDialog::UpdateIcons()
+void ConfigDialog::updateIcons()
 {
-    themesList.clear();
-    for(FXint i=0; i<icons->getNumItems(); i++)
+    m_themesList.clear();
+    for(FXint i=0; i<m_icons->getNumItems(); i++)
     {
-        themesList.append(icons->getItemText(i)+';');
+        m_themesList.append(m_icons->getItemText(i)+';');
     }
 }
 
-void ConfigDialog::ShowMessage()
+void ConfigDialog::showMessage()
 {
-    if(showWarning)
+    if(m_showWarning)
     {
         FXMessageBox::information(this, FX::MBOX_OK, _("Information"), _("Some changes need restart application"));
-        showWarning = FALSE;
+        m_showWarning = FALSE;
     }
 }
 
-FXbool ConfigDialog::ThemeExist(const FXString &ckdTheme)
+FXbool ConfigDialog::themeExist(const FXString &ckdTheme)
 {
-    for(FXint i=0; i<icons->getNumItems(); i++)
+    for(FXint i=0; i<m_icons->getNumItems(); i++)
     {
-        if(icons->getItemText(i) == ckdTheme)
+        if(m_icons->getItemText(i) == ckdTheme)
         {
             return TRUE;
         }
@@ -2172,96 +2172,96 @@ FXbool ConfigDialog::ThemeExist(const FXString &ckdTheme)
     return FALSE;
 }
 
-FXbool ConfigDialog::NickExist(const FXString &ckdNick, FXbool user)
+FXbool ConfigDialog::nickExist(const FXString &ckdNick, FXbool user)
 {
-    for(FXint i=0; i<(user ? users->getNumItems() : friends->getNumItems()); i++)
+    for(FXint i=0; i<(user ? m_users->getNumItems() : m_friends->getNumItems()); i++)
     {
-        if((user ? users->getItemText(i) : friends->getItemText(i)) == ckdNick) return TRUE;
+        if((user ? m_users->getItemText(i) : m_friends->getItemText(i)) == ckdNick) return TRUE;
     }
     return FALSE;
 }
 
-FXbool ConfigDialog::SmileyExist(const FXString& ckdSmiley)
+FXbool ConfigDialog::smileyExist(const FXString& ckdSmiley)
 {
     StringIt it;
-    for(it=smileysMap.begin(); it!=smileysMap.end(); it++)
+    for(it=m_smileysMap.begin(); it!=m_smileysMap.end(); it++)
     {
         if(!compare((*it).first, ckdSmiley)) return TRUE;
     }
     return FALSE;
 }
 
-void ConfigDialog::ReadConfig()
+void ConfigDialog::readConfig()
 {
     FXString ircfontspec;
     FXSettings set;
-    set.parseFile(utils::GetIniFile(), TRUE);
-    themeCurrent.base = set.readColorEntry("SETTINGS", "basecolor", getApp()->getBaseColor());
-    themeCurrent.back = set.readColorEntry("SETTINGS", "backcolor", getApp()->getBackColor());
-    themeCurrent.border = set.readColorEntry("SETTINGS", "bordercolor", getApp()->getBorderColor());
-    themeCurrent.fore = set.readColorEntry("SETTINGS", "forecolor", getApp()->getForeColor());
-    themeCurrent.menuback = set.readColorEntry("SETTINGS", "selmenubackcolor", getApp()->getSelMenuBackColor());
-    themeCurrent.menufore = set.readColorEntry("SETTINGS", "selmenutextcolor", getApp()->getSelMenuTextColor());
-    themeCurrent.selback = set.readColorEntry("SETTINGS", "selbackcolor", getApp()->getSelbackColor());
-    themeCurrent.selfore = set.readColorEntry("SETTINGS", "selforecolor", getApp()->getSelforeColor());
-    themeCurrent.tipback = set.readColorEntry("SETTINGS", "tipbackcolor", getApp()->getTipbackColor());
-    themeCurrent.tipfore = set.readColorEntry("SETTINGS", "tipforecolor", getApp()->getTipforeColor());
-    themeCurrent.hilite = set.readColorEntry("SETTINGS", "hilitecolor", getApp()->getHiliteColor());
-    themeCurrent.shadow = set.readColorEntry("SETTINGS", "shadowcolor", getApp()->getShadowColor());
-    trayColor = set.readColorEntry("SETTINGS", "traycolor", themeCurrent.base);
-    usersShown = set.readBoolEntry("SETTINGS", "usersShown", TRUE);
-    statusShown = set.readBoolEntry("SETTINGS", "statusShown", TRUE);
-    tabPosition = set.readIntEntry("SETTINGS", "tabPosition", 0);
-    commandsList = set.readStringEntry("SETTINGS", "commandsList");
-    themePath = utils::CheckThemePath(set.readStringEntry("SETTINGS", "themePath", DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "default"));
-    themesList = utils::CheckThemesList(set.readStringEntry("SETTINGS", "themesList", FXString(themePath+";").text()));
-    colors.text = set.readColorEntry("SETTINGS", "textColor", FXRGB(255,255,255));
-    colors.back = set.readColorEntry("SETTINGS", "textBackColor", FXRGB(0,0,0));
-    colors.user = set.readColorEntry("SETTINGS", "userColor", FXRGB(191,191,191));
-    colors.action = set.readColorEntry("SETTINGS", "actionsColor", FXRGB(255,165,0));
-    colors.notice = set.readColorEntry("SETTINGS", "noticeColor", FXRGB(0,0,255));
-    colors.error = set.readColorEntry("SETTINGS", "errorColor", FXRGB(255,0,0));
-    colors.hilight = set.readColorEntry("SETTINGS", "hilightColor", FXRGB(0,255,0));
-    colors.link = set.readColorEntry("SETTINGS", "linkColor", FXRGB(0,0,255));
+    set.parseFile(utils::getIniFile(), TRUE);
+    m_themeCurrent.base = set.readColorEntry("SETTINGS", "basecolor", getApp()->getBaseColor());
+    m_themeCurrent.back = set.readColorEntry("SETTINGS", "backcolor", getApp()->getBackColor());
+    m_themeCurrent.border = set.readColorEntry("SETTINGS", "bordercolor", getApp()->getBorderColor());
+    m_themeCurrent.fore = set.readColorEntry("SETTINGS", "forecolor", getApp()->getForeColor());
+    m_themeCurrent.menuback = set.readColorEntry("SETTINGS", "selmenubackcolor", getApp()->getSelMenuBackColor());
+    m_themeCurrent.menufore = set.readColorEntry("SETTINGS", "selmenutextcolor", getApp()->getSelMenuTextColor());
+    m_themeCurrent.selback = set.readColorEntry("SETTINGS", "selbackcolor", getApp()->getSelbackColor());
+    m_themeCurrent.selfore = set.readColorEntry("SETTINGS", "selforecolor", getApp()->getSelforeColor());
+    m_themeCurrent.tipback = set.readColorEntry("SETTINGS", "tipbackcolor", getApp()->getTipbackColor());
+    m_themeCurrent.tipfore = set.readColorEntry("SETTINGS", "tipforecolor", getApp()->getTipforeColor());
+    m_themeCurrent.hilite = set.readColorEntry("SETTINGS", "hilitecolor", getApp()->getHiliteColor());
+    m_themeCurrent.shadow = set.readColorEntry("SETTINGS", "shadowcolor", getApp()->getShadowColor());
+    m_trayColor = set.readColorEntry("SETTINGS", "traycolor", m_themeCurrent.base);
+    m_usersShown = set.readBoolEntry("SETTINGS", "usersShown", TRUE);
+    m_statusShown = set.readBoolEntry("SETTINGS", "statusShown", TRUE);
+    m_tabPosition = set.readIntEntry("SETTINGS", "tabPosition", 0);
+    m_commandsList = set.readStringEntry("SETTINGS", "commandsList");
+    m_themePath = utils::checkThemePath(set.readStringEntry("SETTINGS", "themePath", DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "default"));
+    m_themesList = utils::checkThemesList(set.readStringEntry("SETTINGS", "themesList", FXString(m_themePath+";").text()));
+    m_colors.text = set.readColorEntry("SETTINGS", "textColor", FXRGB(255,255,255));
+    m_colors.back = set.readColorEntry("SETTINGS", "textBackColor", FXRGB(0,0,0));
+    m_colors.user = set.readColorEntry("SETTINGS", "userColor", FXRGB(191,191,191));
+    m_colors.action = set.readColorEntry("SETTINGS", "actionsColor", FXRGB(255,165,0));
+    m_colors.notice = set.readColorEntry("SETTINGS", "noticeColor", FXRGB(0,0,255));
+    m_colors.error = set.readColorEntry("SETTINGS", "errorColor", FXRGB(255,0,0));
+    m_colors.hilight = set.readColorEntry("SETTINGS", "hilightColor", FXRGB(0,255,0));
+    m_colors.link = set.readColorEntry("SETTINGS", "linkColor", FXRGB(0,0,255));
     ircfontspec = set.readStringEntry("SETTINGS", "ircFont", "");
-    sameCmd = set.readBoolEntry("SETTINGS", "sameCmd", FALSE);
-    sameList = set.readBoolEntry("SETTINGS", "sameList", FALSE);
-    coloredNick = set.readBoolEntry("SETTINGS", "coloredNick", FALSE);
+    m_sameCmd = set.readBoolEntry("SETTINGS", "sameCmd", FALSE);
+    m_sameList = set.readBoolEntry("SETTINGS", "sameList", FALSE);
+    m_coloredNick = set.readBoolEntry("SETTINGS", "coloredNick", FALSE);
     if(!ircfontspec.empty())
     {
-        ircFont = new FXFont(getApp(), ircfontspec);
-        ircFont->create();
+        m_ircFont = new FXFont(getApp(), ircfontspec);
+        m_ircFont->create();
     }
     else
     {
         getApp()->getNormalFont()->create();
         FXFontDesc fontdescription;
         getApp()->getNormalFont()->getFontDesc(fontdescription);
-        ircFont = new FXFont(getApp(),fontdescription);
-        ircFont->create();
+        m_ircFont = new FXFont(getApp(),fontdescription);
+        m_ircFont->create();
     }
-    maxAway = set.readIntEntry("SETTINGS", "maxAway", 200);
-    logging = set.readBoolEntry("SETTINGS", "logging", FALSE);
-    serverWindow = set.readBoolEntry("SETTINGS", "serverWindow", TRUE);
+    m_maxAway = set.readIntEntry("SETTINGS", "maxAway", 200);
+    m_logging = set.readBoolEntry("SETTINGS", "logging", FALSE);
+    m_serverWindow = set.readBoolEntry("SETTINGS", "serverWindow", TRUE);
 #ifdef HAVE_TRAY
-    useTray = set.readBoolEntry("SETTINGS", "tray", FALSE);
+    m_useTray = set.readBoolEntry("SETTINGS", "tray", FALSE);
 #else
-    useTray = FALSE;
+    m_useTray = FALSE;
 #endif
-    if(useTray)
-        closeToTray = set.readBoolEntry("SETTINGS", "closeToTray", FALSE);
+    if(m_useTray)
+        m_closeToTray = set.readBoolEntry("SETTINGS", "closeToTray", FALSE);
     else
-        closeToTray = FALSE;
-    reconnect = set.readBoolEntry("SETTINGS", "reconnect", FALSE);
-    numberAttempt = set.readIntEntry("SETTINGS", "numberAttempt", 1);
-    delayAttempt = set.readIntEntry("SETTINGS", "delayAttempt", 20);
-    nickChar = FXString(set.readStringEntry("SETTINGS", "nickCompletionChar", ":")).left(1);
-    logPath = set.readStringEntry("SETTINGS", "logPath");
-    if(logging && !FXStat::exists(logPath)) logging = FALSE;
-    dccPath = set.readStringEntry("SETTINGS", "dccPath");
-    if(!FXStat::exists(dccPath)) dccPath = FXSystem::getHomeDirectory();
-    autoDccChat = set.readBoolEntry("SETTINGS", "autoDccChat", FALSE);
-    autoDccFile = set.readBoolEntry("SETTINGS", "autoDccFile", FALSE);
+        m_closeToTray = FALSE;
+    m_reconnect = set.readBoolEntry("SETTINGS", "reconnect", FALSE);
+    m_numberAttempt = set.readIntEntry("SETTINGS", "numberAttempt", 1);
+    m_delayAttempt = set.readIntEntry("SETTINGS", "delayAttempt", 20);
+    m_nickChar = FXString(set.readStringEntry("SETTINGS", "nickCompletionChar", ":")).left(1);
+    m_logPath = set.readStringEntry("SETTINGS", "logPath");
+    if(m_logging && !FXStat::exists(m_logPath)) m_logging = FALSE;
+    m_dccPath = set.readStringEntry("SETTINGS", "dccPath");
+    if(!FXStat::exists(m_dccPath)) m_dccPath = FXSystem::getHomeDirectory();
+    m_autoDccChat = set.readBoolEntry("SETTINGS", "autoDccChat", FALSE);
+    m_autoDccFile = set.readBoolEntry("SETTINGS", "autoDccFile", FALSE);
     FXint usersNum = set.readIntEntry("USERS", "number", 0);
     if(usersNum)
     {
@@ -2272,7 +2272,7 @@ void ConfigDialog::ReadConfig()
             user.nick = set.readStringEntry(FXStringFormat("USER%d", i).text(), "nick", FXStringFormat("xxx%d", i).text());
             user.channel = set.readStringEntry(FXStringFormat("USER%d", i).text(), "channel", "all");
             user.server = set.readStringEntry(FXStringFormat("USER%d", i).text(), "server", "all");
-            usersList.append(user);
+            m_usersList.append(user);
         }
     }
     FXint friendsNum = set.readIntEntry("FRIENDS", "number", 0);
@@ -2285,7 +2285,7 @@ void ConfigDialog::ReadConfig()
             user.nick = set.readStringEntry(FXStringFormat("FRIEND%d", i).text(), "nick", FXStringFormat("xxx%d", i).text());
             user.channel = set.readStringEntry(FXStringFormat("FRIEND%d", i).text(), "channel", "");
             user.server = set.readStringEntry(FXStringFormat("FRIEND%d", i).text(), "server", "");
-            friendsList.append(user);
+            m_friendsList.append(user);
         }
     }
     FXint serversNum = set.readIntEntry("SERVERS", "number", 0);
@@ -2298,52 +2298,52 @@ void ConfigDialog::ReadConfig()
             server.port = set.readIntEntry(FXStringFormat("SERVER%d", i).text(), "port", 6667);
             server.nick = set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "nick", "xxx");
             server.realname = set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "realname", "xxx");
-            server.passwd = utils::Decrypt(set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "hes", ""));
+            server.passwd = utils::decrypt(set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "hes", ""));
             server.channels = set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "channels", "");
             server.commands = set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "commands", "");
             server.autoConnect = set.readBoolEntry(FXStringFormat("SERVER%d", i).text(), "autoconnect", FALSE);
             server.useSsl = set.readBoolEntry(FXStringFormat("SERVER%d", i).text(), "ssl", FALSE);
-            serverList.append(server);
+            m_serverList.append(server);
         }
     }
 #ifdef HAVE_LUA
-    autoload = set.readBoolEntry("SETTINGS", "autoload", FALSE);
+    m_autoload = set.readBoolEntry("SETTINGS", "autoload", FALSE);
 #else
-    autoload = FALSE;
+    m_autoload = FALSE;
 #endif
-    autoloadPath = set.readStringEntry("SETTINGS", "autoloadPath");
-    if(autoload && !FXStat::exists(utils::IsUtf8(autoloadPath.text(), autoloadPath.length()) ? autoloadPath : utils::LocaleToUtf8(autoloadPath))) autoload = FALSE;
+    m_autoloadPath = set.readStringEntry("SETTINGS", "autoloadPath");
+    if(m_autoload && !FXStat::exists(utils::isUtf8(m_autoloadPath.text(), m_autoloadPath.length()) ? m_autoloadPath : utils::localeToUtf8(m_autoloadPath))) m_autoload = FALSE;
     FXString dccIP = set.readStringEntry("SETTINGS", "dccIP");
     FXRex rex("\\l");
     if(dccIP.empty() || dccIP.contains('.')!=3 || rex.match(dccIP))
     {
-        dccIP1 = "";
-        dccIP2 = "";
-        dccIP3 = "";
-        dccIP4 = "";
+        m_dccIP1 = "";
+        m_dccIP2 = "";
+        m_dccIP3 = "";
+        m_dccIP4 = "";
     }
     else
     {
-        dccIP1 = dccIP.section('.',0);
-        dccIP2 = dccIP.section('.',1);
-        dccIP3 = dccIP.section('.',2);
-        dccIP4 = dccIP.section('.',3);
+        m_dccIP1 = dccIP.section('.',0);
+        m_dccIP2 = dccIP.section('.',1);
+        m_dccIP3 = dccIP.section('.',2);
+        m_dccIP4 = dccIP.section('.',3);
     }
-    dccPortD = set.readIntEntry("SETTINGS", "dccPortD");
-    if(dccPortD<0 || dccPortD>65536) dccPortD = 0;
-    dccPortH = set.readIntEntry("SETTINGS", "dccPortH");
-    if(dccPortH<0 || dccPortH>65536) dccPortH = 0;
-    if(dccPortH<dccPortD) dccPortH = dccPortD;
-    dccTimeout = set.readIntEntry("SETTINGS", "dccTimeout", 66);
-    sounds = set.readBoolEntry("SETTINGS", "sounds", FALSE);
-    soundConnect = set.readBoolEntry("SETTINGS", "soundConnect", FALSE);
-    soundDisconnect = set.readBoolEntry("SETTINGS", "soundDisconnect", FALSE);
-    soundMessage = set.readBoolEntry("SETTINGS", "soundMessage", FALSE);
-    pathConnect = set.readStringEntry("SETTINGS", "pathConnect", DXIRC_DATADIR PATHSEPSTRING "sounds" PATHSEPSTRING "connected.wav");
-    pathDisconnect = set.readStringEntry("SETTINGS", "pathDisconnect", DXIRC_DATADIR PATHSEPSTRING "sounds" PATHSEPSTRING "disconnected.wav");
-    pathMessage = set.readStringEntry("SETTINGS", "pathMessage", DXIRC_DATADIR PATHSEPSTRING "sounds" PATHSEPSTRING "message.wav");
-    stripColors = set.readBoolEntry("SETTINGS", "stripColors", TRUE);
-    useSmileys = set.readBoolEntry("SETTINGS", "useSmileys", FALSE);
+    m_dccPortD = set.readIntEntry("SETTINGS", "dccPortD");
+    if(m_dccPortD<0 || m_dccPortD>65536) m_dccPortD = 0;
+    m_dccPortH = set.readIntEntry("SETTINGS", "dccPortH");
+    if(m_dccPortH<0 || m_dccPortH>65536) m_dccPortH = 0;
+    if(m_dccPortH<m_dccPortD) m_dccPortH = m_dccPortD;
+    m_dccTimeout = set.readIntEntry("SETTINGS", "dccTimeout", 66);
+    m_sounds = set.readBoolEntry("SETTINGS", "sounds", FALSE);
+    m_soundConnect = set.readBoolEntry("SETTINGS", "soundConnect", FALSE);
+    m_soundDisconnect = set.readBoolEntry("SETTINGS", "soundDisconnect", FALSE);
+    m_soundMessage = set.readBoolEntry("SETTINGS", "soundMessage", FALSE);
+    m_pathConnect = set.readStringEntry("SETTINGS", "pathConnect", DXIRC_DATADIR PATHSEPSTRING "sounds" PATHSEPSTRING "connected.wav");
+    m_pathDisconnect = set.readStringEntry("SETTINGS", "pathDisconnect", DXIRC_DATADIR PATHSEPSTRING "sounds" PATHSEPSTRING "disconnected.wav");
+    m_pathMessage = set.readStringEntry("SETTINGS", "pathMessage", DXIRC_DATADIR PATHSEPSTRING "sounds" PATHSEPSTRING "message.wav");
+    m_stripColors = set.readBoolEntry("SETTINGS", "stripColors", TRUE);
+    m_useSmileys = set.readBoolEntry("SETTINGS", "useSmileys", FALSE);
     FXint smileysNum = set.readIntEntry("SMILEYS", "number", 0);
     if(smileysNum)
     {
@@ -2354,102 +2354,102 @@ void ConfigDialog::ReadConfig()
             key = set.readStringEntry("SMILEYS", FXStringFormat("smiley%d", i).text(), FXStringFormat("%d)", i).text());
             value = set.readStringEntry("SMILEYS", FXStringFormat("path%d", i).text(), "");
             if(!key.empty())
-                smileysMap.insert(StringPair(key, value));
+                m_smileysMap.insert(StringPair(key, value));
         }
     }
 }
 
-void ConfigDialog::SaveConfig()
+void ConfigDialog::saveConfig()
 {
     getApp()->reg().setModified(FALSE);
     FXSettings set;
     //set.clear();
-    set.writeIntEntry("SERVERS", "number", serverList.no());
-    if(serverList.no())
+    set.writeIntEntry("SERVERS", "number", m_serverList.no());
+    if(m_serverList.no())
     {
-        for(FXint i=0; i<serverList.no(); i++)
+        for(FXint i=0; i<m_serverList.no(); i++)
         {
-            set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "hostname", serverList[i].hostname.text());
-            set.writeIntEntry(FXStringFormat("SERVER%d", i).text(), "port", serverList[i].port);
-            set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "nick", serverList[i].nick.text());
-            set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "realname", serverList[i].realname.text());
-            set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "hes", utils::Encrypt(serverList[i].passwd).text());
-            set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "channels", serverList[i].channels.text());
-            set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "commands", serverList[i].commands.text());
-            set.writeBoolEntry(FXStringFormat("SERVER%d", i).text(), "autoconnect", serverList[i].autoConnect);
-            set.writeBoolEntry(FXStringFormat("SERVER%d", i).text(), "ssl", serverList[i].useSsl);
+            set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "hostname", m_serverList[i].hostname.text());
+            set.writeIntEntry(FXStringFormat("SERVER%d", i).text(), "port", m_serverList[i].port);
+            set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "nick", m_serverList[i].nick.text());
+            set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "realname", m_serverList[i].realname.text());
+            set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "hes", utils::encrypt(m_serverList[i].passwd).text());
+            set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "channels", m_serverList[i].channels.text());
+            set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "commands", m_serverList[i].commands.text());
+            set.writeBoolEntry(FXStringFormat("SERVER%d", i).text(), "autoconnect", m_serverList[i].autoConnect);
+            set.writeBoolEntry(FXStringFormat("SERVER%d", i).text(), "ssl", m_serverList[i].useSsl);
         }
     }
-    set.writeBoolEntry("SETTINGS", "usersShown", usersShown);
-    set.writeBoolEntry("SETTINGS", "statusShown", statusShown);
-    set.writeStringEntry("SETTINGS", "commandsList", commandsList.text());
-    set.writeStringEntry("SETTINGS", "themePath", themePath.text());
-    set.writeStringEntry("SETTINGS", "themesList", themesList.text());
-    set.writeColorEntry("SETTINGS", "textColor", colors.text);
-    set.writeColorEntry("SETTINGS", "textBackColor", colors.back);
-    set.writeColorEntry("SETTINGS", "userColor", colors.user);
-    set.writeColorEntry("SETTINGS", "actionsColor", colors.action);
-    set.writeColorEntry("SETTINGS", "noticeColor", colors.notice);
-    set.writeColorEntry("SETTINGS", "errorColor", colors.error);
-    set.writeColorEntry("SETTINGS", "hilightColor", colors.hilight);
-    set.writeColorEntry("SETTINGS", "linkColor", colors.link);
-    set.writeStringEntry("SETTINGS", "ircFont", ircFont->getFont().text());
-    set.writeIntEntry("SETTINGS", "maxAway", maxAway);
-    set.writeBoolEntry("SETTINGS", "logging", logging);
-    set.writeBoolEntry("SETTINGS", "sameCmd", sameCmd);
-    set.writeBoolEntry("SETTINGS", "sameList", sameList);
-    set.writeBoolEntry("SETTINGS", "coloredNick", coloredNick);
-    set.writeBoolEntry("SETTINGS", "tray", useTray);
-    set.writeBoolEntry("SETTINGS", "closeToTray", closeToTray);
-    set.writeBoolEntry("SETTINGS", "reconnect", reconnect);
-    set.writeIntEntry("SETTINGS", "numberAttempt", numberAttempt);
-    set.writeIntEntry("SETTINGS", "delayAttempt", delayAttempt);
-    set.writeBoolEntry("SETTINGS", "serverWindow", serverWindow);
-    set.writeStringEntry("SETTINGS", "logPath", logPath.text());
-    set.writeStringEntry("SETTINGS", "dccPath", dccPath.text());
-    set.writeStringEntry("SETTINGS", "nickCompletionChar", nickChar.text());
-    set.writeIntEntry("USERS", "number", usersList.no());
-    if(usersList.no())
-    {
-
-        for(FXint i=0; i<usersList.no(); i++)
-        {
-            set.writeStringEntry(FXStringFormat("USER%d", i).text(), "nick", usersList[i].nick.text());
-            set.writeStringEntry(FXStringFormat("USER%d", i).text(), "channel", usersList[i].channel.text());
-            set.writeStringEntry(FXStringFormat("USER%d", i).text(), "server", usersList[i].server.text());
-        }
-    }
-    set.writeIntEntry("FRIENDS", "number", friendsList.no());
-    if(friendsList.no())
+    set.writeBoolEntry("SETTINGS", "usersShown", m_usersShown);
+    set.writeBoolEntry("SETTINGS", "statusShown", m_statusShown);
+    set.writeStringEntry("SETTINGS", "commandsList", m_commandsList.text());
+    set.writeStringEntry("SETTINGS", "themePath", m_themePath.text());
+    set.writeStringEntry("SETTINGS", "themesList", m_themesList.text());
+    set.writeColorEntry("SETTINGS", "textColor", m_colors.text);
+    set.writeColorEntry("SETTINGS", "textBackColor", m_colors.back);
+    set.writeColorEntry("SETTINGS", "userColor", m_colors.user);
+    set.writeColorEntry("SETTINGS", "actionsColor", m_colors.action);
+    set.writeColorEntry("SETTINGS", "noticeColor", m_colors.notice);
+    set.writeColorEntry("SETTINGS", "errorColor", m_colors.error);
+    set.writeColorEntry("SETTINGS", "hilightColor", m_colors.hilight);
+    set.writeColorEntry("SETTINGS", "linkColor", m_colors.link);
+    set.writeStringEntry("SETTINGS", "ircFont", m_ircFont->getFont().text());
+    set.writeIntEntry("SETTINGS", "maxAway", m_maxAway);
+    set.writeBoolEntry("SETTINGS", "logging", m_logging);
+    set.writeBoolEntry("SETTINGS", "sameCmd", m_sameCmd);
+    set.writeBoolEntry("SETTINGS", "sameList", m_sameList);
+    set.writeBoolEntry("SETTINGS", "coloredNick", m_coloredNick);
+    set.writeBoolEntry("SETTINGS", "tray", m_useTray);
+    set.writeBoolEntry("SETTINGS", "closeToTray", m_closeToTray);
+    set.writeBoolEntry("SETTINGS", "reconnect", m_reconnect);
+    set.writeIntEntry("SETTINGS", "numberAttempt", m_numberAttempt);
+    set.writeIntEntry("SETTINGS", "delayAttempt", m_delayAttempt);
+    set.writeBoolEntry("SETTINGS", "serverWindow", m_serverWindow);
+    set.writeStringEntry("SETTINGS", "logPath", m_logPath.text());
+    set.writeStringEntry("SETTINGS", "dccPath", m_dccPath.text());
+    set.writeStringEntry("SETTINGS", "nickCompletionChar", m_nickChar.text());
+    set.writeIntEntry("USERS", "number", m_usersList.no());
+    if(m_usersList.no())
     {
 
-        for(FXint i=0; i<friendsList.no(); i++)
+        for(FXint i=0; i<m_usersList.no(); i++)
         {
-            set.writeStringEntry(FXStringFormat("FRIEND%d", i).text(), "nick", friendsList[i].nick.text());
-            set.writeStringEntry(FXStringFormat("FRIEND%d", i).text(), "channel", friendsList[i].channel.text());
-            set.writeStringEntry(FXStringFormat("FRIEND%d", i).text(), "server", friendsList[i].server.text());
+            set.writeStringEntry(FXStringFormat("USER%d", i).text(), "nick", m_usersList[i].nick.text());
+            set.writeStringEntry(FXStringFormat("USER%d", i).text(), "channel", m_usersList[i].channel.text());
+            set.writeStringEntry(FXStringFormat("USER%d", i).text(), "server", m_usersList[i].server.text());
         }
     }
-    set.writeIntEntry("SETTINGS","x", owner->getX());
-    set.writeIntEntry("SETTINGS","y", owner->getY());
-    set.writeIntEntry("SETTINGS","w", owner->getWidth());
-    set.writeIntEntry("SETTINGS","h", owner->getHeight());
-    set.writeIntEntry("SETTINGS", "tabPosition", tabPosition);
-    set.writeColorEntry("SETTINGS", "basecolor", themeCurrent.base);
-    set.writeColorEntry("SETTINGS", "bordercolor", themeCurrent.border);
-    set.writeColorEntry("SETTINGS", "backcolor", themeCurrent.back);
-    set.writeColorEntry("SETTINGS", "forecolor", themeCurrent.fore);
-    set.writeColorEntry("SETTINGS", "hilitecolor", themeCurrent.hilite);
-    set.writeColorEntry("SETTINGS", "shadowcolor", themeCurrent.shadow);
-    set.writeColorEntry("SETTINGS", "selforecolor", themeCurrent.selfore);
-    set.writeColorEntry("SETTINGS", "selbackcolor", themeCurrent.selback);
-    set.writeColorEntry("SETTINGS", "tipforecolor", themeCurrent.tipfore);
-    set.writeColorEntry("SETTINGS", "tipbackcolor", themeCurrent.tipback);
-    set.writeColorEntry("SETTINGS", "selmenutextcolor", themeCurrent.menufore);
-    set.writeColorEntry("SETTINGS", "selmenubackcolor", themeCurrent.menuback);
-    set.writeColorEntry("SETTINGS", "traycolor", trayColor);
-    set.writeStringEntry("SETTINGS", "normalfont", font->getFont().text());
-    dxStringMap aliases = utils::GetAliases();
+    set.writeIntEntry("FRIENDS", "number", m_friendsList.no());
+    if(m_friendsList.no())
+    {
+
+        for(FXint i=0; i<m_friendsList.no(); i++)
+        {
+            set.writeStringEntry(FXStringFormat("FRIEND%d", i).text(), "nick", m_friendsList[i].nick.text());
+            set.writeStringEntry(FXStringFormat("FRIEND%d", i).text(), "channel", m_friendsList[i].channel.text());
+            set.writeStringEntry(FXStringFormat("FRIEND%d", i).text(), "server", m_friendsList[i].server.text());
+        }
+    }
+    set.writeIntEntry("SETTINGS","x", m_owner->getX());
+    set.writeIntEntry("SETTINGS","y", m_owner->getY());
+    set.writeIntEntry("SETTINGS","w", m_owner->getWidth());
+    set.writeIntEntry("SETTINGS","h", m_owner->getHeight());
+    set.writeIntEntry("SETTINGS", "tabPosition", m_tabPosition);
+    set.writeColorEntry("SETTINGS", "basecolor", m_themeCurrent.base);
+    set.writeColorEntry("SETTINGS", "bordercolor", m_themeCurrent.border);
+    set.writeColorEntry("SETTINGS", "backcolor", m_themeCurrent.back);
+    set.writeColorEntry("SETTINGS", "forecolor", m_themeCurrent.fore);
+    set.writeColorEntry("SETTINGS", "hilitecolor", m_themeCurrent.hilite);
+    set.writeColorEntry("SETTINGS", "shadowcolor", m_themeCurrent.shadow);
+    set.writeColorEntry("SETTINGS", "selforecolor", m_themeCurrent.selfore);
+    set.writeColorEntry("SETTINGS", "selbackcolor", m_themeCurrent.selback);
+    set.writeColorEntry("SETTINGS", "tipforecolor", m_themeCurrent.tipfore);
+    set.writeColorEntry("SETTINGS", "tipbackcolor", m_themeCurrent.tipback);
+    set.writeColorEntry("SETTINGS", "selmenutextcolor", m_themeCurrent.menufore);
+    set.writeColorEntry("SETTINGS", "selmenubackcolor", m_themeCurrent.menuback);
+    set.writeColorEntry("SETTINGS", "traycolor", m_trayColor);
+    set.writeStringEntry("SETTINGS", "normalfont", m_font->getFont().text());
+    dxStringMap aliases = utils::getAliases();
     set.writeIntEntry("ALIASES", "number", (FXint)aliases.size());
     if((FXint)aliases.size())
     {
@@ -2461,35 +2461,35 @@ void ConfigDialog::SaveConfig()
             set.writeStringEntry("ALIASES", FXStringFormat("value%d", i).text(), (*it).second.text());
         }
     }
-    set.writeBoolEntry("SETTINGS", "autoload", autoload);
-    set.writeStringEntry("SETTINGS", "autoloadPath", autoloadPath.text());
-    if(dccIP1.empty() || dccIP2.empty() || dccIP3.empty() || dccIP4.empty()) set.writeStringEntry("SETTINGS", "dccIP", "");
-    else set.writeStringEntry("SETTINGS", "dccIP", FXString(dccIP1+"."+dccIP2+"."+dccIP3+"."+dccIP4).text());
-    set.writeIntEntry("SETTINGS", "dccPortD", dccPortD);
-    set.writeIntEntry("SETTINGS", "dccPortH", dccPortH);
-    set.writeIntEntry("SETTINGS", "dccTimeout", dccTimeout);
-    set.writeBoolEntry("SETTINGS", "autoDccChat", autoDccChat);
-    set.writeBoolEntry("SETTINGS", "autoDccFile", autoDccFile);
-    set.writeBoolEntry("SETTINGS", "sounds", sounds);
-    set.writeBoolEntry("SETTINGS", "soundConnect", soundConnect);
-    set.writeBoolEntry("SETTINGS", "soundDisconnect", soundDisconnect);
-    set.writeBoolEntry("SETTINGS", "soundMessage", soundMessage);
-    set.writeStringEntry("SETTINGS", "pathConnect", pathConnect.text());
-    set.writeStringEntry("SETTINGS", "pathDisconnect", pathDisconnect.text());
-    set.writeStringEntry("SETTINGS", "pathMessage", pathMessage.text());
-    set.writeBoolEntry("SETTINGS", "stripColors", stripColors);
-    set.writeBoolEntry("SETTINGS", "useSmileys", useSmileys);
-    set.writeIntEntry("SMILEYS", "number", (FXint)smileysMap.size());
-    if((FXint)smileysMap.size())
+    set.writeBoolEntry("SETTINGS", "autoload", m_autoload);
+    set.writeStringEntry("SETTINGS", "autoloadPath", m_autoloadPath.text());
+    if(m_dccIP1.empty() || m_dccIP2.empty() || m_dccIP3.empty() || m_dccIP4.empty()) set.writeStringEntry("SETTINGS", "dccIP", "");
+    else set.writeStringEntry("SETTINGS", "dccIP", FXString(m_dccIP1+"."+m_dccIP2+"."+m_dccIP3+"."+m_dccIP4).text());
+    set.writeIntEntry("SETTINGS", "dccPortD", m_dccPortD);
+    set.writeIntEntry("SETTINGS", "dccPortH", m_dccPortH);
+    set.writeIntEntry("SETTINGS", "dccTimeout", m_dccTimeout);
+    set.writeBoolEntry("SETTINGS", "autoDccChat", m_autoDccChat);
+    set.writeBoolEntry("SETTINGS", "autoDccFile", m_autoDccFile);
+    set.writeBoolEntry("SETTINGS", "sounds", m_sounds);
+    set.writeBoolEntry("SETTINGS", "soundConnect", m_soundConnect);
+    set.writeBoolEntry("SETTINGS", "soundDisconnect", m_soundDisconnect);
+    set.writeBoolEntry("SETTINGS", "soundMessage", m_soundMessage);
+    set.writeStringEntry("SETTINGS", "pathConnect", m_pathConnect.text());
+    set.writeStringEntry("SETTINGS", "pathDisconnect", m_pathDisconnect.text());
+    set.writeStringEntry("SETTINGS", "pathMessage", m_pathMessage.text());
+    set.writeBoolEntry("SETTINGS", "stripColors", m_stripColors);
+    set.writeBoolEntry("SETTINGS", "useSmileys", m_useSmileys);
+    set.writeIntEntry("SMILEYS", "number", (FXint)m_smileysMap.size());
+    if((FXint)m_smileysMap.size())
     {
         StringIt it;
         FXint i;
-        for(i=0, it=smileysMap.begin(); it!=smileysMap.end(); it++,i++)
+        for(i=0, it=m_smileysMap.begin(); it!=m_smileysMap.end(); it++,i++)
         {
             set.writeStringEntry("SMILEYS", FXStringFormat("smiley%d", i).text(), (*it).first.text());
             set.writeStringEntry("SMILEYS", FXStringFormat("path%d", i).text(), (*it).second.text());
         }
     }
     set.setModified();
-    set.unparseFile(utils::GetIniFile());
+    set.unparseFile(utils::getIniFile());
 }

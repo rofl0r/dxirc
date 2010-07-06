@@ -29,81 +29,81 @@
 FXIMPLEMENT(LogItem, FXTreeItem, NULL, 0)
 
 FXDEFMAP(LogViewer) LogViewerMap[] = {
-    FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_CLOSE,      LogViewer::OnClose),
-    FXMAPFUNC(SEL_CLOSE,    0,                        LogViewer::OnClose),
-    FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_TREE,       LogViewer::OnTree),
-    FXMAPFUNC(SEL_EXPANDED, LogViewer::ID_TREE,       LogViewer::OnTree),
-    FXMAPFUNC(SEL_RIGHTBUTTONRELEASE,   LogViewer::ID_TREE, LogViewer::OnRightTree),
-    FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_RESET,      LogViewer::OnReset),
-    FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_SEARCH,     LogViewer::OnSearch),
-    FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_SEARCHNEXT, LogViewer::OnSearchNext),
-    FXMAPFUNCS(SEL_COMMAND, LogViewer::ID_ALL, LogViewer::ID_FILE, LogViewer::OnCmdSearchOptions),
-    FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_PACK,       LogViewer::OnPack),
-    FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_UNPACK,     LogViewer::OnUnpack),
-    FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_DELETEITEM,     LogViewer::OnDelete),
-    FXMAPFUNC(SEL_KEYPRESS, 0,                        LogViewer::OnKeyPress)
+    FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_CLOSE,      LogViewer::onClose),
+    FXMAPFUNC(SEL_CLOSE,    0,                        LogViewer::onClose),
+    FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_TREE,       LogViewer::onTree),
+    FXMAPFUNC(SEL_EXPANDED, LogViewer::ID_TREE,       LogViewer::onTree),
+    FXMAPFUNC(SEL_RIGHTBUTTONRELEASE,   LogViewer::ID_TREE, LogViewer::onRightTree),
+    FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_RESET,      LogViewer::onReset),
+    FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_SEARCH,     LogViewer::onSearch),
+    FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_SEARCHNEXT, LogViewer::onSearchNext),
+    FXMAPFUNCS(SEL_COMMAND, LogViewer::ID_ALL, LogViewer::ID_FILE, LogViewer::onCmdSearchOptions),
+    FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_PACK,       LogViewer::onPack),
+    FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_UNPACK,     LogViewer::onUnpack),
+    FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_DELETEITEM,     LogViewer::onDelete),
+    FXMAPFUNC(SEL_KEYPRESS, 0,                        LogViewer::onKeyPress)
 };
 
 FXIMPLEMENT(LogViewer, FXTopWindow, LogViewerMap, ARRAYNUMBER(LogViewerMap))
 
 LogViewer::LogViewer(FXApp *app, const FXString &lpath, FXFont *fnt)
-        : FXTopWindow(app, _("dxirc - log viewer"), NULL, NULL, DECOR_ALL, 0,0,800,500, 0,0,0,0, 0,0), logPath(lpath)
+        : FXTopWindow(app, _("dxirc - log viewer"), NULL, NULL, DECOR_ALL, 0,0,800,500, 0,0,0,0, 0,0), m_logPath(lpath)
 {
-    setIcon(bigicon);
-    setMiniIcon(smallicon);
+    setIcon(ICO_BIG);
+    setMiniIcon(ICO_SMALL);
 
-    all = TRUE;
-    channel = FALSE;
-    file = FALSE;
-    icase = FALSE;
-    treeLoaded = FALSE;
-    targetAll.connect(all);
-    targetAll.setTarget(this);
-    targetAll.setSelector(ID_ALL);
-    targetChannel.connect(channel);
-    targetChannel.setTarget(this);
-    targetChannel.setSelector(ID_CHANNEL);
-    targetFile.connect(file);
-    targetFile.setTarget(this);
-    targetFile.setSelector(ID_FILE);
-    targetIcase.connect(icase);
+    m_all = TRUE;
+    m_channel = FALSE;
+    m_file = FALSE;
+    m_icase = FALSE;
+    m_treeLoaded = FALSE;
+    m_targetAll.connect(m_all);
+    m_targetAll.setTarget(this);
+    m_targetAll.setSelector(ID_ALL);
+    m_targetChannel.connect(m_channel);
+    m_targetChannel.setTarget(this);
+    m_targetChannel.setSelector(ID_CHANNEL);
+    m_targetFile.connect(m_file);
+    m_targetFile.setTarget(this);
+    m_targetFile.setSelector(ID_FILE);
+    m_targetIcase.connect(m_icase);
 
-    buttonframe = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X);
-    buttonClose = new FXButton(buttonframe, _("C&lose"), NULL, this, ID_CLOSE, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
+    m_buttonframe = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X);
+    m_buttonClose = new FXButton(m_buttonframe, _("C&lose"), NULL, this, ID_CLOSE, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
 
-    content = new FXHorizontalFrame(this,  LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    m_content = new FXHorizontalFrame(this,  LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
 
-    splitter = new FXSplitter(content, LAYOUT_FILL_X | LAYOUT_FILL_Y | SPLITTER_REVERSED | SPLITTER_TRACKING);
-    textframe = new FXVerticalFrame(splitter, FRAME_SUNKEN | FRAME_THICK | LAYOUT_FILL_X | LAYOUT_FILL_Y);
-    text = new FXText(textframe, NULL, 0, FRAME_SUNKEN | LAYOUT_FILL_X | LAYOUT_FILL_Y | TEXT_WORDWRAP | TEXT_READONLY);
-    text->setFont(fnt);
-    text->setVisibleColumns(80);
-    listframe = new FXVerticalFrame(splitter, FRAME_SUNKEN | FRAME_THICK | LAYOUT_FILL_X | LAYOUT_FILL_Y | LAYOUT_FIX_WIDTH);
-    searchframe = new FXHorizontalFrame(listframe, FRAME_THICK | LAYOUT_FILL_X);
-    searchfield = new FXTextField(searchframe, 15, this, ID_SEARCH, TEXTFIELD_ENTER_ONLY|FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    searchfield->setTipText(_("F3 for next"));
-    searchfield->disable();
-    buttonSearch = new FXButton(searchframe, _("&Search"), NULL, this, ID_SEARCH, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
-    buttonSearch->disable();
-    buttonReset = new FXButton(searchframe, _("&Reset"), NULL, this, ID_RESET, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
-    buttonReset->disable();
-    group = new FXGroupBox(listframe, _("Search options"), LAYOUT_SIDE_TOP|FRAME_GROOVE|LAYOUT_FILL_X, 0,0,0,0);
-    buttonIcase = new FXCheckButton(group, _("&Ignore case"), &targetIcase, FXDataTarget::ID_VALUE);
-    buttonIcase->disable();
-    buttonFile = new FXRadioButton(group, _("Search file"), &targetFile, FXDataTarget::ID_VALUE);
-    buttonFile->disable();
-    buttonChannel = new FXRadioButton(group, _("Search channel/query"), &targetChannel, FXDataTarget::ID_VALUE);
-    buttonChannel->disable();
-    buttonAll = new FXRadioButton(group, _("Search all"), &targetAll, FXDataTarget::ID_VALUE);
-    buttonAll->disable();
-    treeframe = new FXVerticalFrame(listframe, FRAME_THICK | LAYOUT_FILL_X | LAYOUT_FILL_Y);
-    treeHistory = new FXTreeList(treeframe, this, ID_TREE, TREELIST_SHOWS_BOXES | TREELIST_SHOWS_LINES | FRAME_SUNKEN | LAYOUT_FILL_X | LAYOUT_FILL_Y);
-    treeHistory->setSortFunc(FXTreeList::ascendingCase);
-    treeHistory->setScrollStyle(HSCROLLING_OFF);
+    m_splitter = new FXSplitter(m_content, LAYOUT_FILL_X | LAYOUT_FILL_Y | SPLITTER_REVERSED | SPLITTER_TRACKING);
+    m_textframe = new FXVerticalFrame(m_splitter, FRAME_SUNKEN | FRAME_THICK | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+    m_text = new FXText(m_textframe, NULL, 0, FRAME_SUNKEN | LAYOUT_FILL_X | LAYOUT_FILL_Y | TEXT_WORDWRAP | TEXT_READONLY);
+    m_text->setFont(fnt);
+    m_text->setVisibleColumns(80);
+    m_listframe = new FXVerticalFrame(m_splitter, FRAME_SUNKEN | FRAME_THICK | LAYOUT_FILL_X | LAYOUT_FILL_Y | LAYOUT_FIX_WIDTH);
+    m_searchframe = new FXHorizontalFrame(m_listframe, FRAME_THICK | LAYOUT_FILL_X);
+    m_searchfield = new FXTextField(m_searchframe, 15, this, ID_SEARCH, TEXTFIELD_ENTER_ONLY|FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    m_searchfield->setTipText(_("F3 for next"));
+    m_searchfield->disable();
+    m_buttonSearch = new FXButton(m_searchframe, _("&Search"), NULL, this, ID_SEARCH, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
+    m_buttonSearch->disable();
+    m_buttonReset = new FXButton(m_searchframe, _("&Reset"), NULL, this, ID_RESET, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
+    m_buttonReset->disable();
+    m_group = new FXGroupBox(m_listframe, _("Search options"), LAYOUT_SIDE_TOP|FRAME_GROOVE|LAYOUT_FILL_X, 0,0,0,0);
+    m_buttonIcase = new FXCheckButton(m_group, _("&Ignore case"), &m_targetIcase, FXDataTarget::ID_VALUE);
+    m_buttonIcase->disable();
+    m_buttonFile = new FXRadioButton(m_group, _("Search file"), &m_targetFile, FXDataTarget::ID_VALUE);
+    m_buttonFile->disable();
+    m_buttonChannel = new FXRadioButton(m_group, _("Search channel/query"), &m_targetChannel, FXDataTarget::ID_VALUE);
+    m_buttonChannel->disable();
+    m_buttonAll = new FXRadioButton(m_group, _("Search all"), &m_targetAll, FXDataTarget::ID_VALUE);
+    m_buttonAll->disable();
+    m_treeframe = new FXVerticalFrame(m_listframe, FRAME_THICK | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+    m_treeHistory = new FXTreeList(m_treeframe, this, ID_TREE, TREELIST_SHOWS_BOXES | TREELIST_SHOWS_LINES | FRAME_SUNKEN | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+    m_treeHistory->setSortFunc(FXTreeList::ascendingCase);
+    m_treeHistory->setScrollStyle(HSCROLLING_OFF);
     getAccelTable()->addAccel(MKUINT(KEY_F3, 0), this, FXSEL(SEL_COMMAND,LogViewer::ID_SEARCHNEXT));
 
-    searchstring = "";
-    itemOnRight = NULL;
+    m_searchstring = "";
+    m_itemOnRight = NULL;
 }
 
 LogViewer::~LogViewer()
@@ -114,87 +114,87 @@ void LogViewer::create()
 {
     FXTopWindow::create();
     show(PLACEMENT_CURSOR);
-    LoadTree();
-    searchfield->disable();
-    buttonSearch->disable();
-    buttonReset->disable();
-    buttonIcase->disable();
-    buttonFile->disable();
-    buttonChannel->disable();
-    buttonAll->disable();
+    loadTree();
+    m_searchfield->disable();
+    m_buttonSearch->disable();
+    m_buttonReset->disable();
+    m_buttonIcase->disable();
+    m_buttonFile->disable();
+    m_buttonChannel->disable();
+    m_buttonAll->disable();
 }
 
-void LogViewer::SetFont(FXFont *fnt)
+void LogViewer::setFont(FXFont *fnt)
 {
-    text->setFont(fnt);
+    m_text->setFont(fnt);
 }
 
-long LogViewer::OnClose(FXObject*, FXSelector, void*)
+long LogViewer::onClose(FXObject*, FXSelector, void*)
 {
-    treeHistory->clearItems(TRUE);
-    text->removeText(0, text->getLength());
-    searchfield->setText("");
-    searchstring.clear();
+    m_treeHistory->clearItems(TRUE);
+    m_text->removeText(0, m_text->getLength());
+    m_searchfield->setText("");
+    m_searchstring.clear();
     hide();
     return 1;
 }
 
-long LogViewer::OnSearch(FXObject*, FXSelector, void*)
+long LogViewer::onSearch(FXObject*, FXSelector, void*)
 {
-    if(file)
+    if(m_file)
     {
         FXint beg[10];
         FXint end[10];
         FXint pos;
-        if(text->getLength())
+        if(m_text->getLength())
         {
-            pos = text->getCursorPos();
-            if(!searchfield->getText().empty())
+            pos = m_text->getCursorPos();
+            if(!m_searchfield->getText().empty())
             {
-                searchstring = searchfield->getText();
-                searchfield->setText("");
+                m_searchstring = m_searchfield->getText();
+                m_searchfield->setText("");
                 FXuint flags = SEARCH_FORWARD|SEARCH_WRAP;
-                if(icase) flags |= SEARCH_IGNORECASE;
-                if(text->findText(searchstring, beg, end, pos, flags, 10))
+                if(m_icase) flags |= SEARCH_IGNORECASE;
+                if(m_text->findText(m_searchstring, beg, end, pos, flags, 10))
                 {
-                    text->setAnchorPos(beg[0]);
-                    text->extendSelection(end[0],SELECT_CHARS,TRUE);
-                    text->setCursorPos(end[0],TRUE);
-                    text->makePositionVisible(beg[0]);
-                    text->makePositionVisible(end[0]);
-                    buttonReset->enable();
+                    m_text->setAnchorPos(beg[0]);
+                    m_text->extendSelection(end[0],SELECT_CHARS,TRUE);
+                    m_text->setCursorPos(end[0],TRUE);
+                    m_text->makePositionVisible(beg[0]);
+                    m_text->makePositionVisible(end[0]);
+                    m_buttonReset->enable();
                 }
                 else
                 {
                     getApp()->beep();                    
-                    FXMessageBox::information(this, MBOX_OK, _("Information"), _("'%s' wasn't found"), searchstring.text());
+                    FXMessageBox::information(this, MBOX_OK, _("Information"), _("'%s' wasn't found"), m_searchstring.text());
                 }
                 return 1;
             }
         }
     }
-    else if(channel)
+    else if(m_channel)
     {        
         FXint count = 0;
         FXRex rex;
         FXint rexmode = REX_VERBATIM;
-        if(icase) rexmode |= REX_ICASE;
-        if(!searchfield->getText().empty())
+        if(m_icase) rexmode |= REX_ICASE;
+        if(!m_searchfield->getText().empty())
         {
-            searchstring = searchfield->getText();
-            searchfield->setText("");
-            text->removeText(0, text->getLength());
-            if(rex.parse(searchstring, rexmode) == REGERR_OK)
+            m_searchstring = m_searchfield->getText();
+            m_searchfield->setText("");
+            m_text->removeText(0, m_text->getLength());
+            if(rex.parse(m_searchstring, rexmode) == REGERR_OK)
             {
                 getApp()->beginWaitCursor();
-                LogItem *item = (LogItem*)treeHistory->getCurrentItem();
+                LogItem *item = (LogItem*)m_treeHistory->getCurrentItem();
                 if(item->isFile()) item = (LogItem*)item->parent;
-                if(!IsChannelItem(item)) return 0;
+                if(!isChannelItem(item)) return 0;
                 LogItem *chitem = item;
                 item = (LogItem*)chitem->first;
                 while(item)
                 {
-                    std::ifstream stream(GetItemPathname(item).text());
+                    std::ifstream stream(getItemPathname(item).text());
                     std::string temp;
                     bool contain = FALSE;
                     while(std::getline(stream, temp))
@@ -206,18 +206,18 @@ long LogViewer::OnSearch(FXObject*, FXSelector, void*)
                             break;
                         }
                     }
-                    if(contain) treeHistory->enableItem(item);
-                    else treeHistory->disableItem(item);
+                    if(contain) m_treeHistory->enableItem(item);
+                    else m_treeHistory->disableItem(item);
                     item = (LogItem*)item->next;
                 }
                 getApp()->endWaitCursor();
                 if(count == 0)
                 {
-                    FXMessageBox::information(this, MBOX_OK, _("Information"), _("'%s' wasn't found"), searchstring.text());
+                    FXMessageBox::information(this, MBOX_OK, _("Information"), _("'%s' wasn't found"), m_searchstring.text());
                     item = (LogItem*)chitem->first;
                     while(item)
                     {
-                        treeHistory->enableItem(item);
+                        m_treeHistory->enableItem(item);
                         item = (LogItem*)item->next;
                     }
                 }
@@ -228,43 +228,43 @@ long LogViewer::OnSearch(FXObject*, FXSelector, void*)
     else //search over all files
     {
         //we need load full tree
-        if(!treeLoaded)
+        if(!m_treeLoaded)
         {
             getApp()->beginWaitCursor();
-            LogItem *item = (LogItem*)treeHistory->getFirstItem();
+            LogItem *item = (LogItem*)m_treeHistory->getFirstItem();
             while(item!=NULL)
             {
-                ListChildItems(item);
+                listChildItems(item);
                 item=(LogItem*)item->getBelow();
             }
             getApp()->endWaitCursor();
-            treeLoaded = TRUE;
+            m_treeLoaded = TRUE;
         }
         FXint count = 0;
         FXRex rex;
         FXint rexmode = REX_VERBATIM;
-        if(icase) rexmode |= REX_ICASE;
-        if(!searchfield->getText().empty())
+        if(m_icase) rexmode |= REX_ICASE;
+        if(!m_searchfield->getText().empty())
         {
-            searchstring = searchfield->getText();
-            searchfield->setText("");
-            text->removeText(0, text->getLength());
-            if(rex.parse(searchstring, rexmode) == REGERR_OK)
+            m_searchstring = m_searchfield->getText();
+            m_searchfield->setText("");
+            m_text->removeText(0, m_text->getLength());
+            if(rex.parse(m_searchstring, rexmode) == REGERR_OK)
             {
                 getApp()->beginWaitCursor();
-                LogItem *item = (LogItem*)treeHistory->getFirstItem();
+                LogItem *item = (LogItem*)m_treeHistory->getFirstItem();
                 item = (LogItem*)item->first;
                 while(item)
                 {
                     if(item->isDirectory())
                     {
-                        if(IsChannelItem(item))
+                        if(isChannelItem(item))
                         {
                             FXint hidden = 0;
                             LogItem *fitem = (LogItem*)item->first;
                             while(fitem)
                             {
-                                std::ifstream stream(GetItemPathname(fitem).text());
+                                std::ifstream stream(getItemPathname(fitem).text());
                                 std::string temp;
                                 bool contain = FALSE;
                                 while(std::getline(stream, temp))
@@ -276,15 +276,15 @@ long LogViewer::OnSearch(FXObject*, FXSelector, void*)
                                         break;
                                     }
                                 }
-                                if(contain) treeHistory->enableItem(fitem);
+                                if(contain) m_treeHistory->enableItem(fitem);
                                 else
                                 {
-                                    treeHistory->disableItem(fitem);
+                                    m_treeHistory->disableItem(fitem);
                                     hidden++;
                                 }
                                 fitem = (LogItem*)fitem->next;
                             }
-                            if(item->getNumChildren() == hidden) treeHistory->disableItem(item);
+                            if(item->getNumChildren() == hidden) m_treeHistory->disableItem(item);
                         }
                         if(item->first)
                         {
@@ -301,8 +301,8 @@ long LogViewer::OnSearch(FXObject*, FXSelector, void*)
                 getApp()->endWaitCursor();
                 if(count == 0)
                 {
-                    FXMessageBox::information(this, MBOX_OK, _("Information"), _("'%s' wasn't found"), searchstring.text());
-                    EnableAllItems();
+                    FXMessageBox::information(this, MBOX_OK, _("Information"), _("'%s' wasn't found"), m_searchstring.text());
+                    enableAllItems();
                 }
             }
             return 1;
@@ -311,24 +311,24 @@ long LogViewer::OnSearch(FXObject*, FXSelector, void*)
     return 0;
 }
 
-long LogViewer::OnSearchNext(FXObject*, FXSelector, void*)
+long LogViewer::onSearchNext(FXObject*, FXSelector, void*)
 {
     FXint beg, end;
-    FXint pos = text->getCursorPos();
+    FXint pos = m_text->getCursorPos();
 
-    if(!searchstring.empty())
+    if(!m_searchstring.empty())
     {
-        if(text->getLength())
+        if(m_text->getLength())
         {
             FXuint flags = SEARCH_FORWARD|SEARCH_WRAP;
-            if(icase) flags |= SEARCH_IGNORECASE;
-            if(text->findText(searchstring, &beg, &end, pos, flags))
+            if(m_icase) flags |= SEARCH_IGNORECASE;
+            if(m_text->findText(m_searchstring, &beg, &end, pos, flags))
             {
-                text->setAnchorPos(beg);
-                text->extendSelection(end,SELECT_CHARS,TRUE);
-                text->setCursorPos(end,TRUE);
-                text->makePositionVisible(beg);
-                text->makePositionVisible(end);
+                m_text->setAnchorPos(beg);
+                m_text->extendSelection(end,SELECT_CHARS,TRUE);
+                m_text->setCursorPos(end,TRUE);
+                m_text->makePositionVisible(beg);
+                m_text->makePositionVisible(end);
             }
             else getApp()->beep();
         }
@@ -336,93 +336,93 @@ long LogViewer::OnSearchNext(FXObject*, FXSelector, void*)
     return 1;
 }
 
-long LogViewer::OnReset(FXObject*, FXSelector, void*)
+long LogViewer::onReset(FXObject*, FXSelector, void*)
 {
-    searchstring.clear();
-    text->setSelection(0,0);
-    searchfield->setFocus();
-    EnableAllItems();
+    m_searchstring.clear();
+    m_text->setSelection(0,0);
+    m_searchfield->setFocus();
+    enableAllItems();
     return 1;
 }
 
-long LogViewer::OnTree(FXObject*, FXSelector, void *ptr)
+long LogViewer::onTree(FXObject*, FXSelector, void *ptr)
 {
     LogItem *item = (LogItem*)ptr;
     if(item->isFile())
     {
-        if(!LoadFile(GetItemPathname(item)))
+        if(!loadFile(getItemPathname(item)))
         {
             LogItem *parent = (LogItem*)item->getParent();
-            treeHistory->setCurrentItem(parent, TRUE);
-            Scan();
-            text->removeText(0, text->getLength());
-            buttonIcase->enable();
-            buttonFile->disable();
-            file = FALSE;
-            if(IsChannelItem(parent))
+            m_treeHistory->setCurrentItem(parent, TRUE);
+            scan();
+            m_text->removeText(0, m_text->getLength());
+            m_buttonIcase->enable();
+            m_buttonFile->disable();
+            m_file = FALSE;
+            if(isChannelItem(parent))
             {
-                buttonChannel->enable();
-                channel = TRUE;
-                all = FALSE;
+                m_buttonChannel->enable();
+                m_channel = TRUE;
+                m_all = FALSE;
             }
             else
             {
-                buttonChannel->disable();
-                channel = FALSE;
-                all = TRUE;
+                m_buttonChannel->disable();
+                m_channel = FALSE;
+                m_all = TRUE;
             }
-            buttonAll->enable();
-            searchfield->enable();
-            buttonSearch->enable();
-            if(!searchstring.empty()) buttonReset->enable();
+            m_buttonAll->enable();
+            m_searchfield->enable();
+            m_buttonSearch->enable();
+            if(!m_searchstring.empty()) m_buttonReset->enable();
             return 1;
         }
-        OnSearchNext(NULL, 0, NULL);
-        buttonIcase->enable();
-        buttonFile->enable();
-        buttonChannel->enable();
-        buttonAll->enable();
-        file = TRUE;
-        channel = FALSE;
-        all = FALSE;
+        onSearchNext(NULL, 0, NULL);
+        m_buttonIcase->enable();
+        m_buttonFile->enable();
+        m_buttonChannel->enable();
+        m_buttonAll->enable();
+        m_file = TRUE;
+        m_channel = FALSE;
+        m_all = FALSE;
     }
     else
     {
-        text->removeText(0, text->getLength());
-        Scan();
-        buttonIcase->enable();
-        buttonFile->disable();
-        file = FALSE;
-        if(IsChannelItem(item))
+        m_text->removeText(0, m_text->getLength());
+        scan();
+        m_buttonIcase->enable();
+        m_buttonFile->disable();
+        m_file = FALSE;
+        if(isChannelItem(item))
         {
-            buttonChannel->enable();
-            channel = TRUE;
-            all = FALSE;
+            m_buttonChannel->enable();
+            m_channel = TRUE;
+            m_all = FALSE;
         }
         else
         {
-            buttonChannel->disable();
-            channel = FALSE;
-            all = TRUE;
+            m_buttonChannel->disable();
+            m_channel = FALSE;
+            m_all = TRUE;
         }
-        buttonAll->enable();
+        m_buttonAll->enable();
     }
-    searchfield->enable();
-    buttonSearch->enable();
-    if(!searchstring.empty()) buttonReset->enable();
+    m_searchfield->enable();
+    m_buttonSearch->enable();
+    if(!m_searchstring.empty()) m_buttonReset->enable();
     return 1;
 }
 
-long LogViewer::OnRightTree(FXObject*, FXSelector, void *ptr)
+long LogViewer::onRightTree(FXObject*, FXSelector, void *ptr)
 {
     FXEvent* event = (FXEvent*)ptr;
     if(event->moved) return 1;
-    LogItem *item = (LogItem*)treeHistory->getItemAt(event->win_x,event->win_y);
+    LogItem *item = (LogItem*)m_treeHistory->getItemAt(event->win_x,event->win_y);
     if(item)
     {
-        if(item == treeHistory->getFirstItem())
+        if(item == m_treeHistory->getFirstItem())
             return 1;
-        itemOnRight = item;
+        m_itemOnRight = item;
         FXMenuPane popup(this);
         if(item->isExpanded())
             new FXMenuCommand(&popup, _("Collapse"), NULL, this, ID_PACK);
@@ -436,47 +436,47 @@ long LogViewer::OnRightTree(FXObject*, FXSelector, void *ptr)
     return 1;
 }
 
-long LogViewer::OnPack(FXObject*, FXSelector, void*)
+long LogViewer::onPack(FXObject*, FXSelector, void*)
 {
-    if(itemOnRight)
+    if(m_itemOnRight)
     {
-        treeHistory->collapseTree(itemOnRight, TRUE);
+        m_treeHistory->collapseTree(m_itemOnRight, TRUE);
     }
     return 1;
 }
 
-long LogViewer::OnUnpack(FXObject*, FXSelector, void*)
+long LogViewer::onUnpack(FXObject*, FXSelector, void*)
 {
-    if(itemOnRight)
+    if(m_itemOnRight)
     {
-        Scan();
-        treeHistory->expandTree(itemOnRight, TRUE);
+        scan();
+        m_treeHistory->expandTree(m_itemOnRight, TRUE);
     }
     return 1;
 }
 
-long LogViewer::OnDelete(FXObject*, FXSelector, void*)
+long LogViewer::onDelete(FXObject*, FXSelector, void*)
 {
-    if(itemOnRight)
+    if(m_itemOnRight)
     {
-        if(itemOnRight == treeHistory->getFirstItem())
+        if(m_itemOnRight == m_treeHistory->getFirstItem())
             return 1;
         FXString message;
-        if(itemOnRight->isDirectory())
+        if(m_itemOnRight->isDirectory())
         {
-            if(itemOnRight->hasItems())
-                message = FXStringFormat(_("Delete %s with all child items?\nThis cann't be UNDONE!"), itemOnRight->getText().text());
+            if(m_itemOnRight->hasItems())
+                message = FXStringFormat(_("Delete %s with all child items?\nThis cann't be UNDONE!"), m_itemOnRight->getText().text());
             else
-                message = FXStringFormat(_("Delete %s?\nThis cann't be UNDONE!"), itemOnRight->getText().text());
+                message = FXStringFormat(_("Delete %s?\nThis cann't be UNDONE!"), m_itemOnRight->getText().text());
         }
-        else if(itemOnRight->isFile())
-            message = FXStringFormat(_("Delete file %s?\nThis cann't be UNDONE!"), itemOnRight->getText().text());
+        else if(m_itemOnRight->isFile())
+            message = FXStringFormat(_("Delete file %s?\nThis cann't be UNDONE!"), m_itemOnRight->getText().text());
         else
             return 1;
         if(FXMessageBox::question(this, MBOX_YES_NO, _("Question"), message.text()) == 1)
         {
-            FXFile::removeFiles(GetItemPathname(itemOnRight), TRUE);
-            Scan();
+            FXFile::removeFiles(getItemPathname(m_itemOnRight), TRUE);
+            scan();
         }
         else
             return 1;
@@ -484,7 +484,7 @@ long LogViewer::OnDelete(FXObject*, FXSelector, void*)
     return 1;
 }
 
-long LogViewer::OnKeyPress(FXObject *sender, FXSelector sel, void *ptr)
+long LogViewer::onKeyPress(FXObject *sender, FXSelector sel, void *ptr)
 {
     FXEvent *event = (FXEvent*)ptr;
     if(event->code == KEY_Escape)
@@ -500,31 +500,31 @@ long LogViewer::OnKeyPress(FXObject *sender, FXSelector sel, void *ptr)
     return 0;
 }
 
-long LogViewer::OnCmdSearchOptions(FXObject*, FXSelector sel, void*)
+long LogViewer::onCmdSearchOptions(FXObject*, FXSelector sel, void*)
 {
     switch(FXSELID(sel))
     {
     case ID_ALL:
-        channel = FALSE;
-        file = FALSE;
-        all = TRUE;
+        m_channel = FALSE;
+        m_file = FALSE;
+        m_all = TRUE;
         break;
     case ID_CHANNEL:
-        all = FALSE;
-        file = FALSE;
-        channel = TRUE;
+        m_all = FALSE;
+        m_file = FALSE;
+        m_channel = TRUE;
         break;
     case ID_FILE:
-        all = FALSE;
-        channel = FALSE;
-        file = TRUE;
+        m_all = FALSE;
+        m_channel = FALSE;
+        m_file = TRUE;
         break;
     }
     return 1;
 }
 
 // Load file thanks for xfe again
-FXbool LogViewer::LoadFile(const FXString& file)
+FXbool LogViewer::loadFile(const FXString& file)
 {
     FXFile textfile(file,FXFile::Reading);
     FXint size, n, c, i, j;
@@ -570,7 +570,7 @@ FXbool LogViewer::LoadFile(const FXString& file)
     n=i;
 
     // Set text
-    text->setText(txt,n);
+    m_text->setText(txt,n);
     FXFREE(&txt);
 
     // Kill wait cursor
@@ -579,24 +579,24 @@ FXbool LogViewer::LoadFile(const FXString& file)
     return TRUE;
 }
 
-void LogViewer::EnableAllItems()
+void LogViewer::enableAllItems()
 {
-    LogItem *item = (LogItem*)treeHistory->getFirstItem();
+    LogItem *item = (LogItem*)m_treeHistory->getFirstItem();
     item = (LogItem*)item->first;
     while(item)
     {
         if(item->isDirectory())
         {
-            if(IsChannelItem(item))
+            if(isChannelItem(item))
             {
                 LogItem *fitem = (LogItem*)item->first;
                 while(fitem)
                 {
-                    treeHistory->enableItem(fitem);
+                    m_treeHistory->enableItem(fitem);
                     fitem = (LogItem*)fitem->next;
                 }
             }
-            treeHistory->enableItem(item);
+            m_treeHistory->enableItem(item);
             if(item->first)
             {
                 item = (LogItem*)item->first;
@@ -611,26 +611,26 @@ void LogViewer::EnableAllItems()
     }
 }
 
-FXString LogViewer::GetItemPathname(const FXTreeItem* item)
+FXString LogViewer::getItemPathname(const FXTreeItem* item)
 {
     FXString pathname;
     if (item)
     {
-        if(item == treeHistory->getFirstItem())
-            return logPath;
+        if(item == m_treeHistory->getFirstItem())
+            return m_logPath;
         while (1)
         {
-            if(item!=treeHistory->getFirstItem()) pathname.prepend(item->getText());
+            if(item!=m_treeHistory->getFirstItem()) pathname.prepend(item->getText());
             item = item->getParent();
             if(!item) break;
             if(item->getParent()) pathname.prepend(PATHSEP);
         }
-        return pathname.prepend(logPath+PATHSEPSTRING);
+        return pathname.prepend(m_logPath+PATHSEPSTRING);
     }
     return FXString::null;
 }
 
-FXbool LogViewer::IsChannelItem(const LogItem* item)
+FXbool LogViewer::isChannelItem(const LogItem* item)
 {
     if(item->hasItems())
     {
@@ -644,21 +644,21 @@ FXbool LogViewer::IsChannelItem(const LogItem* item)
     return FALSE;
 }
 
-void LogViewer::LoadTree()
+void LogViewer::loadTree()
 {
     LogItem *ritem = new LogItem(_("Logs"), NULL, NULL, NULL);
     ritem->setDraggable(FALSE);
     ritem->state = LogItem::FOLDER|LogItem::HASITEMS;
-    treeHistory->appendItem(NULL, ritem, TRUE);
+    m_treeHistory->appendItem(NULL, ritem, TRUE);
     getApp()->beginWaitCursor();
-    ListChildItems(ritem);
-    treeHistory->sortChildItems(ritem);
-    treeHistory->expandTree(ritem, TRUE);
+    listChildItems(ritem);
+    m_treeHistory->sortChildItems(ritem);
+    m_treeHistory->expandTree(ritem, TRUE);
     getApp()->endWaitCursor();
 }
 
 // modified FXDirList::listChildItems(FXDirItem *par)
-void LogViewer::ListChildItems(LogItem *par)
+void LogViewer::listChildItems(LogItem *par)
 {
     LogItem *oldlist, *newlist, **po, **pp, **pn, *item, *link;
     FXIcon *openicon;
@@ -672,7 +672,7 @@ void LogViewer::ListChildItems(LogItem *par)
     FXDir dir;
 
     // Path to parent node
-    directory = GetItemPathname(par);
+    directory = getItemPathname(par);
 
     // Build new insert-order list
     oldlist = par->list;
@@ -726,7 +726,7 @@ void LogViewer::ListChildItems(LogItem *par)
 #endif
 
             // If it is not a directory, and not showing files and matching pattern skip it
-            if (!info.isDirectory() && !IsRightFile(pathname,name))continue;
+            if (!info.isDirectory() && !isRightFile(pathname,name))continue;
 
             // Find it, and take it out from the old list if found
             for(pp = po; (item = *pp) != NULL; pp = &item->link)
@@ -742,8 +742,8 @@ void LogViewer::ListChildItems(LogItem *par)
 
             // Not found; prepend before list
             //item = (LogItem*) listHistory->appendItem(par, name, ofoldericon, foldericon, NULL, TRUE);
-            item = new LogItem(name, ofoldericon, foldericon, NULL);
-            treeHistory->appendItem(par, item, TRUE);
+            item = new LogItem(name, ICO_OPENFOLDER, ICO_CLOSEFOLDER, NULL);
+            m_treeHistory->appendItem(par, item, TRUE);
 
             // Next gets hung after this one
 fnd:
@@ -822,13 +822,13 @@ fnd:
             // Determine icons and type
             if (item->isDirectory())
             {
-                openicon = ofoldericon;
-                closedicon = foldericon;
+                openicon = ICO_OPENFOLDER;
+                closedicon = ICO_CLOSEFOLDER;
             }
             else
             {
-                openicon = fileicon;
-                closedicon = fileicon;
+                openicon = ICO_FILE;
+                closedicon = ICO_FILE;
             }
 
             // Update item information
@@ -850,7 +850,7 @@ fnd:
     for(item = oldlist; item; item = link)
     {
         link = item->link;
-        treeHistory->removeItem(item, TRUE);
+        m_treeHistory->removeItem(item, TRUE);
     }
 
     // Now we know for sure whether we really have subitems or not
@@ -863,10 +863,10 @@ fnd:
     par->list = newlist;
 
     // Need to layout
-    treeHistory->recalc();
+    m_treeHistory->recalc();
 }
 
-FXbool LogViewer::IsRightFile(const FXString& path, const FXString& name)
+FXbool LogViewer::isRightFile(const FXString& path, const FXString& name)
 {
     if(FXRex("^\\d\\d\\d\\d-\\d\\d-\\d\\d+$").match(name))
     {
@@ -896,21 +896,21 @@ FXbool LogViewer::IsRightFile(const FXString& path, const FXString& name)
 }
 
 //inspired by FXDirList
-void LogViewer::Scan()
+void LogViewer::scan()
 {
     FXString pathname;
     LogItem *item;
     FXStat info;
-    if(!treeHistory->getFirstItem())
-        LoadTree();
-    item = (LogItem*)treeHistory->getFirstItem();
+    if(!m_treeHistory->getFirstItem())
+        loadTree();
+    item = (LogItem*)m_treeHistory->getFirstItem();
     getApp()->beginWaitCursor();
     while(item)
     {
         if(item->isDirectory() /*&& item->isExpanded()*/)
         {
           // Get the full path of the item
-          pathname=GetItemPathname(item);
+          pathname=getItemPathname(item);
           // Stat this directory; should not fail as parent has been scanned already
           FXStat::statFile(pathname,info);
           // Get the mod date of the item
@@ -919,8 +919,8 @@ void LogViewer::Scan()
           if(item->date!=newdate || (!item->getNumChildren() && item->isExpanded()))
           {
               // And do the refresh
-              ListChildItems(item);
-              treeHistory->sortChildItems(item);
+              listChildItems(item);
+              m_treeHistory->sortChildItems(item);
               // Remember when we did this
               item->date=newdate;
           }

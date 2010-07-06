@@ -42,26 +42,26 @@ public:
 
     virtual void create();
 
-    long OnAdd(FXObject*,FXSelector,void*);
-    long OnModify(FXObject*,FXSelector,void*);
-    long OnDelete(FXObject*,FXSelector,void*);
-    long OnCancel(FXObject*,FXSelector,void*);
-    long OnSaveClose(FXObject*,FXSelector,void*);
-    long OnTable(FXObject*,FXSelector,void*);
-    long OnKeyPress(FXObject*,FXSelector,void*);
+    long onAdd(FXObject*,FXSelector,void*);
+    long onModify(FXObject*,FXSelector,void*);
+    long onDelete(FXObject*,FXSelector,void*);
+    long onCancel(FXObject*,FXSelector,void*);
+    long onSaveClose(FXObject*,FXSelector,void*);
+    long onTable(FXObject*,FXSelector,void*);
+    long onKeyPress(FXObject*,FXSelector,void*);
 
 private:
     AliasDialog() {}
     AliasDialog(const AliasDialog& orig);
 
-    FXVerticalFrame *contents, *tableframe;
-    FXHorizontalFrame *buttonframe;
-    FXIconList *table;
-    FXButton *buttonAdd, *buttonModify, *buttonDelete, *buttonCancel, *buttonSaveClose;
-    dxStringMap aliases;
+    FXVerticalFrame *m_contents, *m_tableframe;
+    FXHorizontalFrame *m_buttonframe;
+    FXIconList *m_table;
+    FXButton *m_buttonAdd, *m_buttonModify, *m_buttonDelete, *m_buttonCancel, *m_buttonSaveClose;
+    dxStringMap m_aliases;
 
-    void UpdateTable();
-    FXbool CommandExist(const FXString&);
+    void updateTable();
+    FXbool commandExist(const FXString&);
 };
 
 #endif	/* ALIASDIALOG_H */

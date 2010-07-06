@@ -25,63 +25,63 @@
 #include "dxirc.h"
 
 FXDEFMAP(ScriptDialog) ScriptDialogMap[] = {
-    FXMAPFUNC(SEL_COMMAND,          ScriptDialog::ID_LOAD,      ScriptDialog::OnLoad),
-    FXMAPFUNC(SEL_COMMAND,          ScriptDialog::ID_VIEW,      ScriptDialog::OnView),
-    FXMAPFUNC(SEL_COMMAND,          ScriptDialog::ID_VIEWNEW,   ScriptDialog::OnViewNew),
-    FXMAPFUNC(SEL_COMMAND,          ScriptDialog::ID_UNLOAD,    ScriptDialog::OnUnload),
-    FXMAPFUNC(SEL_COMMAND,          ScriptDialog::ID_CLOSE,     ScriptDialog::OnClose),
-    FXMAPFUNC(SEL_COMMAND,          ScriptDialog::ID_LIST,      ScriptDialog::OnList),
-    FXMAPFUNC(SEL_KEYPRESS,         0,                          ScriptDialog::OnKeyPress)
+    FXMAPFUNC(SEL_COMMAND,          ScriptDialog::ID_LOAD,      ScriptDialog::onLoad),
+    FXMAPFUNC(SEL_COMMAND,          ScriptDialog::ID_VIEW,      ScriptDialog::onView),
+    FXMAPFUNC(SEL_COMMAND,          ScriptDialog::ID_VIEWNEW,   ScriptDialog::onViewNew),
+    FXMAPFUNC(SEL_COMMAND,          ScriptDialog::ID_UNLOAD,    ScriptDialog::onUnload),
+    FXMAPFUNC(SEL_COMMAND,          ScriptDialog::ID_CLOSE,     ScriptDialog::onClose),
+    FXMAPFUNC(SEL_COMMAND,          ScriptDialog::ID_LIST,      ScriptDialog::onList),
+    FXMAPFUNC(SEL_KEYPRESS,         0,                          ScriptDialog::onKeyPress)
 };
 
 FXIMPLEMENT(ScriptDialog, FXDialogBox, ScriptDialogMap, ARRAYNUMBER(ScriptDialogMap))
 
 ScriptDialog::ScriptDialog(dxirc *owner)
-    : FXDialogBox(owner, _("Scripts list"), DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0), irc(owner)
+    : FXDialogBox(owner, _("Scripts list"), DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0), m_irc(owner)
 {
-    contents = new FXVerticalFrame(this, LAYOUT_SIDE_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 10,10,10,10, 0,0);
+    m_contents = new FXVerticalFrame(this, LAYOUT_SIDE_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 10,10,10,10, 0,0);
 
-    scriptframe = new FXHorizontalFrame(contents, LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    listframe = new FXVerticalFrame(scriptframe, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    names = new FXList(listframe, this, ID_LIST, LIST_BROWSESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    names->setScrollStyle(HSCROLLING_OFF);    
+    m_scriptframe = new FXHorizontalFrame(m_contents, LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    m_listframe = new FXVerticalFrame(m_scriptframe, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    m_names = new FXList(m_listframe, this, ID_LIST, LIST_BROWSESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    m_names->setScrollStyle(HSCROLLING_OFF);
 
-    group = new FXGroupBox(scriptframe, _("Details"), FRAME_GROOVE|LAYOUT_RIGHT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 4,4,4,4, 4,4);
-    matrix = new FXMatrix(group,2,MATRIX_BY_COLUMNS|LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    m_group = new FXGroupBox(m_scriptframe, _("Details"), FRAME_GROOVE|LAYOUT_RIGHT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 4,4,4,4, 4,4);
+    m_matrix = new FXMatrix(m_group,2,MATRIX_BY_COLUMNS|LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
 
-    new FXLabel(matrix, _("Name:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    name = new FXTextField(matrix, 45, NULL, 0, TEXTFIELD_READONLY|FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    name->setBackColor(getApp()->getBaseColor());
+    new FXLabel(m_matrix, _("Name:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    m_name = new FXTextField(m_matrix, 45, NULL, 0, TEXTFIELD_READONLY|FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    m_name->setBackColor(getApp()->getBaseColor());
 
-    new FXLabel(matrix, _("Version:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    version = new FXTextField(matrix, 45, NULL, 0, TEXTFIELD_READONLY|TEXTFIELD_INTEGER|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    version->setBackColor(getApp()->getBaseColor());
+    new FXLabel(m_matrix, _("Version:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    m_version = new FXTextField(m_matrix, 45, NULL, 0, TEXTFIELD_READONLY|TEXTFIELD_INTEGER|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    m_version->setBackColor(getApp()->getBaseColor());
 
-    new FXLabel(matrix, _("Description:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    FXHorizontalFrame *descriptionbox=new FXHorizontalFrame(matrix, LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW|FRAME_SUNKEN|FRAME_THICK,0,0,0,0, 0,0,0,0);
-    description = new FXText(descriptionbox, NULL, 0, TEXT_READONLY|TEXT_WORDWRAP|LAYOUT_FILL_X|LAYOUT_FILL_X);
-    description->setVisibleRows(3);
-    description->setVisibleColumns(45);
-    description->setBackColor(getApp()->getBaseColor());
+    new FXLabel(m_matrix, _("Description:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    FXHorizontalFrame *descriptionbox=new FXHorizontalFrame(m_matrix, LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW|FRAME_SUNKEN|FRAME_THICK,0,0,0,0, 0,0,0,0);
+    m_description = new FXText(descriptionbox, NULL, 0, TEXT_READONLY|TEXT_WORDWRAP|LAYOUT_FILL_X|LAYOUT_FILL_X);
+    m_description->setVisibleRows(3);
+    m_description->setVisibleColumns(45);
+    m_description->setBackColor(getApp()->getBaseColor());
 
-    new FXLabel(matrix, _("Path:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    FXHorizontalFrame *pathbox=new FXHorizontalFrame(matrix, LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW|FRAME_SUNKEN|FRAME_THICK,0,0,0,0, 0,0,0,0);
-    path = new FXText(pathbox, NULL, 0, TEXT_READONLY|TEXT_WORDWRAP|LAYOUT_FILL_X|LAYOUT_FILL_X);
-    path->setVisibleRows(2);
-    path->setVisibleColumns(45);
-    path->setDelimiters("/");
-    path->setBackColor(getApp()->getBaseColor());
+    new FXLabel(m_matrix, _("Path:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    FXHorizontalFrame *pathbox=new FXHorizontalFrame(m_matrix, LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW|FRAME_SUNKEN|FRAME_THICK,0,0,0,0, 0,0,0,0);
+    m_path = new FXText(pathbox, NULL, 0, TEXT_READONLY|TEXT_WORDWRAP|LAYOUT_FILL_X|LAYOUT_FILL_X);
+    m_path->setVisibleRows(2);
+    m_path->setVisibleColumns(45);
+    m_path->setDelimiters("/");
+    m_path->setBackColor(getApp()->getBaseColor());
 
-    buttonframe = new FXHorizontalFrame(contents, LAYOUT_FILL_X|LAYOUT_FILL_Y);    
+    m_buttonframe = new FXHorizontalFrame(m_contents, LAYOUT_FILL_X|LAYOUT_FILL_Y);
 
-    buttonClose = new FXButton(buttonframe, _("C&lose"), NULL, this, ID_CLOSE, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
-    buttonUnload = new FXButton(buttonframe, _("&Unload"), NULL, this, ID_UNLOAD, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
-    buttonViewNew = new FXButton(buttonframe, _("View &script"), NULL, this, ID_VIEWNEW, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
-    buttonView = new FXButton(buttonframe, _("&View current"), NULL, this, ID_VIEW, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
-    buttonLoad = new FXButton(buttonframe, _("L&oad"), NULL, this, ID_LOAD, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    m_buttonClose = new FXButton(m_buttonframe, _("C&lose"), NULL, this, ID_CLOSE, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    m_buttonUnload = new FXButton(m_buttonframe, _("&Unload"), NULL, this, ID_UNLOAD, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    m_buttonViewNew = new FXButton(m_buttonframe, _("View &script"), NULL, this, ID_VIEWNEW, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    m_buttonView = new FXButton(m_buttonframe, _("&View current"), NULL, this, ID_VIEW, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    m_buttonLoad = new FXButton(m_buttonframe, _("L&oad"), NULL, this, ID_LOAD, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
 
-    UpdateList();
-    UpdateDetails();
+    updateList();
+    updateDetails();
 }
 
 ScriptDialog::~ScriptDialog()
@@ -89,57 +89,57 @@ ScriptDialog::~ScriptDialog()
 
 }
 
-long ScriptDialog::OnClose(FXObject*,FXSelector,void*)
+long ScriptDialog::onClose(FXObject*,FXSelector,void*)
 {
     getApp()->stopModal(this,TRUE);
     hide();    
     return 1;
 }
 
-long ScriptDialog::OnLoad(FXObject*,FXSelector,void*)
+long ScriptDialog::onLoad(FXObject*,FXSelector,void*)
 {
     FXFileDialog file(this, _("Load lua script"));
     file.setPatternList(_("Lua scripts (*.lua)"));
     if(file.execute(PLACEMENT_CURSOR))
     {
-        irc->LoadLuaScript(file.getFilename());
+        m_irc->loadLuaScript(file.getFilename());
     }
-    UpdateList();
-    UpdateDetails();
+    updateList();
+    updateDetails();
 
     return 1;
 }
 
-long ScriptDialog::OnView(FXObject*,FXSelector,void*)
+long ScriptDialog::onView(FXObject*,FXSelector,void*)
 {
-    FXint index = names->getCurrentItem();
+    FXint index = m_names->getCurrentItem();
     if(index == -1) return 0;
-    ViewFile(irc->scripts[index].path);
+    viewFile(m_irc->m_scripts[index].path);
     return 1;
 }
 
-long ScriptDialog::OnViewNew(FXObject*, FXSelector, void*)
+long ScriptDialog::onViewNew(FXObject*, FXSelector, void*)
 {
     FXFileDialog file(this, _("Load lua script"));
     file.setPatternList(_("Lua scripts (*.lua)"));
     if(file.execute(PLACEMENT_CURSOR))
     {
-        ViewFile(file.getFilename());
+        viewFile(file.getFilename());
     }
     return 1;
 }
 
-long ScriptDialog::OnUnload(FXObject*,FXSelector,void*)
+long ScriptDialog::onUnload(FXObject*,FXSelector,void*)
 {
-    FXint index = names->getCurrentItem();
+    FXint index = m_names->getCurrentItem();
     if(index == -1) return 0;
-    irc->UnloadLuaScript(irc->scripts[index].name);
-    UpdateList();
-    UpdateDetails();
+    m_irc->unloadLuaScript(m_irc->m_scripts[index].name);
+    updateList();
+    updateDetails();
     return 1;
 }
 
-long ScriptDialog::OnKeyPress(FXObject *sender,FXSelector sel,void *ptr)
+long ScriptDialog::onKeyPress(FXObject *sender,FXSelector sel,void *ptr)
 {
     if(FXTopWindow::onKeyPress(sender,sel,ptr)) return 1;
     if(((FXEvent*)ptr)->code == KEY_Escape)
@@ -151,59 +151,59 @@ long ScriptDialog::OnKeyPress(FXObject *sender,FXSelector sel,void *ptr)
     return 0;
 }
 
-long ScriptDialog::OnList(FXObject*,FXSelector,void*)
+long ScriptDialog::onList(FXObject*,FXSelector,void*)
 {
-    UpdateDetails();
+    updateDetails();
 
     return 1;
 }
 
-void ScriptDialog::UpdateList()
+void ScriptDialog::updateList()
 {
-    names->clearItems();
-    for(FXint i=0; i<irc->scripts.no(); i++)
+    m_names->clearItems();
+    for(FXint i=0; i<m_irc->m_scripts.no(); i++)
     {
-        names->appendItem(irc->scripts[i].name);
+        m_names->appendItem(m_irc->m_scripts[i].name);
     }
-    if(irc->scripts.no())
+    if(m_irc->m_scripts.no())
     {
-        buttonView->enable();
-        buttonUnload->enable();
+        m_buttonView->enable();
+        m_buttonUnload->enable();
     }
     else
     {
-        buttonView->disable();
-        buttonUnload->disable();
+        m_buttonView->disable();
+        m_buttonUnload->disable();
     }
 }
 
-void ScriptDialog::UpdateDetails()
+void ScriptDialog::updateDetails()
 {
-    FXint index = names->getCurrentItem();
+    FXint index = m_names->getCurrentItem();
     if(index == -1)
     {
-        name->setText("");
-        version->setText("");
-        description->setText("");
-        path->setText("");
+        m_name->setText("");
+        m_version->setText("");
+        m_description->setText("");
+        m_path->setText("");
         return;
     }
-    name->setText(irc->scripts[index].name);
-        if(irc->scripts[index].name.length()>18) name->setTipText(irc->scripts[index].name);
-        else name->setTipText("");
-    version->setText(irc->scripts[index].version);
-        if(irc->scripts[index].version.length()>18) version->setTipText(irc->scripts[index].version);
-        else version->setTipText("");
-    description->setText(irc->scripts[index].description);
-        if(description->getNumRows()>3) description->setTipText(irc->scripts[index].description);
-        else description->setTipText("");
-    path->setText(irc->scripts[index].path);
-        if(description->getNumRows()>2) path->setTipText(irc->scripts[index].path);
-        else path->setTipText("");
+    m_name->setText(m_irc->m_scripts[index].name);
+        if(m_irc->m_scripts[index].name.length()>18) m_name->setTipText(m_irc->m_scripts[index].name);
+        else m_name->setTipText("");
+    m_version->setText(m_irc->m_scripts[index].version);
+        if(m_irc->m_scripts[index].version.length()>18) m_version->setTipText(m_irc->m_scripts[index].version);
+        else m_version->setTipText("");
+    m_description->setText(m_irc->m_scripts[index].description);
+        if(m_description->getNumRows()>3) m_description->setTipText(m_irc->m_scripts[index].description);
+        else m_description->setTipText("");
+    m_path->setText(m_irc->m_scripts[index].path);
+        if(m_description->getNumRows()>2) m_path->setTipText(m_irc->m_scripts[index].path);
+        else m_path->setTipText("");
     recalc();
 }
 
-void ScriptDialog::ViewFile(const FXString &file)
+void ScriptDialog::viewFile(const FXString &file)
 {
     FXDialogBox dialog(this, file, MBOX_OK|DECOR_TITLE|DECOR_BORDER|DECOR_RESIZE);
     FXVerticalFrame *contents = new FXVerticalFrame(&dialog, LAYOUT_SIDE_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 10,10,10,10, 0,0);

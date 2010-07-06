@@ -110,7 +110,7 @@ namespace utils
         }
     }
     
-    FXTextCodec* GetCodec()
+    FXTextCodec* getCodec()
     {
         if(lcodec != NULL)
             return lcodec;
@@ -681,22 +681,22 @@ namespace utils
         return lcodec;
     }
 
-    FXString LocaleToUtf8(const FXchar *buffer)
+    FXString localeToUtf8(const FXchar *buffer)
     {
-        return GetCodec()->mb2utf(buffer);
+        return getCodec()->mb2utf(buffer);
     }
 
-    FXString LocaleToUtf8(const FXString& text)
+    FXString localeToUtf8(const FXString& text)
     {
-        return GetCodec()->mb2utf(text);
+        return getCodec()->mb2utf(text);
     }
 
-    void SetIniFile(const FXString &file)
+    void setIniFile(const FXString &file)
     {
         iniFile = file;
     }
 
-    FXString GetIniFile()
+    FXString getIniFile()
     {
         FXString pathname;
         if(!iniFile.empty() && !FXStat::isExecutable(iniFile))
@@ -722,7 +722,7 @@ namespace utils
         else
         {
 #ifdef WIN32
-            pathname = LocaleToUtf8(FXSystem::getEnvironment("AppData")+PATHSEPSTRING+"dxirc");
+            pathname = localeToUtf8(FXSystem::getEnvironment("AppData")+PATHSEPSTRING+"dxirc");
             if(!FXStat::exists(pathname))
             {
                 if(!FXDir::create(pathname))
@@ -762,7 +762,7 @@ namespace utils
         return FXString::null;
     }
 
-    FXString GetParam(FXString toParse, FXint n, FXbool toEnd)
+    FXString getParam(FXString toParse, FXint n, FXbool toEnd)
     {
         if (toEnd)
         {
@@ -774,7 +774,7 @@ namespace utils
         }
     }
 
-    FXString GetParam(FXString toParse, FXint n, FXbool toEnd, const FXchar &separator)
+    FXString getParam(FXString toParse, FXint n, FXbool toEnd, const FXchar &separator)
     {
         if (toEnd)
         {
@@ -786,7 +786,7 @@ namespace utils
         }
     }
 
-    FXString RemoveSpaces(const FXString &text)
+    FXString removeSpaces(const FXString &text)
     {
         FXint num = text.contains(' ');
         FXString removed;
@@ -802,7 +802,7 @@ namespace utils
             return text;
     }
 
-    FXString RemoveNonalphanumeric(const FXString &text)
+    FXString removeNonalphanumeric(const FXString &text)
     {
         if(FXRex("^[a-zA-Z0-9]+$").match(text))
             return text;
@@ -822,7 +822,7 @@ namespace utils
         }
     }
 
-    FXString CreateModes(FXchar sign, FXchar mode, FXString nicks)
+    FXString createModes(FXchar sign, FXchar mode, FXString nicks)
     {
         FXString modes;
         modes += sign;
@@ -838,10 +838,10 @@ namespace utils
         return modes+" "+tomode;
     }
 
-    void SetAlias()
+    void setAlias()
     {
         FXSettings set;
-        set.parseFile(GetIniFile(), TRUE);
+        set.parseFile(getIniFile(), TRUE);
         FXint no = set.readIntEntry("ALIASES", "number", 0);
         for(FXint i=0; i<no; i++)
         {
@@ -855,35 +855,35 @@ namespace utils
 
     }
 
-    void SetAliases(dxStringMap a)
+    void setAliases(dxStringMap a)
     {
         aliases = a;
         FillCommands();
     }
 
-    FXString GetAlias(FXString key)
+    FXString getAlias(FXString key)
     {
         if(aliases.count(key.lower())>0)
             return aliases.find(key)->second;
         return FXString::null;
     }
 
-    dxStringMap GetAliases()
+    dxStringMap getAliases()
     {
         return aliases;
     }
 
-    FXint CommandsNo()
+    FXint commandsNo()
     {
         return commands.no();
     }
 
-    FXString CommandsAt(FXint i)
+    FXString commandsAt(FXint i)
     {
         return commands.at(i);
     }
 
-    FXbool IsCommand(const FXString &command)
+    FXbool isCommand(const FXString &command)
     {
         if(!commands.no()) return FALSE;
         for(FXint i=0; i<commands.no(); i++)
@@ -902,7 +902,7 @@ namespace utils
     }
 
     //This's from Xfe, thanks
-    FXbool IsUtf8(const FXchar* string, FXuint length)
+    FXbool isUtf8(const FXchar* string, FXuint length)
     {
         FXchar s[4];
         const FXchar BOM[] = { 0xEF, 0xBB, 0xBF, '\0' };
@@ -945,14 +945,14 @@ namespace utils
         }
     }
 
-    void AddScriptCommand(LuaScriptCommand command)
+    void addScriptCommand(LuaScriptCommand command)
     {
         scriptCommands.append(command);
         FillCommands();
     }
 
     //Remove one command for lua script
-    FXbool RemoveScriptCommand(const FXString &command)
+    FXbool removeScriptCommand(const FXString &command)
     {
         for(FXint i=scriptCommands.no()-1; i>-1; i--)
         {
@@ -967,7 +967,7 @@ namespace utils
     }
 
     //Remove all commands for lua script
-    FXbool RemoveScriptCommands(const FXString& script)
+    FXbool removeScriptCommands(const FXString& script)
     {
         FXbool result = FALSE;
         for(FXint i=scriptCommands.no()-1; i>-1; i--)
@@ -982,7 +982,7 @@ namespace utils
         return result;
     }
 
-    FXbool IsScriptCommand(const FXString &command)
+    FXbool isScriptCommand(const FXString &command)
     {
         for(FXint i=0; i<scriptCommands.no(); i++)
         {
@@ -991,7 +991,7 @@ namespace utils
         return FALSE;
     }
 
-    FXString AvailableCommands()
+    FXString availableCommands()
     {
         FXString commandstr = _("Available commnads: ");
         for(FXint i=0; i < commands.no(); i++)
@@ -1001,7 +1001,7 @@ namespace utils
         return commandstr;
     }
 
-    FXString AvailableScriptCommands()
+    FXString availableScriptCommands()
     {
         FXString commandstr = _("Available commnads: ");
         for(FXint i=0; i < scriptCommands.no(); i++)
@@ -1011,7 +1011,7 @@ namespace utils
         return commandstr;
     }
 
-    FXString GetHelpText(const FXString &command)
+    FXString getHelpText(const FXString &command)
     {
         for(FXint i=0; i<scriptCommands.no(); i++)
         {
@@ -1020,7 +1020,7 @@ namespace utils
         return FXStringFormat(_("Command %s doesn't exists"), command.text());
     }
 
-    FXString GetFuncname(const FXString &command)
+    FXString getFuncname(const FXString &command)
     {
         for(FXint i=0; i<scriptCommands.no(); i++)
         {
@@ -1029,7 +1029,7 @@ namespace utils
         return FXStringFormat(_("Command %s doesn't exists"), command.text());
     }
 
-    FXString GetScriptName(const FXString &command)
+    FXString getScriptName(const FXString &command)
     {
         for(FXint i=0; i<scriptCommands.no(); i++)
         {
@@ -1038,7 +1038,7 @@ namespace utils
         return FXStringFormat(_("Command %s doesn't exists"), command.text());
     }
 
-    FXString CheckThemePath(const FXString &path)
+    FXString checkThemePath(const FXString &path)
     {
         if(path == "internal") return path;
         else
@@ -1049,7 +1049,7 @@ namespace utils
         }
     }
 
-    FXString CheckThemesList(const FXString &list)
+    FXString checkThemesList(const FXString &list)
     {
         const char *themeDefaultPath = DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "default;";
         FXString themes;
@@ -1062,7 +1062,7 @@ namespace utils
         return FXString("internal;")+FXString(themeDefaultPath);
     }
 
-    FXString Encrypt(const FXString &text)
+    FXString encrypt(const FXString &text)
     {
         FXString result = "";
         for(FXint i=0; i<text.count(); i++)
@@ -1074,7 +1074,7 @@ namespace utils
         return result;
     }
 
-    FXString Decrypt(const FXString &text)
+    FXString decrypt(const FXString &text)
     {
         FXString result = "";
         for(FXint i=0; i<text.count(); i++)
@@ -1084,22 +1084,30 @@ namespace utils
         return result;
     }
 
-    FXString GetStringIniEntry(const FXchar *section,const FXchar *key,const FXchar *def)
+    FXString getStringIniEntry(const FXchar *section,const FXchar *key,const FXchar *def)
     {
         FXSettings set;
         set.parseFile(iniFile, TRUE);
         return set.readStringEntry(section, key, def);
     }
 
-    FXint GetIntIniEntry(const FXchar* section, const FXchar* key, FXint def)
+    FXint getIntIniEntry(const FXchar* section, const FXchar* key, FXint def)
     {
         FXSettings set;
         set.parseFile(iniFile, TRUE);
         return set.readIntEntry(section, key, def);
     }
 
+    //return bool entry in inifile
+    FXbool getBoolIniEntry(const FXchar* section, const FXchar* key, FXbool def)
+    {
+        FXSettings set;
+        set.parseFile(iniFile, TRUE);
+        return set.readBoolEntry(section, key, def);
+    }
+
     //Return file size in human readable form
-    FXString GetFileSize(FXlong size)
+    FXString getFileSize(FXlong size)
     {
         FXfloat fsize = 0.0;
         if(size > 1000000000)
@@ -1130,7 +1138,7 @@ namespace utils
     }
 
     //Return file size in human readable form
-    FXString GetFileSize(const FXString &ssize)
+    FXString getFileSize(const FXString &ssize)
     {
         FXlong size = FXLongVal(ssize);
         FXfloat fsize = 0.0;
@@ -1164,7 +1172,7 @@ namespace utils
     /*Return download/send speed in human readable form
      * speed = difference between two position during 1 second
      */
-    FXString GetSpeed(FXlong speed)
+    FXString getSpeed(FXlong speed)
     {
         FXfloat fspeed = 0.0;
         if(speed > 100000)
@@ -1183,7 +1191,7 @@ namespace utils
     }
 
     //Return remaining time of download/send
-    FXString GetRemaining(FXlong size, FXlong speed)
+    FXString getRemaining(FXlong size, FXlong speed)
     {
         FXfloat fsize = 0.0;
         FXfloat fspeed = 0.0;
@@ -1205,7 +1213,7 @@ namespace utils
     }
 
     //play event sound
-    void PlayFile(const FXString &file)
+    void playFile(const FXString &file)
     {
         if(!FXStat::exists(file))
             return;
@@ -1224,6 +1232,14 @@ namespace utils
         if(exec.contains("aplay")) exec += " -q";
         exec += " "+FXPath::enquote(file)+" &";
         system(exec.text());
+#endif
+    }
+
+    //write debugline
+    void debugLine(const FXString &line)
+    {
+#ifdef DEBUG
+        fxmessage("[%s] %s\n", FXSystem::time("%H:%M:%S", FXSystem::now()).text(), line.text());
 #endif
     }
 }

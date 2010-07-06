@@ -46,29 +46,29 @@ class DccDialog: public FXTopWindow
 
         virtual void create();
         
-        long OnClose(FXObject*,FXSelector,void*);
-        long OnKeyPress(FXObject*,FXSelector,void*);
-        long OnTimeout(FXObject*,FXSelector,void*);
-        long OnClear(FXObject*,FXSelector,void*);
-        long OnCanceled(FXObject*,FXSelector,void*);
-        long OnRightClick(FXObject*,FXSelector,void*);
-        long OnPopupCancel(FXObject*,FXSelector,void*);
+        long onClose(FXObject*,FXSelector,void*);
+        long onKeyPress(FXObject*,FXSelector,void*);
+        long onTimeout(FXObject*,FXSelector,void*);
+        long onClear(FXObject*,FXSelector,void*);
+        long onCanceled(FXObject*,FXSelector,void*);
+        long onRightClick(FXObject*,FXSelector,void*);
+        long onPopupCancel(FXObject*,FXSelector,void*);
 
     private:
         DccDialog() {}
         DccDialog(const DccDialog&);
 
-        dxirc *irc;
-        FXVerticalFrame *contents, *tableframe;
-        FXMatrix *matrix;
-        FXHorizontalFrame *buttonframe;
-        FXButton *buttonClose, *buttonClear, *buttonCanceled;
-        FXTable *table;
-        FXLabel *path, *ip, *port;
-        FXGroupBox *group;
-        FXint indexOnRight;
+        dxirc *m_irc;
+        FXVerticalFrame *m_contents, *m_tableframe;
+        FXMatrix *m_matrix;
+        FXHorizontalFrame *m_buttonframe;
+        FXButton *m_buttonClose, *m_buttonClear, *m_buttonCanceled;
+        FXTable *m_table;
+        FXLabel *m_path, *m_ip, *m_port;
+        FXGroupBox *m_group;
+        FXint m_indexOnRight;
 
-        void UpdateTable();
+        void updateTable();
 };
 
 #endif // DCCDIALOG_H

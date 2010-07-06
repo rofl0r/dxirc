@@ -25,118 +25,118 @@
 #include "i18n.h"
 
 FXDEFMAP(dxPipe) dxPipeMap[] = {
-    FXMAPFUNC(SEL_IO_READ,      dxPipe::ID_READ,     dxPipe::OnIORead)
+    FXMAPFUNC(SEL_IO_READ,      dxPipe::ID_READ,     dxPipe::onIORead)
 };
 
 FXIMPLEMENT(dxPipe, FXObject, dxPipeMap, ARRAYNUMBER(dxPipeMap))
 
 dxPipe::dxPipe(FXApp *app, FXObject *tgt)
-        : application(app), target(tgt)
+        : m_application(app), m_target(tgt)
 {
-    running = FALSE;
+    m_running = FALSE;
 }
 
 dxPipe::~dxPipe()
 {
 }
 
-long dxPipe::OnIORead(FXObject*, FXSelector, void*)
+long dxPipe::onIORead(FXObject*, FXSelector, void*)
 {
-    ReadData();
+    readData();
     return 1;
 }
 
-FXint dxPipe::ExecCmd(FXString cmd)
+FXint dxPipe::execCmd(FXString cmd)
 {
-    command = cmd;
-    strprev = "";
+    m_command = cmd;
+    m_strprev = "";
 #ifndef WIN32
-    if (pipe(in) == -1 || pipe(out) == -1)
+    if (pipe(m_in) == -1 || pipe(m_out) == -1)
         return -1;
 
-    pid = fork();
-    if (pid == -1)
+    m_pid = fork();
+    if (m_pid == -1)
         return -1;
 
-    running = TRUE;
-    application->addInput(out[0], INPUT_READ, this, ID_READ);
+    m_running = TRUE;
+    m_application->addInput(m_out[0], INPUT_READ, this, ID_READ);
 
-    if (pid == 0)
+    if (m_pid == 0)
     {
         char *args[4];
-        ::close(out[0]);
-        ::dup2(out[1],STDOUT_FILENO);
-        ::dup2(out[1],STDERR_FILENO);
-        ::close(in[1]);
-        ::dup2(in[0],STDIN_FILENO);
+        ::close(m_out[0]);
+        ::dup2(m_out[1],STDOUT_FILENO);
+        ::dup2(m_out[1],STDERR_FILENO);
+        ::close(m_in[1]);
+        ::dup2(m_in[0],STDIN_FILENO);
         args[0] = (char*) "sh";
         args[1] = (char*) "-c";
-        args[2] = (char*) command.text();
+        args[2] = (char*) m_command.text();
         args[3] = NULL;
         execvp(args[0], args);
         _exit(1);
     }
     else
     {
-        ::close(out[1]);
-        ::close(in[0]);
+        ::close(m_out[1]);
+        ::close(m_in[0]);
     }
 #endif
     return 1;
 }
 
-void dxPipe::StopCmd()
+void dxPipe::stopCmd()
 {
 #ifndef WIN32
-    if(running)
+    if(m_running)
     {
-        kill(pid, SIGKILL);
-        FXString send = FXStringFormat(_("Command %s stopped"), command.text());
-        target->handle(this, FXSEL(SEL_COMMAND, ID_PIPE), &send);
+        kill(m_pid, SIGKILL);
+        FXString send = FXStringFormat(_("Command %s stopped"), m_command.text());
+        m_target->handle(this, FXSEL(SEL_COMMAND, ID_PIPE), &send);
     }
-    running = FALSE;
+    m_running = FALSE;
 #endif
 }
 
-int dxPipe::ReadData()
+int dxPipe::readData()
 {   
 #ifndef WIN32
     FXchar buffer[2048];
     int size, status;
 
-    FXString data = strprev;
+    FXString data = m_strprev;
 
-    size = read(out[0], buffer, sizeof(buffer)-1);
+    size = read(m_out[0], buffer, sizeof(buffer)-1);
     if (size > 0)
     {
         buffer[size] = '\0';
-        if (utils::IsUtf8(buffer, size)) data.append(buffer);
-        else data.append(utils::LocaleToUtf8(buffer));
+        if (utils::isUtf8(buffer, size)) data.append(buffer);
+        else data.append(utils::localeToUtf8(buffer));
         if(!data.contains('\n'))
         {
-            target->handle(this, FXSEL(SEL_COMMAND, ID_PIPE), &data);
+            m_target->handle(this, FXSEL(SEL_COMMAND, ID_PIPE), &data);
         }
         else
         {
             while (data.contains('\n'))
             {
                 FXString send = data.before('\n').before('\r');
-                target->handle(this, FXSEL(SEL_COMMAND, ID_PIPE), &send);
+                m_target->handle(this, FXSEL(SEL_COMMAND, ID_PIPE), &send);
                 data = data.after('\n');
             }
-            strprev = data;
+            m_strprev = data;
         }
     }
     else if(size == 0)
     {
-        waitpid(pid, &status, 0);
-        running = FALSE;
-        application->removeInput(out[0], INPUT_READ);
+        waitpid(m_pid, &status, 0);
+        m_running = FALSE;
+        m_application->removeInput(m_out[0], INPUT_READ);
     }
     else
     {
-        running = FALSE;
-        application->removeInput(out[0], INPUT_READ);
+        m_running = FALSE;
+        m_application->removeInput(m_out[0], INPUT_READ);
         _exit(-1);
     }
     return size;

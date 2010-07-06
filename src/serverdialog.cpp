@@ -24,91 +24,91 @@
 #include "i18n.h"
 
 FXDEFMAP(ServerDialog) ServerDialogMap[] = {
-    FXMAPFUNC(SEL_COMMAND,          ServerDialog::ID_JOIN,      ServerDialog::OnJoin),
-    FXMAPFUNC(SEL_COMMAND,          ServerDialog::ID_ADD,       ServerDialog::OnAdd),
-    FXMAPFUNC(SEL_COMMAND,          ServerDialog::ID_MODIFY,    ServerDialog::OnModify),
-    FXMAPFUNC(SEL_COMMAND,          ServerDialog::ID_DELETE,    ServerDialog::OnDelete),
-    FXMAPFUNC(SEL_COMMAND,          ServerDialog::ID_CANCEL,    ServerDialog::OnCancel),
-    FXMAPFUNC(SEL_CLOSE,            0,                          ServerDialog::OnCancel),
-    FXMAPFUNC(SEL_COMMAND,          ServerDialog::ID_SAVECLOSE, ServerDialog::OnSaveClose),
-    FXMAPFUNC(SEL_COMMAND,          ServerDialog::ID_LIST,      ServerDialog::OnList),
-    FXMAPFUNC(SEL_DOUBLECLICKED,    ServerDialog::ID_LIST,      ServerDialog::OnDoubleClick),
-    FXMAPFUNC(SEL_KEYPRESS,         0,                          ServerDialog::OnKeyPress),
+    FXMAPFUNC(SEL_COMMAND,          ServerDialog::ID_JOIN,      ServerDialog::onJoin),
+    FXMAPFUNC(SEL_COMMAND,          ServerDialog::ID_ADD,       ServerDialog::onAdd),
+    FXMAPFUNC(SEL_COMMAND,          ServerDialog::ID_MODIFY,    ServerDialog::onModify),
+    FXMAPFUNC(SEL_COMMAND,          ServerDialog::ID_DELETE,    ServerDialog::onDelete),
+    FXMAPFUNC(SEL_COMMAND,          ServerDialog::ID_CANCEL,    ServerDialog::onCancel),
+    FXMAPFUNC(SEL_CLOSE,            0,                          ServerDialog::onCancel),
+    FXMAPFUNC(SEL_COMMAND,          ServerDialog::ID_SAVECLOSE, ServerDialog::onSaveClose),
+    FXMAPFUNC(SEL_COMMAND,          ServerDialog::ID_LIST,      ServerDialog::onList),
+    FXMAPFUNC(SEL_DOUBLECLICKED,    ServerDialog::ID_LIST,      ServerDialog::onDoubleClick),
+    FXMAPFUNC(SEL_KEYPRESS,         0,                          ServerDialog::onKeyPress),
 };
 
 FXIMPLEMENT(ServerDialog, FXDialogBox, ServerDialogMap, ARRAYNUMBER(ServerDialogMap))
 
 ServerDialog::ServerDialog(FXMainWindow *owner, dxServerInfoArray servers)
-    : FXDialogBox(owner, _("Servers list"), DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0), serverList(servers), indexJoin(-1)
+    : FXDialogBox(owner, _("Servers list"), DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0), m_serverList(servers), m_indexJoin(-1)
 {
-    contents = new FXVerticalFrame(this, LAYOUT_SIDE_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 10,10,10,10, 0,0);
+    m_contents = new FXVerticalFrame(this, LAYOUT_SIDE_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 10,10,10,10, 0,0);
 
-    serverframe = new FXHorizontalFrame(contents, LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    listframe = new FXVerticalFrame(serverframe, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    names = new FXList(listframe, this, ID_LIST, LIST_BROWSESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    names->setScrollStyle(HSCROLLING_OFF);
-    UpdateList();
+    m_serverframe = new FXHorizontalFrame(m_contents, LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    m_listframe = new FXVerticalFrame(m_serverframe, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    m_names = new FXList(m_listframe, this, ID_LIST, LIST_BROWSESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    m_names->setScrollStyle(HSCROLLING_OFF);
+    updateList();
 
-    group = new FXGroupBox(serverframe, _("Details"), FRAME_GROOVE|LAYOUT_RIGHT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 4,4,4,4, 4,4);
-    matrix = new FXMatrix(group,2,MATRIX_BY_COLUMNS|LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    m_group = new FXGroupBox(m_serverframe, _("Details"), FRAME_GROOVE|LAYOUT_RIGHT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 4,4,4,4, 4,4);
+    m_matrix = new FXMatrix(m_group,2,MATRIX_BY_COLUMNS|LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
 
-    new FXLabel(matrix, _("Hostname:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    hostname = new FXTextField(matrix, 25, NULL, 0, TEXTFIELD_READONLY|FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    hostname->setBackColor(getApp()->getBaseColor());
+    new FXLabel(m_matrix, _("Hostname:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    m_hostname = new FXTextField(m_matrix, 25, NULL, 0, TEXTFIELD_READONLY|FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    m_hostname->setBackColor(getApp()->getBaseColor());
 
-    new FXLabel(matrix, _("Port:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    port = new FXTextField(matrix, 25, NULL, 0, TEXTFIELD_READONLY|TEXTFIELD_INTEGER|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    port->setBackColor(getApp()->getBaseColor());
+    new FXLabel(m_matrix, _("Port:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    m_port = new FXTextField(m_matrix, 25, NULL, 0, TEXTFIELD_READONLY|TEXTFIELD_INTEGER|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    m_port->setBackColor(getApp()->getBaseColor());
 
-    new FXLabel(matrix, _("Password:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    passwd = new FXTextField(matrix, 25, NULL, 0, TEXTFIELD_READONLY|TEXTFIELD_PASSWD|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    passwd->setBackColor(getApp()->getBaseColor());
+    new FXLabel(m_matrix, _("Password:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    m_passwd = new FXTextField(m_matrix, 25, NULL, 0, TEXTFIELD_READONLY|TEXTFIELD_PASSWD|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    m_passwd->setBackColor(getApp()->getBaseColor());
 
-    new FXLabel(matrix, _("Nickname:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    nick = new FXTextField(matrix, 25, NULL, 0, TEXTFIELD_READONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    nick->setBackColor(getApp()->getBaseColor());
+    new FXLabel(m_matrix, _("Nickname:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    m_nick = new FXTextField(m_matrix, 25, NULL, 0, TEXTFIELD_READONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    m_nick->setBackColor(getApp()->getBaseColor());
 
-    new FXLabel(matrix, _("Realname:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    realname = new FXTextField(matrix, 25, NULL, 0, TEXTFIELD_READONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    realname->setBackColor(getApp()->getBaseColor());
+    new FXLabel(m_matrix, _("Realname:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    m_realname = new FXTextField(m_matrix, 25, NULL, 0, TEXTFIELD_READONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    m_realname->setBackColor(getApp()->getBaseColor());
 
-    new FXLabel(matrix, _("Channel(s):"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    FXHorizontalFrame *channelsbox=new FXHorizontalFrame(matrix, LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW|FRAME_SUNKEN|FRAME_THICK,0,0,0,0, 0,0,0,0);
-    channels = new FXText(channelsbox, NULL, 0, TEXT_READONLY|TEXT_WORDWRAP|LAYOUT_FILL_X|LAYOUT_FILL_X);
-    channels->setVisibleRows(3);
-    channels->setVisibleColumns(25);
-    channels->setBackColor(getApp()->getBaseColor());
+    new FXLabel(m_matrix, _("Channel(s):"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    FXHorizontalFrame *channelsbox=new FXHorizontalFrame(m_matrix, LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW|FRAME_SUNKEN|FRAME_THICK,0,0,0,0, 0,0,0,0);
+    m_channels = new FXText(channelsbox, NULL, 0, TEXT_READONLY|TEXT_WORDWRAP|LAYOUT_FILL_X|LAYOUT_FILL_X);
+    m_channels->setVisibleRows(3);
+    m_channels->setVisibleColumns(25);
+    m_channels->setBackColor(getApp()->getBaseColor());
 
-    new FXLabel(matrix, _("Commands on connection:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    FXHorizontalFrame *commandsbox=new FXHorizontalFrame(matrix, LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW|FRAME_SUNKEN|FRAME_THICK,0,0,0,0, 0,0,0,0);
-    commands = new FXText(commandsbox, NULL, 0, TEXT_READONLY|TEXT_WORDWRAP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    commands->setVisibleRows(4);
-    commands->setVisibleColumns(25);
-    commands->setBackColor(getApp()->getBaseColor());
+    new FXLabel(m_matrix, _("Commands on connection:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    FXHorizontalFrame *commandsbox=new FXHorizontalFrame(m_matrix, LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW|FRAME_SUNKEN|FRAME_THICK,0,0,0,0, 0,0,0,0);
+    m_commands = new FXText(commandsbox, NULL, 0, TEXT_READONLY|TEXT_WORDWRAP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    m_commands->setVisibleRows(4);
+    m_commands->setVisibleColumns(25);
+    m_commands->setBackColor(getApp()->getBaseColor());
 
 #ifdef HAVE_OPENSSL
-    new FXLabel(matrix, _("Use SSL:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    usessl = new FXTextField(matrix, 25, NULL, 0, TEXTFIELD_READONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    usessl->setBackColor(getApp()->getBaseColor());
+    new FXLabel(m_matrix, _("Use SSL:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    m_usessl = new FXTextField(m_matrix, 25, NULL, 0, TEXTFIELD_READONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    m_usessl->setBackColor(getApp()->getBaseColor());
 #endif
 
-    new FXLabel(matrix, _("Auto connect:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    autoconnect = new FXTextField(matrix, 25, NULL, 0, TEXTFIELD_READONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    autoconnect->setBackColor(getApp()->getBaseColor());
+    new FXLabel(m_matrix, _("Auto connect:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    m_autoconnect = new FXTextField(m_matrix, 25, NULL, 0, TEXTFIELD_READONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    m_autoconnect->setBackColor(getApp()->getBaseColor());
 
-    buttonframe = new FXHorizontalFrame(contents, LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    m_buttonframe = new FXHorizontalFrame(m_contents, LAYOUT_FILL_X|LAYOUT_FILL_Y);
 
-    buttonCancel = new FXButton(buttonframe, _("&Cancel"), NULL, this, ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
-    buttonSaveClose = new FXButton(buttonframe, _("&Save&&Close"), NULL, this, ID_SAVECLOSE, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
-    buttonDelete = new FXButton(buttonframe, _("&Delete"), NULL, this, ID_DELETE, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
-    serverList.no()? buttonDelete->enable() : buttonDelete->disable();
-    buttonModify = new FXButton(buttonframe, _("&Modify"), NULL, this, ID_MODIFY, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
-    serverList.no()? buttonModify->enable() : buttonModify->disable();
-    buttonAdd = new FXButton(buttonframe, _("&Add"), NULL, this, ID_ADD, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
-    buttonJoin = new FXButton(buttonframe, _("&Join"), NULL, this, ID_JOIN, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
-    serverList.no()? buttonJoin->enable() : buttonJoin->disable();
+    m_buttonCancel = new FXButton(m_buttonframe, _("&Cancel"), NULL, this, ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    m_buttonSaveClose = new FXButton(m_buttonframe, _("&Save&&Close"), NULL, this, ID_SAVECLOSE, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    m_buttonDelete = new FXButton(m_buttonframe, _("&Delete"), NULL, this, ID_DELETE, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    m_serverList.no()? m_buttonDelete->enable() : m_buttonDelete->disable();
+    m_buttonModify = new FXButton(m_buttonframe, _("&Modify"), NULL, this, ID_MODIFY, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    m_serverList.no()? m_buttonModify->enable() : m_buttonModify->disable();
+    m_buttonAdd = new FXButton(m_buttonframe, _("&Add"), NULL, this, ID_ADD, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    m_buttonJoin = new FXButton(m_buttonframe, _("&Join"), NULL, this, ID_JOIN, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    m_serverList.no()? m_buttonJoin->enable() : m_buttonJoin->disable();
 
-    UpdateDetails();
+    updateDetails();
 }
 
 ServerDialog::~ServerDialog()
@@ -116,23 +116,23 @@ ServerDialog::~ServerDialog()
 
 }
 
-long ServerDialog::OnJoin(FXObject*,FXSelector,void*)
+long ServerDialog::onJoin(FXObject*,FXSelector,void*)
 {
     getApp()->stopModal(this,TRUE);
     hide();
-    indexJoin = names->getCurrentItem();
+    m_indexJoin = m_names->getCurrentItem();
     return 1;
 }
 
-long ServerDialog::OnSaveClose(FXObject*,FXSelector,void*)
+long ServerDialog::onSaveClose(FXObject*,FXSelector,void*)
 {
     getApp()->stopModal(this,TRUE);
     hide();
-    indexJoin = -1;
+    m_indexJoin = -1;
     return 1;
 }
 
-long ServerDialog::OnAdd(FXObject*,FXSelector,void*)
+long ServerDialog::onAdd(FXObject*,FXSelector,void*)
 {
     FXDialogBox serverEdit(this, _("Server edit"), DECOR_TITLE|DECOR_BORDER, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     FXVerticalFrame *contents = new FXVerticalFrame(&serverEdit, LAYOUT_SIDE_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0, 0, 0, 0, 10, 10, 10, 10, 0, 0);
@@ -183,7 +183,7 @@ long ServerDialog::OnAdd(FXObject*,FXSelector,void*)
 
     if(serverEdit.execute(PLACEMENT_OWNER))
     {
-        if(!hostname->getText().empty() && !nick->getText().empty() && !HostnameExist(hostname->getText(), port->getValue(), nick->getText()))
+        if(!hostname->getText().empty() && !nick->getText().empty() && !hostnameExist(hostname->getText(), port->getValue(), nick->getText()))
         {
             ServerInfo server;
             server.hostname = hostname->getText();
@@ -199,22 +199,22 @@ long ServerDialog::OnAdd(FXObject*,FXSelector,void*)
             server.useSsl = FALSE;
 #endif
             server.autoConnect = buttonAuto->getCheck();
-            serverList.append(server);
+            m_serverList.append(server);
         }
     }
 
-    UpdateList();
-    UpdateDetails();
+    updateList();
+    updateDetails();
 
     return 1;
 }
 
-long ServerDialog::OnModify(FXObject*,FXSelector,void*)
+long ServerDialog::onModify(FXObject*,FXSelector,void*)
 {
-    FXint index = names->getCurrentItem();
-    FXString oldhostname = serverList[index].hostname;
-    FXint oldport = serverList[index].port;
-    FXString oldnick = serverList[index].nick;
+    FXint index = m_names->getCurrentItem();
+    FXString oldhostname = m_serverList[index].hostname;
+    FXint oldport = m_serverList[index].port;
+    FXString oldnick = m_serverList[index].nick;
 
     FXDialogBox serverEdit(this, _("Server edit"), DECOR_TITLE|DECOR_BORDER, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     FXVerticalFrame *contents = new FXVerticalFrame(&serverEdit, LAYOUT_SIDE_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0, 0, 0, 0, 10, 10, 10, 10, 0, 0);
@@ -222,28 +222,28 @@ long ServerDialog::OnModify(FXObject*,FXSelector,void*)
 
     new FXLabel(matrix, _("Hostname:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     FXTextField *hostname = new FXTextField(matrix, 25, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    hostname->setText(serverList[index].hostname);
+    hostname->setText(m_serverList[index].hostname);
 
     new FXLabel(matrix, _("Port:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     FXSpinner *port = new FXSpinner(matrix, 23, NULL, 0, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     port->setRange(0, 65536);
-    port->setValue(serverList[index].port);
+    port->setValue(m_serverList[index].port);
 
     new FXLabel(matrix, _("Password:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     FXTextField *passwd = new FXTextField(matrix, 25, NULL, 0, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    passwd->setText(serverList[index].passwd);
+    passwd->setText(m_serverList[index].passwd);
 
     new FXLabel(matrix, _("Nickname:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     FXTextField *nick = new FXTextField(matrix, 25, NULL, 0, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    nick->setText(serverList[index].nick);
+    nick->setText(m_serverList[index].nick);
 
     new FXLabel(matrix, _("Realname:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     FXTextField *realname = new FXTextField(matrix, 25, NULL, 0, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    realname->setText(serverList[index].realname);
+    realname->setText(m_serverList[index].realname);
 
     new FXLabel(matrix, _("Channel(s):\tChannels need to be comma separated"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     FXTextField *channel = new FXTextField(matrix, 25, NULL, 0, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    channel->setText(serverList[index].channels);
+    channel->setText(m_serverList[index].channels);
     channel->setTipText(_("Channels need to be comma separated"));
 
     new FXLabel(matrix, _("Commands on connection:\tOne command on one line"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
@@ -251,18 +251,18 @@ long ServerDialog::OnModify(FXObject*,FXSelector,void*)
     FXText *command = new FXText(commandsbox, NULL, 0, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     command->setVisibleRows(4);
     command->setVisibleColumns(25);
-    command->setText(serverList[index].commands);
+    command->setText(m_serverList[index].commands);
     command->setTipText(_("One command on one line"));
 
 #ifdef HAVE_OPENSSL
     new FXLabel(matrix, _("Use SSL:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     FXCheckButton *buttonSsl = new FXCheckButton(matrix, "", NULL, 0);
-    buttonSsl->setCheck(serverList[index].useSsl);
+    buttonSsl->setCheck(m_serverList[index].useSsl);
 #endif
 
     new FXLabel(matrix, _("Auto connect:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     FXCheckButton *buttonAuto = new FXCheckButton(matrix, "", NULL, 0);
-    buttonAuto->setCheck(serverList[index].autoConnect);
+    buttonAuto->setCheck(m_serverList[index].autoConnect);
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents, LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
     new FXButton(buttonframe, _("&Cancel"), NULL, &serverEdit, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 5);
@@ -270,7 +270,7 @@ long ServerDialog::OnModify(FXObject*,FXSelector,void*)
 
     if(serverEdit.execute(PLACEMENT_OWNER))
     {
-        if(!hostname->getText().empty() && !nick->getText().empty() && (!HostnameExist(hostname->getText(), port->getValue(), nick->getText()) || (oldhostname==hostname->getText() && oldport==port->getValue() && oldnick == nick->getText())))
+        if(!hostname->getText().empty() && !nick->getText().empty() && (!hostnameExist(hostname->getText(), port->getValue(), nick->getText()) || (oldhostname==hostname->getText() && oldport==port->getValue() && oldnick == nick->getText())))
         {
             ServerInfo server;
             server.hostname = hostname->getText();
@@ -286,33 +286,33 @@ long ServerDialog::OnModify(FXObject*,FXSelector,void*)
             server.useSsl = FALSE;
 #endif
             server.autoConnect = buttonAuto->getCheck();
-            serverList[index] = server;
+            m_serverList[index] = server;
         }
     }
 
-    UpdateList();
-    UpdateDetails();
+    updateList();
+    updateDetails();
 
     return 1;
 }
 
-long ServerDialog::OnDelete(FXObject*,FXSelector,void*)
+long ServerDialog::onDelete(FXObject*,FXSelector,void*)
 {
-    FXint index = names->getCurrentItem();
-    serverList.erase(index);
-    UpdateList();
-    UpdateDetails();
+    FXint index = m_names->getCurrentItem();
+    m_serverList.erase(index);
+    updateList();
+    updateDetails();
     return 1;
 }
 
-long ServerDialog::OnCancel(FXObject*,FXSelector,void*)
+long ServerDialog::onCancel(FXObject*,FXSelector,void*)
 {
     getApp()->stopModal(this,FALSE);
     hide();
     return 1;
 }
 
-long ServerDialog::OnKeyPress(FXObject *sender,FXSelector sel,void *ptr)
+long ServerDialog::onKeyPress(FXObject *sender,FXSelector sel,void *ptr)
 {
     if(FXTopWindow::onKeyPress(sender,sel,ptr)) return 1;
     if(((FXEvent*)ptr)->code == KEY_Escape)
@@ -323,94 +323,94 @@ long ServerDialog::OnKeyPress(FXObject *sender,FXSelector sel,void *ptr)
     return 0;
 }
 
-long ServerDialog::OnList(FXObject*,FXSelector,void*)
+long ServerDialog::onList(FXObject*,FXSelector,void*)
 {
-    UpdateDetails();
+    updateDetails();
 
-    buttonJoin->enable();
-    buttonModify->enable();
-    buttonDelete->enable();
+    m_buttonJoin->enable();
+    m_buttonModify->enable();
+    m_buttonDelete->enable();
 
     return 1;
 }
 
-long ServerDialog::OnDoubleClick(FXObject*, FXSelector, void *ptr)
+long ServerDialog::onDoubleClick(FXObject*, FXSelector, void *ptr)
 {
     FXint index = (FXint)(FXival)ptr;
     if(0 <= index)
     {
         getApp()->stopModal(this,TRUE);
         hide();
-        indexJoin = index;
+        m_indexJoin = index;
     }
     return 1;
 }
 
-FXbool ServerDialog::HostnameExist(const FXString &hostname, const FXint &port, const FXString &nick)
+FXbool ServerDialog::hostnameExist(const FXString &hostname, const FXint &port, const FXString &nick)
 {
-    for(FXint i=0; i < serverList.no(); i++)
+    for(FXint i=0; i < m_serverList.no(); i++)
     {
-        if(serverList[i].hostname == hostname && serverList[i].port == port && serverList[i].nick == nick) return TRUE;
+        if(m_serverList[i].hostname == hostname && m_serverList[i].port == port && m_serverList[i].nick == nick) return TRUE;
     }
     return FALSE;
 }
 
-void ServerDialog::UpdateList()
+void ServerDialog::updateList()
 {
-    names->clearItems();
-    for(FXint i =0; i < serverList.no(); i++)
+    m_names->clearItems();
+    for(FXint i =0; i < m_serverList.no(); i++)
     {
-        names->appendItem(serverList[i].hostname);
+        m_names->appendItem(m_serverList[i].hostname);
     }
 }
 
-void ServerDialog::UpdateDetails()
+void ServerDialog::updateDetails()
 {
-    if(names->getNumItems())
+    if(m_names->getNumItems())
     {
-        FXint index = names->getCurrentItem();
-        hostname->setText(serverList[index].hostname);
-            if(serverList[index].channels.length()>18) hostname->setTipText(serverList[index].hostname);
-            else hostname->setTipText("");
-        port->setText(FXStringVal(serverList[index].port));
-            if(FXStringVal(serverList[index].port).length()>18) port->setTipText(FXStringVal(serverList[index].port));
-            else port->setTipText("");
-        nick->setText(serverList[index].nick);
-            if(serverList[index].nick.length()>18) nick->setTipText(serverList[index].nick);
-            else nick->setTipText("");
-        realname->setText(serverList[index].realname);
-            if(serverList[index].realname.length()>18) realname->setTipText(serverList[index].realname);
-            else realname->setTipText("");
-        passwd->setText(serverList[index].passwd);
-            if(serverList[index].passwd.length()>18) passwd->setTipText(serverList[index].passwd);
-            else passwd->setTipText("");
-        channels->setText(serverList[index].channels);
-            if(channels->getNumRows()>3) channels->setTipText(serverList[index].channels);
-            else channels->setTipText("");
-        commands->setText(serverList[index].commands);
-            if(commands->getNumRows()>4) commands->setTipText(serverList[index].commands);
-            else commands->setTipText("");
+        FXint index = m_names->getCurrentItem();
+        m_hostname->setText(m_serverList[index].hostname);
+            if(m_serverList[index].channels.length()>18) m_hostname->setTipText(m_serverList[index].hostname);
+            else m_hostname->setTipText("");
+        m_port->setText(FXStringVal(m_serverList[index].port));
+            if(FXStringVal(m_serverList[index].port).length()>18) m_port->setTipText(FXStringVal(m_serverList[index].port));
+            else m_port->setTipText("");
+        m_nick->setText(m_serverList[index].nick);
+            if(m_serverList[index].nick.length()>18) m_nick->setTipText(m_serverList[index].nick);
+            else m_nick->setTipText("");
+        m_realname->setText(m_serverList[index].realname);
+            if(m_serverList[index].realname.length()>18) m_realname->setTipText(m_serverList[index].realname);
+            else m_realname->setTipText("");
+        m_passwd->setText(m_serverList[index].passwd);
+            if(m_serverList[index].passwd.length()>18) m_passwd->setTipText(m_serverList[index].passwd);
+            else m_passwd->setTipText("");
+        m_channels->setText(m_serverList[index].channels);
+            if(m_channels->getNumRows()>3) m_channels->setTipText(m_serverList[index].channels);
+            else m_channels->setTipText("");
+        m_commands->setText(m_serverList[index].commands);
+            if(m_commands->getNumRows()>4) m_commands->setTipText(m_serverList[index].commands);
+            else m_commands->setTipText("");
 #ifdef HAVE_OPENSSL
-        serverList[index].useSsl ? usessl->setText(_("Yes")) : usessl->setText(_("No"));
+        m_serverList[index].useSsl ? m_usessl->setText(_("Yes")) : m_usessl->setText(_("No"));
 #endif
-        serverList[index].autoConnect ? autoconnect->setText(_("Yes")) : autoconnect->setText(_("No"));
+        m_serverList[index].autoConnect ? m_autoconnect->setText(_("Yes")) : m_autoconnect->setText(_("No"));
     }
     else
     {
-        hostname->setText("");
-        port->setText("");
-        nick->setText("");
-        realname->setText("");
-        passwd->setText("");
-        channels->setText("");
-        commands->setText("");
+        m_hostname->setText("");
+        m_port->setText("");
+        m_nick->setText("");
+        m_realname->setText("");
+        m_passwd->setText("");
+        m_channels->setText("");
+        m_commands->setText("");
 #ifdef HAVE_OPENSSL
-        usessl->setText("");
+        m_usessl->setText("");
 #endif
-        autoconnect->setText("");
-        buttonJoin->disable();
-        buttonModify->disable();
-        buttonDelete->disable();
+        m_autoconnect->setText("");
+        m_buttonJoin->disable();
+        m_buttonModify->disable();
+        m_buttonDelete->disable();
     }
 }
 

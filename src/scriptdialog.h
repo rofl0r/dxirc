@@ -43,31 +43,31 @@ class ScriptDialog: public FXDialogBox
             ID_LAST
         };
         
-        long OnLoad(FXObject*,FXSelector,void*);
-        long OnView(FXObject*,FXSelector,void*);
-        long OnViewNew(FXObject*,FXSelector,void*);
-        long OnUnload(FXObject*,FXSelector,void*);
-        long OnClose(FXObject*,FXSelector,void*);
-        long OnList(FXObject*,FXSelector,void*);
-        long OnKeyPress(FXObject*,FXSelector,void*);
+        long onLoad(FXObject*,FXSelector,void*);
+        long onView(FXObject*,FXSelector,void*);
+        long onViewNew(FXObject*,FXSelector,void*);
+        long onUnload(FXObject*,FXSelector,void*);
+        long onClose(FXObject*,FXSelector,void*);
+        long onList(FXObject*,FXSelector,void*);
+        long onKeyPress(FXObject*,FXSelector,void*);
 
     private:
         ScriptDialog() {}
         ScriptDialog(const ScriptDialog&);
 
-        dxirc *irc;
-        FXVerticalFrame *contents, *listframe;
-        FXHorizontalFrame *buttonframe, *scriptframe;
-        FXGroupBox *group;
-        FXMatrix *matrix;
-        FXList *names;
-        FXTextField *name, *version;
-        FXText *description, *path;
-        FXButton *buttonLoad, *buttonView, *buttonUnload, *buttonClose, *buttonViewNew;
+        dxirc *m_irc;
+        FXVerticalFrame *m_contents, *m_listframe;
+        FXHorizontalFrame *m_buttonframe, *m_scriptframe;
+        FXGroupBox *m_group;
+        FXMatrix *m_matrix;
+        FXList *m_names;
+        FXTextField *m_name, *m_version;
+        FXText *m_description, *m_path;
+        FXButton *m_buttonLoad, *m_buttonView, *m_buttonUnload, *m_buttonClose, *m_buttonViewNew;
         
-        void UpdateList();
-        void UpdateDetails();
-        void ViewFile(const FXString&);
+        void updateList();
+        void updateDetails();
+        void viewFile(const FXString&);
 };
 
 #endif // SCRIPTDIALOG_H

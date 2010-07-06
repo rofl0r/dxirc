@@ -42,37 +42,37 @@ class ServerDialog: public FXDialogBox
             ID_LAST
         };
 
-        dxServerInfoArray GetServers() { return serverList; }
-        FXint GetIndexJoin() { return indexJoin; }
+        dxServerInfoArray getServers() { return m_serverList; }
+        FXint getIndexJoin() { return m_indexJoin; }
 
-        long OnJoin(FXObject*,FXSelector,void*);
-        long OnAdd(FXObject*,FXSelector,void*);
-        long OnModify(FXObject*,FXSelector,void*);
-        long OnDelete(FXObject*,FXSelector,void*);
-        long OnCancel(FXObject*,FXSelector,void*);
-        long OnSaveClose(FXObject*,FXSelector,void*);
-        long OnList(FXObject*,FXSelector,void*);
-        long OnDoubleClick(FXObject*,FXSelector,void*);
-        long OnKeyPress(FXObject*,FXSelector,void*);
+        long onJoin(FXObject*,FXSelector,void*);
+        long onAdd(FXObject*,FXSelector,void*);
+        long onModify(FXObject*,FXSelector,void*);
+        long onDelete(FXObject*,FXSelector,void*);
+        long onCancel(FXObject*,FXSelector,void*);
+        long onSaveClose(FXObject*,FXSelector,void*);
+        long onList(FXObject*,FXSelector,void*);
+        long onDoubleClick(FXObject*,FXSelector,void*);
+        long onKeyPress(FXObject*,FXSelector,void*);
 
     private:
         ServerDialog() {}
         ServerDialog(const ServerDialog&);
 
-        dxServerInfoArray serverList;
-        FXint indexJoin;
-        FXVerticalFrame *contents, *listframe;
-        FXHorizontalFrame *buttonframe, *serverframe;
-        FXGroupBox *group;
-        FXMatrix *matrix;
-        FXList *names;
-        FXTextField *hostname, *port, *passwd, *nick, *realname, *autoconnect, *usessl;
-        FXText *channels, *commands;
-        FXButton *buttonJoin, *buttonAdd, *buttonModify, *buttonDelete, *buttonCancel, *buttonSaveClose;
+        dxServerInfoArray m_serverList;
+        FXint m_indexJoin;
+        FXVerticalFrame *m_contents, *m_listframe;
+        FXHorizontalFrame *m_buttonframe, *m_serverframe;
+        FXGroupBox *m_group;
+        FXMatrix *m_matrix;
+        FXList *m_names;
+        FXTextField *m_hostname, *m_port, *m_passwd, *m_nick, *m_realname, *m_autoconnect, *m_usessl;
+        FXText *m_channels, *m_commands;
+        FXButton *m_buttonJoin, *m_buttonAdd, *m_buttonModify, *m_buttonDelete, *m_buttonCancel, *m_buttonSaveClose;
 
-        FXbool HostnameExist(const FXString&, const FXint&, const FXString&);
-        void UpdateList();
-        void UpdateDetails();
+        FXbool hostnameExist(const FXString&, const FXint&, const FXString&);
+        void updateList();
+        void updateDetails();
 };
 
 #endif // SERVERDIALOG_H

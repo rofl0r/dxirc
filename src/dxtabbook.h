@@ -40,14 +40,14 @@ public:
     void layout();
     FXint numTabs() const;
 
-    long OnPrevious(FXObject*, FXSelector, void*);
-    long OnNext(FXObject*, FXSelector, void*);
-    long OnHidden(FXObject*, FXSelector, void*);
-    long OnTab(FXObject*, FXSelector, void*);
+    long onPrevious(FXObject*, FXSelector, void*);
+    long onNext(FXObject*, FXSelector, void*);
+    long onHidden(FXObject*, FXSelector, void*);
+    long onTab(FXObject*, FXSelector, void*);
 private:
     dxTabBook() {}
 
-    FXArrowButton *buttonPrevious, *buttonNext, *buttonHidden;
+    FXArrowButton *m_buttonPrevious, *m_buttonNext, *m_buttonHidden;
 };
 
 #endif	/* _DXTABBOOK_H */

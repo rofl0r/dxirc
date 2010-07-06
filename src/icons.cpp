@@ -25,13 +25,13 @@
 #include "icons.h"
 #include "utils.h"
 
-FXIcon *bigicon, *smallicon;
-FXIcon *irc_owner_icon, *irc_admin_icon, *irc_op_icon, *irc_voice_icon, *irc_halfop_icon, *irc_normal_icon;
-FXIcon *irc_away_owner_icon, *irc_away_admin_icon, *irc_away_op_icon, *irc_away_voice_icon, *irc_away_halfop_icon, *irc_away_normal_icon;
-FXIcon *serverlisticon, *connecticon, *disconnecticon, *quiticon, *closeicon, *optionicon, *helpicon;
-FXIcon *servericon, *channelicon, *queryicon, *clearicon, *flagicon, *trayicon, *newm, *newfile, *unewm, *chnewm, *foldericon, *ofoldericon, *fileicon;
-FXIcon *cancelicon, *finishicon, *downicon, *upicon;
-FXIcon *dccicon, *dccnewm, *logsicon, *scripticon, *transfericon, *playicon;
+FXIcon *ICO_BIG, *ICO_SMALL;
+FXIcon *ICO_IRCOWNER, *ICO_IRCADMIN, *ICO_IRCOP, *ICO_IRCVOICE, *ICO_IRCHALFOP, *ICO_IRCNORMAL;
+FXIcon *ICO_IRCAWAYOWNER, *ICO_IRCAWAYADMIN, *ICO_IRCAWAYOP, *ICO_IRCAWAYVOICE, *ICO_IRCAWAYHALFOP, *ICO_IRCAWAYNORMAL;
+FXIcon *ICO_SERVERLIST, *ICO_CONNECT, *ICO_DISCONNECT, *ICO_QUIT, *ICO_CLOSE, *ICO_OPTION, *ICO_HELP;
+FXIcon *ICO_SERVER, *ICO_CHANNEL, *ICO_QUERY, *ICO_CLEAR, *ICO_FLAG, *ICO_TRAY, *ICO_NEWMSG, *ICO_NEWFILE, *ICO_QUERYNEWMSG, *ICO_CHANNELNEWMSG, *ICO_CLOSEFOLDER, *ICO_OPENFOLDER, *ICO_FILE;
+FXIcon *ICO_CANCEL, *ICO_FINISH, *ICO_DOWN, *ICO_UP;
+FXIcon *ICO_DCC, *ICO_DCCNEWMSG, *ICO_LOGS, *ICO_SCRIPT, *ICO_TRANSFER, *ICO_PLAY;
 FXColor menuColor, textBackColor;
 
 /* created by reswrap from file empty.png */
@@ -365,7 +365,7 @@ const unsigned char big_dxirc[]={
   0x2f,0x7e,0xc2,0xa7,0x00,0x00,0x00,0x00,0x49,0x45,0x4e,0x44,0xae,0x42,0x60,0x82
 };
 
-FXIcon* MakeIcon(FXApp *app, const FXString path, const FXString name)
+FXIcon* makeIcon(FXApp *app, const FXString path, const FXString name)
 {
     FXIcon *icon = NULL;
     FXString file = FXPath::search(path, name);
@@ -394,7 +394,7 @@ FXIcon* MakeIcon(FXApp *app, const FXString path, const FXString name)
     return NULL;
 }
 
-FXIcon* MakeIcon(FXApp *app, const FXString path, const FXString name, const FXbool menu)
+FXIcon* makeIcon(FXApp *app, const FXString path, const FXString name, const FXbool menu)
 {
     FXIcon *icon = NULL;
     FXString file = FXPath::search(path, name);
@@ -431,7 +431,7 @@ FXIcon* MakeIcon(FXApp *app, const FXString path, const FXString name, const FXb
     return NULL;
 }
 
-FXIcon* MakeIcon(FXApp* app, const FXString& path, FXint size, FXColor color)
+FXIcon* makeIcon(FXApp* app, const FXString& path, FXint size, FXColor color)
 {
     FXIconSource iconsource(app);
     FXIcon *icon = NULL;
@@ -451,7 +451,7 @@ FXIcon* MakeIcon(FXApp* app, const FXString& path, FXint size, FXColor color)
     return NULL;
 }
 
-FXIcon* MakeAwayIcon(FXApp *app, const FXString path, const FXString name)
+FXIcon* makeAwayIcon(FXApp *app, const FXString path, const FXString name)
 {
     FXIcon *iconAway = NULL;
     FXString fileAway = FXPath::search(path, "irc_away.png");
@@ -512,61 +512,61 @@ FXIcon* MakeAwayIcon(FXApp *app, const FXString path, const FXString name)
     return NULL;
 }
 
-FXbool MakeAllIcons(FXApp *app, const FXString &iniFile, const FXString &datadir)
+FXbool makeAllIcons(FXApp *app, const FXString &iniFile, const FXString &datadir)
 {
     FXbool success = TRUE;
     FXString mainpath = datadir+PATHSEPSTRING+"icons";
     FXString flagpath = datadir+PATHSEPSTRING+"icons"+PATHSEPSTRING+"flags";
     FXSettings set;
     set.parseFile(iniFile, TRUE);
-    FXString themepath = utils::CheckThemePath(set.readStringEntry("SETTINGS", "themePath", DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "default"));
+    FXString themepath = utils::checkThemePath(set.readStringEntry("SETTINGS", "themePath", DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "default"));
     menuColor = set.readColorEntry("SETTINGS", "basecolor", app->getBaseColor());
     textBackColor = set.readColorEntry("SETTINGS", "textBackColor", FXRGB(255,255,255));
 
-    success = ((bigicon = MakeIcon(app, mainpath, "big_dxirc.png", TRUE)) != NULL) &success;
-    success = ((smallicon = MakeIcon(app, mainpath, "small_dxirc.png", TRUE)) != NULL) &success;
-    success = ((irc_owner_icon = MakeIcon(app, themepath, "irc_owner.png", FALSE)) != NULL) &success;
-    success = ((irc_admin_icon = MakeIcon(app, themepath, "irc_admin.png", FALSE)) != NULL) &success;
-    success = ((irc_op_icon = MakeIcon(app, themepath, "irc_op.png", FALSE)) != NULL) &success;
-    success = ((irc_voice_icon = MakeIcon(app, themepath, "irc_voice.png", FALSE)) != NULL) &success;
-    success = ((irc_halfop_icon = MakeIcon(app, themepath, "irc_halfop.png", FALSE)) != NULL) &success;
-    success = ((irc_normal_icon = MakeIcon(app, themepath, "irc_normal.png", FALSE)) != NULL) &success;
-    success = ((irc_away_owner_icon = MakeAwayIcon(app, themepath, "irc_owner.png")) != NULL) &success;
-    success = ((irc_away_admin_icon = MakeAwayIcon(app, themepath, "irc_admin.png")) != NULL) &success;
-    success = ((irc_away_op_icon = MakeAwayIcon(app, themepath, "irc_op.png")) != NULL) &success;
-    success = ((irc_away_voice_icon = MakeAwayIcon(app, themepath, "irc_voice.png")) != NULL) &success;
-    success = ((irc_away_halfop_icon = MakeAwayIcon(app, themepath, "irc_halfop.png")) != NULL) &success;
-    success = ((irc_away_normal_icon = MakeAwayIcon(app, themepath, "irc_normal.png")) != NULL) &success;
-    success = ((serverlisticon = MakeIcon(app, mainpath, "server.png", TRUE)) != NULL) &success;
-    success = ((connecticon = MakeIcon(app, mainpath, "connect.png", TRUE)) != NULL) &success;
-    success = ((disconnecticon = MakeIcon(app, mainpath, "disconnect.png", TRUE)) != NULL) &success;
-    success = ((quiticon = MakeIcon(app, mainpath, "door_out.png", TRUE)) != NULL) &success;
-    success = ((closeicon = MakeIcon(app, mainpath, "cross.png", TRUE)) != NULL) &success;
-    success = ((optionicon = MakeIcon(app, mainpath, "wrench.png", TRUE)) != NULL) &success;
-    success = ((helpicon = MakeIcon(app, mainpath, "help.png", TRUE)) != NULL) &success;
-    success = ((servericon = MakeIcon(app, mainpath, "world.png", TRUE)) != NULL) &success;
-    success = ((channelicon = MakeIcon(app, mainpath, "channel.png", TRUE)) != NULL) &success;
-    success = ((queryicon = MakeIcon(app, mainpath, "user.png", TRUE)) != NULL) &success;
-    success = ((clearicon = MakeIcon(app, mainpath, "clear.png", TRUE)) != NULL) &success;
-    success = ((flagicon = MakeIcon(app, flagpath, "cz.png", TRUE)) != NULL) &success;
-    success = ((trayicon = MakeIcon(app, mainpath, "small_dxirc.png")) != NULL) &success;
-    success = ((newm = MakeIcon(app, mainpath, "newm.png")) != NULL) &success;
-    success = ((newfile = MakeIcon(app, mainpath, "newfile.png")) != NULL) &success;
-    success = ((unewm = MakeIcon(app, mainpath, "unewm.png", TRUE)) != NULL) &success;
-    success = ((chnewm = MakeIcon(app, mainpath, "chnewm.png", TRUE)) != NULL) &success;
-    success = ((foldericon = MakeIcon(app, mainpath, "folder.png", TRUE)) != NULL) &success;
-    success = ((ofoldericon = MakeIcon(app, mainpath, "folder_go.png", TRUE)) != NULL) &success;
-    success = ((fileicon = MakeIcon(app, mainpath, "page.png", TRUE)) != NULL) &success;
-    success = ((cancelicon = MakeIcon(app, mainpath, "cancel.png", TRUE)) != NULL) &success;
-    success = ((finishicon = MakeIcon(app, mainpath, "tick.png", TRUE)) != NULL) &success;
-    success = ((downicon = MakeIcon(app, mainpath, "arrow_down.png", TRUE)) != NULL) &success;
-    success = ((upicon = MakeIcon(app, mainpath, "arrow_up.png", TRUE)) != NULL) &success;
-    success = ((dccicon = MakeIcon(app, mainpath, "dcc.png", TRUE)) != NULL) &success;
-    success = ((dccnewm = MakeIcon(app, mainpath, "dccnewm.png", TRUE)) != NULL) &success;
-    success = ((logsicon = MakeIcon(app, mainpath, "logs.png", TRUE)) != NULL) &success;
-    success = ((scripticon = MakeIcon(app, mainpath, "script.png", TRUE)) != NULL) &success;
-    success = ((transfericon = MakeIcon(app, mainpath, "file.png", TRUE)) != NULL) &success;
-    success = ((playicon = MakeIcon(app, mainpath, "play.png", TRUE)) != NULL) &success;
+    success = ((ICO_BIG = makeIcon(app, mainpath, "big_dxirc.png", TRUE)) != NULL) &success;
+    success = ((ICO_SMALL = makeIcon(app, mainpath, "small_dxirc.png", TRUE)) != NULL) &success;
+    success = ((ICO_IRCOWNER = makeIcon(app, themepath, "irc_owner.png", FALSE)) != NULL) &success;
+    success = ((ICO_IRCADMIN = makeIcon(app, themepath, "irc_admin.png", FALSE)) != NULL) &success;
+    success = ((ICO_IRCOP = makeIcon(app, themepath, "irc_op.png", FALSE)) != NULL) &success;
+    success = ((ICO_IRCVOICE = makeIcon(app, themepath, "irc_voice.png", FALSE)) != NULL) &success;
+    success = ((ICO_IRCHALFOP = makeIcon(app, themepath, "irc_halfop.png", FALSE)) != NULL) &success;
+    success = ((ICO_IRCNORMAL = makeIcon(app, themepath, "irc_normal.png", FALSE)) != NULL) &success;
+    success = ((ICO_IRCAWAYOWNER = makeAwayIcon(app, themepath, "irc_owner.png")) != NULL) &success;
+    success = ((ICO_IRCAWAYADMIN = makeAwayIcon(app, themepath, "irc_admin.png")) != NULL) &success;
+    success = ((ICO_IRCAWAYOP = makeAwayIcon(app, themepath, "irc_op.png")) != NULL) &success;
+    success = ((ICO_IRCAWAYVOICE = makeAwayIcon(app, themepath, "irc_voice.png")) != NULL) &success;
+    success = ((ICO_IRCAWAYHALFOP = makeAwayIcon(app, themepath, "irc_halfop.png")) != NULL) &success;
+    success = ((ICO_IRCAWAYNORMAL = makeAwayIcon(app, themepath, "irc_normal.png")) != NULL) &success;
+    success = ((ICO_SERVERLIST = makeIcon(app, mainpath, "server.png", TRUE)) != NULL) &success;
+    success = ((ICO_CONNECT = makeIcon(app, mainpath, "connect.png", TRUE)) != NULL) &success;
+    success = ((ICO_DISCONNECT = makeIcon(app, mainpath, "disconnect.png", TRUE)) != NULL) &success;
+    success = ((ICO_QUIT = makeIcon(app, mainpath, "door_out.png", TRUE)) != NULL) &success;
+    success = ((ICO_CLOSE = makeIcon(app, mainpath, "cross.png", TRUE)) != NULL) &success;
+    success = ((ICO_OPTION = makeIcon(app, mainpath, "wrench.png", TRUE)) != NULL) &success;
+    success = ((ICO_HELP = makeIcon(app, mainpath, "help.png", TRUE)) != NULL) &success;
+    success = ((ICO_SERVER = makeIcon(app, mainpath, "world.png", TRUE)) != NULL) &success;
+    success = ((ICO_CHANNEL = makeIcon(app, mainpath, "channel.png", TRUE)) != NULL) &success;
+    success = ((ICO_QUERY = makeIcon(app, mainpath, "user.png", TRUE)) != NULL) &success;
+    success = ((ICO_CLEAR = makeIcon(app, mainpath, "clear.png", TRUE)) != NULL) &success;
+    success = ((ICO_FLAG = makeIcon(app, flagpath, "cz.png", TRUE)) != NULL) &success;
+    success = ((ICO_TRAY = makeIcon(app, mainpath, "small_dxirc.png")) != NULL) &success;
+    success = ((ICO_NEWMSG = makeIcon(app, mainpath, "newm.png")) != NULL) &success;
+    success = ((ICO_NEWFILE = makeIcon(app, mainpath, "newfile.png")) != NULL) &success;
+    success = ((ICO_QUERYNEWMSG = makeIcon(app, mainpath, "unewm.png", TRUE)) != NULL) &success;
+    success = ((ICO_CHANNELNEWMSG = makeIcon(app, mainpath, "chnewm.png", TRUE)) != NULL) &success;
+    success = ((ICO_CLOSEFOLDER = makeIcon(app, mainpath, "folder.png", TRUE)) != NULL) &success;
+    success = ((ICO_OPENFOLDER = makeIcon(app, mainpath, "folder_go.png", TRUE)) != NULL) &success;
+    success = ((ICO_FILE = makeIcon(app, mainpath, "page.png", TRUE)) != NULL) &success;
+    success = ((ICO_CANCEL = makeIcon(app, mainpath, "cancel.png", TRUE)) != NULL) &success;
+    success = ((ICO_FINISH = makeIcon(app, mainpath, "tick.png", TRUE)) != NULL) &success;
+    success = ((ICO_DOWN = makeIcon(app, mainpath, "arrow_down.png", TRUE)) != NULL) &success;
+    success = ((ICO_UP = makeIcon(app, mainpath, "arrow_up.png", TRUE)) != NULL) &success;
+    success = ((ICO_DCC = makeIcon(app, mainpath, "dcc.png", TRUE)) != NULL) &success;
+    success = ((ICO_DCCNEWMSG = makeIcon(app, mainpath, "dccnewm.png", TRUE)) != NULL) &success;
+    success = ((ICO_LOGS = makeIcon(app, mainpath, "logs.png", TRUE)) != NULL) &success;
+    success = ((ICO_SCRIPT = makeIcon(app, mainpath, "script.png", TRUE)) != NULL) &success;
+    success = ((ICO_TRANSFER = makeIcon(app, mainpath, "file.png", TRUE)) != NULL) &success;
+    success = ((ICO_PLAY = makeIcon(app, mainpath, "play.png", TRUE)) != NULL) &success;
 
     return success;
 }

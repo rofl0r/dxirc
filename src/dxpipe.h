@@ -43,23 +43,23 @@ public:
         ID_LAST
     };
 
-    long OnIORead(FXObject*, FXSelector, void*);
-    FXint ExecCmd(FXString);
-    FXbool GetRunning() { return running; }
-    void StopCmd();
+    long onIORead(FXObject*, FXSelector, void*);
+    FXint execCmd(FXString);
+    FXbool getRunning() { return m_running; }
+    void stopCmd();
 
 private:
     dxPipe() {}
     dxPipe(const dxPipe& orig);
 
-    int ReadData();
+    int readData();
 
-    FXApp *application;
-    FXObject *target;
-    FXint in[2], out[2];
-    FXint pid;
-    FXString strprev, command;
-    FXbool running;
+    FXApp *m_application;
+    FXObject *m_target;
+    FXint m_in[2], m_out[2];
+    FXint m_pid;
+    FXString m_strprev, m_command;
+    FXbool m_running;
 };
 
 #endif	/* _DXPIPE_H */
