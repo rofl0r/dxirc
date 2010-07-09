@@ -33,7 +33,7 @@ dxScriptCommandsArray scriptCommands;
 
 namespace utils
 {
-    void FillCommands()
+    void fillCommands()
     {
         commands.clear();        
         commands.append("ADMIN");
@@ -851,14 +851,14 @@ namespace utils
             if(!key.empty() && !value.empty() && key[0]=='/' && !key.contains(' '))
                 aliases.insert(StringPair(key, value));
         }
-        FillCommands();
+        fillCommands();
 
     }
 
     void setAliases(dxStringMap a)
     {
         aliases = a;
-        FillCommands();
+        fillCommands();
     }
 
     FXString getAlias(FXString key)
@@ -894,7 +894,7 @@ namespace utils
     }
 
     //This's from Xfe, thanks
-    int Streq(const FXchar *a, const FXchar *b)
+    int streq(const FXchar *a, const FXchar *b)
     {
         if (a == NULL || b == NULL)
             return 0;
@@ -935,7 +935,7 @@ namespace utils
                 s[3]='\0';
 
                 // String contains BOM => UTF8
-                if (Streq(s,BOM))
+                if (streq(s,BOM))
                     return TRUE;
 
                 // String don't contain BOM
@@ -948,7 +948,7 @@ namespace utils
     void addScriptCommand(LuaScriptCommand command)
     {
         scriptCommands.append(command);
-        FillCommands();
+        fillCommands();
     }
 
     //Remove one command for lua script
@@ -959,7 +959,7 @@ namespace utils
             if(comparecase(command, scriptCommands[i].name) == 0)
             {
                 scriptCommands.erase(i);
-                FillCommands();
+                fillCommands();
                 return TRUE;
             }
         }
@@ -978,7 +978,7 @@ namespace utils
                 result = TRUE;
             }
         }
-        FillCommands();
+        fillCommands();
         return result;
     }
 
