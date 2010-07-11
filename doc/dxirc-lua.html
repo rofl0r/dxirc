@@ -10,7 +10,7 @@
   <title>dxirc Lua Scripting Reference</title>
 </head><body>
 
-<h1>dxirc Lua Scripting Reference<br>since version 0.50.0</h1>
+<h1>dxirc Lua Scripting Reference<br>since version 0.60.svn</h1>
 
 <h2>Contents</h2>
 
@@ -83,7 +83,7 @@ with Lua scripting enabled — you can check this in the About dialog.</p>
 
     <ul>
       <li><code class="value">text</code> — command argument, i.e. <code class="string">"first second"</code> when invoked as <code>/test first second</code>,</li>
-      <li><code class="value">id</code> — id of tab from which the command was invoked (indexed from zero).</li>
+      <li><code class="value">id</code> — id of tab from which the command was invoked.</li>
     </ul>
 
     <p class="caption">Example:</p>
@@ -105,14 +105,14 @@ with Lua scripting enabled — you can check this in the About dialog.</p>
     <ul>
       <li><code class="value">from</code> — nickname of the message author,</li>
       <li><code class="value">text</code> — message text,</li>
-      <li><code class="value">id</code> — id of the tab from which the message was received (indexed from zero).</li>
+      <li><code class="value">id</code> — id of the tab from which the message was received.</li>
     </ul>
 
     <p>For <code>JOIN</code> event, the <code>funcname</code> is then invoked as <code><span class="function">funcname</span>(<span class="value">nick</span>, <span class="value">id</span>)</code>, where:</p>
 
     <ul>
       <li><code class="value">nick</code> — nickname of the joined person,</li>
-      <li><code class="value">id</code> — id of the tab from which the event was received (indexed from zero).</li>
+      <li><code class="value">id</code> — id of the tab from which the event was received.</li>
     </ul>
 
     <p class="caption">Example:</p>
@@ -132,7 +132,7 @@ with Lua scripting enabled — you can check this in the About dialog.</p>
 
     <ul>
       <li><code class="value">text</code> — entered text,</li>
-      <li><code class="value">id</code> — id of tab from which the message was entered (indexed from zero).</li>
+      <li><code class="value">id</code> — id of tab from which the message was entered.</li>
     </ul>
 
     <p class="caption">Example:</p>
@@ -151,7 +151,7 @@ with Lua scripting enabled — you can check this in the About dialog.</p>
     <p>The function <code>funcname</code> is then invoked as <code><span class="function">funcname</span>(<span class="value">tab</span>)</code>, where the resulting <code class="value">tab</code> table contains following keywords:</p>
 
     <ul>
-      <li><code class="string">"id"</code> — id of tab (indexed from zero).</li>
+      <li><code class="string">"id"</code> — id of tab,</li>
       <li><code class="string">"name"</code> — tab name,</li>
       <li><code class="string">"type"</code> — tab type, i.e. <code>server</code>, <code>channel</code>, <code>query</code>, <code>dccchat</code> or <code>other</code>,</li>
       <li><code class="string">"servername"</code> — server name,</li>
@@ -190,7 +190,7 @@ with Lua scripting enabled — you can check this in the About dialog.</p>
     <ul>
       <li><code class="value">command</code> — command name, i.e. <code class="string">"test"</code> when invoked as <code>/test first second</code>, <code class="value">nil</code> when invoked as <code>Hello, World!</code></li>
       <li><code class="value">text</code> — command argument, i.e. <code class="string">"first second"</code> when invoked as <code>/test first second</code>, <code class="string">"Hello, World!"</code> when invoked as <code>Hello, World!</code></li>
-      <li><code class="value">id</code> — id of tab from which the command was invoked (indexed from zero).</li>
+      <li><code class="value">id</code> — id of tab from which the command was invoked.</li>
     </ul>
 
     <p class="caption">Example:</p>
@@ -218,7 +218,7 @@ with Lua scripting enabled — you can check this in the About dialog.</p>
 
     <ul>
       <li><code class="value">command</code> — command to be executed,</li>
-      <li><code class="value">id</code> — optional tab id (indexed from zero); unless specified, the command is executed in the current tab.</li>
+      <li><code class="value">id</code> — optional tab id; unless specified, the command is executed in the current tab.</li>
     </ul>
 
     <p class="caption">Example:</p>
@@ -233,7 +233,7 @@ with Lua scripting enabled — you can check this in the About dialog.</p>
 
     <ul>
       <li><code class="value">text</code> — text to be displayed.</li>
-      <li><code class="value">id</code> — optional tab id (indexed from zero); unless specified, the message is printed to the current tab window.</li>
+      <li><code class="value">id</code> — optional tab id; unless specified, the message is printed to the current tab window.</li>
       <li><code class="value">style</code> — optional style number; unless specified, the message is formatted as ordinary text. Available styles are as follows:
         <ul>
           <li><code>1</code> — user message,</li>
@@ -319,7 +319,7 @@ current tab instead. When there are no tabs at all, it returns <code class="valu
 
   <dt>dxirc.GetTabInfo(<span>id</span>)</dt>
   <dd>
-    <p>Returns information about the tab with selected <code class="value">id</code> (indexed from zero). The resulting table contains following keywords:</p>
+    <p>Returns information about the tab with selected <code class="value">id</code>. The resulting table contains following keywords:</p>
 
     <ul>
       <li><code class="string">"name"</code> — tab name,</li>
@@ -351,7 +351,7 @@ current tab instead. When there are no tabs at all, it returns <code class="valu
     <p>Changes focus to the selected tab. It accepts following argument:</p>
 
     <ul>
-      <li><code class="value">id</code> — desired tab id (indexed from zero).</li>
+      <li><code class="value">id</code> — desired tab id.</li>
     </ul>
 
     <p class="caption">Example:</p>
@@ -377,7 +377,7 @@ current tab instead. When there are no tabs at all, it returns <code class="valu
     <p>Clears chat on the selected tab. It accepts following argument:</p>
 
     <ul>
-      <li><code class="value">id</code> — desired tab id (indexed from zero).</li>
+      <li><code class="value">id</code> — desired tab id.</li>
     </ul>
 
     <p class="caption">Example:</p>

@@ -6837,7 +6837,6 @@ int
 main ()
 {
   char *data, *data2, *data3;
-  const char *cdata2;
   int i, pagesize;
   int fd, fd2;
 
@@ -6862,10 +6861,10 @@ main ()
   fd2 = open ("conftest.txt", O_RDWR | O_CREAT | O_TRUNC, 0600);
   if (fd2 < 0)
     return 4;
-  cdata2 = "";
-  if (write (fd2, cdata2, 1) != 1)
+  data2 = "";
+  if (write (fd2, data2, 1) != 1)
     return 5;
-  data2 = (char *) mmap (0, pagesize, PROT_READ | PROT_WRITE, MAP_SHARED, fd2, 0L);
+  data2 = mmap (0, pagesize, PROT_READ | PROT_WRITE, MAP_SHARED, fd2, 0L);
   if (data2 == MAP_FAILED)
     return 6;
   for (i = 0; i < pagesize; ++i)
@@ -13705,10 +13704,15 @@ $as_echo "$as_me: WARNING: unrecognized options: $ac_unrecognized_opts" >&2;}
 fi
 
 
-echo ""
+echo
 echo "Configure finished!"
+echo "Install prefix:                             $prefix"
+echo "Build with tray support:                    $enable_tray"
+echo "Build with lua scripting support:           $have_lua"
+echo "Build with SSL:                             $have_openssl"
+echo
 echo "              Do:  'make' to compile dxirc."
 echo "            Then:  'make install' (as root) to install dxirc."
-echo ""
+echo
 
 

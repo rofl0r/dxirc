@@ -519,7 +519,7 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     if(!FXStat::exists(m_autoloadPath))
     {
 #ifdef WIN32
-        m_autoloadPath = utils::LocaleToUtf8(FXSystem::getHomeDirectory()+PATHSEPSTRING+"scripts");
+        m_autoloadPath = utils::localeToUtf8(FXSystem::getHomeDirectory()+PATHSEPSTRING+"scripts");
 #else
         m_autoloadPath = FXSystem::getHomeDirectory()+PATHSEPSTRING+".dxirc"+PATHSEPSTRING+"scripts";
 #endif

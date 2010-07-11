@@ -147,10 +147,15 @@ dnl Output
 AC_OUTPUT(Makefile intl/Makefile m4/Makefile po/Makefile.in dxirc.spec src/Makefile
           icons/Makefile icons/default/Makefile icons/flags/Makefile icons/smileys/Makefile sounds/Makefile)
 
-echo ""
+echo
 echo "Configure finished!"
+echo "Install prefix:                             $prefix"
+echo "Build with tray support:                    $enable_tray"
+echo "Build with lua scripting support:           $have_lua"
+echo "Build with SSL:                             $have_openssl"
+echo
 echo "              Do:  'make' to compile dxirc."
 echo "            Then:  'make install' (as root) to install dxirc."
-echo ""
+echo
 
 
