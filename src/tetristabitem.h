@@ -76,7 +76,7 @@ class TetrisTabItem : public FXTabItem
 {
     FXDECLARE(TetrisTabItem)
 public:
-    TetrisTabItem(dxTabBook*, const FXString&, FXIcon*, FXuint);
+    TetrisTabItem(dxTabBook*, const FXString&, FXIcon*, FXuint, FXint);
     virtual ~TetrisTabItem();
     enum {
         ID_GAMECANVAS = FXMainWindow::ID_LAST+400,
@@ -105,6 +105,7 @@ public:
     void drop();
     FXbool isPauseEnable() { return m_pauseEnable; }
     FXbool isPaused() { return m_paused; }
+    FXint getID() { return m_id; }
 
     long onPaint(FXObject*, FXSelector, void*);
     long onTimeout(FXObject*, FXSelector, void*);
@@ -124,7 +125,7 @@ private:
     FXint m_cells[columns][rows];
     FXint m_fullLines[4];
     FXint m_apiece, m_anext;
-    FXint m_removedLines, m_level, m_score, m_nextPiece;
+    FXint m_removedLines, m_level, m_score, m_nextPiece, m_id;
     FXbool m_paused, m_done, m_pauseEnable;
     Piece *m_piece;
     FXColor m_penColor;

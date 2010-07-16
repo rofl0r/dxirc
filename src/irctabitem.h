@@ -72,7 +72,7 @@ class IrcTabItem: public FXTabItem
     FXDECLARE(IrcTabItem)
     friend class dxirc;
     public:
-        IrcTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FXuint opts=TAB_TOP_NORMAL, TYPE typ=CHANNEL, IrcSocket *sock=NULL, FXbool oswnd=FALSE, FXbool uswn=TRUE, FXbool logg=FALSE, FXString cmdlst="", FXString lpth="", FXint maxa=200, IrcColor clrs=IrcColor(), FXString nichar=":", FXFont *fnt=NULL, FXbool scmd=FALSE, FXbool slst=FALSE, FXbool cnick=FALSE, FXbool sclr=TRUE);
+        IrcTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FXuint opts=TAB_TOP_NORMAL, FXint id=0, TYPE typ=CHANNEL, IrcSocket *sock=NULL, FXbool oswnd=FALSE, FXbool uswn=TRUE, FXbool logg=FALSE, FXString cmdlst="", FXString lpth="", FXint maxa=200, IrcColor clrs=IrcColor(), FXString nichar=":", FXFont *fnt=NULL, FXbool scmd=FALSE, FXbool slst=FALSE, FXbool cnick=FALSE, FXbool sclr=TRUE);
         virtual ~IrcTabItem();
         enum {
             ID_COMMANDLINE = FXMainWindow::ID_LAST+25,
@@ -121,6 +121,7 @@ class IrcTabItem: public FXTabItem
         FXString getNickName() { return m_server ? m_server->getNickName() : ""; }
         void setType(const TYPE &typ, const FXString &tabtext);
         TYPE getType() { return m_type; }
+        FXint getID() { return m_id; }
         void reparentTab();
         void setColor(IrcColor);
         void setCommandsList(FXString clst);
@@ -185,7 +186,7 @@ class IrcTabItem: public FXTabItem
         FXList *m_users;
         FXTextField *m_commandline;
         dxTextField *m_topicline;
-        FXint m_currentPosition, m_historyMax, m_numberUsers, m_pics;
+        FXint m_currentPosition, m_historyMax, m_numberUsers, m_pics, m_id;
         FXbool m_checkAway, m_iamOp, m_usersShown, m_logging, m_ownServerWindow;
         FXbool m_sameCmd, m_sameList, m_coloredNick, m_editableTopic, m_sendPipe;
         FXbool m_scriptHasAll, m_scriptHasMyMsg, m_stripColors;

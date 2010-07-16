@@ -156,7 +156,7 @@ class dxirc: public FXMainWindow
         ColorTheme m_appTheme;
         FXPopup *m_traymenu;
         FXTrayIcon *m_trayIcon;
-        FXint m_lastToken;
+        FXint m_lastToken, m_lastID;
         dxStringMap m_smileysMap;
         dxSmileyArray m_smileys;
         FXColor m_trayColor;
@@ -201,6 +201,7 @@ class dxirc: public FXMainWindow
         FXint getServerTab(IrcSocket*);
         FXint getTabId(IrcSocket*, FXString);
         FXint getTabId(FXString);
+        FXint getCurrentTabId();
         FXbool isLastTab(IrcSocket*);
         FXbool isFriend(const FXString &nick, const FXString &on, const FXString &server);
         void connectServer(FXString hostname, FXint port, FXString pass, FXString nick, FXString rname, FXString channels, FXString commands, FXbool ssl, DCCTYPE dccType=DCC_NONE, FXString dccNick="", IrcSocket *dccParent=0, DccFile dccFile=DccFile());

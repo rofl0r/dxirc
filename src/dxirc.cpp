@@ -192,6 +192,7 @@ dxirc::dxirc(FXApp *app)
     m_transfers = NULL;
     m_traymenu = NULL;
     m_lastToken = 0;
+    m_lastID = 0;
 
     readConfig();
 
@@ -250,7 +251,8 @@ dxirc::dxirc(FXApp *app)
     server->setDelayAttempt(m_delayAttempt);
     m_servers.append(server);
 
-    IrcTabItem *tabitem = new IrcTabItem(m_tabbook, "(server)", ICO_SERVER, TAB_BOTTOM, SERVER, server, m_ownServerWindow, m_usersShown, m_logging, m_commandsList, m_logPath, m_maxAway, m_colors, m_nickCompletionChar, m_ircFont, m_sameCmd, m_sameList, m_coloredNick, m_stripColors);
+    IrcTabItem *tabitem = new IrcTabItem(m_tabbook, "(server)", ICO_SERVER, TAB_BOTTOM, m_lastID, SERVER, server, m_ownServerWindow, m_usersShown, m_logging, m_commandsList, m_logPath, m_maxAway, m_colors, m_nickCompletionChar, m_ircFont, m_sameCmd, m_sameList, m_coloredNick, m_stripColors);
+    m_lastID++;
     server->appendTarget(tabitem);
     tabitem->setIrcFont(m_ircFont);
 
@@ -1539,14 +1541,15 @@ void dxirc::connectServer(FXString hostname, FXint port, FXString pass, FXString
         {
             if (!m_tabbook->numChildren())
             {
-                IrcTabItem *tabitem = new IrcTabItem(m_tabbook, dcc ? dccNick : hostname, dcc ? ICO_DCC : ICO_SERVER, TAB_BOTTOM, dcc ? DCCCHAT : SERVER, m_servers[0], m_ownServerWindow, m_usersShown, m_logging, m_commandsList, m_logPath, m_maxAway, m_colors, m_nickCompletionChar, m_ircFont, m_sameCmd, m_sameList, m_coloredNick, m_stripColors);
+                IrcTabItem *tabitem = new IrcTabItem(m_tabbook, dcc ? dccNick : hostname, dcc ? ICO_DCC : ICO_SERVER, TAB_BOTTOM, m_lastID, dcc ? DCCCHAT : SERVER, m_servers[0], m_ownServerWindow, m_usersShown, m_logging, m_commandsList, m_logPath, m_maxAway, m_colors, m_nickCompletionChar, m_ircFont, m_sameCmd, m_sameList, m_coloredNick, m_stripColors);
+                sendNewTab(m_servers[0], dcc ? dccNick : hostname, m_lastID, FALSE, dcc ? DCCCHAT : SERVER);
+                m_lastID++;
                 tabitem->create();
                 tabitem->createGeom();
                 tabitem->setSmileys(m_useSmileys, m_smileys);
                 m_servers[0]->appendTarget(tabitem);
                 updateTabPosition();
                 sortTabs();
-                sendNewTab(m_servers[0], dcc ? dccNick : hostname, getTabId(m_servers[0], dcc ? dccNick : hostname), FALSE, dcc ? DCCCHAT : SERVER);
             }
             if(m_tabbook->childAtIndex(0)->getMetaClass()==&IrcTabItem::metaClass)
             {
@@ -1592,14 +1595,15 @@ void dxirc::connectServer(FXString hostname, FXint port, FXString pass, FXString
         m_servers[0]->setDccFile(dccFile);
         if(dccType != DCC_IN && dccType != DCC_OUT && dccType != DCC_PIN && dccType != DCC_POUT)
         {
-            IrcTabItem *tabitem = new IrcTabItem(m_tabbook, dcc ? dccNick : hostname, dcc ? ICO_DCC : ICO_SERVER, TAB_BOTTOM, dcc ? DCCCHAT : SERVER, m_servers[0], m_ownServerWindow, m_usersShown, m_logging, m_commandsList, m_logPath, m_maxAway, m_colors, m_nickCompletionChar, m_ircFont, m_sameCmd, m_sameList, m_coloredNick, m_stripColors);
+            IrcTabItem *tabitem = new IrcTabItem(m_tabbook, dcc ? dccNick : hostname, dcc ? ICO_DCC : ICO_SERVER, TAB_BOTTOM, m_lastID, dcc ? DCCCHAT : SERVER, m_servers[0], m_ownServerWindow, m_usersShown, m_logging, m_commandsList, m_logPath, m_maxAway, m_colors, m_nickCompletionChar, m_ircFont, m_sameCmd, m_sameList, m_coloredNick, m_stripColors);
+            sendNewTab(m_servers[0], dcc ? dccNick : hostname, m_lastID, FALSE, dcc ? DCCCHAT : SERVER);
+            m_lastID++;
             tabitem->create();
             tabitem->createGeom();
             tabitem->setSmileys(m_useSmileys, m_smileys);
             m_servers[0]->appendTarget(tabitem);
             updateTabPosition();
             sortTabs();
-            sendNewTab(m_servers[0], dcc ? dccNick : hostname, getTabId(m_servers[0], dcc ? dccNick : hostname), FALSE, dcc ? DCCCHAT : SERVER);
             if(dcc)
             {
                 for(FXint i = 0; i < m_tabbook->numChildren(); i+=2)
@@ -1819,14 +1823,15 @@ void dxirc::onIrcNewchannel(IrcSocket *server, IrcEvent *ev)
     }
     else
     {
-        IrcTabItem* tabitem = new IrcTabItem(m_tabbook, ev->param1, ICO_CHANNEL, TAB_BOTTOM, CHANNEL, server, m_ownServerWindow, m_usersShown, m_logging, m_commandsList, m_logPath, m_maxAway, m_colors, m_nickCompletionChar, m_ircFont, m_sameCmd, m_sameList, m_coloredNick, m_stripColors);
+        IrcTabItem* tabitem = new IrcTabItem(m_tabbook, ev->param1, ICO_CHANNEL, TAB_BOTTOM, m_lastID, CHANNEL, server, m_ownServerWindow, m_usersShown, m_logging, m_commandsList, m_logPath, m_maxAway, m_colors, m_nickCompletionChar, m_ircFont, m_sameCmd, m_sameList, m_coloredNick, m_stripColors);
+        sendNewTab(server, ev->param1, m_lastID, FALSE, CHANNEL);
+        m_lastID++;
         server->appendTarget(tabitem);
         tabitem->create();
         tabitem->createGeom();
         tabitem->setSmileys(m_useSmileys, m_smileys);
         updateTabPosition();
         sortTabs();
-        sendNewTab(server, ev->param1, getTabId(server, ev->param1), FALSE, CHANNEL);
     }
     updateMenus();
 }
@@ -1845,14 +1850,15 @@ void dxirc::onIrcQuery(IrcSocket *server, IrcEvent *ev)
     }
     else
     {
-        IrcTabItem* tabitem = new IrcTabItem(m_tabbook, ev->param1, ICO_QUERY, TAB_BOTTOM, QUERY, server, m_ownServerWindow, m_usersShown, m_logging, m_commandsList, m_logPath, m_maxAway, m_colors, m_nickCompletionChar, m_ircFont, m_sameCmd, m_sameList, m_coloredNick, m_stripColors);
+        IrcTabItem* tabitem = new IrcTabItem(m_tabbook, ev->param1, ICO_QUERY, TAB_BOTTOM, m_lastID, QUERY, server, m_ownServerWindow, m_usersShown, m_logging, m_commandsList, m_logPath, m_maxAway, m_colors, m_nickCompletionChar, m_ircFont, m_sameCmd, m_sameList, m_coloredNick, m_stripColors);
+        sendNewTab(server, ev->param1, m_lastID, FALSE, QUERY);
+        m_lastID++;
         server->appendTarget(tabitem);
         tabitem->create();
         tabitem->createGeom();
         tabitem->setSmileys(m_useSmileys, m_smileys);
         updateTabPosition();
         sortTabs();
-        sendNewTab(server, ev->param1, getTabId(server, ev->param1), FALSE, QUERY);
     }
     if(ev->param2 == server->getNickName())
     {
@@ -3086,13 +3092,14 @@ long dxirc::onRemoveIgnoreUser(FXObject *sender, FXSelector, void *data)
 long dxirc::onNewTetris(FXObject*, FXSelector, void*)
 {
     if(hasTetrisTab()) return 1;
-    TetrisTabItem *tab = new TetrisTabItem(m_tabbook, "tetris", 0, TAB_TOP);
+    TetrisTabItem *tab = new TetrisTabItem(m_tabbook, "tetris", 0, TAB_TOP, m_lastID);
+    sendNewTab(NULL, "tetris", m_lastID, TRUE, OTHER);
+    m_lastID++;
     tab->create();
     tab->createGeom();
     tab->setColor(m_colors);
     updateTabPosition();
     sortTabs();
-    sendNewTab(NULL, "tetris", getTabId("tetris"), TRUE, OTHER);
     updateMenus();
     m_tabbook->setCurrent(m_tabbook->numChildren()/2-1, TRUE);
     return 1;
@@ -3252,7 +3259,7 @@ long dxirc::onLua(FXObject *obj, FXSelector, void *data)
                 if(lua_isfunction(m_scripts[i].L, -1))
                 {
                     lua_pushstring(m_scripts[i].L, text.text());
-                    lua_pushnumber(m_scripts[i].L, m_tabbook->indexOfChild(tab)/2);
+                    lua_pushnumber(m_scripts[i].L, tab->getID());
                     if(lua_pcall(m_scripts[i].L, 2, 0, 0)) appendIrcStyledText(FXStringFormat(_("Error: %s"), lua_tostring(m_scripts[i].L, -1)), 4);
                 }
                 else lua_pop(m_scripts[i].L, 1);
@@ -3293,7 +3300,7 @@ long dxirc::onIrcMyMsg(FXObject *sender, FXSelector, void *data)
                     else
                     {
                         lua_pushstring(m_scripts[j].L, text->text());
-                        lua_pushinteger(m_scripts[j].L, m_tabbook->indexOfChild(tab)/2);
+                        lua_pushinteger(m_scripts[j].L, tab->getID());
                         if (lua_pcall(m_scripts[j].L, 2, 0, 0))
                         {
                             appendIrcStyledText(FXStringFormat(_("Lua plugin: error calling %s %s"), m_scriptEvents[i].funcname.text(), lua_tostring(m_scripts[j].L, -1)), 4);
@@ -3433,7 +3440,7 @@ long dxirc::onIrcCommand(FXObject *sender, FXSelector, void *data)
                             lua_pushnil(m_scripts[j].L);
                             lua_pushstring(m_scripts[j].L, commandtext->text());
                         }
-                        lua_pushinteger(m_scripts[j].L, m_tabbook->indexOfChild(tab)/2);
+                        lua_pushinteger(m_scripts[j].L, tab->getID());
                         if (lua_pcall(m_scripts[j].L, 3, 0, 0))
                         {
                             appendIrcStyledText(FXStringFormat(_("Lua plugin: error calling %s %s"), m_scriptEvents[i].funcname.text(), lua_tostring(m_scripts[j].L, -1)), 4);
@@ -3483,7 +3490,8 @@ FXint dxirc::getTabId(IrcSocket *server, FXString name)
 {
     for(FXint i = 0; i < m_tabbook->numChildren(); i+=2)
     {
-        if(server->findTarget(static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))) && comparecase(name, static_cast<FXTabItem*>(m_tabbook->childAtIndex(i))->getText()) == 0) return i/2;
+        if(server->findTarget(static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))) && comparecase(name, static_cast<FXTabItem*>(m_tabbook->childAtIndex(i))->getText()) == 0)
+            return static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))->getID();
     }
     return -1;
 }
@@ -3493,9 +3501,25 @@ FXint dxirc::getTabId(FXString name)
 {
     for(FXint i = 0; i < m_tabbook->numChildren(); i+=2)
     {
-        if(comparecase(name, static_cast<FXTabItem*>(m_tabbook->childAtIndex(i))->getText()) == 0) return i/2;
+        if(comparecase(name, static_cast<FXTabItem*>(m_tabbook->childAtIndex(i))->getText()) == 0)
+        {
+            if(m_tabbook->childAtIndex(i)->getMetaClass()==&TetrisTabItem::metaClass)
+                return static_cast<TetrisTabItem*>(m_tabbook->childAtIndex(i))->getID();
+            else
+                return static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))->getID();
+        }
     }
     return -1;
+}
+
+FXint dxirc::getCurrentTabId()
+{
+	FXint index = m_tabbook->getCurrent();
+	if(m_tabbook->childAtIndex(index)->getMetaClass()==&TetrisTabItem::metaClass)
+		return static_cast<TetrisTabItem*>(m_tabbook->childAtIndex(index))->getID();
+	else
+		return static_cast<IrcTabItem*>(m_tabbook->childAtIndex(index))->getID();
+	return -1;
 }
 
 FXbool dxirc::isFriend(const FXString &nick, const FXString &on, const FXString &server)
@@ -4210,12 +4234,12 @@ int dxirc::onLuaGetTab(lua_State *lua)
             {
                 if(comparecase(tab, static_cast<FXTabItem*>(_pThis->m_tabbook->childAtIndex(i))->getText()) == 0 && comparecase(server, static_cast<IrcTabItem*>(_pThis->m_tabbook->childAtIndex(i))->getServerName()) == 0)
                 {
-                    lua_pushnumber(lua, i/2);
+                    lua_pushnumber(lua, static_cast<IrcTabItem*>(_pThis->m_tabbook->childAtIndex(i))->getID());
                     return 1;
                 }
             }
         }
-        lua_pushnumber(lua, _pThis->m_tabbook->getCurrent());
+        lua_pushnumber(lua, _pThis->getCurrentTabId());
         return 1;
     }
     else lua_pushnumber(lua, -1);
@@ -4228,7 +4252,7 @@ int dxirc::onLuaGetTab(lua_State *lua)
 int dxirc::onLuaGetCurrentTab(lua_State *lua)
 {
 #ifdef HAVE_LUA
-    lua_pushnumber(lua, _pThis->m_tabbook->getCurrent());
+    lua_pushnumber(lua, _pThis->getCurrentTabId());
     return 1;
 #else
     return 0;
@@ -4363,32 +4387,16 @@ int dxirc::onLuaCreateTab(lua_State *lua)
             }
         }
     }
-    IrcTabItem *tabitem = new IrcTabItem(_pThis->m_tabbook, name, NULL, TAB_BOTTOM, OTHER, NULL, _pThis->m_ownServerWindow, _pThis->m_usersShown, FALSE, _pThis->m_commandsList, _pThis->m_logPath, _pThis->m_maxAway, _pThis->m_colors, _pThis->m_nickCompletionChar, _pThis->m_ircFont, _pThis->m_sameCmd, _pThis->m_sameList, _pThis->m_coloredNick, _pThis->m_stripColors);
+    IrcTabItem *tabitem = new IrcTabItem(_pThis->m_tabbook, name, NULL, TAB_BOTTOM, _pThis->m_lastID, OTHER, NULL, _pThis->m_ownServerWindow, _pThis->m_usersShown, FALSE, _pThis->m_commandsList, _pThis->m_logPath, _pThis->m_maxAway, _pThis->m_colors, _pThis->m_nickCompletionChar, _pThis->m_ircFont, _pThis->m_sameCmd, _pThis->m_sameList, _pThis->m_coloredNick, _pThis->m_stripColors);
+    lua_pushnumber(lua, _pThis->m_lastID);
+    _pThis->sendNewTab(NULL, name, _pThis->m_lastID, FALSE, OTHER);
+    _pThis->m_lastID++;
     tabitem->create();
     tabitem->createGeom();
     tabitem->setSmileys(_pThis->m_useSmileys, _pThis->m_smileys);
     _pThis->updateTabPosition();
     _pThis->sortTabs();
     _pThis->updateMenus();
-    if(_pThis->m_tabbook->numChildren())
-    {
-        for(FXint i = 0; i < _pThis->m_tabbook->numChildren(); i+=2)
-        {
-            if(_pThis->m_tabbook->childAtIndex(i)->getMetaClass()==&IrcTabItem::metaClass
-                    && comparecase(static_cast<FXTabItem*>(_pThis->m_tabbook->childAtIndex(i))->getText(), name) == 0
-                    && static_cast<IrcTabItem*>(_pThis->m_tabbook->childAtIndex(i))->getType() == OTHER)
-            {
-                lua_pushnumber(lua, i/2);
-                _pThis->sendNewTab(NULL, name, _pThis->getTabId(name), FALSE, OTHER);
-                return 1;
-            }
-        }
-    }
-    else
-    {
-        lua_pushnil(lua);
-        return 0;
-    }
     return 1;
 #else
     return 0;

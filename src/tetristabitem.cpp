@@ -153,13 +153,14 @@ FXDEFMAP(TetrisTabItem) TetrisTabItemMap[] = {
 
 FXIMPLEMENT(TetrisTabItem, FXTabItem, TetrisTabItemMap, ARRAYNUMBER(TetrisTabItemMap))
 
-TetrisTabItem::TetrisTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FXuint opts=TAB_TOP_NORMAL)
+TetrisTabItem::TetrisTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FXuint opts=TAB_TOP_NORMAL, FXint id=0)
 :       FXTabItem(tab, tabtext, ic, opts),
         m_parent(tab),
         m_removedLines(0),
         m_level(1),
         m_score(0),
         m_nextPiece(0),
+        m_id(id),
         m_paused(FALSE),
         m_done(FALSE),
         m_pauseEnable(FALSE),

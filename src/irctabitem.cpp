@@ -143,8 +143,8 @@ FXDEFMAP(IrcTabItem) IrcTabItemMap[] = {
 
 FXIMPLEMENT(IrcTabItem, FXTabItem, IrcTabItemMap, ARRAYNUMBER(IrcTabItemMap))
 
-IrcTabItem::IrcTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *ic, FXuint opts, TYPE typ, IrcSocket *sock, FXbool oswnd, FXbool uswn, FXbool logg, FXString cmdlst, FXString lpth, FXint maxa, IrcColor clrs, FXString nichar, FXFont *fnt, FXbool scmd, FXbool slst, FXbool cnick, FXbool sclr)
-    : FXTabItem(tab, tabtext, ic, opts), m_parent(tab), m_server(sock), m_type(typ), m_usersShown(uswn), m_logging(logg), m_ownServerWindow(oswnd), m_sameCmd(scmd), m_sameList(slst), m_coloredNick(cnick), m_stripColors(sclr),
+IrcTabItem::IrcTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *ic, FXuint opts, FXint id, TYPE typ, IrcSocket *sock, FXbool oswnd, FXbool uswn, FXbool logg, FXString cmdlst, FXString lpth, FXint maxa, IrcColor clrs, FXString nichar, FXFont *fnt, FXbool scmd, FXbool slst, FXbool cnick, FXbool sclr)
+    : FXTabItem(tab, tabtext, ic, opts), m_parent(tab), m_server(sock), m_type(typ), m_id(id),m_usersShown(uswn), m_logging(logg), m_ownServerWindow(oswnd), m_sameCmd(scmd), m_sameList(slst), m_coloredNick(cnick), m_stripColors(sclr),
         m_colors(clrs), m_commandsList(cmdlst), m_logPath(lpth), m_maxAway(maxa), m_nickCompletionChar(nichar), m_logstream(NULL)
 {
     m_currentPosition = 0;
@@ -2518,6 +2518,11 @@ FXbool IrcTabItem::showHelp(FXString command)
         appendIrcStyledText(_("BANLIST <channel>, shows banlist for channel."), 3, FXSystem::now());
         return TRUE;
     }
+    if(command == "commands")
+    {
+        appendIrcStyledText(_("COMMANDS, shows available commands"), 3, FXSystem::now());
+        return TRUE;
+    }
     if(command == "connect")
     {
         appendIrcStyledText(_("CONNECT <server> [port] [nick] [password] [realname] [channels], connects for given server."), 3, FXSystem::now());
@@ -2776,17 +2781,17 @@ long IrcTabItem::onKeyPress(FXObject *, FXSelector, void *ptr)
                     m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_NEXTTAB), NULL);
                     return 1;
                 }
-                if(m_commandline->getText()[0] == '/' && m_commandline->getText().after(' ').empty())
+                if(line[0] == '/' && line.after(' ').empty())
                 {
                     for(FXint i = 0; i < utils::commandsNo(); i++)
                     {
-                        if(comparecase(m_commandline->getText().after('/').before(' '), utils::commandsAt(i)) == 0)
+                        if(comparecase(line.after('/').before(' '), utils::commandsAt(i)) == 0)
                         {
                             if((i+1) < utils::commandsNo()) m_commandline->setText("/"+utils::commandsAt(++i)+" ");
                             else m_commandline->setText("/"+utils::commandsAt(0)+" ");
                             break;
                         }
-                        else if(comparecase(m_commandline->getText().after('/'), utils::commandsAt(i).left(m_commandline->getText().after('/').length())) == 0)
+                        else if(comparecase(line.after('/'), utils::commandsAt(i).left(line.after('/').length())) == 0)
                         {
                             m_commandline->setText("/"+utils::commandsAt(i)+" ");
                             break;
@@ -2794,15 +2799,20 @@ long IrcTabItem::onKeyPress(FXObject *, FXSelector, void *ptr)
                     }
                     return 1;
                 }
-                if(m_commandline->getText()[0] != '/' && m_commandline->getText().after(' ').empty())
+                if(line[0] != '/' && line.after(' ').empty())
                 {
+                    if(line.empty())
+                    {
+                        m_commandline->setText(getNick(0)+m_nickCompletionChar+" ");
+                        return 1;
+                    }
                     for(FXint j = 0; j < m_users->getNumItems() ; j++)
                     {
-                        if(comparecase(m_commandline->getText(), getNick(j).left(m_commandline->getText().length())) == 0)
+                        if(comparecase(line, getNick(j).left(line.length())) == 0)
                         {
                             m_commandline->setText(getNick(j)+m_nickCompletionChar+" ");
                         }
-                        else if(comparecase(m_commandline->getText().section(m_nickCompletionChar, 0, 1), getNick(j)) == 0)
+                        else if(comparecase(line.section(m_nickCompletionChar, 0, 1), getNick(j)) == 0)
                         {
                             if((j+1) < m_users->getNumItems()) m_commandline->setText(getNick(++j)+m_nickCompletionChar+" ");
                             else m_commandline->setText(getNick(0)+m_nickCompletionChar+" ");
@@ -2810,7 +2820,7 @@ long IrcTabItem::onKeyPress(FXObject *, FXSelector, void *ptr)
                     }
                     return 1;
                 }
-                if(m_commandline->getText().find(' ') != -1)
+                if(line.find(' ') != -1)
                 {
                     FXint curpos;
                     line[m_commandline->getCursorPos()] == ' ' ? curpos = m_commandline->getCursorPos()-1 : curpos = m_commandline->getCursorPos();
