@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="dxirc" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin\Debug\dxirc" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Debug\" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin\Release\dxirc" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Release\" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option='-DDXIRC_DATADIR=\&quot;.\&quot;' />
+			<Add option="-DFOXDLL" />
+			<Add option="-DUNICODE" />
+			<Add option="-DHAVE_OPENSSL" />
+			<Add option="-DHAVE_TRAY" />
+			<Add option="-DHAVE_LUA" />
+			<Add directory="." />
+			<Add directory="$(#mingw.include)\FOX-1.6" />
+		</Compiler>
+		<Linker>
+			<Add library="FOXDLL-1.6" />
+			<Add library="ws2_32" />
+			<Add library="png12" />
+			<Add library="intl" />
+			<Add library="jpeg" />
+			<Add library="lua" />
+			<Add library="tiff" />
+			<Add library="eay32" />
+			<Add library="ssl32" />
+			<Add library="winmm" />
+		</Linker>
+		<Unit filename="..\src\FXTrayApp.cpp" />
+		<Unit filename="..\src\FXTrayApp.h" />
+		<Unit filename="..\src\FXTrayIcon.cpp" />
+		<Unit filename="..\src\FXTrayIcon.h" />
+		<Unit filename="..\src\aliasdialog.cpp" />
+		<Unit filename="..\src\aliasdialog.h" />
+		<Unit filename="..\src\configdialog.cpp" />
+		<Unit filename="..\src\configdialog.h" />
+		<Unit filename="..\src\dccdialog.cpp" />
+		<Unit filename="..\src\dccdialog.h" />
+		<Unit filename="..\src\defs.h" />
+		<Unit filename="..\src\dxirc.cpp" />
+		<Unit filename="..\src\dxirc.h" />
+		<Unit filename="..\src\dxpipe.cpp" />
+		<Unit filename="..\src\dxpipe.h" />
+		<Unit filename="..\src\dxtabbook.cpp" />
+		<Unit filename="..\src\dxtabbook.h" />
+		<Unit filename="..\src\dxtext.cpp" />
+		<Unit filename="..\src\dxtext.h" />
+		<Unit filename="..\src\dxtextfield.cpp" />
+		<Unit filename="..\src\dxtextfield.h" />
+		<Unit filename="..\src\help.h" />
+		<Unit filename="..\src\i18n.h" />
+		<Unit filename="..\src\icons.cpp" />
+		<Unit filename="..\src\icons.h" />
+		<Unit filename="..\src\ircsocket.cpp" />
+		<Unit filename="..\src\ircsocket.h" />
+		<Unit filename="..\src\irctabitem.cpp" />
+		<Unit filename="..\src\irctabitem.h" />
+		<Unit filename="..\src\logviewer.cpp" />
+		<Unit filename="..\src\logviewer.h" />
+		<Unit filename="..\src\scriptdialog.cpp" />
+		<Unit filename="..\src\scriptdialog.h" />
+		<Unit filename="..\src\serverdialog.cpp" />
+		<Unit filename="..\src\serverdialog.h" />
+		<Unit filename="..\src\tetristabitem.cpp" />
+		<Unit filename="..\src\tetristabitem.h" />
+		<Unit filename="..\src\utils.cpp" />
+		<Unit filename="..\src\utils.h" />
+		<Unit filename="config.h" />
+		<Unit filename="dxirc.rc">
+			<Option compilerVar="WINDRES" />
+		</Unit>
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
