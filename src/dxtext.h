@@ -93,6 +93,8 @@ public:
     void removeSmileys();
     virtual void appendText(const FXString &text);
     virtual void appendStyledText(FXString text, FXint style=0);
+    virtual void removeLine(FXint line);
+    virtual void removeLastLine();
     virtual void clearText();
     virtual FXint getDefaultWidth();
     virtual FXint getDefaultHeight();

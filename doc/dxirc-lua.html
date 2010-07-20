@@ -34,6 +34,9 @@
 <p>Note that in order to support Lua scripts, dxirc has to be built
 with Lua scripting enabled — you can check this in the About dialog.</p>
 
+<p>With this update, the tab <b>id</b>s are now fixed and no longer correspond to the order in which they are presented to a user.
+</p>
+
 <h2 id="section_2">2&nbsp;&nbsp;Available Functions</h2>
 
 <h3 id="section_2_1">2.1&nbsp;&nbsp;Obligatory Functions</h3>
@@ -218,7 +221,7 @@ with Lua scripting enabled — you can check this in the About dialog.</p>
 
     <ul>
       <li><code class="value">command</code> — command to be executed,</li>
-      <li><code class="value">id</code> — optional tab id; unless specified, the command is executed in the current tab.</li>
+      <li><code class="value">id</code> — optional tab id; unless specified or equal -1, the command is executed in the current tab.</li>
     </ul>
 
     <p class="caption">Example:</p>
@@ -233,7 +236,7 @@ with Lua scripting enabled — you can check this in the About dialog.</p>
 
     <ul>
       <li><code class="value">text</code> — text to be displayed.</li>
-      <li><code class="value">id</code> — optional tab id; unless specified, the message is printed to the current tab window.</li>
+      <li><code class="value">id</code> — optional tab id; unless specified or equal -1, the message is printed to the current tab window.</li>
       <li><code class="value">style</code> — optional style number; unless specified, the message is formatted as ordinary text. Available styles are as follows:
         <ul>
           <li><code>1</code> — user message,</li>

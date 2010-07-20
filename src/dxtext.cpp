@@ -373,6 +373,21 @@ void dxText::appendStyledText(FXString text, FXint style)
     }
 }
 
+void dxText::removeLine(FXint line)
+{
+    if(line<0 || line>=contents.no()) return;
+    contents.erase(line);
+    styles.erase(line);
+    nlines-=lines[line];
+    lines.erase(line);
+    updateRange(FXMIN(0,line-1), FXMIN(contents.no()-1,line+1));
+}
+
+void dxText::removeLastLine()
+{
+    removeLine(contents.no()-1);
+}
+
 //Replace smiley in text by its code
 void dxText::createSmiley(FXString* text, FXString* style)
 {

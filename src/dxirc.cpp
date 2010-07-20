@@ -2227,7 +2227,7 @@ void dxirc::onIrcDccPout(IrcSocket *server, IrcEvent *ev)
     dcc.type = DCC_POUT;
     dcc.canceled = FALSE;
     dcc.finishedPosition = 0;
-    if(m_lastToken==65000) m_lastToken=0;
+    if(m_lastToken==32767) m_lastToken=0;
     dcc.token = ++m_lastToken;
     dcc.nick = ev->param1;
     for(FXint i=0; i<m_dccfilesList.no(); i++)
@@ -3514,12 +3514,42 @@ FXint dxirc::getTabId(FXString name)
 
 FXint dxirc::getCurrentTabId()
 {
-	FXint index = m_tabbook->getCurrent();
-	if(m_tabbook->childAtIndex(index)->getMetaClass()==&TetrisTabItem::metaClass)
-		return static_cast<TetrisTabItem*>(m_tabbook->childAtIndex(index))->getID();
-	else
-		return static_cast<IrcTabItem*>(m_tabbook->childAtIndex(index))->getID();
-	return -1;
+    FXint index = m_tabbook->getCurrent()*2;
+    if(m_tabbook->childAtIndex(index)->getMetaClass()==&TetrisTabItem::metaClass)
+        return static_cast<TetrisTabItem*>(m_tabbook->childAtIndex(index))->getID();
+    else
+        return static_cast<IrcTabItem*>(m_tabbook->childAtIndex(index))->getID();
+    return -1;
+}
+
+FXbool dxirc::isValidTabId(FXint id)
+{
+    if(id<0) return FALSE;
+    for(FXint i = 0; i < m_tabbook->numChildren(); i+=2)
+    {
+        if(m_tabbook->childAtIndex(i)->getMetaClass()==&TetrisTabItem::metaClass)
+        {
+            if(static_cast<TetrisTabItem*>(m_tabbook->childAtIndex(i))->getID()==id) return TRUE;
+        }
+        else
+        {
+            if(static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))->getID()==id) return TRUE;
+        }
+    }
+    return FALSE;
+}
+
+FXbool dxirc::isIdIrcTabItem(FXint id)
+{
+    if(id<0) return FALSE;
+    for(FXint i = 0; i < m_tabbook->numChildren(); i+=2)
+    {
+        if(m_tabbook->childAtIndex(i)->getMetaClass()==&IrcTabItem::metaClass)
+        {
+            if(static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))->getID()==id) return TRUE;
+        }
+    }
+    return FALSE;
 }
 
 FXbool dxirc::isFriend(const FXString &nick, const FXString &on, const FXString &server)
@@ -4117,18 +4147,20 @@ int dxirc::onLuaCommand(lua_State *lua)
     if(lua_isstring(lua, 1)) command = lua_tostring(lua, 1);
     if(command.empty()) return 0;
     FXint id;
-    if(lua_isnumber(lua, 2)) id = lua_tointeger(lua, 2);
-    else id = _pThis->m_tabbook->getCurrent();
+    if(lua_isnumber(lua, 2) && _pThis->isValidTabId(lua_tointeger(lua, 2))) id = lua_tointeger(lua, 2);
+    else id = _pThis->getCurrentTabId();
     if(_pThis->m_tabbook->numChildren())
     {
         for(FXint i = 0; i<_pThis->m_tabbook->numChildren(); i+=2)
         {
-            if(id*2 == i)
+            if(_pThis->m_tabbook->childAtIndex(i)->getMetaClass()==&IrcTabItem::metaClass)
             {
-                if(_pThis->m_tabbook->childAtIndex(i)->getMetaClass()!=&IrcTabItem::metaClass) return 0;
                 IrcTabItem *tab = static_cast<IrcTabItem*>(_pThis->m_tabbook->childAtIndex(i));
-                tab->processLine(command);
-                return 1;
+                if(id==tab->getID())
+                {
+                    tab->processLine(command);
+                    return 1;
+                }
             }
         }
     }
@@ -4145,12 +4177,8 @@ int dxirc::onLuaPrint(lua_State *lua)
     if(lua_isstring(lua, 1)) text = lua_tostring(lua, 1);
     if(text.empty()) return 0;
     FXint id, style;
-    if(lua_isnumber(lua, 2))
-    {
-        id = lua_tointeger(lua, 2);
-        if(id<0 || id>_pThis->m_tabbook->numTabs()-1) id = _pThis->m_tabbook->getCurrent();
-    }
-    else id = _pThis->m_tabbook->getCurrent();
+    if(lua_isnumber(lua, 2) && _pThis->isIdIrcTabItem(lua_tointeger(lua, 2))) id = lua_tointeger(lua, 2);
+    else id = _pThis->getCurrentTabId();
     if(lua_isnumber(lua, 3))
     {
         style = lua_tointeger(lua, 3);
@@ -4161,13 +4189,15 @@ int dxirc::onLuaPrint(lua_State *lua)
     {
         for(FXint i = 0; i<_pThis->m_tabbook->numChildren(); i+=2)
         {
-            if(id*2 == i)
+            if(_pThis->m_tabbook->childAtIndex(i)->getMetaClass()==&IrcTabItem::metaClass)
             {
-                if(_pThis->m_tabbook->childAtIndex(i)->getMetaClass()!=&IrcTabItem::metaClass) return 0;
                 IrcTabItem *tab = static_cast<IrcTabItem*>(_pThis->m_tabbook->childAtIndex(i));
-                tab->appendStyledText(text, style, TRUE, TRUE);
-                tab->makeLastRowVisible();
-                return 1;
+                if(id==tab->getID())
+                {
+                    tab->appendStyledText(text, style, TRUE, TRUE);
+                    tab->makeLastRowVisible();
+                    return 1;
+                }
             }
         }
     }
@@ -4275,13 +4305,25 @@ int dxirc::onLuaGetTabInfo(lua_State *lua)
     FXint id;
     if(lua_isnumber(lua, 1))  id = lua_tointeger(lua, 1);
     else id = -1;
-    if(_pThis->m_tabbook->numChildren() && id != -1 && id*2 < _pThis->m_tabbook->numChildren() && _pThis->m_tabbook->childAtIndex(id*2)->getMetaClass()==&IrcTabItem::metaClass)
+    if(_pThis->m_tabbook->numChildren() && _pThis->isIdIrcTabItem(id))
     {
+		IrcTabItem *tab = NULL;
+        for(FXint i = 0; i<_pThis->m_tabbook->numChildren(); i+=2)
+        {
+            if(_pThis->m_tabbook->childAtIndex(i)->getMetaClass()==&IrcTabItem::metaClass)
+            {
+                tab = static_cast<IrcTabItem*>(_pThis->m_tabbook->childAtIndex(i));
+                if(id==tab->getID())
+                {
+                    break;
+                }
+            }
+        }
         lua_newtable(lua);
         lua_pushstring(lua, "name");
-        lua_pushstring(lua, static_cast<IrcTabItem*>(_pThis->m_tabbook->childAtIndex(id*2))->getText().text());
+        lua_pushstring(lua, tab->getText().text());
         lua_settable(lua, -3);
-        switch(static_cast<IrcTabItem*>(_pThis->m_tabbook->childAtIndex(id*2))->getType()) {
+        switch(tab->getType()) {
             case SERVER:
             {
                 lua_pushstring(lua, "type");
@@ -4314,13 +4356,13 @@ int dxirc::onLuaGetTabInfo(lua_State *lua)
             }break;
         }
         lua_pushstring(lua, "servername");
-        lua_pushstring(lua, static_cast<IrcTabItem*>(_pThis->m_tabbook->childAtIndex(id*2))->getServerName().text());
+        lua_pushstring(lua, tab->getServerName().text());
         lua_settable(lua, -3);
         lua_pushstring(lua, "port");
-        lua_pushinteger(lua, static_cast<IrcTabItem*>(_pThis->m_tabbook->childAtIndex(id*2))->getServerPort());
+        lua_pushinteger(lua, tab->getServerPort());
         lua_settable(lua, -3);
         lua_pushstring(lua, "nick");
-        lua_pushstring(lua, static_cast<IrcTabItem*>(_pThis->m_tabbook->childAtIndex(id*2))->getNickName().text());
+        lua_pushstring(lua, tab->getNickName().text());
         lua_settable(lua, -3);
     }
     else
@@ -4351,12 +4393,20 @@ int dxirc::onLuaGetTabInfo(lua_State *lua)
 int dxirc::onLuaSetTab(lua_State *lua)
 {
 #ifdef HAVE_LUA
-    FXint number = 0;
-    if(lua_isnumber(lua, 1))  number = lua_tointeger(lua, 1);
+    FXint id = 0;
+    if(lua_isnumber(lua, 1) && _pThis->isIdIrcTabItem(lua_tointeger(lua, 1)))  id = lua_tointeger(lua, 1);
     else return 0;
-    if(_pThis->m_tabbook->numChildren() && number < _pThis->m_tabbook->numChildren()/2)
+    if(_pThis->m_tabbook->numChildren())
     {
-        _pThis->m_tabbook->setCurrent(number, _pThis->m_tabbook->numChildren() > number*2 ? TRUE : FALSE);
+        for(FXint i = 0; i < _pThis->m_tabbook->numChildren(); i+=2)
+        {
+            if(_pThis->m_tabbook->childAtIndex(i)->getMetaClass()==&IrcTabItem::metaClass
+                    && static_cast<IrcTabItem*>(_pThis->m_tabbook->childAtIndex(i))->getID() == id)
+            {
+                _pThis->m_tabbook->setCurrent(i/2, TRUE);
+                return 1;
+            }
+        }
     }
     return  1;
 #else
@@ -4417,17 +4467,17 @@ int dxirc::onLuaClear(lua_State *lua)
 {
 #ifdef HAVE_LUA
     FXint id = -1;
-    if(lua_isnumber(lua, 1))  id = lua_tointeger(lua, 1);
+    if(lua_isnumber(lua, 1) && _pThis->isIdIrcTabItem(lua_tointeger(lua, 1)))  id = lua_tointeger(lua, 1);
     else return 0;
+    utils::debugLine(FXStringFormat("onLuaClear id:%d",id));
     if(_pThis->m_tabbook->numChildren())
     {
-        for(FXint i = 0; i<_pThis->m_tabbook->numChildren(); i+=2)
+        for(FXint i = 0; i < _pThis->m_tabbook->numChildren(); i+=2)
         {
-            if(id*2 == i)
+            if(_pThis->m_tabbook->childAtIndex(i)->getMetaClass()==&IrcTabItem::metaClass
+                    && static_cast<IrcTabItem*>(_pThis->m_tabbook->childAtIndex(i))->getID() == id)
             {
-                if(_pThis->m_tabbook->childAtIndex(i)->getMetaClass()!=&IrcTabItem::metaClass) return 0;
-                IrcTabItem *tab = static_cast<IrcTabItem*>(_pThis->m_tabbook->childAtIndex(i));
-                tab->clearChat();
+                static_cast<IrcTabItem*>(_pThis->m_tabbook->childAtIndex(i))->clearChat();
                 return 1;
             }
         }
