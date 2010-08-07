@@ -235,7 +235,8 @@ dxirc::dxirc(FXApp *app)
     if(utils::getLangsNum())
     {
         m_showSpellCombo = utils::getBoolIniEntry("SETTINGS", "showSpellCombo", FALSE);
-        (new FXMenuCheck(m_editmenu, _("Spellchecking language list\tCtrl-P\tShow/Hide spellchecking language list"), this, ID_SPELL))->setCheck(m_showSpellCombo);
+        m_spellCombo = new FXMenuCheck(m_editmenu, _("Spellchecking language list\tCtrl-P\tShow/Hide spellchecking language list"), this, ID_SPELL);
+        m_spellCombo->setCheck(m_showSpellCombo);
     }
     else m_showSpellCombo = FALSE;
 #endif
@@ -885,6 +886,8 @@ long dxirc::onCmdOptions(FXObject*, FXSelector, void*)
         readConfig();
         if(m_logging) m_logviewer->enable();
         else m_logviewer->disable();
+        if(m_useSpell) m_spellCombo->enable();
+        else m_spellCombo->disable();
         m_ircFont->getFontDesc(newdescr);
         if(olddescr.encoding!=newdescr.encoding || olddescr.flags!=newdescr.flags ||
                 olddescr.setwidth!=newdescr.setwidth || olddescr.size!=newdescr.size ||

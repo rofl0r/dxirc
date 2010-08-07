@@ -505,7 +505,7 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     m_closeToTrayButton = new FXCheckButton(otherpane, _("Close button hides application"), &m_targetCloseToTray, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
 #endif
 #ifdef HAVE_ENCHANT
-    new FXCheckButton(otherpane, _("Use spellchecking"), &m_targetUseSpell, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
+    (new FXCheckButton(otherpane, _("Use spellchecking"), &m_targetUseSpell, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT))->setCheck(m_useSpell);
 #endif
     new FXCheckButton(otherpane, _("Special tab for server messages"), &m_serverTarget, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
     new FXCheckButton(otherpane, _("Logging chats"), &m_logTarget, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
