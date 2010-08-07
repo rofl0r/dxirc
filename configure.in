@@ -97,6 +97,19 @@ if test "$enable_lua" = "yes"; then
   fi
 fi
 
+dnl Check for enchant
+AC_ARG_ENABLE(enchant, [  --disable-spellchecking Disable spellchecking support],,enable_enchant=yes)
+have_enchant=no
+if test "$enable_enchant" = "yes"; then
+  PKG_CHECK_MODULES(ENCHANT, enchant, :, :)
+  if test "$ENCHANT_LIBS"; then
+    have_enchant=yes
+    AC_DEFINE(HAVE_ENCHANT,1, Build with spellchecking support by enchant)
+    CXXFLAGS="${CXXFLAGS} $ENCHANT_CFLAGS"
+    LIBS="$LIBS $ENCHANT_LIBS"
+  fi
+fi
+
 
 dnl Check for FOX 1.6
 AC_CHECK_LIB(FOX-1.6,fxfindfox,,AC_MSG_ERROR("libFOX-1.6 not found"))
@@ -117,6 +130,16 @@ FOXCFLAGS=`$FOX_CONFIG --cflags`
 CXXFLAGS="${CXXFLAGS} $FOXCFLAGS"
 FOXLIBS=`$FOX_CONFIG --libs`
 LIBS="$LIBS $FOXLIBS"
+
+dnl Check for utils::checkWord
+dnl have_spellutils=no
+dnl AC_MSG_CHECKING(for utils::checkWord)
+dnl AC_TRY_COMPILE([#include "src/utils.h"],
+dnl [utils::checkWord("test","cs");],
+dnl [AC_DEFINE(HAVE_SPELLUTILS,1, namespace utils have spellchecking support) have_spellutils=yes])
+dnl AC_MSG_RESULT($have_spellutils)
+dnl I know answer :)
+AC_DEFINE(HAVE_SPELLUTILS,1, namespace utils have spellchecking support)
 
 dnl Check for libPNG
 AC_CHECK_LIB(png, png_read_info,,AC_MSG_ERROR("libPNG not found"))
@@ -153,6 +176,7 @@ echo "Install prefix:                             $prefix"
 echo "Build with tray support:                    $enable_tray"
 echo "Build with lua scripting support:           $have_lua"
 echo "Build with SSL:                             $have_openssl"
+echo "Build with spellchecking support:           $have_enchant"
 echo
 echo "              Do:  'make' to compile dxirc."
 echo "            Then:  'make install' (as root) to install dxirc."

@@ -208,7 +208,7 @@ class ConfigDialog: public FXDialogBox
         FXString m_commandsList, m_themePath, m_themesList, m_logPath, m_autoloadPath, m_dccPath;
         FXString m_dccIP1, m_dccIP2, m_dccIP3, m_dccIP4;
         FXbool m_logging, m_serverWindow, m_sameCmd, m_sameList, m_useTray, m_coloredNick, m_closeToTray, m_reconnect;
-        FXbool m_usersShown, m_statusShown, m_autoload, m_sounds, m_soundConnect, m_soundDisconnect, m_soundMessage;
+        FXbool m_statusShown, m_autoload, m_sounds, m_soundConnect, m_soundDisconnect, m_soundMessage;
         FXbool m_stripColors, m_useSmileys, m_showImportwarning, m_showWarning;
         FXbool m_autoDccChat, m_autoDccFile;
         dxServerInfoArray m_serverList;
@@ -246,6 +246,8 @@ class ConfigDialog: public FXDialogBox
         FXMainWindow *m_owner;
         dxStringMap m_smileysMap;
         FXColor m_trayColor;
+        FXbool m_useSpell;
+        FXDataTarget m_targetUseSpell;
 
         void fillCommnads();
         FXString fillCommandsCombo();

@@ -112,6 +112,14 @@ namespace utils
     FXString getRemaining(FXlong, FXlong);
     void playFile(const FXString&);
     void debugLine(const FXString&);
+    FXbool checkWord(FXString word, FXString lang);
+    FXbool addLang(FXString lang);
+    void clearSpellCheckers();
+    void setLangs();
+    FXint getLangsNum();
+    dxStringArray getLangs();
+    FXString getDefaultLang();
+    FXString getLocale();
 }
 
 

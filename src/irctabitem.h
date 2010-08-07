@@ -72,7 +72,7 @@ class IrcTabItem: public FXTabItem
     FXDECLARE(IrcTabItem)
     friend class dxirc;
     public:
-        IrcTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FXuint opts=TAB_TOP_NORMAL, FXint id=0, TYPE typ=CHANNEL, IrcSocket *sock=NULL, FXbool oswnd=FALSE, FXbool uswn=TRUE, FXbool logg=FALSE, FXString cmdlst="", FXString lpth="", FXint maxa=200, IrcColor clrs=IrcColor(), FXString nichar=":", FXFont *fnt=NULL, FXbool scmd=FALSE, FXbool slst=FALSE, FXbool cnick=FALSE, FXbool sclr=TRUE);
+        IrcTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *icon=0, FXuint opts=TAB_TOP_NORMAL, FXint id=0, TYPE type=CHANNEL, IrcSocket *socket=NULL, FXbool ownServerWindow=FALSE, FXbool usersShown=TRUE, FXbool logging=FALSE, FXString commandsList="", FXString logPath="", FXint maxAway=200, IrcColor colorss=IrcColor(), FXString nickChar=":", FXFont *font=NULL, FXbool sameCommand=FALSE, FXbool sameList=FALSE, FXbool coloredNick=FALSE, FXbool stripColors=TRUE, FXbool useSpell=TRUE, FXbool showSpellCombo=FALSE);
         virtual ~IrcTabItem();
         enum {
             ID_COMMANDLINE = FXMainWindow::ID_LAST+25,
@@ -109,6 +109,7 @@ class IrcTabItem: public FXTabItem
             ID_RMIUSER, //for handle /ignore rmusr
             ID_AWAY, //set away on right click
             ID_DEAWAY, //remove away on right click
+            ID_SPELL,
             ID_LAST
         };
 
@@ -136,6 +137,8 @@ class IrcTabItem: public FXTabItem
         void setStripColors(FXbool);
         void setCommandFocus();
         void setSmileys(FXbool smiley, dxSmileyArray nsmileys);
+        void setUseSpell(FXbool useSpell);
+        void setShowSpellCombo(FXbool showSpellCombo);
         void removeSmileys();
         void makeLastRowVisible();
 
@@ -165,6 +168,7 @@ class IrcTabItem: public FXTabItem
         long onDccSend(FXObject *, FXSelector, void*);
         long onSetAway(FXObject *, FXSelector, void*);
         long onRemoveAway(FXObject *, FXSelector, void*);
+        long onSpellLang(FXObject *, FXSelector, void*);
 
     protected:        
         void appendText(FXString, FXbool);
@@ -181,15 +185,16 @@ class IrcTabItem: public FXTabItem
         dxPipe *m_pipe;
         TYPE m_type;
         FXVerticalFrame *m_textframe, *m_usersframe, *m_mainframe;
+        FXHorizontalFrame *m_commandframe;
         FXSplitter *m_splitter;
         dxText *m_text;
         FXList *m_users;
-        FXTextField *m_commandline;
+        dxTextField *m_commandline;
         dxTextField *m_topicline;
         FXint m_currentPosition, m_historyMax, m_numberUsers, m_pics, m_id;
         FXbool m_checkAway, m_iamOp, m_usersShown, m_logging, m_ownServerWindow;
         FXbool m_sameCmd, m_sameList, m_coloredNick, m_editableTopic, m_sendPipe;
-        FXbool m_scriptHasAll, m_scriptHasMyMsg, m_stripColors;
+        FXbool m_scriptHasAll, m_scriptHasMyMsg, m_stripColors, m_useSpell, m_showSpellCombo;
         dxStringArray m_commandsHistory, m_pipeStrings;
         dxHiliteArray m_textStyleList;
         IrcColor m_colors;
@@ -198,6 +203,7 @@ class IrcTabItem: public FXTabItem
         FXint m_maxAway, m_maxLen;
         FXString m_nickCompletionChar;
         std::ofstream *m_logstream;
+        FXComboBox *m_spellLangs;
         
 
         void onIrcPrivmsg(IrcEvent *ev);

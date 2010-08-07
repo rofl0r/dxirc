@@ -75,6 +75,7 @@ class dxirc: public FXMainWindow
             ID_STIMEOUT,
             ID_TETRIS,
             ID_TRANSFERS,
+            ID_SPELL,
             ID_LAST
         };
 
@@ -118,6 +119,7 @@ class dxirc: public FXMainWindow
         long onRemoveIgnoreCommand(FXObject*, FXSelector, void*);
         long onAddIgnoreUser(FXObject*, FXSelector, void*);
         long onRemoveIgnoreUser(FXObject*, FXSelector, void*);
+        long onCmdSpell(FXObject*, FXSelector, void*);
         static int onLuaAddCommand(lua_State*);
         static int onLuaAddEvent(lua_State*);
         static int onLuaAddMyMsg(lua_State*);
@@ -164,8 +166,7 @@ class dxirc: public FXMainWindow
         FXMenuBar *m_menubar;
         FXMenuPane *m_servermenu, *m_helpmenu, *m_editmenu;
         FXMenuCommand *m_disconnect, *m_closeTab, *m_clearTab, *m_clearTabs, *m_logviewer;
-        FXMenuCheck *m_users;
-        FXMenuCheck *m_status;
+        FXMenuCheck *m_users, *m_status;
         FXHorizontalFrame *m_statusbar;
         FXLabel *m_statuslabel;
         FXVerticalFrame *m_mainframe;
@@ -174,6 +175,7 @@ class dxirc: public FXMainWindow
         DccDialog *m_transfers;
         dxServersArray m_servers;
         dxScriptEventsArray m_scriptEvents;
+        FXbool m_useSpell, m_showSpellCombo;
 
         void onIrcNewchannel(IrcSocket*, IrcEvent*);
         void onIrcQuery(IrcSocket*, IrcEvent*);
@@ -231,6 +233,7 @@ class dxirc: public FXMainWindow
         void createSmileys();
         FXString getUniqueName(const FXString &path, const FXString &name, const FXString &extension);
         FXbool isForResume(const FXString &name);
+        void createIrcTab(const FXString &tabtext, FXIcon *icon, TYPE typ, IrcSocket *socket);
 
     protected:
         dxScriptsArray m_scripts;

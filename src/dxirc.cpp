@@ -151,7 +151,8 @@ FXDEFMAP(dxirc) dxircMap[] = {
     FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_RMICOMMAND,  dxirc::onRemoveIgnoreCommand),
     FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_ADDIUSER,    dxirc::onAddIgnoreUser),
     FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_RMIUSER,     dxirc::onRemoveIgnoreUser),
-    FXMAPFUNC(SEL_COMMAND,      DccDialog::ID_DCCCANCEL,    dxirc::onCmdDccCancel)
+    FXMAPFUNC(SEL_COMMAND,      DccDialog::ID_DCCCANCEL,    dxirc::onCmdDccCancel),
+    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_SPELL,            dxirc::onCmdSpell)
 };
 
 FXIMPLEMENT(dxirc, FXMainWindow, dxircMap, ARRAYNUMBER(dxircMap))
@@ -227,8 +228,17 @@ dxirc::dxirc(FXApp *app)
     m_clearTab = new FXMenuCommand(m_editmenu, _("Clear window\tCtrl-L"), ICO_CLEAR, this, ID_CLEAR);
     m_clearTabs = new FXMenuCommand(m_editmenu, _("Clear all windows\tCtrl-Shift-L"), NULL, this, ID_CLEARALL);
     new FXMenuSeparator(m_editmenu);
+    m_usersShown = utils::getBoolIniEntry("SETTINGS", "usersShown", TRUE);
     m_users = new FXMenuCheck(m_editmenu, _("Users list\tCtrl-U\tShow/Hide users list"), this, ID_USERS);
     m_users->setCheck(m_usersShown);
+#ifdef HAVE_ENCHANT
+    if(utils::getLangsNum())
+    {
+        m_showSpellCombo = utils::getBoolIniEntry("SETTINGS", "showSpellCombo", FALSE);
+        (new FXMenuCheck(m_editmenu, _("Spellchecking language list\tCtrl-P\tShow/Hide spellchecking language list"), this, ID_SPELL))->setCheck(m_showSpellCombo);
+    }
+    else m_showSpellCombo = FALSE;
+#endif
     m_status = new FXMenuCheck(m_editmenu, _("Status bar"), this, ID_STATUS);
     m_status->setCheck(m_statusShown);
     new FXMenuCommand(m_editmenu, _("&Aliases"), NULL, this, ID_ALIAS);
@@ -250,11 +260,6 @@ dxirc::dxirc(FXApp *app)
     server->setNumberAttempt(m_numberAttempt);
     server->setDelayAttempt(m_delayAttempt);
     m_servers.append(server);
-
-    IrcTabItem *tabitem = new IrcTabItem(m_tabbook, "(server)", ICO_SERVER, TAB_BOTTOM, m_lastID, SERVER, server, m_ownServerWindow, m_usersShown, m_logging, m_commandsList, m_logPath, m_maxAway, m_colors, m_nickCompletionChar, m_ircFont, m_sameCmd, m_sameList, m_coloredNick, m_stripColors);
-    m_lastID++;
-    server->appendTarget(tabitem);
-    tabitem->setIrcFont(m_ircFont);
 
     m_statusbar = new FXHorizontalFrame(m_mainframe, LAYOUT_LEFT|JUSTIFY_LEFT|LAYOUT_FILL_X|FRAME_NONE, 0,0,0,0, 1,1,1,1);
     FXHorizontalFrame *hframe=new FXHorizontalFrame(m_statusbar, LAYOUT_LEFT|JUSTIFY_LEFT|LAYOUT_FILL_X|FRAME_SUNKEN, 0,0,0,0, 0,0,0,0);
@@ -371,12 +376,14 @@ dxirc::~dxirc()
     }
 #endif
     delete m_ircFont;
+    utils::clearSpellCheckers();
     _pThis = NULL;
 }
 
 void dxirc::create()
 {
     FXMainWindow::create();
+    createIrcTab("(server)", ICO_SERVER, SERVER, m_servers[0]);
     FXbool maximized = utils::getBoolIniEntry("SETTINGS", "maximized", FALSE);
     if(maximized) maximize();
     //Checking for screen resolution and correction size, position
@@ -456,7 +463,6 @@ void dxirc::readConfig()
     m_appTheme.shadow = set.readColorEntry("SETTINGS", "shadowcolor", m_app->getShadowColor());
     m_trayColor = set.readColorEntry("SETTINGS", "traycolor", m_appTheme.base);
     m_fontSpec = set.readStringEntry("SETTINGS", "normalfont", m_app->getNormalFont()->getFont().text());
-    m_usersShown = set.readBoolEntry("SETTINGS", "usersShown", TRUE);
     m_statusShown = set.readBoolEntry("SETTINGS", "statusShown", TRUE);
     m_tabPosition = set.readIntEntry("SETTINGS", "tabPosition", 0);
     m_commandsList = set.readStringEntry("SETTINGS", "commandsList");
@@ -575,6 +581,14 @@ void dxirc::readConfig()
                 m_smileysMap.insert(StringPair(key, value));
         }
     }
+#ifdef HAVE_ENCHANT
+    if(utils::getLangsNum())
+        m_useSpell = set.readBoolEntry("SETTINGS", "useSpell", TRUE);
+    else
+        m_useSpell = FALSE;
+#else
+    m_useSpell = FALSE;
+#endif
     setX(xx);
     setY(yy);
     setWidth(ww);
@@ -603,7 +617,6 @@ void dxirc::readServersConfig()
             if(server.autoConnect)
             {
                 connectServer(server.hostname, server.port, server.passwd, server.nick, server.realname, server.channels, server.commands, server.useSsl);
-                fxsleep(500000);
             }
             m_serverList.append(server);
         }
@@ -742,6 +755,8 @@ void dxirc::saveConfig()
             set.writeStringEntry("SMILEYS", FXStringFormat("path%d", i).text(), (*it).second.text());
         }
     }
+    set.writeBoolEntry("SETTINGS", "useSpell", m_useSpell);
+    set.writeBoolEntry("SETTINGS", "showSpellCombo", m_showSpellCombo);
     set.setModified();
     set.unparseFile(utils::getIniFile());
 }
@@ -832,6 +847,20 @@ long dxirc::onCmdUsers(FXObject*, FXSelector, void*)
             IrcTabItem *tab = static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i));
             if(m_usersShown) tab->showUsers();
             else tab->hideUsers();
+        }
+    }
+    return 1;
+}
+
+long dxirc::onCmdSpell(FXObject*, FXSelector, void*)
+{
+    m_showSpellCombo = !m_showSpellCombo;
+    for(FXint i = 0; i<m_tabbook->numChildren(); i+=2)
+    {
+        if(m_tabbook->childAtIndex(i)->getMetaClass()==&IrcTabItem::metaClass)
+        {
+            IrcTabItem *tab = static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i));
+            tab->setShowSpellCombo(m_showSpellCombo);
         }
     }
     return 1;
@@ -1300,6 +1329,7 @@ void dxirc::updateTabs(FXbool recreateSmileys)
             irctab->setColoredNick(m_coloredNick);
             irctab->setStripColors(m_stripColors);
             irctab->setSmileys(m_useSmileys, m_smileys);
+            irctab->setUseSpell(m_useSpell);
         }        
         if(m_tabbook->childAtIndex(i)->getMetaClass()==&TetrisTabItem::metaClass)
         {
@@ -1369,7 +1399,7 @@ void dxirc::updateTabPosition()
                 packing &= ~PACK_UNIFORM_WIDTH;
                 m_tabbook->setPackingHints(packing);
             }
-    }   
+    }
 }
 
 void dxirc::createSmileys()
@@ -1541,15 +1571,7 @@ void dxirc::connectServer(FXString hostname, FXint port, FXString pass, FXString
         {
             if (!m_tabbook->numChildren())
             {
-                IrcTabItem *tabitem = new IrcTabItem(m_tabbook, dcc ? dccNick : hostname, dcc ? ICO_DCC : ICO_SERVER, TAB_BOTTOM, m_lastID, dcc ? DCCCHAT : SERVER, m_servers[0], m_ownServerWindow, m_usersShown, m_logging, m_commandsList, m_logPath, m_maxAway, m_colors, m_nickCompletionChar, m_ircFont, m_sameCmd, m_sameList, m_coloredNick, m_stripColors);
-                sendNewTab(m_servers[0], dcc ? dccNick : hostname, m_lastID, FALSE, dcc ? DCCCHAT : SERVER);
-                m_lastID++;
-                tabitem->create();
-                tabitem->createGeom();
-                tabitem->setSmileys(m_useSmileys, m_smileys);
-                m_servers[0]->appendTarget(tabitem);
-                updateTabPosition();
-                sortTabs();
+                createIrcTab(dcc ? dccNick : hostname, dcc ? ICO_DCC : ICO_SERVER, dcc ? DCCCHAT : SERVER, m_servers[0]);
             }
             if(m_tabbook->childAtIndex(0)->getMetaClass()==&IrcTabItem::metaClass)
             {
@@ -1595,15 +1617,7 @@ void dxirc::connectServer(FXString hostname, FXint port, FXString pass, FXString
         m_servers[0]->setDccFile(dccFile);
         if(dccType != DCC_IN && dccType != DCC_OUT && dccType != DCC_PIN && dccType != DCC_POUT)
         {
-            IrcTabItem *tabitem = new IrcTabItem(m_tabbook, dcc ? dccNick : hostname, dcc ? ICO_DCC : ICO_SERVER, TAB_BOTTOM, m_lastID, dcc ? DCCCHAT : SERVER, m_servers[0], m_ownServerWindow, m_usersShown, m_logging, m_commandsList, m_logPath, m_maxAway, m_colors, m_nickCompletionChar, m_ircFont, m_sameCmd, m_sameList, m_coloredNick, m_stripColors);
-            sendNewTab(m_servers[0], dcc ? dccNick : hostname, m_lastID, FALSE, dcc ? DCCCHAT : SERVER);
-            m_lastID++;
-            tabitem->create();
-            tabitem->createGeom();
-            tabitem->setSmileys(m_useSmileys, m_smileys);
-            m_servers[0]->appendTarget(tabitem);
-            updateTabPosition();
-            sortTabs();
+            createIrcTab(dcc ? dccNick : hostname, dcc ? ICO_DCC : ICO_SERVER, dcc ? DCCCHAT : SERVER, m_servers[0]);
             if(dcc)
             {
                 for(FXint i = 0; i < m_tabbook->numChildren(); i+=2)
@@ -1823,15 +1837,7 @@ void dxirc::onIrcNewchannel(IrcSocket *server, IrcEvent *ev)
     }
     else
     {
-        IrcTabItem* tabitem = new IrcTabItem(m_tabbook, ev->param1, ICO_CHANNEL, TAB_BOTTOM, m_lastID, CHANNEL, server, m_ownServerWindow, m_usersShown, m_logging, m_commandsList, m_logPath, m_maxAway, m_colors, m_nickCompletionChar, m_ircFont, m_sameCmd, m_sameList, m_coloredNick, m_stripColors);
-        sendNewTab(server, ev->param1, m_lastID, FALSE, CHANNEL);
-        m_lastID++;
-        server->appendTarget(tabitem);
-        tabitem->create();
-        tabitem->createGeom();
-        tabitem->setSmileys(m_useSmileys, m_smileys);
-        updateTabPosition();
-        sortTabs();
+        createIrcTab(ev->param1, ICO_CHANNEL, CHANNEL, server);
     }
     updateMenus();
 }
@@ -1850,15 +1856,7 @@ void dxirc::onIrcQuery(IrcSocket *server, IrcEvent *ev)
     }
     else
     {
-        IrcTabItem* tabitem = new IrcTabItem(m_tabbook, ev->param1, ICO_QUERY, TAB_BOTTOM, m_lastID, QUERY, server, m_ownServerWindow, m_usersShown, m_logging, m_commandsList, m_logPath, m_maxAway, m_colors, m_nickCompletionChar, m_ircFont, m_sameCmd, m_sameList, m_coloredNick, m_stripColors);
-        sendNewTab(server, ev->param1, m_lastID, FALSE, QUERY);
-        m_lastID++;
-        server->appendTarget(tabitem);
-        tabitem->create();
-        tabitem->createGeom();
-        tabitem->setSmileys(m_useSmileys, m_smileys);
-        updateTabPosition();
-        sortTabs();
+        createIrcTab(ev->param1, ICO_QUERY, QUERY, server);
     }
     if(ev->param2 == server->getNickName())
     {
@@ -3584,6 +3582,41 @@ FXbool dxirc::isFriend(const FXString &nick, const FXString &on, const FXString 
     return bnick && bchannel && bserver;
 }
 
+void dxirc::createIrcTab(const FXString& tabtext, FXIcon* icon, TYPE typ, IrcSocket* socket)
+{
+    FXuint style;
+    switch(m_tabPosition) {
+        case 0: //bottom
+            {
+                style = TAB_BOTTOM;
+            }break;
+        case 1: //left
+            {
+                style = TAB_LEFT;
+            }break;
+        case 2: //top
+            {
+                style = TAB_TOP;
+            }break;
+        case 3: //right
+            {
+                style = TAB_RIGHT;
+            }break;
+        default:
+            {
+                style = TAB_BOTTOM;
+            }
+    }
+    IrcTabItem *tabitem = new IrcTabItem(m_tabbook, tabtext, icon, style, m_lastID, typ, socket, m_ownServerWindow, m_usersShown, typ == OTHER ? FALSE : m_logging, m_commandsList, m_logPath, m_maxAway, m_colors, m_nickCompletionChar, m_ircFont, m_sameCmd, m_sameList, m_coloredNick, m_stripColors, m_useSpell, m_showSpellCombo);
+    sendNewTab(socket, tabtext, m_lastID, FALSE, typ);
+    m_lastID++;
+    tabitem->create();
+    tabitem->createGeom();
+    tabitem->setSmileys(m_useSmileys, m_smileys);
+    if(socket) socket->appendTarget(tabitem);
+    sortTabs();
+}
+
 FXbool dxirc::isLastTab(IrcSocket *server)
 {
     FXint numTabs = 0;
@@ -4437,16 +4470,8 @@ int dxirc::onLuaCreateTab(lua_State *lua)
             }
         }
     }
-    IrcTabItem *tabitem = new IrcTabItem(_pThis->m_tabbook, name, NULL, TAB_BOTTOM, _pThis->m_lastID, OTHER, NULL, _pThis->m_ownServerWindow, _pThis->m_usersShown, FALSE, _pThis->m_commandsList, _pThis->m_logPath, _pThis->m_maxAway, _pThis->m_colors, _pThis->m_nickCompletionChar, _pThis->m_ircFont, _pThis->m_sameCmd, _pThis->m_sameList, _pThis->m_coloredNick, _pThis->m_stripColors);
+    _pThis->createIrcTab(name, NULL, OTHER, NULL);
     lua_pushnumber(lua, _pThis->m_lastID);
-    _pThis->sendNewTab(NULL, name, _pThis->m_lastID, FALSE, OTHER);
-    _pThis->m_lastID++;
-    tabitem->create();
-    tabitem->createGeom();
-    tabitem->setSmileys(_pThis->m_useSmileys, _pThis->m_smileys);
-    _pThis->updateTabPosition();
-    _pThis->sortTabs();
-    _pThis->updateMenus();
     return 1;
 #else
     return 0;
@@ -4529,6 +4554,7 @@ int main(int argc,char *argv[])
             if(FXStat::exists(argv[i+1])) datadir = argv[i+1];
         }
     }
+    utils::setLangs();
 
 #ifdef HAVE_TRAY
     FXTrayApp app(PACKAGE, FXString::null);

@@ -138,14 +138,23 @@ FXDEFMAP(IrcTabItem) IrcTabItemMap[] = {
     FXMAPFUNC(SEL_LINK,                 IrcTabItem::ID_TOPIC,           IrcTabItem::onTopicLink),
     FXMAPFUNC(SEL_COMMAND,              dxPipe::ID_PIPE,                IrcTabItem::onPipe),
     FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_AWAY,            IrcTabItem::onSetAway),
-    FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_DEAWAY,          IrcTabItem::onRemoveAway)
+    FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_DEAWAY,          IrcTabItem::onRemoveAway),
+    FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_SPELL,           IrcTabItem::onSpellLang)
 };
 
 FXIMPLEMENT(IrcTabItem, FXTabItem, IrcTabItemMap, ARRAYNUMBER(IrcTabItemMap))
 
-IrcTabItem::IrcTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *ic, FXuint opts, FXint id, TYPE typ, IrcSocket *sock, FXbool oswnd, FXbool uswn, FXbool logg, FXString cmdlst, FXString lpth, FXint maxa, IrcColor clrs, FXString nichar, FXFont *fnt, FXbool scmd, FXbool slst, FXbool cnick, FXbool sclr)
-    : FXTabItem(tab, tabtext, ic, opts), m_parent(tab), m_server(sock), m_type(typ), m_id(id),m_usersShown(uswn), m_logging(logg), m_ownServerWindow(oswnd), m_sameCmd(scmd), m_sameList(slst), m_coloredNick(cnick), m_stripColors(sclr),
-        m_colors(clrs), m_commandsList(cmdlst), m_logPath(lpth), m_maxAway(maxa), m_nickCompletionChar(nichar), m_logstream(NULL)
+IrcTabItem::IrcTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *icon, FXuint opts,
+        FXint id, TYPE type, IrcSocket *socket, FXbool ownServerWindow, FXbool usersShown,
+        FXbool logging, FXString commandsList, FXString logPath, FXint maxAway, IrcColor colors,
+        FXString nickChar, FXFont *font, FXbool sameCommand, FXbool sameList, FXbool coloredNick,
+        FXbool stripColors, FXbool useSpell, FXbool showSpellCombo)
+    : FXTabItem(tab, tabtext, icon, opts), m_parent(tab), m_server(socket), m_type(type),
+        m_id(id),m_usersShown(usersShown), m_logging(logging),
+        m_ownServerWindow(ownServerWindow), m_sameCmd(sameCommand), m_sameList(sameList),
+        m_coloredNick(coloredNick), m_stripColors(stripColors), m_useSpell(useSpell),
+        m_showSpellCombo(showSpellCombo), m_colors(colors), m_commandsList(commandsList), m_logPath(logPath),
+        m_maxAway(maxAway), m_nickCompletionChar(nickChar), m_logstream(NULL)
 {
     m_currentPosition = 0;
     m_historyMax = 25;
@@ -176,10 +185,10 @@ IrcTabItem::IrcTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *ic, FXui
     {
         m_topicline->hide();
     }
-    m_topicline->setFont(fnt);
+    m_topicline->setFont(font);
     m_topicline->setLinkColor(m_colors.link);
     m_text = new dxText(m_textframe, this, ID_TEXT, FRAME_SUNKEN|LAYOUT_FILL_X|LAYOUT_FILL_Y|TEXT_READONLY|TEXT_WORDWRAP|TEXT_SHOWACTIVE|TEXT_AUTOSCROLL);
-    m_text->setFont(fnt);
+    m_text->setFont(font);
     m_text->setSelTextColor(getApp()->getSelforeColor());
     m_text->setSelBackColor(getApp()->getSelbackColor());
 
@@ -187,16 +196,34 @@ IrcTabItem::IrcTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *ic, FXui
     m_users = new FXList(m_usersframe, this, ID_USERS, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     m_users->setSortFunc(FXList::ascendingCase);
     m_users->setScrollStyle(HSCROLLING_OFF);
-    if(m_sameList) m_users->setFont(fnt);
+    if(m_sameList) m_users->setFont(font);
     if(m_type != CHANNEL || !m_usersShown)
     {
         m_usersframe->hide();
         m_users->hide();
     }
 
-    m_commandline = new FXTextField(m_mainframe, 25, this, ID_COMMANDLINE, TEXTFIELD_ENTER_ONLY|FRAME_SUNKEN|JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_BOTTOM, 0, 0, 0, 0, 1, 1, 1, 1);
-    if(m_sameCmd) m_commandline->setFont(fnt);
-
+    m_commandframe = new FXHorizontalFrame(m_mainframe, LAYOUT_FILL_X, 0,0,0,0, 0,0,0,0);
+    m_commandline = new dxTextField(m_commandframe, 25, this, ID_COMMANDLINE, TEXTFIELD_ENTER_ONLY|FRAME_SUNKEN|JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_BOTTOM, 0, 0, 0, 0, 1, 1, 1, 1);
+    if(m_sameCmd) m_commandline->setFont(font);
+    m_commandline->setUseSpell(m_useSpell);
+    m_spellLangs = new FXComboBox(m_commandframe, 6, this, ID_SPELL, COMBOBOX_STATIC);
+    dxStringArray langs = utils::getLangs();
+    FXString lang = utils::getDefaultLang();
+    FXint index = 0;
+    for(FXint i=0; i<langs.no(); i++)
+    {
+        m_spellLangs->appendItem(langs[i]);
+        if(langs[i]==lang) index=i;
+    }
+    if(m_sameCmd) m_spellLangs->setFont(font);
+    if(!m_showSpellCombo || !langs.no()) m_spellLangs->hide();
+    if(langs.no())
+    {
+        m_commandline->setLanguage(lang);
+        m_spellLangs->setCurrentItem(index);
+    }
+    
     dxHiliteStyle style = {m_colors.text,m_colors.back,getApp()->getSelforeColor(),getApp()->getSelbackColor(),0,FALSE};
     for(int i=0; i<17; i++)
     {
@@ -245,6 +272,8 @@ IrcTabItem::IrcTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *ic, FXui
     m_topicline->setTextColor(m_colors.text);
     m_topicline->setCursorColor(m_colors.text);
     m_users->setTextColor(m_colors.text);
+    m_spellLangs->setBackColor(m_colors.back);
+    m_spellLangs->setTextColor(m_colors.text);
 
     this->setIconPosition(ICON_BEFORE_TEXT);
 }
@@ -261,12 +290,6 @@ IrcTabItem::~IrcTabItem()
 void IrcTabItem::createGeom()
 {
     m_mainframe->create();
-    m_splitter->create();
-    m_textframe->create();
-    m_text->create();
-    m_usersframe->create();
-    m_users->create();
-    m_commandline->create();
 }
 
 void IrcTabItem::clearChat()
@@ -368,6 +391,7 @@ void IrcTabItem::setTextBackColor(FXColor clr)
     m_commandline->setBackColor(clr);
     m_topicline->setBackColor(clr);
     m_users->setBackColor(clr);
+    m_spellLangs->setBackColor(clr);
 }
 
 void IrcTabItem::setTextForeColor(FXColor clr)
@@ -381,6 +405,7 @@ void IrcTabItem::setTextForeColor(FXColor clr)
     m_topicline->setTextColor(clr);
     m_topicline->setCursorColor(clr);
     m_users->setTextColor(clr);
+    m_spellLangs->setTextColor(clr);
 }
 
 void IrcTabItem::setUserColor(FXColor clr)
@@ -497,6 +522,26 @@ void IrcTabItem::setStripColors(FXbool sclr)
 void IrcTabItem::setSmileys(FXbool smiley, dxSmileyArray nsmileys)
 {
     m_text->setSmileys(smiley, nsmileys);
+}
+
+void IrcTabItem::setUseSpell(FXbool useSpell)
+{
+    m_useSpell = useSpell;
+    m_commandline->setUseSpell(m_useSpell);
+    if(!m_useSpell) m_spellLangs->hide();
+    if(m_useSpell && m_showSpellCombo) m_spellLangs->show();
+    m_commandframe->recalc();
+}
+
+void IrcTabItem::setShowSpellCombo(FXbool showSpellCombo)
+{
+    if(m_showSpellCombo!=showSpellCombo)
+    {
+        m_showSpellCombo = showSpellCombo;
+        if(m_showSpellCombo) m_spellLangs->show();
+        else m_spellLangs->hide();
+        m_commandframe->recalc();
+    }
 }
 
 void IrcTabItem::removeSmileys()
@@ -4418,6 +4463,13 @@ long IrcTabItem::onSetAway(FXObject*, FXSelector, void*)
 long IrcTabItem::onRemoveAway(FXObject*, FXSelector, void*)
 {
     m_server->sendAway("");
+    return 1;
+}
+
+//handle change in spellLang combobox
+long IrcTabItem::onSpellLang(FXObject*, FXSelector, void*)
+{
+    m_commandline->setLanguage(m_spellLangs->getItemText(m_spellLangs->getCurrentItem()));
     return 1;
 }
 

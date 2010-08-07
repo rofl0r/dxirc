@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: david@konstrukce-cad.com\n"
-"POT-Creation-Date: 2010-07-14 17:32+0200\n"
+"POT-Creation-Date: 2010-08-07 14:11+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,11 +16,11 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/configdialog.cpp:123 src/configdialog.cpp:382 src/configdialog.cpp:929
-#: src/configdialog.cpp:967 src/configdialog.cpp:1007
-#: src/configdialog.cpp:1313 src/configdialog.cpp:1353 src/dxirc.cpp:1495
-#: src/irctabitem.cpp:59 src/irctabitem.cpp:4303 src/irctabitem.cpp:4324
-#: src/irctabitem.cpp:4349 src/irctabitem.cpp:4379 src/irctabitem.cpp:4402
+#: src/configdialog.cpp:123 src/configdialog.cpp:384 src/configdialog.cpp:934
+#: src/configdialog.cpp:972 src/configdialog.cpp:1012
+#: src/configdialog.cpp:1318 src/configdialog.cpp:1358 src/dxirc.cpp:1527
+#: src/irctabitem.cpp:59 src/irctabitem.cpp:4353 src/irctabitem.cpp:4374
+#: src/irctabitem.cpp:4399 src/irctabitem.cpp:4429 src/irctabitem.cpp:4452
 #: src/serverdialog.cpp:101 src/serverdialog.cpp:181 src/serverdialog.cpp:268
 #: src/aliasdialog.cpp:53 src/aliasdialog.cpp:84 src/aliasdialog.cpp:127
 #: src/dccdialog.cpp:171 ../../fox-1.6.37/src/FXMessageBox.cpp:107
@@ -37,11 +37,11 @@ msgstr ""
 msgid "&Cancel"
 msgstr ""
 
-#: src/configdialog.cpp:124 src/configdialog.cpp:930 src/configdialog.cpp:968
-#: src/configdialog.cpp:1008 src/configdialog.cpp:1314
-#: src/configdialog.cpp:1354 src/dxirc.cpp:1409 src/dxirc.cpp:1496
-#: src/irctabitem.cpp:4304 src/irctabitem.cpp:4325 src/irctabitem.cpp:4350
-#: src/irctabitem.cpp:4380 src/irctabitem.cpp:4403 src/serverdialog.cpp:182
+#: src/configdialog.cpp:124 src/configdialog.cpp:935 src/configdialog.cpp:973
+#: src/configdialog.cpp:1013 src/configdialog.cpp:1319
+#: src/configdialog.cpp:1359 src/dxirc.cpp:1441 src/dxirc.cpp:1528
+#: src/irctabitem.cpp:4354 src/irctabitem.cpp:4375 src/irctabitem.cpp:4400
+#: src/irctabitem.cpp:4430 src/irctabitem.cpp:4453 src/serverdialog.cpp:182
 #: src/serverdialog.cpp:269 src/aliasdialog.cpp:85 src/aliasdialog.cpp:128
 #: ../../fox-1.6.37/src/FXMessageBox.cpp:102
 #: ../../fox-1.6.37/src/FXMessageBox.cpp:106
@@ -62,8 +62,8 @@ msgstr ""
 msgid "Preview:"
 msgstr ""
 
-#: src/configdialog.cpp:162 src/configdialog.cpp:1045
-#: src/configdialog.cpp:1879 src/irctabitem.cpp:72 src/irctabitem.cpp:82
+#: src/configdialog.cpp:162 src/configdialog.cpp:1050
+#: src/configdialog.cpp:1884 src/irctabitem.cpp:72 src/irctabitem.cpp:82
 msgid "Select file"
 msgstr ""
 
@@ -71,710 +71,719 @@ msgstr ""
 msgid "Preferences"
 msgstr ""
 
-#: src/configdialog.cpp:380 src/serverdialog.cpp:102 src/aliasdialog.cpp:54
+#: src/configdialog.cpp:382 src/serverdialog.cpp:102 src/aliasdialog.cpp:54
 msgid "&Save&&Close"
 msgstr ""
 
-#: src/configdialog.cpp:389
+#: src/configdialog.cpp:391
 msgid "Irc text settings"
 msgstr ""
 
-#: src/configdialog.cpp:395
+#: src/configdialog.cpp:397
 msgid "Text backround color"
 msgstr ""
 
-#: src/configdialog.cpp:397
+#: src/configdialog.cpp:399
 msgid "Text color"
 msgstr ""
 
-#: src/configdialog.cpp:399
+#: src/configdialog.cpp:401
 msgid "User events text color"
 msgstr ""
 
-#: src/configdialog.cpp:401
+#: src/configdialog.cpp:403
 msgid "Actions message text color"
 msgstr ""
 
-#: src/configdialog.cpp:403
+#: src/configdialog.cpp:405
 msgid "Notice text color"
 msgstr ""
 
-#: src/configdialog.cpp:405
+#: src/configdialog.cpp:407
 msgid "Error text color"
 msgstr ""
 
-#: src/configdialog.cpp:407
+#: src/configdialog.cpp:409
 msgid "Highlight message text color"
 msgstr ""
 
-#: src/configdialog.cpp:409
+#: src/configdialog.cpp:411
 msgid "Link color"
 msgstr ""
 
-#: src/configdialog.cpp:410 src/configdialog.cpp:595
+#: src/configdialog.cpp:412 src/configdialog.cpp:600
 msgid "Font"
 msgstr ""
 
-#: src/configdialog.cpp:412
+#: src/configdialog.cpp:414
 msgid "Use same font for commandline"
 msgstr ""
 
-#: src/configdialog.cpp:413
+#: src/configdialog.cpp:415
 msgid "Use same font for user list"
 msgstr ""
 
-#: src/configdialog.cpp:414
+#: src/configdialog.cpp:416
 msgid "Use colored nick"
 msgstr ""
 
-#: src/configdialog.cpp:415
+#: src/configdialog.cpp:417
 msgid "Strip colors in text"
 msgstr ""
 
-#: src/configdialog.cpp:421
+#: src/configdialog.cpp:423
 msgid "Ignore commands and users"
 msgstr ""
 
-#: src/configdialog.cpp:423
+#: src/configdialog.cpp:425
 msgid "Commands"
 msgstr ""
 
-#: src/configdialog.cpp:425 src/configdialog.cpp:431 src/configdialog.cpp:459
-#: src/configdialog.cpp:666 src/configdialog.cpp:713
+#: src/configdialog.cpp:427 src/configdialog.cpp:433 src/configdialog.cpp:461
+#: src/configdialog.cpp:671 src/configdialog.cpp:718
 msgid "Add"
 msgstr ""
 
-#: src/configdialog.cpp:426 src/configdialog.cpp:433 src/configdialog.cpp:460
-#: src/configdialog.cpp:668 src/configdialog.cpp:715 src/logviewer.cpp:431
+#: src/configdialog.cpp:428 src/configdialog.cpp:435 src/configdialog.cpp:462
+#: src/configdialog.cpp:673 src/configdialog.cpp:720 src/logviewer.cpp:431
 msgid "Delete"
 msgstr ""
 
-#: src/configdialog.cpp:429
+#: src/configdialog.cpp:431
 msgid "Users"
 msgstr ""
 
-#: src/configdialog.cpp:432 src/configdialog.cpp:667 src/configdialog.cpp:714
+#: src/configdialog.cpp:434 src/configdialog.cpp:672 src/configdialog.cpp:719
 msgid "Modify"
 msgstr ""
 
-#: src/configdialog.cpp:437 ../../fox-1.6.37/src/FXFileList.cpp:196
+#: src/configdialog.cpp:439 ../../fox-1.6.37/src/FXFileList.cpp:196
 #: ../../fox-1.6.37/src/FXFileSelector.cpp:731
 msgid "User"
 msgstr ""
 
-#: src/configdialog.cpp:438 src/configdialog.cpp:673
+#: src/configdialog.cpp:440 src/configdialog.cpp:678
 msgid "Channel(s)"
 msgstr ""
 
-#: src/configdialog.cpp:439 src/configdialog.cpp:674
+#: src/configdialog.cpp:441 src/configdialog.cpp:679
 msgid "Server(s)"
 msgstr ""
 
-#: src/configdialog.cpp:455
+#: src/configdialog.cpp:457
 msgid "General settings"
 msgstr ""
 
-#: src/configdialog.cpp:457
+#: src/configdialog.cpp:459
 msgid "Nick icons themes"
 msgstr ""
 
-#: src/configdialog.cpp:474
+#: src/configdialog.cpp:476
 msgid "\tAdmin"
 msgstr ""
 
-#: src/configdialog.cpp:475
+#: src/configdialog.cpp:477
 msgid "\tOwner"
 msgstr ""
 
-#: src/configdialog.cpp:476
+#: src/configdialog.cpp:478
 msgid "\tOp"
 msgstr ""
 
-#: src/configdialog.cpp:477
+#: src/configdialog.cpp:479
 msgid "\tHalfop"
 msgstr ""
 
-#: src/configdialog.cpp:478
+#: src/configdialog.cpp:480
 msgid "\tVoice"
 msgstr ""
 
-#: src/configdialog.cpp:479
+#: src/configdialog.cpp:481
 msgid "\tNormal"
 msgstr ""
 
-#: src/configdialog.cpp:480
+#: src/configdialog.cpp:482
 msgid "\tAway"
 msgstr ""
 
-#: src/configdialog.cpp:481
+#: src/configdialog.cpp:483
 msgid "Reconnect after disconnection"
 msgstr ""
 
-#: src/configdialog.cpp:483
+#: src/configdialog.cpp:485
 msgid "Number of attempts"
 msgstr ""
 
-#: src/configdialog.cpp:489
+#: src/configdialog.cpp:491
 msgid "Delay between two attempts in seconds"
 msgstr ""
 
-#: src/configdialog.cpp:495
+#: src/configdialog.cpp:497
 msgid ""
 "Max. users number for checking away\tToo high number can be reason for ban"
 msgstr ""
 
-#: src/configdialog.cpp:498
+#: src/configdialog.cpp:500
 msgid "Nick completion char"
 msgstr ""
 
-#: src/configdialog.cpp:502
+#: src/configdialog.cpp:504
 msgid "Use trayicon"
 msgstr ""
 
-#: src/configdialog.cpp:503
+#: src/configdialog.cpp:505
 msgid "Close button hides application"
 msgstr ""
 
-#: src/configdialog.cpp:505
+#: src/configdialog.cpp:508
+msgid "Use spellchecking"
+msgstr ""
+
+#: src/configdialog.cpp:510
 msgid "Special tab for server messages"
 msgstr ""
 
-#: src/configdialog.cpp:506
+#: src/configdialog.cpp:511
 msgid "Logging chats"
 msgstr ""
 
-#: src/configdialog.cpp:508
+#: src/configdialog.cpp:513
 msgid "Log path"
 msgstr ""
 
-#: src/configdialog.cpp:515
+#: src/configdialog.cpp:520
 msgid "Automatically load scripts"
 msgstr ""
 
-#: src/configdialog.cpp:517
+#: src/configdialog.cpp:522
 msgid "Path"
 msgstr ""
 
-#: src/configdialog.cpp:532
+#: src/configdialog.cpp:537
 msgid "Tab position"
 msgstr ""
 
-#: src/configdialog.cpp:534
+#: src/configdialog.cpp:539
 msgid "Bottom"
 msgstr ""
 
-#: src/configdialog.cpp:535
+#: src/configdialog.cpp:540
 msgid "Left"
 msgstr ""
 
-#: src/configdialog.cpp:536
+#: src/configdialog.cpp:541
 msgid "Top"
 msgstr ""
 
-#: src/configdialog.cpp:537
+#: src/configdialog.cpp:542
 msgid "Right"
 msgstr ""
 
-#: src/configdialog.cpp:543
+#: src/configdialog.cpp:548
 msgid "FOX toolkit look for dxirc"
 msgstr ""
 
-#: src/configdialog.cpp:548
+#: src/configdialog.cpp:553
 msgid "Theme:"
 msgstr ""
 
-#: src/configdialog.cpp:555
+#: src/configdialog.cpp:560
 msgid "Base Color"
 msgstr ""
 
-#: src/configdialog.cpp:557
+#: src/configdialog.cpp:562
 msgid "Border Color"
 msgstr ""
 
-#: src/configdialog.cpp:559
+#: src/configdialog.cpp:564
 msgid "Text Color"
 msgstr ""
 
-#: src/configdialog.cpp:561
+#: src/configdialog.cpp:566
 msgid "Background Color"
 msgstr ""
 
-#: src/configdialog.cpp:563
+#: src/configdialog.cpp:568
 msgid "Selected Text Color"
 msgstr ""
 
-#: src/configdialog.cpp:565
+#: src/configdialog.cpp:570
 msgid "Selected Background Color"
 msgstr ""
 
-#: src/configdialog.cpp:567
+#: src/configdialog.cpp:572
 msgid "Selected Menu Text Color"
 msgstr ""
 
-#: src/configdialog.cpp:569
+#: src/configdialog.cpp:574
 msgid "Selected Menu Background Color"
 msgstr ""
 
-#: src/configdialog.cpp:571
+#: src/configdialog.cpp:576
 msgid "Tip Text Color"
 msgstr ""
 
-#: src/configdialog.cpp:573
+#: src/configdialog.cpp:578
 msgid "Tip Background Color"
 msgstr ""
 
-#: src/configdialog.cpp:576
+#: src/configdialog.cpp:581
 msgid "Tray Color"
 msgstr ""
 
-#: src/configdialog.cpp:581
+#: src/configdialog.cpp:586
 msgid "Select this text, to see the selected colors"
 msgstr ""
 
-#: src/configdialog.cpp:583
+#: src/configdialog.cpp:588
 msgid "Selected Text (with focus)"
 msgstr ""
 
-#: src/configdialog.cpp:585
+#: src/configdialog.cpp:590
 msgid "Selected Text (no focus)"
 msgstr ""
 
-#: src/configdialog.cpp:587
+#: src/configdialog.cpp:592
 msgid "Tooltip example"
 msgstr ""
 
-#: src/configdialog.cpp:588
+#: src/configdialog.cpp:593
 msgid "Menu example"
 msgstr ""
 
-#: src/configdialog.cpp:590
+#: src/configdialog.cpp:595
 msgid "&Server list"
 msgstr ""
 
-#: src/configdialog.cpp:591
+#: src/configdialog.cpp:596
 msgid "Selected Menu Entry"
 msgstr ""
 
-#: src/configdialog.cpp:593 src/dxirc.cpp:271
+#: src/configdialog.cpp:598 src/dxirc.cpp:278
 #: ../../fox-1.6.37/src/FXMessageBox.cpp:122
 #: ../../fox-1.6.37/src/FXMessageBox.cpp:127
 msgid "&Quit"
 msgstr ""
 
-#: src/configdialog.cpp:599
+#: src/configdialog.cpp:604
 msgid "DCC settings"
 msgstr ""
 
-#: src/configdialog.cpp:601
+#: src/configdialog.cpp:606
 msgid "Directory for saving files:"
 msgstr ""
 
-#: src/configdialog.cpp:606
+#: src/configdialog.cpp:611
 msgid "DCC IP address:"
 msgstr ""
 
-#: src/configdialog.cpp:614
+#: src/configdialog.cpp:619
 msgid "(Leave blank for use IP address from server)"
 msgstr ""
 
-#: src/configdialog.cpp:617
+#: src/configdialog.cpp:622
 msgid "DCC ports:"
 msgstr ""
 
-#: src/configdialog.cpp:623
+#: src/configdialog.cpp:628
 msgid "(Set 0 for use ports from OS)"
 msgstr ""
 
-#: src/configdialog.cpp:625
+#: src/configdialog.cpp:630
 msgid "Time for waiting for connection in seconds"
 msgstr ""
 
-#: src/configdialog.cpp:627
+#: src/configdialog.cpp:632
 msgid "Automatically connect offered chat"
 msgstr ""
 
-#: src/configdialog.cpp:628
+#: src/configdialog.cpp:633
 msgid "Automatically receive offered file"
 msgstr ""
 
-#: src/configdialog.cpp:631
+#: src/configdialog.cpp:636
 msgid "Sound settings"
 msgstr ""
 
-#: src/configdialog.cpp:633
+#: src/configdialog.cpp:638
 msgid "Use sounds"
 msgstr ""
 
-#: src/configdialog.cpp:634
+#: src/configdialog.cpp:639
 msgid "Events"
 msgstr ""
 
-#: src/configdialog.cpp:636
+#: src/configdialog.cpp:641
 msgid "Friend connected"
 msgstr ""
 
-#: src/configdialog.cpp:642 src/configdialog.cpp:656 src/configdialog.cpp:698
+#: src/configdialog.cpp:647 src/configdialog.cpp:661 src/configdialog.cpp:703
 msgid "\tPlay"
 msgstr ""
 
-#: src/configdialog.cpp:650
+#: src/configdialog.cpp:655
 msgid "Friend disconnected"
 msgstr ""
 
-#: src/configdialog.cpp:664
+#: src/configdialog.cpp:669
 msgid "Friends"
 msgstr ""
 
-#: src/configdialog.cpp:672
+#: src/configdialog.cpp:677
 msgid "Friend"
 msgstr ""
 
-#: src/configdialog.cpp:692
+#: src/configdialog.cpp:697
 msgid "Highlighted message or query message"
 msgstr ""
 
-#: src/configdialog.cpp:708
+#: src/configdialog.cpp:713
 msgid "Smileys settings"
 msgstr ""
 
-#: src/configdialog.cpp:710
+#: src/configdialog.cpp:715
 msgid "Use smileys"
 msgstr ""
 
-#: src/configdialog.cpp:711
+#: src/configdialog.cpp:716
 msgid "Smileys"
 msgstr ""
 
-#: src/configdialog.cpp:716
+#: src/configdialog.cpp:721
 msgid "Import"
 msgstr ""
 
-#: src/configdialog.cpp:717
+#: src/configdialog.cpp:722
 msgid "Export"
 msgstr ""
 
-#: src/configdialog.cpp:748
+#: src/configdialog.cpp:753
 msgid "&General"
 msgstr ""
 
-#: src/configdialog.cpp:749
+#: src/configdialog.cpp:754
 msgid "&Look"
 msgstr ""
 
-#: src/configdialog.cpp:750
+#: src/configdialog.cpp:755
 msgid "&Irc Text"
 msgstr ""
 
-#: src/configdialog.cpp:751
+#: src/configdialog.cpp:756
 msgid "I&gnore"
 msgstr ""
 
-#: src/configdialog.cpp:752
+#: src/configdialog.cpp:757
 msgid "&DCC"
 msgstr ""
 
-#: src/configdialog.cpp:753
+#: src/configdialog.cpp:758
 msgid "&Sounds"
 msgstr ""
 
-#: src/configdialog.cpp:754
+#: src/configdialog.cpp:759
 msgid "S&mileys"
 msgstr ""
 
-#: src/configdialog.cpp:920
+#: src/configdialog.cpp:925
 msgid "Select ignore command"
 msgstr ""
 
-#: src/configdialog.cpp:924 src/aliasdialog.cpp:80 src/aliasdialog.cpp:122
+#: src/configdialog.cpp:929 src/aliasdialog.cpp:80 src/aliasdialog.cpp:122
 msgid "Command:"
 msgstr ""
 
-#: src/configdialog.cpp:951 src/irctabitem.cpp:4363
+#: src/configdialog.cpp:956 src/irctabitem.cpp:4413
 msgid "Add ignore user"
 msgstr ""
 
-#: src/configdialog.cpp:955 src/configdialog.cpp:996 src/configdialog.cpp:1301
-#: src/configdialog.cpp:1342 src/irctabitem.cpp:4367
+#: src/configdialog.cpp:960 src/configdialog.cpp:1001
+#: src/configdialog.cpp:1306 src/configdialog.cpp:1347 src/irctabitem.cpp:4417
 msgid "Nick:"
 msgstr ""
 
-#: src/configdialog.cpp:958 src/configdialog.cpp:999 src/configdialog.cpp:1304
-#: src/configdialog.cpp:1345 src/dxirc.cpp:1479 src/irctabitem.cpp:4370
-#: src/serverdialog.cpp:160 src/serverdialog.cpp:244
+#: src/configdialog.cpp:963 src/configdialog.cpp:1004
+#: src/configdialog.cpp:1309 src/configdialog.cpp:1350 src/dxirc.cpp:1511
+#: src/irctabitem.cpp:4420 src/serverdialog.cpp:160 src/serverdialog.cpp:244
 msgid "Channel(s):\tChannels need to be comma separated"
 msgstr ""
 
-#: src/configdialog.cpp:961 src/configdialog.cpp:1307 src/irctabitem.cpp:4373
+#: src/configdialog.cpp:966 src/configdialog.cpp:1312 src/irctabitem.cpp:4423
 #: src/serverdialog.cpp:163 src/serverdialog.cpp:247
 msgid "Channels need to be comma separated"
 msgstr ""
 
-#: src/configdialog.cpp:962 src/configdialog.cpp:1002
-#: src/configdialog.cpp:1308 src/configdialog.cpp:1348 src/irctabitem.cpp:4374
+#: src/configdialog.cpp:967 src/configdialog.cpp:1007
+#: src/configdialog.cpp:1313 src/configdialog.cpp:1353 src/irctabitem.cpp:4424
 msgid "Server:"
 msgstr ""
 
-#: src/configdialog.cpp:992
+#: src/configdialog.cpp:997
 msgid "Modify ignore user"
 msgstr ""
 
-#: src/configdialog.cpp:1044
+#: src/configdialog.cpp:1049
 msgid "Warning"
 msgstr ""
 
-#: src/configdialog.cpp:1044
+#: src/configdialog.cpp:1049
 msgid "File import overwrites current settings"
 msgstr ""
 
-#: src/configdialog.cpp:1107
+#: src/configdialog.cpp:1112
 msgid "Save smiley settings as"
 msgstr ""
 
-#: src/configdialog.cpp:1297
+#: src/configdialog.cpp:1302
 msgid "Add friend"
 msgstr ""
 
-#: src/configdialog.cpp:1338
+#: src/configdialog.cpp:1343
 msgid "Modify friend"
 msgstr ""
 
-#: src/configdialog.cpp:1389
+#: src/configdialog.cpp:1394
 msgid "Select theme directory"
 msgstr ""
 
-#: src/configdialog.cpp:1455 src/configdialog.cpp:1474
+#: src/configdialog.cpp:1460 src/configdialog.cpp:1479
 msgid "Select font"
 msgstr ""
 
-#: src/configdialog.cpp:1733
+#: src/configdialog.cpp:1738
 msgid "Select log directory"
 msgstr ""
 
-#: src/configdialog.cpp:1744
+#: src/configdialog.cpp:1749
 msgid "Select autoload directory"
 msgstr ""
 
-#: src/configdialog.cpp:1755
+#: src/configdialog.cpp:1760
 msgid "Select directory"
 msgstr ""
 
-#: src/configdialog.cpp:1880
+#: src/configdialog.cpp:1885
 msgid "Sound file (*.wav)"
 msgstr ""
 
-#: src/configdialog.cpp:1941 src/configdialog.cpp:1949
-#: src/configdialog.cpp:1954 src/configdialog.cpp:1959
-#: src/configdialog.cpp:1980 src/configdialog.cpp:1985
-#: src/configdialog.cpp:1990 src/configdialog.cpp:2158 src/aliasdialog.cpp:93
+#: src/configdialog.cpp:1946 src/configdialog.cpp:1954
+#: src/configdialog.cpp:1959 src/configdialog.cpp:1964
+#: src/configdialog.cpp:1985 src/configdialog.cpp:1990
+#: src/configdialog.cpp:1995 src/configdialog.cpp:2163 src/aliasdialog.cpp:93
 #: src/aliasdialog.cpp:98 src/aliasdialog.cpp:103 src/aliasdialog.cpp:136
 #: src/aliasdialog.cpp:141 src/aliasdialog.cpp:146 src/logviewer.cpp:170
 #: src/logviewer.cpp:216 src/logviewer.cpp:304
 msgid "Information"
 msgstr ""
 
-#: src/configdialog.cpp:1941
+#: src/configdialog.cpp:1946
 msgid "Maximum number of 256 smileys is reached"
 msgstr ""
 
-#: src/configdialog.cpp:1944
+#: src/configdialog.cpp:1949
 msgid "Add smiley"
 msgstr ""
 
-#: src/configdialog.cpp:1949 src/configdialog.cpp:1980
+#: src/configdialog.cpp:1954 src/configdialog.cpp:1985
 #, c-format
 msgid "Icon file '%s' doesn't exist or isn't image file"
 msgstr ""
 
-#: src/configdialog.cpp:1954 src/configdialog.cpp:1985
+#: src/configdialog.cpp:1959 src/configdialog.cpp:1990
 msgid "Smiley text is empty"
 msgstr ""
 
-#: src/configdialog.cpp:1959 src/configdialog.cpp:1990
+#: src/configdialog.cpp:1964 src/configdialog.cpp:1995
 #, c-format
 msgid "Smiley '%s' already exist"
 msgstr ""
 
-#: src/configdialog.cpp:1975
+#: src/configdialog.cpp:1980
 msgid "Modify smiley"
 msgstr ""
 
-#: src/configdialog.cpp:2071
+#: src/configdialog.cpp:2076
 msgid "Current"
 msgstr ""
 
-#: src/configdialog.cpp:2078
+#: src/configdialog.cpp:2083
 msgid "User Defined"
 msgstr ""
 
-#: src/configdialog.cpp:2158
+#: src/configdialog.cpp:2163
 msgid "Some changes need restart application"
 msgstr ""
 
-#: src/dxirc.cpp:201
+#: src/dxirc.cpp:203
 msgid "&Server list\tF2"
 msgstr ""
 
-#: src/dxirc.cpp:202
+#: src/dxirc.cpp:204
 msgid "Quick &connect\tF7"
 msgstr ""
 
-#: src/dxirc.cpp:203
+#: src/dxirc.cpp:205
 msgid "&Disconnect\tCtrl-D"
 msgstr ""
 
-#: src/dxirc.cpp:206
+#: src/dxirc.cpp:208
 msgid "DCC &transfers\tCtrl-T"
 msgstr ""
 
-#: src/dxirc.cpp:209
+#: src/dxirc.cpp:211
 msgid "S&cripts\tCtrl-S"
 msgstr ""
 
-#: src/dxirc.cpp:212
+#: src/dxirc.cpp:214
 msgid "&Log viewer\tCtrl-G"
 msgstr ""
 
-#: src/dxirc.cpp:216
+#: src/dxirc.cpp:218
 msgid "&Quit\tAlt-F4"
 msgstr ""
 
-#: src/dxirc.cpp:218
+#: src/dxirc.cpp:220
 msgid "&Quit\tCtrl-Q"
 msgstr ""
 
-#: src/dxirc.cpp:220
+#: src/dxirc.cpp:222
 msgid "&Server"
 msgstr ""
 
-#: src/dxirc.cpp:223
+#: src/dxirc.cpp:225
 msgid "Close current tab\tCtrl-W"
 msgstr ""
 
-#: src/dxirc.cpp:226
+#: src/dxirc.cpp:228
 msgid "Clear window\tCtrl-L"
 msgstr ""
 
-#: src/dxirc.cpp:227
+#: src/dxirc.cpp:229
 msgid "Clear all windows\tCtrl-Shift-L"
 msgstr ""
 
-#: src/dxirc.cpp:229
+#: src/dxirc.cpp:232
 msgid "Users list\tCtrl-U\tShow/Hide users list"
 msgstr ""
 
-#: src/dxirc.cpp:231
+#: src/dxirc.cpp:238
+msgid ""
+"Spellchecking language list\tCtrl-P\tShow/Hide spellchecking language list"
+msgstr ""
+
+#: src/dxirc.cpp:242
 msgid "Status bar"
 msgstr ""
 
-#: src/dxirc.cpp:233
+#: src/dxirc.cpp:244
 msgid "&Aliases"
 msgstr ""
 
-#: src/dxirc.cpp:234
+#: src/dxirc.cpp:245
 msgid "&Preferences"
 msgstr ""
 
-#: src/dxirc.cpp:235
+#: src/dxirc.cpp:246
 msgid "&Edit"
 msgstr ""
 
-#: src/dxirc.cpp:238
+#: src/dxirc.cpp:249
 msgid "&Help\tF1"
 msgstr ""
 
-#: src/dxirc.cpp:239
+#: src/dxirc.cpp:250
 msgid "&About..."
 msgstr ""
 
-#: src/dxirc.cpp:240
+#: src/dxirc.cpp:251
 msgid "&Help"
 msgstr ""
 
-#: src/dxirc.cpp:770 src/dxirc.cpp:2012 src/dxirc.cpp:2049 src/dxirc.cpp:3299
-#: src/dxirc.cpp:3389 src/dxirc.cpp:3439
+#: src/dxirc.cpp:787 src/dxirc.cpp:2016 src/dxirc.cpp:2053 src/dxirc.cpp:3304
+#: src/dxirc.cpp:3394 src/dxirc.cpp:3444
 #, c-format
 msgid "Lua plugin: error calling %s %s"
 msgstr ""
 
-#: src/dxirc.cpp:808
+#: src/dxirc.cpp:825
 msgid "Help"
 msgstr ""
 
-#: src/dxirc.cpp:817 src/logviewer.cpp:72 src/scriptdialog.cpp:77
+#: src/dxirc.cpp:834 src/logviewer.cpp:72 src/scriptdialog.cpp:77
 #: src/scriptdialog.cpp:216 src/dccdialog.cpp:75
 msgid "C&lose"
 msgstr ""
 
-#: src/dxirc.cpp:1397
+#: src/dxirc.cpp:1429
 #, c-format
 msgid "About %s"
 msgstr ""
 
-#: src/dxirc.cpp:1400
+#: src/dxirc.cpp:1432
 msgid ""
 "\n"
 "Copyright (C) 2008~ David Vachulka (david@konstrukce-cad.com)\n"
 msgstr ""
 
-#: src/dxirc.cpp:1401
+#: src/dxirc.cpp:1433
 #, c-format
 msgid ""
 "This software was built with the FOX Toolkit Library version %d.%d.%d "
 "(http://www.fox-toolkit.org)."
 msgstr ""
 
-#: src/dxirc.cpp:1403 src/dxirc.cpp:1406
+#: src/dxirc.cpp:1435 src/dxirc.cpp:1438
 #, c-format
 msgid "This software was built with %s"
 msgstr ""
 
-#: src/dxirc.cpp:1408
+#: src/dxirc.cpp:1440
 msgid "This sofware uses http://www.famfamfam.com/lab/icons/"
 msgstr ""
 
-#: src/dxirc.cpp:1455
+#: src/dxirc.cpp:1487
 msgid "Quick connect"
 msgstr ""
 
-#: src/dxirc.cpp:1460 src/serverdialog.cpp:55 src/serverdialog.cpp:141
+#: src/dxirc.cpp:1492 src/serverdialog.cpp:55 src/serverdialog.cpp:141
 #: src/serverdialog.cpp:223
 msgid "Hostname:"
 msgstr ""
 
-#: src/dxirc.cpp:1464 src/serverdialog.cpp:59 src/serverdialog.cpp:145
+#: src/dxirc.cpp:1496 src/serverdialog.cpp:59 src/serverdialog.cpp:145
 #: src/serverdialog.cpp:227 src/dccdialog.cpp:71
 msgid "Port:"
 msgstr ""
 
-#: src/dxirc.cpp:1469 src/serverdialog.cpp:63 src/serverdialog.cpp:150
+#: src/dxirc.cpp:1501 src/serverdialog.cpp:63 src/serverdialog.cpp:150
 #: src/serverdialog.cpp:232
 msgid "Password:"
 msgstr ""
 
-#: src/dxirc.cpp:1472 src/serverdialog.cpp:67 src/serverdialog.cpp:153
+#: src/dxirc.cpp:1504 src/serverdialog.cpp:67 src/serverdialog.cpp:153
 #: src/serverdialog.cpp:236
 msgid "Nickname:"
 msgstr ""
 
-#: src/dxirc.cpp:1476 src/serverdialog.cpp:71 src/serverdialog.cpp:157
+#: src/dxirc.cpp:1508 src/serverdialog.cpp:71 src/serverdialog.cpp:157
 #: src/serverdialog.cpp:240
 msgid "Realname:"
 msgstr ""
 
-#: src/dxirc.cpp:1484 src/serverdialog.cpp:90 src/serverdialog.cpp:173
+#: src/dxirc.cpp:1516 src/serverdialog.cpp:90 src/serverdialog.cpp:173
 #: src/serverdialog.cpp:258
 msgid "Use SSL:"
 msgstr ""
 
-#: src/dxirc.cpp:1488 src/serverdialog.cpp:82
+#: src/dxirc.cpp:1520 src/serverdialog.cpp:82
 msgid "Commands on connection:"
 msgstr ""
 
-#: src/dxirc.cpp:1639
+#: src/dxirc.cpp:1657
 msgid "Confirm disconnect"
 msgstr ""
 
-#: src/dxirc.cpp:1641
+#: src/dxirc.cpp:1659
 #, c-format
 msgid ""
 "Disconnect server: %s\n"
@@ -782,35 +791,35 @@ msgid ""
 "Nick: %s"
 msgstr ""
 
-#: src/dxirc.cpp:1643 ../../fox-1.6.37/src/FXMessageBox.cpp:112
+#: src/dxirc.cpp:1661 ../../fox-1.6.37/src/FXMessageBox.cpp:112
 #: ../../fox-1.6.37/src/FXMessageBox.cpp:117
 msgid "&No"
 msgstr ""
 
-#: src/dxirc.cpp:1644 ../../fox-1.6.37/src/FXMessageBox.cpp:111
+#: src/dxirc.cpp:1662 ../../fox-1.6.37/src/FXMessageBox.cpp:111
 #: ../../fox-1.6.37/src/FXMessageBox.cpp:116
 msgid "&Yes"
 msgstr ""
 
-#: src/dxirc.cpp:2072 src/dxirc.cpp:2123 src/dxirc.cpp:2149 src/dxirc.cpp:2297
-#: src/dxirc.cpp:2321 src/dxirc.cpp:3712 src/logviewer.cpp:476
+#: src/dxirc.cpp:2076 src/dxirc.cpp:2127 src/dxirc.cpp:2153 src/dxirc.cpp:2301
+#: src/dxirc.cpp:2325 src/dxirc.cpp:3799 src/logviewer.cpp:476
 msgid "Question"
 msgstr ""
 
-#: src/dxirc.cpp:2072
+#: src/dxirc.cpp:2076
 #, c-format
 msgid ""
 "%s offers DCC Chat on %s port %s.\n"
 " Do you want connect?"
 msgstr ""
 
-#: src/dxirc.cpp:2117 src/dxirc.cpp:2179 src/dxirc.cpp:2291 src/dxirc.cpp:2349
-#: src/dxirc.cpp:2509 src/dxirc.cpp:2534
+#: src/dxirc.cpp:2121 src/dxirc.cpp:2183 src/dxirc.cpp:2295 src/dxirc.cpp:2353
+#: src/dxirc.cpp:2513 src/dxirc.cpp:2538
 #, c-format
 msgid "Receiving \"%s\" from %s"
 msgstr ""
 
-#: src/dxirc.cpp:2123
+#: src/dxirc.cpp:2127
 #, c-format
 msgid ""
 "%s offers file %s with size %s over DCC .\n"
@@ -818,18 +827,18 @@ msgid ""
 "Do you want continue in download?"
 msgstr ""
 
-#: src/dxirc.cpp:2149
+#: src/dxirc.cpp:2153
 #, c-format
 msgid ""
 "%s offers file %s with size %s over DCC .\n"
 "Do you want connect?"
 msgstr ""
 
-#: src/dxirc.cpp:2151 src/dxirc.cpp:2323
+#: src/dxirc.cpp:2155 src/dxirc.cpp:2327
 msgid "Save file"
 msgstr ""
 
-#: src/dxirc.cpp:2297
+#: src/dxirc.cpp:2301
 #, c-format
 msgid ""
 "%s offers file %s with size %s over DCC passive.\n"
@@ -837,131 +846,131 @@ msgid ""
 "Do you want continue in download?"
 msgstr ""
 
-#: src/dxirc.cpp:2321
+#: src/dxirc.cpp:2325
 #, c-format
 msgid ""
 "%s offers file %s with size %s over DCC passive.\n"
 " Do you want accept?"
 msgstr ""
 
-#: src/dxirc.cpp:2382 src/dxirc.cpp:2397
+#: src/dxirc.cpp:2386 src/dxirc.cpp:2401
 #, c-format
 msgid "Download of \"%s\" from %s canceled"
 msgstr ""
 
-#: src/dxirc.cpp:2386
+#: src/dxirc.cpp:2390
 #, c-format
 msgid "Download of \"%s\" from %s finished"
 msgstr ""
 
-#: src/dxirc.cpp:2407 src/dxirc.cpp:2422
+#: src/dxirc.cpp:2411 src/dxirc.cpp:2426
 #, c-format
 msgid "Upload of \"%s\" to %s canceled"
 msgstr ""
 
-#: src/dxirc.cpp:2411
+#: src/dxirc.cpp:2415
 #, c-format
 msgid "Upload of \"%s\" to %s finished"
 msgstr ""
 
-#: src/dxirc.cpp:2920
+#: src/dxirc.cpp:2924
 #, c-format
 msgid "New highlighted message on %s"
 msgstr ""
 
-#: src/dxirc.cpp:2921
+#: src/dxirc.cpp:2925
 #, c-format
 msgid "New message on %s"
 msgstr ""
 
-#: src/dxirc.cpp:2944
+#: src/dxirc.cpp:2948
 #, c-format
 msgid "'%s' can't be added to ignored commands"
 msgstr ""
 
-#: src/dxirc.cpp:2953
+#: src/dxirc.cpp:2957
 #, c-format
 msgid "'%s' is already added in ignored commands"
 msgstr ""
 
-#: src/dxirc.cpp:2957
+#: src/dxirc.cpp:2961
 #, c-format
 msgid "'%s' was added to ignored commands"
 msgstr ""
 
-#: src/dxirc.cpp:2984
+#: src/dxirc.cpp:2988
 #, c-format
 msgid "'%s' was removed from ignored commands"
 msgstr ""
 
-#: src/dxirc.cpp:2990
+#: src/dxirc.cpp:2994
 #, c-format
 msgid "'%s' isn't in ignored commands"
 msgstr ""
 
-#: src/dxirc.cpp:3023
+#: src/dxirc.cpp:3027
 #, c-format
 msgid "'%s' was updated in ignored users"
 msgstr ""
 
-#: src/dxirc.cpp:3034 src/dxirc.cpp:3044
+#: src/dxirc.cpp:3038 src/dxirc.cpp:3048
 #, c-format
 msgid "'%s' was added to ignored users"
 msgstr ""
 
-#: src/dxirc.cpp:3069
+#: src/dxirc.cpp:3073
 #, c-format
 msgid "'%s' was removed from ignored users"
 msgstr ""
 
-#: src/dxirc.cpp:3075
+#: src/dxirc.cpp:3079
 #, c-format
 msgid "'%s' wasn't removed from ignored users"
 msgstr ""
 
-#: src/dxirc.cpp:3224
+#: src/dxirc.cpp:3229
 msgid "Scripts aren't loaded"
 msgstr ""
 
-#: src/dxirc.cpp:3229
+#: src/dxirc.cpp:3234
 msgid "Loaded scrips:"
 msgstr ""
 
-#: src/dxirc.cpp:3232
+#: src/dxirc.cpp:3237
 #, c-format
 msgid "Name: %s"
 msgstr ""
 
-#: src/dxirc.cpp:3233
+#: src/dxirc.cpp:3238
 #, c-format
 msgid "Description: %s"
 msgstr ""
 
-#: src/dxirc.cpp:3234
+#: src/dxirc.cpp:3239
 #, c-format
 msgid "Version: %s"
 msgstr ""
 
-#: src/dxirc.cpp:3235
+#: src/dxirc.cpp:3240
 #, c-format
 msgid "Path: %s"
 msgstr ""
 
-#: src/dxirc.cpp:3256
+#: src/dxirc.cpp:3261
 #, c-format
 msgid "Error: %s"
 msgstr ""
 
-#: src/dxirc.cpp:3264 src/irctabitem.cpp:1762 src/irctabitem.cpp:2624
+#: src/dxirc.cpp:3269 src/irctabitem.cpp:1807 src/irctabitem.cpp:2669
 msgid "dxirc is compiled without support for Lua scripting"
 msgstr ""
 
-#: src/dxirc.cpp:3703
+#: src/dxirc.cpp:3790
 #, c-format
 msgid "Script %s is already loaded"
 msgstr ""
 
-#: src/dxirc.cpp:3712
+#: src/dxirc.cpp:3799
 #, c-format
 msgid ""
 "Script %s contains dxirc.AddAll\n"
@@ -969,66 +978,66 @@ msgid ""
 "Load it anyway?"
 msgstr ""
 
-#: src/dxirc.cpp:3714
+#: src/dxirc.cpp:3801
 #, c-format
 msgid "Script %s contains dxirc.AddAll. This can BREAK dxirc funcionality."
 msgstr ""
 
-#: src/dxirc.cpp:3719
+#: src/dxirc.cpp:3806
 msgid "Unable to initialize Lua."
 msgstr ""
 
-#: src/dxirc.cpp:3728
+#: src/dxirc.cpp:3815
 #, c-format
 msgid "Unable to load/run the file %s"
 msgstr ""
 
-#: src/dxirc.cpp:3735
+#: src/dxirc.cpp:3822
 #, c-format
 msgid "Lua plugin: error registering script %s"
 msgstr ""
 
-#: src/dxirc.cpp:3748
+#: src/dxirc.cpp:3835
 #, c-format
 msgid "Script with name %s is already loaded"
 msgstr ""
 
-#: src/dxirc.cpp:3760
+#: src/dxirc.cpp:3847
 #, c-format
 msgid "Script %s was loaded"
 msgstr ""
 
-#: src/dxirc.cpp:3769
+#: src/dxirc.cpp:3856
 #, c-format
 msgid "Lua plugin: error calling dxirc_Init() %s"
 msgstr ""
 
-#: src/dxirc.cpp:3787 src/dxirc.cpp:3812
+#: src/dxirc.cpp:3874 src/dxirc.cpp:3899
 #, c-format
 msgid "Script %s isn't loaded"
 msgstr ""
 
-#: src/dxirc.cpp:3811
+#: src/dxirc.cpp:3898
 #, c-format
 msgid "Script %s was unloaded"
 msgstr ""
 
-#: src/dxirc.cpp:3897
+#: src/dxirc.cpp:3984
 #, c-format
 msgid "Command %s already exists"
 msgstr ""
 
-#: src/dxirc.cpp:3941
+#: src/dxirc.cpp:4028
 #, c-format
 msgid "Function %s for event %s already exists"
 msgstr ""
 
-#: src/dxirc.cpp:4079
+#: src/dxirc.cpp:4166
 #, c-format
 msgid "Command/event %s in script %s was removed"
 msgstr ""
 
-#: src/dxirc.cpp:4434
+#: src/dxirc.cpp:4517
 msgid ""
 "\n"
 "Usage: dxirc [options] \n"
@@ -1235,7 +1244,7 @@ msgstr ""
 msgid "%s : is signed on as account %s"
 msgstr ""
 
-#: src/ircsocket.cpp:1215 src/irctabitem.cpp:156 src/irctabitem.cpp:332
+#: src/ircsocket.cpp:1215 src/irctabitem.cpp:165 src/irctabitem.cpp:355
 msgid "No topic is set"
 msgstr ""
 
@@ -1554,918 +1563,918 @@ msgstr ""
 msgid "&Send file"
 msgstr ""
 
-#: src/irctabitem.cpp:1033 src/irctabitem.cpp:1085 src/irctabitem.cpp:1104
-#: src/irctabitem.cpp:1124 src/irctabitem.cpp:1174 src/irctabitem.cpp:1216
-#: src/irctabitem.cpp:1315 src/irctabitem.cpp:1370 src/irctabitem.cpp:1425
-#: src/irctabitem.cpp:1603 src/irctabitem.cpp:1623 src/irctabitem.cpp:1693
-#: src/irctabitem.cpp:1719 src/irctabitem.cpp:1729 src/irctabitem.cpp:1882
-#: src/irctabitem.cpp:1902 src/irctabitem.cpp:1947 src/irctabitem.cpp:1974
-#: src/irctabitem.cpp:2001 src/irctabitem.cpp:2036 src/irctabitem.cpp:2091
-#: src/irctabitem.cpp:2112 src/irctabitem.cpp:2144 src/irctabitem.cpp:2170
-#: src/irctabitem.cpp:2185 src/irctabitem.cpp:2220 src/irctabitem.cpp:2231
-#: src/irctabitem.cpp:2246 src/irctabitem.cpp:2302 src/irctabitem.cpp:2357
-#: src/irctabitem.cpp:2389 src/irctabitem.cpp:2408 src/irctabitem.cpp:2418
-#: src/irctabitem.cpp:2437 src/irctabitem.cpp:2456 src/irctabitem.cpp:2490
+#: src/irctabitem.cpp:1078 src/irctabitem.cpp:1130 src/irctabitem.cpp:1149
+#: src/irctabitem.cpp:1169 src/irctabitem.cpp:1219 src/irctabitem.cpp:1261
+#: src/irctabitem.cpp:1360 src/irctabitem.cpp:1415 src/irctabitem.cpp:1470
+#: src/irctabitem.cpp:1648 src/irctabitem.cpp:1668 src/irctabitem.cpp:1738
+#: src/irctabitem.cpp:1764 src/irctabitem.cpp:1774 src/irctabitem.cpp:1927
+#: src/irctabitem.cpp:1947 src/irctabitem.cpp:1992 src/irctabitem.cpp:2019
+#: src/irctabitem.cpp:2046 src/irctabitem.cpp:2081 src/irctabitem.cpp:2136
+#: src/irctabitem.cpp:2157 src/irctabitem.cpp:2189 src/irctabitem.cpp:2215
+#: src/irctabitem.cpp:2230 src/irctabitem.cpp:2265 src/irctabitem.cpp:2276
+#: src/irctabitem.cpp:2291 src/irctabitem.cpp:2347 src/irctabitem.cpp:2402
+#: src/irctabitem.cpp:2434 src/irctabitem.cpp:2453 src/irctabitem.cpp:2463
+#: src/irctabitem.cpp:2482 src/irctabitem.cpp:2501 src/irctabitem.cpp:2535
 msgid "You aren't connected"
 msgstr ""
 
-#: src/irctabitem.cpp:1096
+#: src/irctabitem.cpp:1141
 #, c-format
 msgid "Warning: Away message is too long. Max. away message length is %d."
 msgstr ""
 
-#: src/irctabitem.cpp:1117
+#: src/irctabitem.cpp:1162
 msgid "/banlist <channel>, shows banlist for channel."
 msgstr ""
 
-#: src/irctabitem.cpp:1133
+#: src/irctabitem.cpp:1178
 msgid ""
 "/connect <server> [port] [nick] [password] [realname] [channels], connects "
 "for given server."
 msgstr ""
 
-#: src/irctabitem.cpp:1162
+#: src/irctabitem.cpp:1207
 msgid "/ctcp <nick> <message>, sends a CTCP message to a user."
 msgstr ""
 
-#: src/irctabitem.cpp:1167
+#: src/irctabitem.cpp:1212
 #, c-format
 msgid "Warning: ctcp message is too long. Max. ctcp message length is %d."
 msgstr ""
 
-#: src/irctabitem.cpp:1209
+#: src/irctabitem.cpp:1254
 msgid "/cycle <channel> [message], leaves and join channel."
 msgstr ""
 
-#: src/irctabitem.cpp:1231
+#: src/irctabitem.cpp:1276
 msgid "Nick for chat wasn't entered."
 msgstr ""
 
-#: src/irctabitem.cpp:1236
+#: src/irctabitem.cpp:1281
 msgid "Chat with yourself isn't good idea."
 msgstr ""
 
-#: src/irctabitem.cpp:1251 src/irctabitem.cpp:1282
+#: src/irctabitem.cpp:1296 src/irctabitem.cpp:1327
 msgid "Nick for sending file wasn't entered."
 msgstr ""
 
-#: src/irctabitem.cpp:1256 src/irctabitem.cpp:1287
+#: src/irctabitem.cpp:1301 src/irctabitem.cpp:1332
 msgid "Sending to yourself isn't good idea."
 msgstr ""
 
-#: src/irctabitem.cpp:1261 src/irctabitem.cpp:1292
+#: src/irctabitem.cpp:1306 src/irctabitem.cpp:1337
 msgid "Filename wasn't entered"
 msgstr ""
 
-#: src/irctabitem.cpp:1266 src/irctabitem.cpp:1297
+#: src/irctabitem.cpp:1311 src/irctabitem.cpp:1342
 #, c-format
 msgid "File '%s' doesn't exist"
 msgstr ""
 
-#: src/irctabitem.cpp:1309
+#: src/irctabitem.cpp:1354
 #, c-format
 msgid "'%s' isn't dcc command <chat|send|psend>"
 msgstr ""
 
-#: src/irctabitem.cpp:1329
+#: src/irctabitem.cpp:1374
 msgid "/deop <nicks>, removes operator status from one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:1334 src/irctabitem.cpp:1363
+#: src/irctabitem.cpp:1379 src/irctabitem.cpp:1408
 msgid ""
 "/deop <channel> <nicks>, removes operator status from one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:1384
+#: src/irctabitem.cpp:1429
 msgid "/devoice <nicks>, removes voice from one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:1389 src/irctabitem.cpp:1418
+#: src/irctabitem.cpp:1434 src/irctabitem.cpp:1463
 msgid "/devoice <channel> <nicks>, removes voice from one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:1477
+#: src/irctabitem.cpp:1522
 msgid ""
 "/exec [-o|-c] <command>, executes command, -o sends output to channel/query, "
 "-c closes running command."
 msgstr ""
 
-#: src/irctabitem.cpp:1513
+#: src/irctabitem.cpp:1558
 msgid ""
 "/ignore <list|addcmd|rmcmd|addusr|rmusr> [command|user] [channel] [server]"
 msgstr ""
 
-#: src/irctabitem.cpp:1518
+#: src/irctabitem.cpp:1563
 msgid "Ignored commands:"
 msgstr ""
 
-#: src/irctabitem.cpp:1519
+#: src/irctabitem.cpp:1564
 msgid "No ignored commands"
 msgstr ""
 
-#: src/irctabitem.cpp:1521
+#: src/irctabitem.cpp:1566
 msgid "Ignored users:"
 msgstr ""
 
-#: src/irctabitem.cpp:1523
+#: src/irctabitem.cpp:1568
 msgid "No ignored users"
 msgstr ""
 
-#: src/irctabitem.cpp:1528
+#: src/irctabitem.cpp:1573
 #, c-format
 msgid "%s on channel(s): %s and server(s): %s"
 msgstr ""
 
-#: src/irctabitem.cpp:1537
+#: src/irctabitem.cpp:1582
 msgid "/ignore addcmd <command>, adds command to ignored commands."
 msgstr ""
 
-#: src/irctabitem.cpp:1547
+#: src/irctabitem.cpp:1592
 msgid "/ignore rmcmd <command>, removes command from ignored commands."
 msgstr ""
 
-#: src/irctabitem.cpp:1557
+#: src/irctabitem.cpp:1602
 msgid "/ignore addusr <user> [channel] [server], adds user to ignored users."
 msgstr ""
 
-#: src/irctabitem.cpp:1567
+#: src/irctabitem.cpp:1612
 msgid "/ignore rmusr <user>, removes user from ignored users."
 msgstr ""
 
-#: src/irctabitem.cpp:1575
+#: src/irctabitem.cpp:1620
 #, c-format
 msgid "'%s' isn't <list|addcmd|rmcmd|addusr|rmusr>"
 msgstr ""
 
-#: src/irctabitem.cpp:1586 src/irctabitem.cpp:1591
+#: src/irctabitem.cpp:1631 src/irctabitem.cpp:1636
 msgid "/invite <nick> <channel>, invites someone to a channel."
 msgstr ""
 
-#: src/irctabitem.cpp:1615
+#: src/irctabitem.cpp:1660
 msgid "/join <channel>, joins a channel."
 msgstr ""
 
-#: src/irctabitem.cpp:1616
+#: src/irctabitem.cpp:1661
 #, c-format
 msgid "'%c' isn't valid char for channel."
 msgstr ""
 
-#: src/irctabitem.cpp:1637
+#: src/irctabitem.cpp:1682
 msgid "/kick <nick>, kicks a user from a channel."
 msgstr ""
 
-#: src/irctabitem.cpp:1642 src/irctabitem.cpp:1686
+#: src/irctabitem.cpp:1687 src/irctabitem.cpp:1731
 msgid "/kick <channel> <nick>, kicks a user from a channel."
 msgstr ""
 
-#: src/irctabitem.cpp:1652 src/irctabitem.cpp:1664 src/irctabitem.cpp:1679
+#: src/irctabitem.cpp:1697 src/irctabitem.cpp:1709 src/irctabitem.cpp:1724
 #, c-format
 msgid "Warning: reason of kick is too long. Max. reason length is %d."
 msgstr ""
 
-#: src/irctabitem.cpp:1707
+#: src/irctabitem.cpp:1752
 msgid "/kill <user> [reason], kills a user from the network."
 msgstr ""
 
-#: src/irctabitem.cpp:1712
+#: src/irctabitem.cpp:1757
 #, c-format
 msgid "Warning: reason of kill is too long. Max. reason length is %d."
 msgstr ""
 
-#: src/irctabitem.cpp:1742
+#: src/irctabitem.cpp:1787
 msgid "/lua <help|load|unload|list> [scriptpath|scriptname]"
 msgstr ""
 
-#: src/irctabitem.cpp:1747
+#: src/irctabitem.cpp:1792
 #, c-format
 msgid "For help about Lua scripting visit: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:1755
+#: src/irctabitem.cpp:1800
 #, c-format
 msgid "'%s' isn't <help|load|unload|list>"
 msgstr ""
 
-#: src/irctabitem.cpp:1775
+#: src/irctabitem.cpp:1820
 msgid "/me <message>, sends the action to the current channel."
 msgstr ""
 
-#: src/irctabitem.cpp:1830
+#: src/irctabitem.cpp:1875
 msgid "/me <message>, sends the action to the current query."
 msgstr ""
 
-#: src/irctabitem.cpp:1875
+#: src/irctabitem.cpp:1920
 msgid "/me <to> <message>, sends the action."
 msgstr ""
 
-#: src/irctabitem.cpp:1894
+#: src/irctabitem.cpp:1939
 msgid "/mode <channel> <modes>, sets modes for a channel."
 msgstr ""
 
-#: src/irctabitem.cpp:1941
+#: src/irctabitem.cpp:1986
 msgid "/msg <nick/channel> <message>, sends a normal message."
 msgstr ""
 
-#: src/irctabitem.cpp:1966
+#: src/irctabitem.cpp:2011
 msgid "/names <channel>, for nicks on a channel."
 msgstr ""
 
-#: src/irctabitem.cpp:1986
+#: src/irctabitem.cpp:2031
 msgid "/nick <nick>, changes nick."
 msgstr ""
 
-#: src/irctabitem.cpp:1991
+#: src/irctabitem.cpp:2036
 #, c-format
 msgid "Warning: nick is too long. Max. nick length is %d."
 msgstr ""
 
-#: src/irctabitem.cpp:2015
+#: src/irctabitem.cpp:2060
 #, c-format
 msgid "NOTICE to %s: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:2030
+#: src/irctabitem.cpp:2075
 msgid "/notice <nick/channel> <message>, sends a notice."
 msgstr ""
 
-#: src/irctabitem.cpp:2050
+#: src/irctabitem.cpp:2095
 msgid "/op <nicks>, gives operator status for one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:2055 src/irctabitem.cpp:2084
+#: src/irctabitem.cpp:2100 src/irctabitem.cpp:2129
 msgid "/op <channel> <nicks>, gives operator status for one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:2106
+#: src/irctabitem.cpp:2151
 msgid "/oper <login> <password>, oper up."
 msgstr ""
 
-#: src/irctabitem.cpp:2137
+#: src/irctabitem.cpp:2182
 msgid "/part <channel> [reason], leaves channel."
 msgstr ""
 
-#: src/irctabitem.cpp:2155
+#: src/irctabitem.cpp:2200
 msgid "/query <nick>, opens query with nick."
 msgstr ""
 
-#: src/irctabitem.cpp:2265 src/irctabitem.cpp:2274 src/irctabitem.cpp:2288
-#: src/irctabitem.cpp:4425
+#: src/irctabitem.cpp:2310 src/irctabitem.cpp:2319 src/irctabitem.cpp:2333
+#: src/irctabitem.cpp:4482
 #, c-format
 msgid "Warning: topic is too long. Max. topic length is %d."
 msgstr ""
 
-#: src/irctabitem.cpp:2295
+#: src/irctabitem.cpp:2340
 msgid "/topic <channel> [topic], views or changes channel topic."
 msgstr ""
 
-#: src/irctabitem.cpp:2316
+#: src/irctabitem.cpp:2361
 msgid "/voice <nicks>, gives voice for one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:2321 src/irctabitem.cpp:2350
+#: src/irctabitem.cpp:2366 src/irctabitem.cpp:2395
 msgid "/voice <channel> <nicks>, gives voice for one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:2369
+#: src/irctabitem.cpp:2414
 msgid "/wallops <message>, sends wallop message."
 msgstr ""
 
-#: src/irctabitem.cpp:2401
+#: src/irctabitem.cpp:2446
 msgid ""
 "/who <mask> [o], searchs for mask on network, if o is supplied, only search "
 "for opers."
 msgstr ""
 
-#: src/irctabitem.cpp:2430
+#: src/irctabitem.cpp:2475
 msgid "/whois <nick>, whois nick."
 msgstr ""
 
-#: src/irctabitem.cpp:2449
+#: src/irctabitem.cpp:2494
 msgid "/whowas <nick>, whowas nick."
 msgstr ""
 
-#: src/irctabitem.cpp:2461 src/irctabitem.cpp:2767
+#: src/irctabitem.cpp:2506 src/irctabitem.cpp:2812
 #, c-format
 msgid "Unknown command '%s', type /commands for available commands"
 msgstr ""
 
-#: src/irctabitem.cpp:2508
+#: src/irctabitem.cpp:2553
 msgid ""
 "ADMIN [server], finds information about administrator for current server or "
 "[server]."
 msgstr ""
 
-#: src/irctabitem.cpp:2513
+#: src/irctabitem.cpp:2558
 msgid "AWAY [message], sets away status."
 msgstr ""
 
-#: src/irctabitem.cpp:2518
+#: src/irctabitem.cpp:2563
 msgid "BANLIST <channel>, shows banlist for channel."
 msgstr ""
 
-#: src/irctabitem.cpp:2523
+#: src/irctabitem.cpp:2568
 msgid "COMMANDS, shows available commands"
 msgstr ""
 
-#: src/irctabitem.cpp:2528
+#: src/irctabitem.cpp:2573
 msgid ""
 "CONNECT <server> [port] [nick] [password] [realname] [channels], connects "
 "for given server."
 msgstr ""
 
-#: src/irctabitem.cpp:2533
+#: src/irctabitem.cpp:2578
 msgid "CTCP <nick> <message>, sends a CTCP message to a user."
 msgstr ""
 
-#: src/irctabitem.cpp:2538
+#: src/irctabitem.cpp:2583
 msgid "CYCLE <channel> [message], leaves and join channel."
 msgstr ""
 
-#: src/irctabitem.cpp:2543
+#: src/irctabitem.cpp:2588
 msgid "DCC chat <nick>, starts DCC chat."
 msgstr ""
 
-#: src/irctabitem.cpp:2544
+#: src/irctabitem.cpp:2589
 msgid "DCC send <nick> <filename>, sends file over DCC."
 msgstr ""
 
-#: src/irctabitem.cpp:2545
+#: src/irctabitem.cpp:2590
 msgid "DCC psend <nick> <filename>, sends file passive over DCC."
 msgstr ""
 
-#: src/irctabitem.cpp:2546
+#: src/irctabitem.cpp:2591
 msgid ""
 "More information about passive DCC on http://en.wikipedia.org/wiki/"
 "Direct_Client-to-Client#Passive_DCC"
 msgstr ""
 
-#: src/irctabitem.cpp:2551
+#: src/irctabitem.cpp:2596
 msgid "DEOP <channel> <nicks>, removes operator status from one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:2556
+#: src/irctabitem.cpp:2601
 msgid "DEVOICE <channel> <nicks>, removes voice from one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:2561
+#: src/irctabitem.cpp:2606
 msgid "DISCONNECT [reason], leaves server."
 msgstr ""
 
-#: src/irctabitem.cpp:2567
+#: src/irctabitem.cpp:2612
 msgid ""
 "EXEC [-o|-c] <command>, executes command, -o sends output to channel/query, -"
 "c closes running command."
 msgstr ""
 
-#: src/irctabitem.cpp:2573
+#: src/irctabitem.cpp:2618
 msgid "HELP <command>, shows help for command."
 msgstr ""
 
-#: src/irctabitem.cpp:2578
+#: src/irctabitem.cpp:2623
 msgid "IGNORE list, shows list ignored commands and users."
 msgstr ""
 
-#: src/irctabitem.cpp:2579
+#: src/irctabitem.cpp:2624
 msgid "IGNORE addcmd <command>, adds command to ignored commands."
 msgstr ""
 
-#: src/irctabitem.cpp:2580
+#: src/irctabitem.cpp:2625
 msgid "IGNORE rmcmd <command>, removes command from ignored commands."
 msgstr ""
 
-#: src/irctabitem.cpp:2581
+#: src/irctabitem.cpp:2626
 msgid "IGNORE addusr <user> [channel] [server], adds user to ignored users."
 msgstr ""
 
-#: src/irctabitem.cpp:2582
+#: src/irctabitem.cpp:2627
 msgid "IGNORE rmusr <user>, removes user from ignored users."
 msgstr ""
 
-#: src/irctabitem.cpp:2587
+#: src/irctabitem.cpp:2632
 msgid "INVITE <nick> <channel>, invites someone to a channel."
 msgstr ""
 
-#: src/irctabitem.cpp:2592
+#: src/irctabitem.cpp:2637
 msgid "JOIN <channel>, joins a channel."
 msgstr ""
 
-#: src/irctabitem.cpp:2597
+#: src/irctabitem.cpp:2642
 msgid "KICK <channel> <nick>, kicks a user from a channel."
 msgstr ""
 
-#: src/irctabitem.cpp:2602
+#: src/irctabitem.cpp:2647
 msgid "KILL <user> [reason], kills a user from the network."
 msgstr ""
 
-#: src/irctabitem.cpp:2607
+#: src/irctabitem.cpp:2652
 msgid "LIST [channel], lists channels and their topics."
 msgstr ""
 
-#: src/irctabitem.cpp:2613
+#: src/irctabitem.cpp:2658
 msgid "LUA help, shows help for lua scripting."
 msgstr ""
 
-#: src/irctabitem.cpp:2614
+#: src/irctabitem.cpp:2659
 msgid "LUA load <path>, loads script."
 msgstr ""
 
-#: src/irctabitem.cpp:2615
+#: src/irctabitem.cpp:2660
 msgid "Example: /lua load /home/dvx/test.lua"
 msgstr ""
 
-#: src/irctabitem.cpp:2616
+#: src/irctabitem.cpp:2661
 msgid "LUA unload <name>, unloads script."
 msgstr ""
 
-#: src/irctabitem.cpp:2617
+#: src/irctabitem.cpp:2662
 msgid "Example: /lua unload test"
 msgstr ""
 
-#: src/irctabitem.cpp:2618
+#: src/irctabitem.cpp:2663
 msgid "LUA list, shows list of loaded scripts"
 msgstr ""
 
-#: src/irctabitem.cpp:2630
+#: src/irctabitem.cpp:2675
 msgid "ME <to> <message>, sends the action."
 msgstr ""
 
-#: src/irctabitem.cpp:2635
+#: src/irctabitem.cpp:2680
 msgid "MODE <channel> <modes>, sets modes for a channel."
 msgstr ""
 
-#: src/irctabitem.cpp:2640
+#: src/irctabitem.cpp:2685
 msgid "MSG <nick/channel> <message>, sends a normal message."
 msgstr ""
 
-#: src/irctabitem.cpp:2645
+#: src/irctabitem.cpp:2690
 msgid "NAMES <channel>, for nicks on a channel."
 msgstr ""
 
-#: src/irctabitem.cpp:2650
+#: src/irctabitem.cpp:2695
 msgid "NICK <nick>, changes nick."
 msgstr ""
 
-#: src/irctabitem.cpp:2655
+#: src/irctabitem.cpp:2700
 msgid "NOTICE <nick/channel> <message>, sends a notice."
 msgstr ""
 
-#: src/irctabitem.cpp:2660
+#: src/irctabitem.cpp:2705
 msgid "OP <channel> <nicks>, gives operator status for one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:2665
+#: src/irctabitem.cpp:2710
 msgid "OPER <login> <password>, oper up."
 msgstr ""
 
-#: src/irctabitem.cpp:2670
+#: src/irctabitem.cpp:2715
 msgid "PART <channel> [reason], leaves channel."
 msgstr ""
 
-#: src/irctabitem.cpp:2675
+#: src/irctabitem.cpp:2720
 msgid "QUERY <nick>, opens query with nick."
 msgstr ""
 
-#: src/irctabitem.cpp:2680
+#: src/irctabitem.cpp:2725
 msgid "QUIT, closes application."
 msgstr ""
 
-#: src/irctabitem.cpp:2685
+#: src/irctabitem.cpp:2730
 msgid "QUOTE [text], sends text to server."
 msgstr ""
 
-#: src/irctabitem.cpp:2690
+#: src/irctabitem.cpp:2735
 msgid "SAY [text], sends text to current tab."
 msgstr ""
 
-#: src/irctabitem.cpp:2695
+#: src/irctabitem.cpp:2740
 msgid ""
 "STATS <type>, shows some irc server usage statistics. Available types vary "
 "slightly per server; some common ones are:"
 msgstr ""
 
-#: src/irctabitem.cpp:2696
+#: src/irctabitem.cpp:2741
 msgid ""
 "c - shows C and N lines for a given server.  These are the names of the "
 "servers that are allowed to connect."
 msgstr ""
 
-#: src/irctabitem.cpp:2697
+#: src/irctabitem.cpp:2742
 msgid "h - shows H and L lines for a given server (Hubs and Leaves)."
 msgstr ""
 
-#: src/irctabitem.cpp:2698
+#: src/irctabitem.cpp:2743
 msgid ""
 "k - show K lines for a server.  This shows who is not allowed to connect and "
 "possibly at what time they are not allowed to connect."
 msgstr ""
 
-#: src/irctabitem.cpp:2699
+#: src/irctabitem.cpp:2744
 msgid "i - shows I lines. This is who CAN connect to a server."
 msgstr ""
 
-#: src/irctabitem.cpp:2700
+#: src/irctabitem.cpp:2745
 msgid ""
 "l - shows information about amount of information passed to servers and "
 "users."
 msgstr ""
 
-#: src/irctabitem.cpp:2701
+#: src/irctabitem.cpp:2746
 msgid ""
 "m - shows a count for the number of times the various commands have been "
 "used since the server was booted."
 msgstr ""
 
-#: src/irctabitem.cpp:2702
+#: src/irctabitem.cpp:2747
 msgid "o - shows the list of authorized operators on the server."
 msgstr ""
 
-#: src/irctabitem.cpp:2703
+#: src/irctabitem.cpp:2748
 msgid "p - shows online operators and their idle times."
 msgstr ""
 
-#: src/irctabitem.cpp:2704
+#: src/irctabitem.cpp:2749
 msgid "u - shows the uptime for a server."
 msgstr ""
 
-#: src/irctabitem.cpp:2705
+#: src/irctabitem.cpp:2750
 msgid ""
 "y - shows Y lines, which lists the various connection classes for a given "
 "server."
 msgstr ""
 
-#: src/irctabitem.cpp:2711
+#: src/irctabitem.cpp:2756
 msgid "TETRIS, start small easteregg."
 msgstr ""
 
-#: src/irctabitem.cpp:2712 src/tetristabitem.cpp:423
+#: src/irctabitem.cpp:2757 src/tetristabitem.cpp:424
 msgid "Keys for playing:"
 msgstr ""
 
-#: src/irctabitem.cpp:2713
+#: src/irctabitem.cpp:2758
 msgid "N .. new game"
 msgstr ""
 
-#: src/irctabitem.cpp:2714
+#: src/irctabitem.cpp:2759
 msgid "P .. pause game"
 msgstr ""
 
-#: src/irctabitem.cpp:2715
+#: src/irctabitem.cpp:2760
 msgid "Num5 .. rotate piece"
 msgstr ""
 
-#: src/irctabitem.cpp:2716
+#: src/irctabitem.cpp:2761
 msgid "Num3 .. move piece right"
 msgstr ""
 
-#: src/irctabitem.cpp:2717
+#: src/irctabitem.cpp:2762
 msgid "Num2 .. drop piece"
 msgstr ""
 
-#: src/irctabitem.cpp:2718
+#: src/irctabitem.cpp:2763
 msgid "Num1 .. move piece left"
 msgstr ""
 
-#: src/irctabitem.cpp:2723
+#: src/irctabitem.cpp:2768
 msgid "TIME, displays the time of day, local to server."
 msgstr ""
 
-#: src/irctabitem.cpp:2728
+#: src/irctabitem.cpp:2773
 msgid "TOPIC [topic], sets or shows topic."
 msgstr ""
 
-#: src/irctabitem.cpp:2733
+#: src/irctabitem.cpp:2778
 msgid "VOICE <channel> <nicks>, gives voice for one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:2738
+#: src/irctabitem.cpp:2783
 msgid "WALLOPS <message>, sends wallop message."
 msgstr ""
 
-#: src/irctabitem.cpp:2743
+#: src/irctabitem.cpp:2788
 msgid ""
 "WHO <mask> [o], searchs for mask on network, if o is supplied, only search "
 "for opers."
 msgstr ""
 
-#: src/irctabitem.cpp:2748
+#: src/irctabitem.cpp:2793
 msgid "WHOAMI, whois about you."
 msgstr ""
 
-#: src/irctabitem.cpp:2753
+#: src/irctabitem.cpp:2798
 msgid "WHOIS <nick>, whois nick."
 msgstr ""
 
-#: src/irctabitem.cpp:2758
+#: src/irctabitem.cpp:2803
 msgid "WHOWAS <nick>, whowas nick."
 msgstr ""
 
-#: src/irctabitem.cpp:2766
+#: src/irctabitem.cpp:2811
 msgid "Command is empty, type /commands for available commands"
 msgstr ""
 
-#: src/irctabitem.cpp:3314
+#: src/irctabitem.cpp:3364
 #, c-format
 msgid "CTCP %s reply from %s: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3327
+#: src/irctabitem.cpp:3377
 #, c-format
 msgid "CTCP %s request from %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3382
+#: src/irctabitem.cpp:3432
 #, c-format
 msgid "%s has joined to %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3395 src/irctabitem.cpp:3404
+#: src/irctabitem.cpp:3445 src/irctabitem.cpp:3454
 #, c-format
 msgid "%s has quit"
 msgstr ""
 
-#: src/irctabitem.cpp:3399
+#: src/irctabitem.cpp:3449
 #, c-format
 msgid "%s has quit (%s)"
 msgstr ""
 
-#: src/irctabitem.cpp:3413
+#: src/irctabitem.cpp:3463
 #, c-format
 msgid "%s has parted %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3414
+#: src/irctabitem.cpp:3464
 #, c-format
 msgid "%s has parted %s (%s)"
 msgstr ""
 
-#: src/irctabitem.cpp:3429 src/irctabitem.cpp:3448 src/irctabitem.cpp:3466
+#: src/irctabitem.cpp:3479 src/irctabitem.cpp:3498 src/irctabitem.cpp:3516
 #, c-format
 msgid "%s's NOTICE: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3461
+#: src/irctabitem.cpp:3511
 #, c-format
 msgid "NOTICE for you: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3477
+#: src/irctabitem.cpp:3527
 #, c-format
 msgid "You're now known as %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3478
+#: src/irctabitem.cpp:3528
 #, c-format
 msgid "%s is now known as %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3492
+#: src/irctabitem.cpp:3542
 #, c-format
 msgid "%s set new topic for %s: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3502
+#: src/irctabitem.cpp:3552
 #, c-format
 msgid "%s invites you to: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3514
+#: src/irctabitem.cpp:3564
 #, c-format
 msgid "%s was kicked from %s by %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3515
+#: src/irctabitem.cpp:3565
 #, c-format
 msgid "%s was kicked from %s by %s (%s)"
 msgstr ""
 
-#: src/irctabitem.cpp:3521
+#: src/irctabitem.cpp:3571
 #, c-format
 msgid "You were kicked from %s by %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3522
+#: src/irctabitem.cpp:3572
 #, c-format
 msgid "You were kicked from %s by %s (%s)"
 msgstr ""
 
-#: src/irctabitem.cpp:3532
+#: src/irctabitem.cpp:3582
 #, c-format
 msgid "Mode change [%s] for %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3565
+#: src/irctabitem.cpp:3615
 #, c-format
 msgid "%s gave you admin"
 msgstr ""
 
-#: src/irctabitem.cpp:3566
+#: src/irctabitem.cpp:3616
 #, c-format
 msgid "%s gave %s admin"
 msgstr ""
 
-#: src/irctabitem.cpp:3574
+#: src/irctabitem.cpp:3624
 #, c-format
 msgid "%s removed you admin"
 msgstr ""
 
-#: src/irctabitem.cpp:3575
+#: src/irctabitem.cpp:3625
 #, c-format
 msgid "%s removed %s admin"
 msgstr ""
 
-#: src/irctabitem.cpp:3589
+#: src/irctabitem.cpp:3639
 #, c-format
 msgid "%s gave you op"
 msgstr ""
 
-#: src/irctabitem.cpp:3590
+#: src/irctabitem.cpp:3640
 #, c-format
 msgid "%s gave %s op"
 msgstr ""
 
-#: src/irctabitem.cpp:3598
+#: src/irctabitem.cpp:3648
 #, c-format
 msgid "%s removed you op"
 msgstr ""
 
-#: src/irctabitem.cpp:3599
+#: src/irctabitem.cpp:3649
 #, c-format
 msgid "%s removed %s op"
 msgstr ""
 
-#: src/irctabitem.cpp:3614
+#: src/irctabitem.cpp:3664
 #, c-format
 msgid "%s gave you voice"
 msgstr ""
 
-#: src/irctabitem.cpp:3615
+#: src/irctabitem.cpp:3665
 #, c-format
 msgid "%s gave %s voice"
 msgstr ""
 
-#: src/irctabitem.cpp:3623
+#: src/irctabitem.cpp:3673
 #, c-format
 msgid "%s removed you voice"
 msgstr ""
 
-#: src/irctabitem.cpp:3624
+#: src/irctabitem.cpp:3674
 #, c-format
 msgid "%s removed %s voice"
 msgstr ""
 
-#: src/irctabitem.cpp:3638
+#: src/irctabitem.cpp:3688
 #, c-format
 msgid "%s gave you halfop"
 msgstr ""
 
-#: src/irctabitem.cpp:3639
+#: src/irctabitem.cpp:3689
 #, c-format
 msgid "%s gave %s halfop"
 msgstr ""
 
-#: src/irctabitem.cpp:3647
+#: src/irctabitem.cpp:3697
 #, c-format
 msgid "%s removed you halfop"
 msgstr ""
 
-#: src/irctabitem.cpp:3648
+#: src/irctabitem.cpp:3698
 #, c-format
 msgid "%s removed %s halfop"
 msgstr ""
 
-#: src/irctabitem.cpp:3665
+#: src/irctabitem.cpp:3715
 #, c-format
 msgid "%s set Mode: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3680
+#: src/irctabitem.cpp:3730
 #, c-format
 msgid "Mode for %s: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3793 src/irctabitem.cpp:3801
+#: src/irctabitem.cpp:3843 src/irctabitem.cpp:3851
 #, c-format
 msgid "Unhandled command '%s' params: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3812
+#: src/irctabitem.cpp:3862
 #, c-format
 msgid "%s is away: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3942
+#: src/irctabitem.cpp:3992
 #, c-format
 msgid "Users on %s: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:4179
+#: src/irctabitem.cpp:4229
 msgid "Give op"
 msgstr ""
 
-#: src/irctabitem.cpp:4180
+#: src/irctabitem.cpp:4230
 msgid "Remove op"
 msgstr ""
 
-#: src/irctabitem.cpp:4182
+#: src/irctabitem.cpp:4232
 msgid "Give voice"
 msgstr ""
 
-#: src/irctabitem.cpp:4183
+#: src/irctabitem.cpp:4233
 msgid "Remove voice"
 msgstr ""
 
-#: src/irctabitem.cpp:4185
+#: src/irctabitem.cpp:4235
 msgid "Kick"
 msgstr ""
 
-#: src/irctabitem.cpp:4187
+#: src/irctabitem.cpp:4237
 msgid "Ban"
 msgstr ""
 
-#: src/irctabitem.cpp:4188
+#: src/irctabitem.cpp:4238
 msgid "KickBan"
 msgstr ""
 
-#: src/irctabitem.cpp:4190
+#: src/irctabitem.cpp:4240
 #, c-format
 msgid "User: %s@%s"
 msgstr ""
 
-#: src/irctabitem.cpp:4191
+#: src/irctabitem.cpp:4241
 #, c-format
 msgid "Realname: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:4195
+#: src/irctabitem.cpp:4245
 msgid "Query"
 msgstr ""
 
-#: src/irctabitem.cpp:4196
+#: src/irctabitem.cpp:4246
 msgid "User information (WHOIS)"
 msgstr ""
 
-#: src/irctabitem.cpp:4197
+#: src/irctabitem.cpp:4247
 msgid "DCC chat"
 msgstr ""
 
-#: src/irctabitem.cpp:4198
+#: src/irctabitem.cpp:4248
 msgid "Send file"
 msgstr ""
 
-#: src/irctabitem.cpp:4199
+#: src/irctabitem.cpp:4249
 msgid "Ignore"
 msgstr ""
 
-#: src/irctabitem.cpp:4200
+#: src/irctabitem.cpp:4250
 msgid "Operator actions"
 msgstr ""
 
-#: src/irctabitem.cpp:4205
+#: src/irctabitem.cpp:4255
 msgid "Remove Away"
 msgstr ""
 
-#: src/irctabitem.cpp:4206
+#: src/irctabitem.cpp:4256
 msgid "Set Away"
 msgstr ""
 
-#: src/irctabitem.cpp:4295
+#: src/irctabitem.cpp:4345
 msgid "Kick dialog"
 msgstr ""
 
-#: src/irctabitem.cpp:4299 src/irctabitem.cpp:4340
+#: src/irctabitem.cpp:4349 src/irctabitem.cpp:4390
 msgid "Kick reason:"
 msgstr ""
 
-#: src/irctabitem.cpp:4315
+#: src/irctabitem.cpp:4365
 msgid "Ban dialog"
 msgstr ""
 
-#: src/irctabitem.cpp:4319 src/irctabitem.cpp:4344
+#: src/irctabitem.cpp:4369 src/irctabitem.cpp:4394
 msgid "Banmask:"
 msgstr ""
 
-#: src/irctabitem.cpp:4336
+#: src/irctabitem.cpp:4386
 msgid "Kick/Ban dialog"
 msgstr ""
 
-#: src/irctabitem.cpp:4393
+#: src/irctabitem.cpp:4443
 msgid "Away dialog"
 msgstr ""
 
-#: src/irctabitem.cpp:4397
+#: src/irctabitem.cpp:4447
 msgid "Message:"
 msgstr ""
 
-#: src/irctabitem.cpp:4399 src/irctabitem.cpp:4407
+#: src/irctabitem.cpp:4449 src/irctabitem.cpp:4457
 msgid "away"
 msgstr ""
 
-#: src/irctabitem.cpp:4453
+#: src/irctabitem.cpp:4510
 #, c-format
 msgid "You was banned by %s"
 msgstr ""
 
-#: src/irctabitem.cpp:4456
+#: src/irctabitem.cpp:4513
 #, c-format
 msgid "%s was banned by %s"
 msgstr ""
@@ -2788,67 +2797,67 @@ msgstr ""
 msgid "Lua scripts (*.lua)"
 msgstr ""
 
-#: src/tetristabitem.cpp:178
+#: src/tetristabitem.cpp:179
 msgid "Next piece:"
-msgstr ""
-
-#: src/tetristabitem.cpp:182 src/tetristabitem.cpp:546
-#, c-format
-msgid "Level: %d"
 msgstr ""
 
 #: src/tetristabitem.cpp:183 src/tetristabitem.cpp:547
 #, c-format
-msgid "Score: %d"
+msgid "Level: %d"
 msgstr ""
 
 #: src/tetristabitem.cpp:184 src/tetristabitem.cpp:548
 #, c-format
+msgid "Score: %d"
+msgstr ""
+
+#: src/tetristabitem.cpp:185 src/tetristabitem.cpp:549
+#, c-format
 msgid "Lines: %d"
 msgstr ""
 
-#: src/tetristabitem.cpp:185
+#: src/tetristabitem.cpp:186
 msgid "&New game"
 msgstr ""
 
-#: src/tetristabitem.cpp:186 src/tetristabitem.cpp:302
-#: src/tetristabitem.cpp:522
+#: src/tetristabitem.cpp:187 src/tetristabitem.cpp:303
+#: src/tetristabitem.cpp:523
 msgid "&Pause game"
 msgstr ""
 
-#: src/tetristabitem.cpp:424
+#: src/tetristabitem.cpp:425
 msgid "n .. new game"
 msgstr ""
 
-#: src/tetristabitem.cpp:425
+#: src/tetristabitem.cpp:426
 msgid "p .. pause game"
 msgstr ""
 
-#: src/tetristabitem.cpp:426
+#: src/tetristabitem.cpp:427
 msgid "i .. rotate piece"
 msgstr ""
 
-#: src/tetristabitem.cpp:427
+#: src/tetristabitem.cpp:428
 msgid "l .. move piece right"
 msgstr ""
 
-#: src/tetristabitem.cpp:428
+#: src/tetristabitem.cpp:429
 msgid "k .. drop piece"
 msgstr ""
 
-#: src/tetristabitem.cpp:429
+#: src/tetristabitem.cpp:430
 msgid "j .. move piece left"
 msgstr ""
 
-#: src/tetristabitem.cpp:434 src/tetristabitem.cpp:437
+#: src/tetristabitem.cpp:435 src/tetristabitem.cpp:438
 msgid "GAME OVER"
 msgstr ""
 
-#: src/tetristabitem.cpp:441 src/tetristabitem.cpp:444
+#: src/tetristabitem.cpp:442 src/tetristabitem.cpp:445
 msgid "PAUSED"
 msgstr ""
 
-#: src/tetristabitem.cpp:528
+#: src/tetristabitem.cpp:529
 msgid "&Resume game"
 msgstr ""
 
@@ -2887,6 +2896,11 @@ msgstr ""
 
 #: src/dccdialog.cpp:77
 msgid "Clear &canceled"
+msgstr ""
+
+#: src/dxtextfield.cpp:523
+#, c-format
+msgid "Current spellchecking language: %s"
 msgstr ""
 
 #: ../../fox-1.6.37/src/FXMessageBox.cpp:128

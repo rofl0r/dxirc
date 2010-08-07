@@ -21,7 +21,7 @@
  */
 
 #ifndef DXTEXTFIELD_H
-#define	DXTEXTFIELD_H
+#define DXTEXTFIELD_H
 
 #ifndef FXTEXTFIELD_H
 #include "FXTextField.h"
@@ -44,6 +44,7 @@
 * TEXTFIELD_ENTER_ONLY can be passed to suppress this feature. Typically, this
 * flag is used in dialogs that close when ENTER is hit in a text field.
 * Modified to show link text
+* Modified to spellchecking support (by enchant)
 */
 
 enum {
@@ -62,6 +63,7 @@ protected:
   FXColor       seltextColor;   // Selected text color
   FXColor       cursorColor;    // Color of the Cursor
   FXColor       linkColor;      // Link color
+  FXColor       spellColor;     // Bad spelled word color
   FXint         cursor;         // Cursor position
   FXint         anchor;         // Anchor position
   FXint         columns;        // Number of columns visible
@@ -69,6 +71,8 @@ protected:
   FXString      clipped;        // Clipped text
   FXString      help;           // Help string
   FXString      tip;            // Tooltip
+  FXbool        useSpell;       // Use spellchecking
+  FXString      spellLang;      // Language for spelling
 protected:
   dxTextField();
   FXint index(FXint x) const;
@@ -77,6 +81,7 @@ protected:
   void drawTextRange(FXDCWindow& dc,FXint fm,FXint to);
   void drawTextFragment(FXDCWindow& dc,FXint x,FXint y,FXint fm,FXint to);
   void drawPWDTextFragment(FXDCWindow& dc,FXint x,FXint y,FXint fm,FXint to);
+  void drawSpellLine(FXDCWindow& dc,FXint x,FXint y,FXint w);
   FXint rightWord(FXint pos) const;
   FXint leftWord(FXint pos) const;
   FXint wordStart(FXint pos) const;
@@ -264,6 +269,24 @@ public:
 
   /// Return link color
   FXColor getLinkColor() const { return linkColor; }
+
+  /// Change spell color
+  void setSpellColor(FXColor clr);
+
+  /// Return spell color
+  FXColor getSpellColor() const { return spellColor; }
+
+  /// Change using spellchecking
+  void setUseSpell(FXbool spell);
+
+  /// Return using spellchecking
+  FXbool getUseSpell() const { return useSpell; }
+
+  /// Change language for spelling
+  void setLanguage(FXString lang);
+
+  /// Return language for spelling
+  FXString getLanguage() const { return spellLang; }
 
   /// Change selected background color
   void setSelBackColor(FXColor clr);

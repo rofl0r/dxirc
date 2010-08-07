@@ -50,6 +50,7 @@
 			<Add library="eay32" />
 			<Add library="ssl32" />
 			<Add library="winmm" />
+                        <Add library="enchant.dll" />
 		</Linker>
 		<Unit filename="..\src\FXTrayApp.cpp" />
 		<Unit filename="..\src\FXTrayApp.h" />

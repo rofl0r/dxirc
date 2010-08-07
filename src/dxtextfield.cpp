@@ -43,6 +43,11 @@
 #include "FXCP1252Codec.h"
 #include "FXUTF16Codec.h"
 #include "FXComposeContext.h"
+#include "config.h"
+#ifdef HAVE_SPELLUTILS
+#include "utils.h"
+#include "i18n.h"
+#endif
 
 
 /*
@@ -77,6 +82,7 @@
   - Need block cursor when in overstrike mode.
 
   - Modified to show link text
+  - Modified to spellchecking support (by enchant)
 */
 
 
@@ -175,10 +181,13 @@ dxTextField::dxTextField(){
   selbackColor=0;
   seltextColor=0;
   cursorColor=0;
+  linkColor=0;
+  spellColor=0;
   cursor=0;
   anchor=0;
   columns=0;
   shift=0;
+  useSpell=FALSE;
   }
 
 
@@ -199,10 +208,13 @@ dxTextField::dxTextField(FXComposite* p,FXint ncols,FXObject* tgt,FXSelector sel
   selbackColor=getApp()->getSelbackColor();
   seltextColor=getApp()->getSelforeColor();
   cursorColor=getApp()->getForeColor();
+  linkColor=FXRGB(0,0,255);
+  spellColor=FXRGB(255,0,0);
   cursor=0;
   anchor=0;
   columns=ncols;
   shift=0;
+  useSpell=FALSE;
   }
 
 
@@ -506,10 +518,21 @@ long dxTextField::onCmdGetTip(FXObject*,FXSelector,void* ptr){
 // We were asked about tip text
 long dxTextField::onQueryTip(FXObject* sender,FXSelector sel,void* ptr){
   if(FXWindow::onQueryTip(sender,sel,ptr)) return 1;
+#ifdef HAVE_SPELLUTILS
+  if(useSpell && !spellLang.empty()){
+      FXString string = FXStringFormat(_("Current spellchecking language: %s"), spellLang.text());
+      sender->handle(this,FXSEL(SEL_COMMAND,ID_SETSTRINGVALUE),(void*)&string);
+      return 1;
+  }
+  else
+#else
+  {
   if((flags&FLAG_TIP) && !tip.empty()){
     sender->handle(this,FXSEL(SEL_COMMAND,ID_SETSTRINGVALUE),(void*)&tip);
     return 1;
     }
+  }
+#endif
   return 0;
   }
 
@@ -581,18 +604,18 @@ long dxTextField::onLeftBtnPress(FXObject*,FXSelector,void* ptr){
   handle(this,FXSEL(SEL_FOCUS_SELF,0),ptr);
   if(isEnabled()){
     grab();
-    if(getStyle(index(ev->win_x))) {
+    if(getStyle(index(ev->win_x))==1) {
       FXint start=index(ev->win_x);
       FXint length=0;
       FXString link="";
       for(FXint i=start; i>=0; i--)
       {
-          if(getStyle(i)) start = i;
+          if(getStyle(i)==1) start = i;
           else break;
       }
       for(FXint i=start; i<contents.length(); i++)
       {
-          if(getStyle(i)) length++;
+          if(getStyle(i)==1) length++;
           else break;
       }
       link = contents.mid(start,length);
@@ -690,7 +713,7 @@ long dxTextField::onMotion(FXObject*,FXSelector,void* ptr){
     return 1;
     }
   else {
-      if(getStyle(index(event->win_x)))
+      if(getStyle(index(event->win_x))==1)
           setDefaultCursor(getApp()->getDefaultCursor(DEF_HAND_CURSOR));
       else
           setDefaultCursor(getApp()->getDefaultCursor(DEF_TEXT_CURSOR));
@@ -1273,9 +1296,13 @@ void dxTextField::drawTextRange(FXDCWindow& dc,FXint fm,FXint to){
           if(newstyle!=curstyle){
               ww=font->getTextWidth(&contents[fm],i-fm);
               if(curstyle==0) dc.setForeground(textColor);
-              else{
+              else if(curstyle==1){
                   dc.setForeground(linkColor);
                   dc.fillRectangle(xx,yy+font->getFontAscent()+1,ww,1);
+              }
+              else{
+                  drawSpellLine(dc,xx,yy+font->getFontAscent()+1,ww);
+                  dc.setForeground(textColor);
               }
               dc.drawText(xx,yy+font->getFontAscent(),&contents[fm],i-fm);
               curstyle=newstyle;
@@ -1285,12 +1312,16 @@ void dxTextField::drawTextRange(FXDCWindow& dc,FXint fm,FXint to){
       }
       // Draw unfinished fragment
       if(curstyle==0) dc.setForeground(textColor);
-      else{
+      else if(curstyle==1){
           dc.setForeground(linkColor);
           dc.fillRectangle(xx,yy+font->getFontAscent()+1,font->getTextWidth(&contents[fm],to-fm),1);
       }
-      dc.drawText(xx,yy+font->getFontAscent(),&contents[fm],to-fm);
+      else{
+          drawSpellLine(dc,xx,yy+font->getFontAscent()+1,font->getTextWidth(&contents[fm],to-fm));
+          dc.setForeground(textColor);
       }
+      dc.drawText(xx,yy+font->getFontAscent(),&contents[fm],to-fm);
+    }
 
     // Stuff selected
     else{
@@ -1324,6 +1355,26 @@ void dxTextField::drawTextRange(FXDCWindow& dc,FXint fm,FXint to){
         }
       }
     }
+  }
+
+// Draw spellline
+void dxTextField::drawSpellLine(FXDCWindow& dc, FXint x, FXint y, FXint w){
+  dc.setForeground(spellColor);
+  register FXint step=2;
+  register FXint xx=x;
+  register FXint yy=y;
+  register FXbool down=TRUE;
+  while(xx+step<=x+w){
+    if(down) {dc.drawLine(xx,yy,xx+step,yy+step);yy+=step;down=FALSE;}
+    else {dc.drawLine(xx,yy,xx+step,yy-step);yy-=step;down=TRUE;}
+    xx+=step;
+  }
+  //draw rest
+  if(xx<x+w){
+      step=x+w-xx;
+      if(down) dc.drawLine(xx,yy,xx+step,yy+step);
+      else dc.drawLine(xx,yy,xx+step,yy-step);
+  }
   }
 
 
@@ -2113,6 +2164,7 @@ void dxTextField::setTextColor(FXColor clr){
     }
   }
 
+
 // Set link color
 void dxTextField::setLinkColor(FXColor clr){
   if(linkColor!=clr){
@@ -2121,6 +2173,32 @@ void dxTextField::setLinkColor(FXColor clr){
     }
   }
 
+
+// Set spell color
+void dxTextField::setSpellColor(FXColor clr){
+  if(spellColor!=clr){
+    spellColor=clr;
+    update();
+    }
+  }
+
+// Set spell color
+void dxTextField::setUseSpell(FXbool spell){
+  if(useSpell!=spell){
+    useSpell=spell;
+    updateStyle();
+    update();
+    }
+  }
+
+// Set language spelling
+void dxTextField::setLanguage(FXString lang){
+  if(spellLang!=lang){
+    spellLang=lang;
+    updateStyle();
+    update();
+    }
+  }
 
 // Set select background color
 void dxTextField::setSelBackColor(FXColor clr){
@@ -2247,81 +2325,114 @@ static FXbool Badchar(FXchar c)
 void dxTextField::updateStyle() {
     styles.length(contents.length());
     FXint i=0;
+    FXint start=0;
+    FXint end=0;
     FXint linkLength=0;
     FXint length=styles.length();
+    for(FXint j=i; j<length; j++)
+        styles[j]=0;
     while(i<length) {
-    if(contents[i]=='h' && !comparecase(contents.mid(i,7),"http://"))
+#ifdef HAVE_SPELLUTILS
+        if(useSpell)
         {
-            for(FXint j=i; j<length; j++)
+            start=wordStart(i);
+            end=wordEnd(i);
+            if(start<end-1 && !utils::checkWord(contents.mid(start,end-start).text(),spellLang))
             {
-                if(Badchar(contents[j]))
+                for(FXint j=start; j<end; j++)
                 {
-                    break;
+                    styles[j]=2;
                 }
-                linkLength++;
             }
-            for(FXint j=0; j<linkLength; j++)
-            {
-                styles[i+j]=linkLength>7?1:0;
-            }
-            i+=linkLength;
-            linkLength=0;
-        }
-        else if(contents[i]=='h' && !comparecase(contents.mid(i,8),"https://"))
-        {
-            for(FXint j=i; j<length; j++)
-            {
-                if(Badchar(contents[j]))
-                {
-                    break;
-                }
-                linkLength++;
-            }
-            for(FXint j=0; j<linkLength; j++)
-            {
-                styles[i+j]=linkLength>8?1:0;
-            }
-            i+=linkLength;
-            linkLength=0;
-        }
-        else if(contents[i]=='f' && !comparecase(contents.mid(i,6),"ftp://"))
-        {
-            for(FXint j=i; j<length; j++)
-            {
-                if(Badchar(contents[j]))
-                {
-                    break;
-                }
-                linkLength++;
-            }
-            for(FXint j=0; j<linkLength; j++)
-            {
-                styles[i+j]=linkLength>6?1:0;
-            }
-            i+=linkLength;
-            linkLength=0;
-        }
-        else if(contents[i]=='w' && !comparecase(contents.mid(i,4),"www."))
-        {
-            for(FXint j=i; j<length; j++)
-            {
-                if(Badchar(contents[j]))
-                {
-                    break;
-                }
-                linkLength++;
-            }
-            for(FXint j=0; j<linkLength; j++)
-            {
-                styles[i+j]=linkLength>4?1:0;
-            }
-            i+=linkLength;
-            linkLength=0;
+            i=end;
         }
         else
+#endif
         {
-            styles[i]=0;
-            i++;
+            if(contents[i]=='h' && !comparecase(contents.mid(i,7),"http://"))
+            {
+                for(FXint j=i; j<length; j++)
+                {
+                    if(Badchar(contents[j]))
+                    {
+                        break;
+                    }
+                    linkLength++;
+                }
+                if(linkLength>7)
+                {
+                    for(FXint j=0; j<linkLength; j++)
+                    {
+                        styles[i+j]=1;
+                    }
+                }
+                i+=linkLength;
+                linkLength=0;
+            }
+            else if(contents[i]=='h' && !comparecase(contents.mid(i,8),"https://"))
+            {
+                for(FXint j=i; j<length; j++)
+                {
+                    if(Badchar(contents[j]))
+                    {
+                        break;
+                    }
+                    linkLength++;
+                }
+                if(linkLength>8)
+                {
+                    for(FXint j=0; j<linkLength; j++)
+                    {
+                        styles[i+j]=1;
+                    }
+                }
+                i+=linkLength;
+                linkLength=0;
+            }
+            else if(contents[i]=='f' && !comparecase(contents.mid(i,6),"ftp://"))
+            {
+                for(FXint j=i; j<length; j++)
+                {
+                    if(Badchar(contents[j]))
+                    {
+                        break;
+                    }
+                    linkLength++;
+                }
+                if(linkLength>6)
+                {
+                    for(FXint j=0; j<linkLength; j++)
+                    {
+                        styles[i+j]=1;
+                    }
+                }
+                i+=linkLength;
+                linkLength=0;
+            }
+            else if(contents[i]=='w' && !comparecase(contents.mid(i,4),"www."))
+            {
+                for(FXint j=i; j<length; j++)
+                {
+                    if(Badchar(contents[j]))
+                    {
+                        break;
+                    }
+                    linkLength++;
+                }
+                if(linkLength>4)
+                {
+                    for(FXint j=0; j<linkLength; j++)
+                    {
+                        styles[i+j]=1;
+                    }
+                }
+                i+=linkLength;
+                linkLength=0;
+            }
+            else
+            {
+                i++;
+            }
         }
     }
     update();
@@ -2365,3 +2476,4 @@ dxTextField::~dxTextField(){
   getApp()->removeTimeout(this,ID_AUTOSCROLL);
   font=(FXFont*)-1L;
   }
+

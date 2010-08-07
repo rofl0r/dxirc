@@ -22,98 +22,116 @@
 #include "utils.h"
 #include "config.h"
 #include "i18n.h"
+#ifdef HAVE_ENCHANT
+#include <enchant++.h>
+typedef std::map<FXString, enchant::Dict*> Checkers;
+Checkers m_checkers;
+#endif
 
-FXTextCodec *lcodec = NULL;
-FXString iniFile = FXString::null;
-dxStringMap aliases;
-dxStringArray commands;
-dxScriptCommandsArray scriptCommands;
+FXTextCodec *m_lcodec = NULL;
+FXString m_iniFile = FXString::null;
+FXString m_locale = FXString::null;
+dxStringMap m_aliases;
+dxStringArray m_commands;
+dxStringArray m_spellLang;
+dxScriptCommandsArray m_scriptCommands;
 
-
+#ifdef HAVE_ENCHANT
+void enumerateDicts (const char * const lang_tag,
+         const char * const /*provider_name*/,
+         const char * const /*provider_desc*/,
+         const char * const /*provider_file*/,
+         void * user_data)
+{
+    m_spellLang = *(dxStringArray*)user_data;
+    if(m_checkers.find(lang_tag) == m_checkers.end())
+        m_spellLang.append(lang_tag);
+}
+#endif
 
 namespace utils
 {
     void fillCommands()
     {
-        commands.clear();        
-        commands.append("ADMIN");
-        commands.append("AWAY");
-        commands.append("BANLIST");
-        commands.append("CONNECT");
-        commands.append("COMMANDS");
-        commands.append("CTCP");
-        commands.append("CYCLE");
-        commands.append("DCC");
-        commands.append("DEOP");
-        commands.append("DEVOICE");
-        commands.append("DISCONNECT");
+        m_commands.clear();
+        m_commands.append("ADMIN");
+        m_commands.append("AWAY");
+        m_commands.append("BANLIST");
+        m_commands.append("CONNECT");
+        m_commands.append("COMMANDS");
+        m_commands.append("CTCP");
+        m_commands.append("CYCLE");
+        m_commands.append("DCC");
+        m_commands.append("DEOP");
+        m_commands.append("DEVOICE");
+        m_commands.append("DISCONNECT");
 #ifndef WIN32
-        commands.append("EXEC");
+        m_commands.append("EXEC");
 #endif
-        commands.append("HELP");
-        commands.append("IGNORE");
-        commands.append("INVITE");
-        commands.append("JOIN");        
-        commands.append("KICK");
-        commands.append("KILL");
-        commands.append("LIST");
+        m_commands.append("HELP");
+        m_commands.append("IGNORE");
+        m_commands.append("INVITE");
+        m_commands.append("JOIN");
+        m_commands.append("KICK");
+        m_commands.append("KILL");
+        m_commands.append("LIST");
 #ifdef HAVE_LUA
-        commands.append("LUA");
+        m_commands.append("LUA");
 #endif
-        commands.append("ME");
-        commands.append("MODE");
-        commands.append("MSG");
-        commands.append("NAMES");
-        commands.append("NICK");
-        commands.append("NOTICE");
-        commands.append("OP");
-        commands.append("OPER");
-        commands.append("PART");
-        commands.append("QUERY");
-        commands.append("QUIT");
-        commands.append("QUOTE");
-        commands.append("SAY");
-        commands.append("STATS");
-        commands.append("TIME");
-        commands.append("TOPIC");
-        commands.append("VOICE");
-        commands.append("WALLOPS");
-        commands.append("WHO");
-        commands.append("WHOAMI");
-        commands.append("WHOIS");
-        commands.append("WHOWAS");
+        m_commands.append("ME");
+        m_commands.append("MODE");
+        m_commands.append("MSG");
+        m_commands.append("NAMES");
+        m_commands.append("NICK");
+        m_commands.append("NOTICE");
+        m_commands.append("OP");
+        m_commands.append("OPER");
+        m_commands.append("PART");
+        m_commands.append("QUERY");
+        m_commands.append("QUIT");
+        m_commands.append("QUOTE");
+        m_commands.append("SAY");
+        m_commands.append("STATS");
+        m_commands.append("TIME");
+        m_commands.append("TOPIC");
+        m_commands.append("VOICE");
+        m_commands.append("WALLOPS");
+        m_commands.append("WHO");
+        m_commands.append("WHOAMI");
+        m_commands.append("WHOIS");
+        m_commands.append("WHOWAS");
         StringIt it;
-        for(it=aliases.begin(); it!=aliases.end(); it++)
+        for(it=m_aliases.begin(); it!=m_aliases.end(); it++)
         {
-            commands.append((*it).first.after('/'));
+            m_commands.append((*it).first.after('/'));
         }
-        for(FXint i=0; i<scriptCommands.no(); i++)
+        for(FXint i=0; i<m_scriptCommands.no(); i++)
         {
-            commands.append(scriptCommands[i].name);
+            m_commands.append(m_scriptCommands[i].name);
         }
         register FXString v;
         register FXint i,j,h;
-        for(h=1; h<=commands.no()/9; h=3*h+1);
+        for(h=1; h<=m_commands.no()/9; h=3*h+1);
         for(; h > 0; h /= 3)
         {
-            for(i = h + 1; i <= commands.no(); i++)
+            for(i = h + 1; i <= m_commands.no(); i++)
             {
-                v = commands[i - 1];
+                v = m_commands[i - 1];
                 j = i;
-                while (j > h && comparecase(commands[j - h - 1], v) > 0)
+                while (j > h && comparecase(m_commands[j - h - 1], v) > 0)
                 {
-                    commands[j - 1] = commands[j - h - 1];
+                    m_commands[j - 1] = m_commands[j - h - 1];
                     j -= h;
                 }
-                commands[j - 1] = v;
+                m_commands[j - 1] = v;
             }
         }
     }
     
     FXTextCodec* getCodec()
     {
-        if(lcodec != NULL)
-            return lcodec;
+        if(m_lcodec != NULL)
+            return m_lcodec;
         else
         {
 #ifdef WIN32
@@ -122,133 +140,133 @@ namespace utils
             {
                 case 1250:
                 {
-                    lcodec = new FXCP1250Codec();
-                    return lcodec;
+                    m_lcodec = new FXCP1250Codec();
+                    return m_lcodec;
                 }
                 case 1251:
                 {
-                    lcodec = new FXCP1251Codec();
-                    return lcodec;
+                    m_lcodec = new FXCP1251Codec();
+                    return m_lcodec;
                 }
                 case 1252:
                 {
-                    lcodec = new FXCP1252Codec();
-                    return lcodec;
+                    m_lcodec = new FXCP1252Codec();
+                    return m_lcodec;
                 }
                 case 1253:
                 {
-                    lcodec = new FXCP1253Codec();
-                    return lcodec;
+                    m_lcodec = new FXCP1253Codec();
+                    return m_lcodec;
                 }
                 case 1254:
                 {
-                    lcodec = new FXCP1254Codec();
-                    return lcodec;
+                    m_lcodec = new FXCP1254Codec();
+                    return m_lcodec;
                 }
                 case 1255:
                 {
-                    lcodec = new FXCP1255Codec();
-                    return lcodec;
+                    m_lcodec = new FXCP1255Codec();
+                    return m_lcodec;
                 }
                 case 1256:
                 {
-                    lcodec = new FXCP1256Codec();
-                    return lcodec;
+                    m_lcodec = new FXCP1256Codec();
+                    return m_lcodec;
                 }
                 case 1257:
                 {
-                    lcodec = new FXCP1257Codec();
-                    return lcodec;
+                    m_lcodec = new FXCP1257Codec();
+                    return m_lcodec;
                 }
                 case 1258:
                 {
-                    lcodec = new FXCP1258Codec();
-                    return lcodec;
+                    m_lcodec = new FXCP1258Codec();
+                    return m_lcodec;
                 }
                 case 437:
                 {
-                    lcodec = new FXCP437Codec();
-                    return lcodec;
+                    m_lcodec = new FXCP437Codec();
+                    return m_lcodec;
                 }
                 case 850:
                 {
-                    lcodec = new FXCP850Codec();
-                    return lcodec;
+                    m_lcodec = new FXCP850Codec();
+                    return m_lcodec;
                 }
                 case 852:
                 {
-                    lcodec = new FXCP852Codec();
-                    return lcodec;
+                    m_lcodec = new FXCP852Codec();
+                    return m_lcodec;
                 }
                 case 855:
                 {
-                    lcodec = new FXCP855Codec();
-                    return lcodec;
+                    m_lcodec = new FXCP855Codec();
+                    return m_lcodec;
                 }
                 case 856:
                 {
-                    lcodec = new FXCP856Codec();
-                    return lcodec;
+                    m_lcodec = new FXCP856Codec();
+                    return m_lcodec;
                 }
                 case 857:
                 {
-                    lcodec = new FXCP857Codec();
-                    return lcodec;
+                    m_lcodec = new FXCP857Codec();
+                    return m_lcodec;
                 }
                 case 860:
                 {
-                    lcodec = new FXCP860Codec();
-                    return lcodec;
+                    m_lcodec = new FXCP860Codec();
+                    return m_lcodec;
                 }
                 case 861:
                 {
-                    lcodec = new FXCP861Codec();
-                    return lcodec;
+                    m_lcodec = new FXCP861Codec();
+                    return m_lcodec;
                 }
                 case 862:
                 {
-                    lcodec = new FXCP862Codec();
-                    return lcodec;
+                    m_lcodec = new FXCP862Codec();
+                    return m_lcodec;
                 }
                 case 863:
                 {
-                    lcodec = new FXCP863Codec();
-                    return lcodec;
+                    m_lcodec = new FXCP863Codec();
+                    return m_lcodec;
                 }
                 case 864:
                 {
-                    lcodec = new FXCP864Codec();
-                    return lcodec;
+                    m_lcodec = new FXCP864Codec();
+                    return m_lcodec;
                 }
                 case 865:
                 {
-                    lcodec = new FXCP865Codec();
-                    return lcodec;
+                    m_lcodec = new FXCP865Codec();
+                    return m_lcodec;
                 }
                 case 866:
                 {
-                    lcodec = new FXCP866Codec();
-                    return lcodec;
+                    m_lcodec = new FXCP866Codec();
+                    return m_lcodec;
                 }
                 case 869:
                 {
-                    lcodec = new FXCP869Codec();
-                    return lcodec;
+                    m_lcodec = new FXCP869Codec();
+                    return m_lcodec;
                 }
                 case 874:
                 {
-                    lcodec = new FXCP874Codec();
-                    return lcodec;
+                    m_lcodec = new FXCP874Codec();
+                    return m_lcodec;
                 }
                 case 20866:
                 {
-                    lcodec = new FXKOI8RCodec();
-                    return lcodec;
+                    m_lcodec = new FXKOI8RCodec();
+                    return m_lcodec;
                 }
                 default:
                 {
-                    lcodec = new FXCP1252Codec();
-                    return lcodec;
+                    m_lcodec = new FXCP1252Codec();
+                    return m_lcodec;
                 }
             }
 #else
@@ -270,415 +288,415 @@ namespace utils
 
             if(language == "af")
             {
-                lcodec = new FX88591Codec();
-                return lcodec;
+                m_lcodec = new FX88591Codec();
+                return m_lcodec;
             }
             if(language == "ar")
             {
-                lcodec = new FX88596Codec();
-                return lcodec;
+                m_lcodec = new FX88596Codec();
+                return m_lcodec;
             }
             if(language == "az")
             {
-                lcodec = new FX88599Codec();
-                return lcodec;
+                m_lcodec = new FX88599Codec();
+                return m_lcodec;
             }
             if(language == "be")
             {
-                lcodec = new FXCP1251Codec();
-                return lcodec;
+                m_lcodec = new FXCP1251Codec();
+                return m_lcodec;
             }
             if(language == "bg")
             {
-                if(codeset=="iso88595") lcodec = new FX88595Codec();
-                else if(codeset=="koi8r") lcodec = new FXKOI8RCodec();
-                else lcodec = new FXCP1251Codec();
-                return lcodec;
+                if(codeset=="iso88595") m_lcodec = new FX88595Codec();
+                else if(codeset=="koi8r") m_lcodec = new FXKOI8RCodec();
+                else m_lcodec = new FXCP1251Codec();
+                return m_lcodec;
             }
             if(language == "br")
             {
-                if(modifier=="euro" || codeset=="iso885915") lcodec = new FX885915Codec();
-                else if(codeset=="iso885914") lcodec = new FX885914Codec();
-                else lcodec = new FX88591Codec();
-                return lcodec;
+                if(modifier=="euro" || codeset=="iso885915") m_lcodec = new FX885915Codec();
+                else if(codeset=="iso885914") m_lcodec = new FX885914Codec();
+                else m_lcodec = new FX88591Codec();
+                return m_lcodec;
             }
             if(language == "ca")
             {
-                if(modifier=="euro" || codeset=="iso885915") lcodec = new FX885915Codec();
-                else lcodec = new FX88591Codec();
-                return lcodec;
+                if(modifier=="euro" || codeset=="iso885915") m_lcodec = new FX885915Codec();
+                else m_lcodec = new FX88591Codec();
+                return m_lcodec;
             }
             if(language == "cs")
             {
-                lcodec = new FX88592Codec();
-                return lcodec;
+                m_lcodec = new FX88592Codec();
+                return m_lcodec;
             }
             if(language == "cy")
             {
-                if(modifier=="euro" || codeset=="iso885915") lcodec = new FX885915Codec();
-                else if(codeset=="iso885914") lcodec = new FX885914Codec();
-                else lcodec = new FX88591Codec();
-                return lcodec;
+                if(modifier=="euro" || codeset=="iso885915") m_lcodec = new FX885915Codec();
+                else if(codeset=="iso885914") m_lcodec = new FX885914Codec();
+                else m_lcodec = new FX88591Codec();
+                return m_lcodec;
             }
             if(language == "da")
             {
-                if(modifier=="euro" || codeset=="iso885915") lcodec = new FX885915Codec();
-                else lcodec = new FX88591Codec();
-                return lcodec;
+                if(modifier=="euro" || codeset=="iso885915") m_lcodec = new FX885915Codec();
+                else m_lcodec = new FX88591Codec();
+                return m_lcodec;
             }
             if(language == "de")
             {
-                if(modifier=="euro" || codeset=="iso885915") lcodec = new FX885915Codec();
-                else lcodec = new FX88591Codec();
-                return lcodec;
+                if(modifier=="euro" || codeset=="iso885915") m_lcodec = new FX885915Codec();
+                else m_lcodec = new FX88591Codec();
+                return m_lcodec;
             }
             if(language == "ee")
             {
-                lcodec = new FX88594Codec();
-                return lcodec;
+                m_lcodec = new FX88594Codec();
+                return m_lcodec;
             }
             if(language == "el")
             {
-                if(modifier=="euro") lcodec = new FX885915Codec();
-                else lcodec = new FX88597Codec();
-                return lcodec;
+                if(modifier=="euro") m_lcodec = new FX885915Codec();
+                else m_lcodec = new FX88597Codec();
+                return m_lcodec;
             }
             if(language == "en")
             {
-                if(modifier=="euro" || codeset=="iso885915") lcodec = new FX885915Codec();
-                else lcodec = new FX88591Codec();
-                return lcodec;
+                if(modifier=="euro" || codeset=="iso885915") m_lcodec = new FX885915Codec();
+                else m_lcodec = new FX88591Codec();
+                return m_lcodec;
             }
             if(language == "eo")
             {
-                lcodec = new FX88593Codec();
-                return lcodec;
+                m_lcodec = new FX88593Codec();
+                return m_lcodec;
             }
             if(language == "es")
             {
-                if(modifier=="euro" || codeset=="iso885915") lcodec = new FX885915Codec();
-                else lcodec = new FX88591Codec();
-                return lcodec;
+                if(modifier=="euro" || codeset=="iso885915") m_lcodec = new FX885915Codec();
+                else m_lcodec = new FX88591Codec();
+                return m_lcodec;
             }
             if(language == "et")
             {
-                if(codeset=="iso88591") lcodec = new FX88591Codec();
-                else if(codeset=="iso885913") lcodec = new FX885913Codec();
-                else if(codeset=="iso88594") lcodec = new FX88594Codec();
-                else lcodec = new FX885915Codec();
-                return lcodec;
+                if(codeset=="iso88591") m_lcodec = new FX88591Codec();
+                else if(codeset=="iso885913") m_lcodec = new FX885913Codec();
+                else if(codeset=="iso88594") m_lcodec = new FX88594Codec();
+                else m_lcodec = new FX885915Codec();
+                return m_lcodec;
             }
             if(language == "eu")
             {
-                if(modifier=="euro" || codeset=="iso885915") lcodec = new FX885915Codec();
-                else lcodec = new FX88591Codec();
-                return lcodec;
+                if(modifier=="euro" || codeset=="iso885915") m_lcodec = new FX885915Codec();
+                else m_lcodec = new FX88591Codec();
+                return m_lcodec;
             }
             if(language == "fi")
             {
-                if(codeset=="88591" || codeset=="iso88591") lcodec = new FX88591Codec();
-                else lcodec = new FX885915Codec();
-                return lcodec;
+                if(codeset=="88591" || codeset=="iso88591") m_lcodec = new FX88591Codec();
+                else m_lcodec = new FX885915Codec();
+                return m_lcodec;
             }
             if(language == "fo")
             {
-                if(modifier=="euro" || codeset=="iso885915") lcodec = new FX885915Codec();
-                else lcodec = new FX88591Codec();
-                return lcodec;
+                if(modifier=="euro" || codeset=="iso885915") m_lcodec = new FX885915Codec();
+                else m_lcodec = new FX88591Codec();
+                return m_lcodec;
             }
             if(language == "fr")
             {
-                if(modifier=="euro" || codeset=="iso885915") lcodec = new FX885915Codec();
-                else lcodec = new FX88591Codec();
-                return lcodec;
+                if(modifier=="euro" || codeset=="iso885915") m_lcodec = new FX885915Codec();
+                else m_lcodec = new FX88591Codec();
+                return m_lcodec;
             }
             if(language == "fre")
             {
-                lcodec = new FX88591Codec();
-                return lcodec;
+                m_lcodec = new FX88591Codec();
+                return m_lcodec;
             }
             if(language == "ga")
             {
-                if(modifier=="euro" || codeset=="iso885915") lcodec = new FX885915Codec();
-                else if(codeset=="iso885914") lcodec = new FX885914Codec();
-                else lcodec = new FX88591Codec();
-                return lcodec;
+                if(modifier=="euro" || codeset=="iso885915") m_lcodec = new FX885915Codec();
+                else if(codeset=="iso885914") m_lcodec = new FX885914Codec();
+                else m_lcodec = new FX88591Codec();
+                return m_lcodec;
             }
             if(language == "gd")
             {
-                if(modifier=="euro" || codeset=="iso885915") lcodec = new FX885915Codec();
-                else if(codeset=="iso885914") lcodec = new FX885914Codec();
-                else lcodec = new FX88591Codec();
-                return lcodec;
+                if(modifier=="euro" || codeset=="iso885915") m_lcodec = new FX885915Codec();
+                else if(codeset=="iso885914") m_lcodec = new FX885914Codec();
+                else m_lcodec = new FX88591Codec();
+                return m_lcodec;
             }
             if(language == "ger")
             {
-                lcodec = new FX88591Codec();
-                return lcodec;
+                m_lcodec = new FX88591Codec();
+                return m_lcodec;
             }
             if(language == "gl")
             {
-                if(modifier=="euro" || codeset=="iso885915") lcodec = new FX885915Codec();
-                else lcodec = new FX88591Codec();
-                return lcodec;
+                if(modifier=="euro" || codeset=="iso885915") m_lcodec = new FX885915Codec();
+                else m_lcodec = new FX88591Codec();
+                return m_lcodec;
             }
             if(language == "gv")
             {
-                if(modifier=="euro" || codeset=="iso885915") lcodec = new FX885915Codec();
-                else if(codeset=="iso885914") lcodec = new FX885914Codec();
-                else lcodec = new FX88591Codec();
-                return lcodec;
+                if(modifier=="euro" || codeset=="iso885915") m_lcodec = new FX885915Codec();
+                else if(codeset=="iso885914") m_lcodec = new FX885914Codec();
+                else m_lcodec = new FX88591Codec();
+                return m_lcodec;
             }
             if(language == "he")
             {
-                if(codeset=="cp1255" || codeset=="microsoftcp1255") lcodec = new FXCP1255Codec();
-                else lcodec = new FX88598Codec();
-                return lcodec;
+                if(codeset=="cp1255" || codeset=="microsoftcp1255") m_lcodec = new FXCP1255Codec();
+                else m_lcodec = new FX88598Codec();
+                return m_lcodec;
             }
             if(language == "hr")
             {
-                lcodec = new FX88592Codec();
-                return lcodec;
+                m_lcodec = new FX88592Codec();
+                return m_lcodec;
             }
             if(language == "hu")
             {
-                lcodec = new FX88592Codec();
-                return lcodec;
+                m_lcodec = new FX88592Codec();
+                return m_lcodec;
             }
             if(language == "id")
             {
-                lcodec = new FX88591Codec();
-                return lcodec;
+                m_lcodec = new FX88591Codec();
+                return m_lcodec;
             }
             if(language == "in")
             {
-                lcodec = new FX88591Codec();
-                return lcodec;
+                m_lcodec = new FX88591Codec();
+                return m_lcodec;
             }
             if(language == "is")
             {
-                if(modifier=="euro" || codeset=="iso885915") lcodec = new FX885915Codec();
-                else lcodec = new FX88591Codec();
-                return lcodec;
+                if(modifier=="euro" || codeset=="iso885915") m_lcodec = new FX885915Codec();
+                else m_lcodec = new FX88591Codec();
+                return m_lcodec;
             }
             if(language == "it")
             {
-                if(modifier=="euro" || codeset=="iso885915") lcodec = new FX885915Codec();
-                else lcodec = new FX88591Codec();
-                return lcodec;
+                if(modifier=="euro" || codeset=="iso885915") m_lcodec = new FX885915Codec();
+                else m_lcodec = new FX88591Codec();
+                return m_lcodec;
             }
             if(language == "iw")
             {
-                lcodec = new FX88598Codec();
-                return lcodec;
+                m_lcodec = new FX88598Codec();
+                return m_lcodec;
             }
             if(language == "kl")
             {
-                if(modifier=="euro" || codeset=="iso885915") lcodec = new FX885915Codec();
-                else lcodec = new FX88591Codec();
-                return lcodec;
+                if(modifier=="euro" || codeset=="iso885915") m_lcodec = new FX885915Codec();
+                else m_lcodec = new FX88591Codec();
+                return m_lcodec;
             }
             if(language == "kw")
             {
-                if(modifier=="euro" || codeset=="iso885915") lcodec = new FX885915Codec();
-                else if(codeset=="iso885914") lcodec = new FX885914Codec();
-                else lcodec = new FX88591Codec();
-                return lcodec;
+                if(modifier=="euro" || codeset=="iso885915") m_lcodec = new FX885915Codec();
+                else if(codeset=="iso885914") m_lcodec = new FX885914Codec();
+                else m_lcodec = new FX88591Codec();
+                return m_lcodec;
             }
             if(language == "lt")
             {
-                if(codeset=="iso88594") lcodec = new FX88594Codec();
-                else lcodec = new FX885913Codec();
-                return lcodec;
+                if(codeset=="iso88594") m_lcodec = new FX88594Codec();
+                else m_lcodec = new FX885913Codec();
+                return m_lcodec;
             }
             if(language == "lv")
             {
-                if(codeset=="iso88594") lcodec = new FX88594Codec();
-                else lcodec = new FX885913Codec();
-                return lcodec;
+                if(codeset=="iso88594") m_lcodec = new FX88594Codec();
+                else m_lcodec = new FX885913Codec();
+                return m_lcodec;
             }
             if(language == "mi")
             {
-                lcodec = new FX88591Codec();
-                return lcodec;
+                m_lcodec = new FX88591Codec();
+                return m_lcodec;
             }
             if(language == "mk")
             {
-                if(codeset=="cp1251" || codeset=="microsoftc1251") lcodec = new FXCP1251Codec();
-                else lcodec = new FX88595Codec();
-                return lcodec;
+                if(codeset=="cp1251" || codeset=="microsoftc1251") m_lcodec = new FXCP1251Codec();
+                else m_lcodec = new FX88595Codec();
+                return m_lcodec;
             }
             if(language == "ms")
             {
-                lcodec = new FX88591Codec();
-                return lcodec;
+                m_lcodec = new FX88591Codec();
+                return m_lcodec;
             }
             if(language == "mt")
             {
-                lcodec = new FX88593Codec();
-                return lcodec;
+                m_lcodec = new FX88593Codec();
+                return m_lcodec;
             }
             if(language == "nb")
             {
-                if(modifier=="euro" || codeset=="iso885915") lcodec = new FX885915Codec();
-                else lcodec = new FX88591Codec();
-                return lcodec;
+                if(modifier=="euro" || codeset=="iso885915") m_lcodec = new FX885915Codec();
+                else m_lcodec = new FX88591Codec();
+                return m_lcodec;
             }
             if(language == "nl")
             {
-                if(modifier=="euro" || codeset=="iso885915") lcodec = new FX885915Codec();
-                else lcodec = new FX88591Codec();
-                return lcodec;
+                if(modifier=="euro" || codeset=="iso885915") m_lcodec = new FX885915Codec();
+                else m_lcodec = new FX88591Codec();
+                return m_lcodec;
             }
             if(language == "nn")
             {
-                if(modifier=="euro" || codeset=="iso885915") lcodec = new FX885915Codec();
-                else lcodec = new FX88591Codec();
-                return lcodec;
+                if(modifier=="euro" || codeset=="iso885915") m_lcodec = new FX885915Codec();
+                else m_lcodec = new FX88591Codec();
+                return m_lcodec;
             }
             if(language == "no")
             {
-                if(modifier=="euro" || codeset=="iso885915") lcodec = new FX885915Codec();
-                else lcodec = new FX88591Codec();
-                return lcodec;
+                if(modifier=="euro" || codeset=="iso885915") m_lcodec = new FX885915Codec();
+                else m_lcodec = new FX88591Codec();
+                return m_lcodec;
             }
             if(language == "ny")
             {
-                if(modifier=="euro" || codeset=="iso885915") lcodec = new FX885915Codec();
-                else lcodec = new FX88591Codec();
-                return lcodec;
+                if(modifier=="euro" || codeset=="iso885915") m_lcodec = new FX885915Codec();
+                else m_lcodec = new FX88591Codec();
+                return m_lcodec;
             }
             if(language == "oc")
             {
-                if(modifier=="euro" || codeset=="iso885915") lcodec = new FX885915Codec();
-                else lcodec = new FX88591Codec();
-                return lcodec;
+                if(modifier=="euro" || codeset=="iso885915") m_lcodec = new FX885915Codec();
+                else m_lcodec = new FX88591Codec();
+                return m_lcodec;
             }
             if(language == "pd")
             {
-                if(modifier=="euro" || codeset=="iso885915") lcodec = new FX885915Codec();
-                else lcodec = new FX88591Codec();
-                return lcodec;
+                if(modifier=="euro" || codeset=="iso885915") m_lcodec = new FX885915Codec();
+                else m_lcodec = new FX88591Codec();
+                return m_lcodec;
             }
             if(language == "ph")
             {
-                lcodec = new FX88591Codec();
-                return lcodec;
+                m_lcodec = new FX88591Codec();
+                return m_lcodec;
             }
             if(language == "pl")
             {
-                lcodec = new FX88592Codec();
-                return lcodec;
+                m_lcodec = new FX88592Codec();
+                return m_lcodec;
             }
             if(language == "pp")
             {
-                lcodec = new FX88591Codec;
-                return lcodec;
+                m_lcodec = new FX88591Codec;
+                return m_lcodec;
             }
             if(language == "pt")
             {
-                if(modifier=="euro" || codeset=="iso885915") lcodec = new FX885915Codec();
-                else lcodec = new FX88591Codec();
-                return lcodec;
+                if(modifier=="euro" || codeset=="iso885915") m_lcodec = new FX885915Codec();
+                else m_lcodec = new FX88591Codec();
+                return m_lcodec;
             }
             if(language == "ro")
             {
-                lcodec = new FX88592Codec();
-                return lcodec;
+                m_lcodec = new FX88592Codec();
+                return m_lcodec;
             }
             if(language == "ru")
             {
-                if(codeset=="koi8r" || territory=="ua") lcodec = new FXKOI8RCodec();
-                else if(codeset=="cp1251" || codeset=="microsoftcp1251") lcodec = new FXCP1251Codec();
-                else lcodec = new FX88595Codec();
-                return lcodec;
+                if(codeset=="koi8r" || territory=="ua") m_lcodec = new FXKOI8RCodec();
+                else if(codeset=="cp1251" || codeset=="microsoftcp1251") m_lcodec = new FXCP1251Codec();
+                else m_lcodec = new FX88595Codec();
+                return m_lcodec;
             }
             if(language == "sh")
             {
-                lcodec = new FX88592Codec();
-                return lcodec;
+                m_lcodec = new FX88592Codec();
+                return m_lcodec;
             }
             if(language == "sk")
             {
-                lcodec = new FX88592Codec();
-                return lcodec;
+                m_lcodec = new FX88592Codec();
+                return m_lcodec;
             }
             if(language == "sl")
             {
-                lcodec = new FX88592Codec();
-                return lcodec;
+                m_lcodec = new FX88592Codec();
+                return m_lcodec;
             }
             if(language == "sp")
             {
-                lcodec = new FX88595Codec();
-                return lcodec;
+                m_lcodec = new FX88595Codec();
+                return m_lcodec;
             }
             if(language == "sq")
             {
-                lcodec = new FX88592Codec();
-                return lcodec;
+                m_lcodec = new FX88592Codec();
+                return m_lcodec;
             }
             if(language == "sr")
             {
-                if(codeset=="iso88592" || territory=="sp") lcodec = new FX88592Codec();
-                else if(codeset=="cp1251" || codeset=="microsoftcp1251") lcodec = new FXCP1251Codec();
-                else lcodec = new FX88595Codec();
-                return lcodec;
+                if(codeset=="iso88592" || territory=="sp") m_lcodec = new FX88592Codec();
+                else if(codeset=="cp1251" || codeset=="microsoftcp1251") m_lcodec = new FXCP1251Codec();
+                else m_lcodec = new FX88595Codec();
+                return m_lcodec;
             }
             if(language == "sv")
             {
-                if(modifier=="euro" || codeset=="iso885915") lcodec = new FX885915Codec();
-                else lcodec = new FX88591Codec();
-                return lcodec;
+                if(modifier=="euro" || codeset=="iso885915") m_lcodec = new FX885915Codec();
+                else m_lcodec = new FX88591Codec();
+                return m_lcodec;
             }
             if(language == "th")
             {
-                lcodec = new FX885911Codec();
-                return lcodec;
+                m_lcodec = new FX885911Codec();
+                return m_lcodec;
             }
             if(language == "tl")
             {
-                lcodec = new FX88591Codec();
-                return lcodec;
+                m_lcodec = new FX88591Codec();
+                return m_lcodec;
             }
             if(language == "tr")
             {
-                lcodec = new FX88599Codec();
-                return lcodec;
+                m_lcodec = new FX88599Codec();
+                return m_lcodec;
             }
             if(language == "tt")
             {
-                lcodec = new FXKOI8RCodec();
-                return lcodec;
+                m_lcodec = new FXKOI8RCodec();
+                return m_lcodec;
             }
             if(language == "uk")
             {
-                if(codeset=="cp1251" || codeset=="microsoftcp1251") lcodec = new FXCP1251Codec();
+                if(codeset=="cp1251" || codeset=="microsoftcp1251") m_lcodec = new FXCP1251Codec();
                 else if(codeset=="koi8u") new FX885915Codec(); // FXKOI8UCodec doesn't exist
-                else lcodec = new FXKOI8RCodec();
-                return lcodec;
+                else m_lcodec = new FXKOI8RCodec();
+                return m_lcodec;
             }
             if(language == "ur")
             {
-                lcodec = new FXCP1256Codec();
-                return lcodec;
+                m_lcodec = new FXCP1256Codec();
+                return m_lcodec;
             }
             if(language == "wa")
             {
-                if(modifier=="euro" || codeset=="iso885915") lcodec = new FX885915Codec();
-                else lcodec = new FX88591Codec();
-                return lcodec;
+                if(modifier=="euro" || codeset=="iso885915") m_lcodec = new FX885915Codec();
+                else m_lcodec = new FX88591Codec();
+                return m_lcodec;
             }
             if(language == "yi")
             {
-                lcodec = new FXCP1255Codec();
-                return lcodec;
+                m_lcodec = new FXCP1255Codec();
+                return m_lcodec;
             }
-            lcodec = new FX885915Codec();
-            return lcodec;
+            m_lcodec = new FX885915Codec();
+            return m_lcodec;
 #endif
         }
-        return lcodec;
+        return m_lcodec;
     }
 
     FXString localeToUtf8(const FXchar *buffer)
@@ -693,15 +711,15 @@ namespace utils
 
     void setIniFile(const FXString &file)
     {
-        iniFile = file;
+        m_iniFile = file;
     }
 
     FXString getIniFile()
     {
         FXString pathname;
-        if(!iniFile.empty() && !FXStat::isExecutable(iniFile))
+        if(!m_iniFile.empty() && !FXStat::isExecutable(m_iniFile))
         {
-            pathname = FXPath::directory(iniFile);
+            pathname = FXPath::directory(m_iniFile);
             if(pathname.empty()) pathname = FXSystem::getCurrentDirectory();
             if(!FXStat::exists(pathname))
             {
@@ -717,7 +735,7 @@ namespace utils
                     fxwarning("%s: is not a directory.\n",pathname.text());
                 }
             }
-            return iniFile;
+            return m_iniFile;
         }
         else
         {
@@ -737,8 +755,8 @@ namespace utils
                     fxwarning("%s: is not a directory.\n",pathname.text());
                 }
             }
-            iniFile = pathname.append(PATHSEPSTRING "dxirc.ini");
-            return iniFile;
+            m_iniFile = pathname.append(PATHSEPSTRING "dxirc.ini");
+            return m_iniFile;
 #else
             pathname = FXSystem::getHomeDirectory()+PATHSEPSTRING+".config"+PATHSEPSTRING+"dxirc";
             if(!FXStat::exists(pathname))
@@ -755,8 +773,8 @@ namespace utils
                     fxwarning("%s: is not a directory.\n",pathname.text());
                 }
             }
-            iniFile = pathname.append(PATHSEPSTRING "dxirc");
-            return iniFile;
+            m_iniFile = pathname.append(PATHSEPSTRING "dxirc");
+            return m_iniFile;
 #endif
         }
         return FXString::null;
@@ -849,7 +867,7 @@ namespace utils
             key = set.readStringEntry("ALIASES", FXStringFormat("key%d", i).text());
             value = set.readStringEntry("ALIASES", FXStringFormat("value%d", i).text());
             if(!key.empty() && !value.empty() && key[0]=='/' && !key.contains(' '))
-                aliases.insert(StringPair(key, value));
+                m_aliases.insert(StringPair(key, value));
         }
         fillCommands();
 
@@ -857,38 +875,38 @@ namespace utils
 
     void setAliases(dxStringMap a)
     {
-        aliases = a;
+        m_aliases = a;
         fillCommands();
     }
 
     FXString getAlias(FXString key)
     {
-        if(aliases.count(key.lower())>0)
-            return aliases.find(key)->second;
+        if(m_aliases.count(key.lower())>0)
+            return m_aliases.find(key)->second;
         return FXString::null;
     }
 
     dxStringMap getAliases()
     {
-        return aliases;
+        return m_aliases;
     }
 
     FXint commandsNo()
     {
-        return commands.no();
+        return m_commands.no();
     }
 
     FXString commandsAt(FXint i)
     {
-        return commands.at(i);
+        return m_commands.at(i);
     }
 
     FXbool isCommand(const FXString &command)
     {
-        if(!commands.no()) return FALSE;
-        for(FXint i=0; i<commands.no(); i++)
+        if(!m_commands.no()) return FALSE;
+        for(FXint i=0; i<m_commands.no(); i++)
         {
-            if(comparecase(command, commands.at(i)) == 0) return TRUE;
+            if(comparecase(command, m_commands.at(i)) == 0) return TRUE;
         }
         return FALSE;
     }
@@ -947,18 +965,18 @@ namespace utils
 
     void addScriptCommand(LuaScriptCommand command)
     {
-        scriptCommands.append(command);
+        m_scriptCommands.append(command);
         fillCommands();
     }
 
     //Remove one command for lua script
     FXbool removeScriptCommand(const FXString &command)
     {
-        for(FXint i=scriptCommands.no()-1; i>-1; i--)
+        for(FXint i=m_scriptCommands.no()-1; i>-1; i--)
         {
-            if(comparecase(command, scriptCommands[i].name) == 0)
+            if(comparecase(command, m_scriptCommands[i].name) == 0)
             {
-                scriptCommands.erase(i);
+                m_scriptCommands.erase(i);
                 fillCommands();
                 return TRUE;
             }
@@ -970,11 +988,11 @@ namespace utils
     FXbool removeScriptCommands(const FXString& script)
     {
         FXbool result = FALSE;
-        for(FXint i=scriptCommands.no()-1; i>-1; i--)
+        for(FXint i=m_scriptCommands.no()-1; i>-1; i--)
         {
-            if(comparecase(script, scriptCommands[i].script) == 0)
+            if(comparecase(script, m_scriptCommands[i].script) == 0)
             {
-                scriptCommands.erase(i);
+                m_scriptCommands.erase(i);
                 result = TRUE;
             }
         }
@@ -984,9 +1002,9 @@ namespace utils
 
     FXbool isScriptCommand(const FXString &command)
     {
-        for(FXint i=0; i<scriptCommands.no(); i++)
+        for(FXint i=0; i<m_scriptCommands.no(); i++)
         {
-            if(comparecase(command, scriptCommands[i].name) == 0) return TRUE;
+            if(comparecase(command, m_scriptCommands[i].name) == 0) return TRUE;
         }
         return FALSE;
     }
@@ -994,9 +1012,9 @@ namespace utils
     FXString availableCommands()
     {
         FXString commandstr = _("Available commnads: ");
-        for(FXint i=0; i < commands.no(); i++)
+        for(FXint i=0; i < m_commands.no(); i++)
         {
-            if(commands[i] != "commands") commandstr += commands[i].upper()+(i != commands.no() - 1? ", " : "");
+            if(m_commands[i] != "commands") commandstr += m_commands[i].upper()+(i != m_commands.no() - 1? ", " : "");
         }
         return commandstr;
     }
@@ -1004,36 +1022,36 @@ namespace utils
     FXString availableScriptCommands()
     {
         FXString commandstr = _("Available commnads: ");
-        for(FXint i=0; i < scriptCommands.no(); i++)
+        for(FXint i=0; i < m_scriptCommands.no(); i++)
         {
-            commandstr += scriptCommands[i].name.upper()+(i != scriptCommands.no() - 1? ", " : "");
+            commandstr += m_scriptCommands[i].name.upper()+(i != m_scriptCommands.no() - 1? ", " : "");
         }
         return commandstr;
     }
 
     FXString getHelpText(const FXString &command)
     {
-        for(FXint i=0; i<scriptCommands.no(); i++)
+        for(FXint i=0; i<m_scriptCommands.no(); i++)
         {
-            if(comparecase(command, scriptCommands[i].name) == 0) return scriptCommands[i].helptext;
+            if(comparecase(command, m_scriptCommands[i].name) == 0) return m_scriptCommands[i].helptext;
         }
         return FXStringFormat(_("Command %s doesn't exists"), command.text());
     }
 
     FXString getFuncname(const FXString &command)
     {
-        for(FXint i=0; i<scriptCommands.no(); i++)
+        for(FXint i=0; i<m_scriptCommands.no(); i++)
         {
-            if(comparecase(command, scriptCommands[i].name) == 0) return scriptCommands[i].funcname;
+            if(comparecase(command, m_scriptCommands[i].name) == 0) return m_scriptCommands[i].funcname;
         }
         return FXStringFormat(_("Command %s doesn't exists"), command.text());
     }
 
     FXString getScriptName(const FXString &command)
     {
-        for(FXint i=0; i<scriptCommands.no(); i++)
+        for(FXint i=0; i<m_scriptCommands.no(); i++)
         {
-            if(comparecase(command, scriptCommands[i].name) == 0) return scriptCommands[i].script;
+            if(comparecase(command, m_scriptCommands[i].name) == 0) return m_scriptCommands[i].script;
         }
         return FXStringFormat(_("Command %s doesn't exists"), command.text());
     }
@@ -1087,14 +1105,14 @@ namespace utils
     FXString getStringIniEntry(const FXchar *section,const FXchar *key,const FXchar *def)
     {
         FXSettings set;
-        set.parseFile(iniFile, TRUE);
+        set.parseFile(m_iniFile, TRUE);
         return set.readStringEntry(section, key, def);
     }
 
     FXint getIntIniEntry(const FXchar* section, const FXchar* key, FXint def)
     {
         FXSettings set;
-        set.parseFile(iniFile, TRUE);
+        set.parseFile(m_iniFile, TRUE);
         return set.readIntEntry(section, key, def);
     }
 
@@ -1102,7 +1120,7 @@ namespace utils
     FXbool getBoolIniEntry(const FXchar* section, const FXchar* key, FXbool def)
     {
         FXSettings set;
-        set.parseFile(iniFile, TRUE);
+        set.parseFile(m_iniFile, TRUE);
         return set.readBoolEntry(section, key, def);
     }
 
@@ -1241,5 +1259,359 @@ namespace utils
 #ifdef DEBUG
         fxmessage("[%s] %s\n", FXSystem::time("%H:%M:%S", FXSystem::now()).text(), line.text());
 #endif
+    }
+
+    //true if word right
+#ifdef HAVE_ENCHANT
+    FXbool checkWord(FXString word, FXString lang)
+    {
+        Checkers::const_iterator it = m_checkers.find(lang);
+        if(it != m_checkers.end())
+            return (*it).second->check(word.text());
+        return TRUE;
+    }
+#else
+    FXbool checkWord(FXString, FXString)
+    {
+        return TRUE;
+    }
+#endif
+
+    //add new lang for spellchecking
+#ifdef HAVE_ENCHANT
+    FXbool addLang(FXString lang)
+    {
+        if(m_checkers.find(lang) != m_checkers.end())
+            return TRUE;
+        try
+        {
+            m_checkers[lang] = enchant::Broker::instance()->request_dict(lang.text());
+        }
+        catch(enchant::Exception &e)
+        {
+
+        }
+        return true;
+    }
+#else
+    FXbool addLang(FXString)
+    {
+        return false;
+    }
+#endif
+
+    //delete all enchant::Dict
+#ifdef HAVE_ENCHANT
+    void clearSpellCheckers()
+    {
+        Checkers::const_iterator it = m_checkers.begin();
+        for(; it != m_checkers.end(); it++)
+        {
+            delete (*it).second;
+        }
+    }
+#else
+    void clearSpellCheckers()
+    {
+    }
+#endif
+
+    //fill available langs
+#ifdef HAVE_ENCHANT
+    void setLangs()
+    {
+        enchant::Broker::instance()->list_dicts(enumerateDicts, &m_spellLang);
+        if(m_spellLang.no())
+        {
+            register FXString v;
+            register FXint i,j,h;
+            for(h=1; h<=m_spellLang.no()/9; h=3*h+1);
+            for(; h > 0; h /= 3)
+            {
+                for(i = h + 1; i <= m_spellLang.no(); i++)
+                {
+                    v = m_spellLang[i - 1];
+                    j = i;
+                    while (j > h && comparecase(m_spellLang[j - h - 1], v) > 0)
+                    {
+                        m_spellLang[j - 1] = m_spellLang[j - h - 1];
+                        j -= h;
+                    }
+                    m_spellLang[j - 1] = v;
+                }
+            }
+        }
+        for(FXint i=0; i<m_spellLang.no(); i++)
+        {
+            if(m_checkers.find(m_spellLang[i]) != m_checkers.end())
+                return;
+            try
+            {
+                m_checkers[m_spellLang[i]] = enchant::Broker::instance()->request_dict(m_spellLang[i].text());
+            }
+            catch(enchant::Exception &e)
+            {
+            }
+        }
+    }
+#else
+    void setLangs()
+    {
+        m_spellLang.no(0);
+    }
+#endif
+
+    //get number of spellchecking language
+#ifdef HAVE_ENCHANT
+    FXint getLangsNum()
+    {
+        return m_spellLang.no();
+    }
+#else
+    FXint getLangsNum()
+    {
+        return 0;
+    }
+#endif
+
+    //return array of spellchecking language
+    dxStringArray getLangs()
+    {
+        return m_spellLang;
+    }
+
+    //get default spellchecking language
+#ifdef HAVE_ENCHANT
+    FXString getDefaultLang()
+    {
+        if(m_locale.empty()) getLocale();
+        if(m_checkers.find(m_locale) != m_checkers.end())
+            return m_locale;
+        Checkers::const_iterator it = m_checkers.begin();
+        FXString language = m_locale.before('_');
+        for(; it != m_checkers.end(); it++)
+        {
+            if(comparecase((*it).first.before('_'),language)==0) return language;
+        }
+        if(m_spellLang.no()) return m_spellLang[0];
+        else return FXString::null;
+    }
+#else
+    FXString getDefaultLang()
+    {
+        return FXString::null;
+    }
+#endif
+
+    //return locale, e.g cs_CZ etc.
+    FXString getLocale()
+    {
+        if(!m_locale.empty())
+            return m_locale;
+#ifdef WIN32
+        LCID lcid = GetUserDefaultLCID();
+        if(lcid!=0)
+        {
+            FXuint localeid = LANGIDFROMLCID(lcid);
+            /* locale code from this page
+             * http://msdn.microsoft.com/en-us/library/dd318693%28v=VS.85%29.aspx
+             * not fully implemented
+             */
+            switch(localeid){
+                case 0x0436: m_locale = "af_ZA";break; // Afrikaans
+                case 0x041c: m_locale = "sq_AL";break; // Albanian
+                case 0x0401: m_locale = "ar_SA";break; // Arabic - Saudi Arabia
+                case 0x0801: m_locale = "ar_IQ";break; // Arabic - Iraq
+                case 0x0c01: m_locale = "ar_EG";break; // Arabic - Egypt
+                case 0x1001: m_locale = "ar_LY";break; // Arabic - Libya
+                case 0x1401: m_locale = "ar_DZ";break; // Arabic - Algeria
+                case 0x1801: m_locale = "ar_MA";break; // Arabic - Morocco
+                case 0x1c01: m_locale = "ar_TN";break; // Arabic - Tunisia
+                case 0x2001: m_locale = "ar_OM";break; // Arabic - Oman
+                case 0x2401: m_locale = "ar_YE";break; // Arabic - Yemen
+                case 0x2801: m_locale = "ar_SY";break; // Arabic - Syria
+                case 0x2c01: m_locale = "ar_JO";break; // Arabic - Jordan
+                case 0x3001: m_locale = "ar_LB";break; // Arabic - Lebanon
+                case 0x3401: m_locale = "ar_KW";break; // Arabic - Kuwait
+                case 0x3801: m_locale = "ar_AE";break; // Arabic - United Arab Emirates
+                case 0x3c01: m_locale = "ar_BH";break; // Arabic - Bahrain
+                case 0x4001: m_locale = "ar_QA";break; // Arabic - Qatar
+                case 0x042b: m_locale = "hy_AM";break; // Armenian
+                case 0x042c: m_locale = "az_AZ";break; // Azeri Latin
+                case 0x082c: m_locale = "az_AZ";break; // Azeri - Cyrillic
+                case 0x042d: m_locale = "eu_ES";break; // Basque
+                case 0x0423: m_locale = "be_BY";break; // Belarusian
+                case 0x0445: m_locale = "bn_IN";break; // Begali
+                case 0x201a: m_locale = "bs_BA";break; // Bosnian
+                case 0x141a: m_locale = "bs_BA";break; // Bosnian - Cyrillic
+                case 0x047e: m_locale = "br_FR";break; // Breton - France
+                case 0x0402: m_locale = "bg_BG";break; // Bulgarian
+                case 0x0403: m_locale = "ca_ES";break; // Catalan
+                case 0x0004: m_locale = "zh_CHS";break; // Chinese - Simplified
+                case 0x0404: m_locale = "zh_TW";break; // Chinese - Taiwan
+                case 0x0804: m_locale = "zh_CN";break; // Chinese - PRC
+                case 0x0c04: m_locale = "zh_HK";break; // Chinese - Hong Kong S.A.R.
+                case 0x1004: m_locale = "zh_SG";break; // Chinese - Singapore
+                case 0x1404: m_locale = "zh_MO";break; // Chinese - Macao S.A.R.
+                case 0x7c04: m_locale = "zh_CHT";break; // Chinese - Traditional
+                case 0x041a: m_locale = "hr_HR";break; // Croatian
+                case 0x101a: m_locale = "hr_BA";break; // Croatian - Bosnia
+                case 0x0405: m_locale = "cs_CZ";break; // Czech
+                case 0x0406: m_locale = "da_DK";break; // Danish
+                case 0x048c: m_locale = "gbz_AF";break; // Dari - Afghanistan
+                case 0x0465: m_locale = "div_MV";break; // Divehi - Maldives
+                case 0x0413: m_locale = "nl_NL";break; // Dutch - The Netherlands
+                case 0x0813: m_locale = "nl_BE";break; // Dutch - Belgium
+                case 0x0409: m_locale = "en_US";break; // English - United States
+                case 0x0809: m_locale = "en_GB";break; // English - United Kingdom
+                case 0x0c09: m_locale = "en_AU";break; // English - Australia
+                case 0x1009: m_locale = "en_CA";break; // English - Canada
+                case 0x1409: m_locale = "en_NZ";break; // English - New Zealand
+                case 0x1809: m_locale = "en_IE";break; // English - Ireland
+                case 0x1c09: m_locale = "en_ZA";break; // English - South Africa
+                case 0x2009: m_locale = "en_JA";break; // English - Jamaica
+                case 0x2409: m_locale = "en_CB";break; // English - Carribbean
+                case 0x2809: m_locale = "en_BZ";break; // English - Belize
+                case 0x2c09: m_locale = "en_TT";break; // English - Trinidad
+                case 0x3009: m_locale = "en_ZW";break; // English - Zimbabwe
+                case 0x3409: m_locale = "en_PH";break; // English - Phillippines
+                case 0x0425: m_locale = "et_EE";break; // Estonian
+                case 0x0438: m_locale = "fo_FO";break; // Faroese
+                case 0x0464: m_locale = "fil_PH";break; // Filipino
+                case 0x040b: m_locale = "fi_FI";break; // Finnish
+                case 0x040c: m_locale = "fr_FR";break; // French - France
+                case 0x080c: m_locale = "fr_BE";break; // French - Belgium
+                case 0x0c0c: m_locale = "fr_CA";break; // French - Canada
+                case 0x100c: m_locale = "fr_CH";break; // French - Switzerland
+                case 0x140c: m_locale = "fr_LU";break; // French - Luxembourg
+                case 0x180c: m_locale = "fr_MC";break; // French - Monaco
+                case 0x0462: m_locale = "fy_NL";break; // Frisian - Netherlands
+                case 0x0456: m_locale = "gl_ES";break; // Galician
+                case 0x0437: m_locale = "ka_GE";break; // Georgian
+                case 0x0407: m_locale = "de_DE";break; // German - Germany
+                case 0x0807: m_locale = "de_CH";break; // German - Switzerland
+                case 0x0c07: m_locale = "de_AT";break; // German - Austria
+                case 0x1007: m_locale = "de_LU";break; // German - Luxembourg
+                case 0x1407: m_locale = "de_LI";break; // German - Liechtenstein
+                case 0x0408: m_locale = "el_GR";break; // Greek
+                case 0x0447: m_locale = "gu_IN";break; // Gujarati
+                case 0x040d: m_locale = "he_IL";break; // Hebrew
+                case 0x0439: m_locale = "hi_IN";break; // Hindi
+                case 0x040e: m_locale = "hu_HU";break; // Hungarian
+                case 0x040f: m_locale = "is_IS";break; // Icelandic
+                case 0x0421: m_locale = "id_ID";break; // Indonesian
+                case 0x045d: m_locale = "iu_CA";break; // Inuktitut
+                case 0x085d: m_locale = "iu_CA";break; // Inuktitut - Latin
+                case 0x083c: m_locale = "ga_IE";break; // Irish - Ireland
+                case 0x0434: m_locale = "xh_ZA";break; // Xhosa - South Africa
+                case 0x0435: m_locale = "zu_ZA";break; // Zulu
+                case 0x0410: m_locale = "it_IT";break; // Italian - Italy
+                case 0x0810: m_locale = "it_CH";break; // Italian - Switzerland
+                case 0x0411: m_locale = "ja_JP";break; // Japanese
+                case 0x044b: m_locale = "kn_IN";break; // Kannada - India
+                case 0x043f: m_locale = "kk_KZ";break; // Kazakh
+                case 0x0457: m_locale = "kok_IN";break; // Konkani
+                case 0x0412: m_locale = "ko_KR";break; // Korean
+                case 0x0440: m_locale = "ky_KG";break; // Kyrgyz
+                case 0x0426: m_locale = "lv_LV";break; // Latvian
+                case 0x0427: m_locale = "lt_LT";break; // Lithuanian
+                case 0x046e: m_locale = "lb_LU";break; // Luxembourgish
+                case 0x042f: m_locale = "mk_MK";break; // FYRO Macedonian
+                case 0x043e: m_locale = "ms_MY";break; // Malay - Malaysia
+                case 0x083e: m_locale = "ms_BN";break; // Malay - Brunei
+                case 0x044c: m_locale = "ml_IN";break; // Malayalam - India
+                case 0x043a: m_locale = "mt_MT";break; // Maltese
+                case 0x0481: m_locale = "mi_NZ";break; // Maori
+                case 0x047a: m_locale = "arn_CL";break; // Mapudungun
+                case 0x044e: m_locale = "mr_IN";break; // Marathi
+                case 0x047c: m_locale = "moh_CA";break; // Mohawk - Canada
+                case 0x0450: m_locale = "mn_MN";break; // Mongolian
+                case 0x0461: m_locale = "ne_NP";break; // Nepali
+                case 0x0414: m_locale = "nb_NO";break; // Norwegian - Bokmal
+                case 0x0814: m_locale = "nn_NO";break; // Norwegian - Nynorsk
+                case 0x0482: m_locale = "oc_FR";break; // Occitan - France
+                case 0x0448: m_locale = "or_IN";break; // Oriya - India
+                case 0x0463: m_locale = "ps_AF";break; // Pashto - Afghanistan
+                case 0x0429: m_locale = "fa_IR";break; // Persian
+                case 0x0415: m_locale = "pl_PL";break; // Polish
+                case 0x0416: m_locale = "pt_BR";break; // Portuguese - Brazil
+                case 0x0816: m_locale = "pt_PT";break; // Portuguese - Portugal
+                case 0x0446: m_locale = "pa_IN";break; // Punjabi
+                case 0x046b: m_locale = "quz_BO";break; // Quechua (Bolivia)
+                case 0x086b: m_locale = "quz_EC";break; // Quechua (Ecuador)
+                case 0x0c6b: m_locale = "quz_PE";break; // Quechua (Peru)
+                case 0x0418: m_locale = "ro_RO";break; // Romanian - Romania
+                case 0x0417: m_locale = "rm_CH";break; // Raeto-Romanese
+                case 0x0419: m_locale = "ru_RU";break; // Russian
+                case 0x243b: m_locale = "smn_FI";break; // Sami Finland
+                case 0x103b: m_locale = "smj_NO";break; // Sami Norway
+                case 0x143b: m_locale = "smj_SE";break; // Sami Sweden
+                case 0x043b: m_locale = "se_NO";break; // Sami Northern Norway
+                case 0x083b: m_locale = "se_SE";break; // Sami Northern Sweden
+                case 0x0c3b: m_locale = "se_FI";break; // Sami Northern Finland
+                case 0x203b: m_locale = "sms_FI";break; // Sami Skolt
+                case 0x183b: m_locale = "sma_NO";break; // Sami Southern Norway
+                case 0x1c3b: m_locale = "sma_SE";break; // Sami Southern Sweden
+                case 0x044f: m_locale = "sa_IN";break; // Sanskrit
+                case 0x0c1a: m_locale = "sr_SP";break; // Serbian - Cyrillic
+                case 0x1c1a: m_locale = "sr_BA";break; // Serbian - Bosnia Cyrillic
+                case 0x081a: m_locale = "sr_SP";break; // Serbian - Latin
+                case 0x181a: m_locale = "sr_BA";break; // Serbian - Bosnia Latin
+                case 0x046c: m_locale = "ns_ZA";break; // Northern Sotho
+                case 0x0432: m_locale = "tn_ZA";break; // Setswana - Southern Africa
+                case 0x041b: m_locale = "sk_SK";break; // Slovak
+                case 0x0424: m_locale = "sl_SI";break; // Slovenian
+                case 0x040a: m_locale = "es_ES";break; // Spanish - Spain
+                case 0x080a: m_locale = "es_MX";break; // Spanish - Mexico
+                case 0x0c0a: m_locale = "es_ES";break; // Spanish - Spain (Modern)
+                case 0x100a: m_locale = "es_GT";break; // Spanish - Guatemala
+                case 0x140a: m_locale = "es_CR";break; // Spanish - Costa Rica
+                case 0x180a: m_locale = "es_PA";break; // Spanish - Panama
+                case 0x1c0a: m_locale = "es_DO";break; // Spanish - Dominican Republic
+                case 0x200a: m_locale = "es_VE";break; // Spanish - Venezuela
+                case 0x240a: m_locale = "es_CO";break; // Spanish - Colombia
+                case 0x280a: m_locale = "es_PE";break; // Spanish - Peru
+                case 0x2c0a: m_locale = "es_AR";break; // Spanish - Argentina
+                case 0x300a: m_locale = "es_EC";break; // Spanish - Ecuador
+                case 0x340a: m_locale = "es_CL";break; // Spanish - Chile
+                case 0x380a: m_locale = "es_UR";break; // Spanish - Uruguay
+                case 0x3c0a: m_locale = "es_PY";break; // Spanish - Paraguay
+                case 0x400a: m_locale = "es_BO";break; // Spanish - Bolivia
+                case 0x440a: m_locale = "es_SV";break; // Spanish - El Salvador
+                case 0x480a: m_locale = "es_HN";break; // Spanish - Honduras
+                case 0x4c0a: m_locale = "es_NI";break; // Spanish - Nicaragua
+                case 0x500a: m_locale = "es_PR";break; // Spanish - Puerto Rico
+                case 0x0441: m_locale = "sw_KE";break; // Swahili
+                case 0x041d: m_locale = "sv_SE";break; // Swedish - Sweden
+                case 0x081d: m_locale = "sv_FI";break; // Swedish - Finland
+                case 0x045a: m_locale = "syr_SY";break; // Syriac
+                case 0x0449: m_locale = "ta_IN";break; // Tamil
+                case 0x0444: m_locale = "tt_RU";break; // Tatar
+                case 0x044a: m_locale = "te_IN";break; // Telugu
+                case 0x041e: m_locale = "th_TH";break; // Thai
+                case 0x041f: m_locale = "tr_TR";break; // Turkish
+                case 0x0422: m_locale = "uk_UA";break; // Ukrainian
+                case 0x0420: m_locale = "ur_PK";break; // Urdu
+                case 0x0820: m_locale = "ur_IN";break; // Urdu - India
+                case 0x0443: m_locale = "uz_UZ";break; // Uzbek - Latin
+                case 0x0843: m_locale = "uz_UZ";break; // Uzbek - Cyrillic
+                case 0x042a: m_locale = "vi_VN";break; // Vietnamese
+                case 0x0452: m_locale = "cy_GB";break; // Welsh
+                default: m_locale = "en_US";
+            }
+        }
+        else m_locale = "en_US";
+#else
+        if(!(FXSystem::getEnvironment("LANG")).empty()) m_locale = FXSystem::getEnvironment("LANG");
+        else if(!(FXSystem::getEnvironment("LC_ALL")).empty()) m_locale = FXSystem::getEnvironment("LC_ALL");
+        else if(!(FXSystem::getEnvironment("LC_MESSAGES")).empty()) m_locale = FXSystem::getEnvironment("LC_MESSAGES");
+        else m_locale = "en_US";
+        if(m_locale == "C" || m_locale == "POSIX")
+        {
+            m_locale = "en_US";
+        }
+        m_locale = m_locale.before('.').before('@');
+#endif
+        return m_locale;
     }
 }

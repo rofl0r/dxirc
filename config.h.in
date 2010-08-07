@@ -69,6 +69,9 @@
    don't. */
 #undef HAVE_DECL__SNWPRINTF
 
+/* Build with spellchecking support by enchant */
+#undef HAVE_ENCHANT
+
 /* Define to 1 if you have the <fox-1.6/fx.h> header file. */
 #undef HAVE_FOX_1_6_FX_H
 
@@ -190,6 +193,9 @@
 
 /* Define to 1 if you have the `snprintf' function. */
 #undef HAVE_SNPRINTF
+
+/* namespace utils have spellchecking support */
+#undef HAVE_SPELLUTILS
 
 /* Define to 1 if you have the <stddef.h> header file. */
 #undef HAVE_STDDEF_H

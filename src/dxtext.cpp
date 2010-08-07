@@ -380,7 +380,7 @@ void dxText::removeLine(FXint line)
     styles.erase(line);
     nlines-=lines[line];
     lines.erase(line);
-    updateRange(FXMIN(0,line-1), FXMIN(contents.no()-1,line+1));
+    updateRange(FXMAX(0,line-1), FXMIN(contents.no()-1,line+1));
 }
 
 void dxText::removeLastLine()
@@ -684,6 +684,7 @@ void dxText::updateRange(FXint beg, FXint end) const
     if(end>=lines.no()) return;
     register FXint y, i, t;
     if(beg>end){t=beg;beg=end;end=t;}
+    if(beg<0) return;
     register FXint hh=font->getFontHeight();
     register FXint h=0;
     y = pos_y+margintop;

@@ -370,6 +370,8 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
 
     m_targetTrayColor.connect(m_trayColor);
 
+    m_targetUseSpell.connect(m_useSpell);
+
     getApp()->getNormalFont()->create();
     FXFontDesc fontdescription;
     getApp()->getNormalFont()->getFontDesc(fontdescription);
@@ -501,6 +503,9 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
 #ifdef HAVE_TRAY
     new FXCheckButton(otherpane, _("Use trayicon"), &m_trayTarget, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
     m_closeToTrayButton = new FXCheckButton(otherpane, _("Close button hides application"), &m_targetCloseToTray, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
+#endif
+#ifdef HAVE_ENCHANT
+    new FXCheckButton(otherpane, _("Use spellchecking"), &m_targetUseSpell, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
 #endif
     new FXCheckButton(otherpane, _("Special tab for server messages"), &m_serverTarget, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
     new FXCheckButton(otherpane, _("Logging chats"), &m_logTarget, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
@@ -2209,7 +2214,6 @@ void ConfigDialog::readConfig()
     m_themeCurrent.hilite = set.readColorEntry("SETTINGS", "hilitecolor", getApp()->getHiliteColor());
     m_themeCurrent.shadow = set.readColorEntry("SETTINGS", "shadowcolor", getApp()->getShadowColor());
     m_trayColor = set.readColorEntry("SETTINGS", "traycolor", m_themeCurrent.base);
-    m_usersShown = set.readBoolEntry("SETTINGS", "usersShown", TRUE);
     m_statusShown = set.readBoolEntry("SETTINGS", "statusShown", TRUE);
     m_tabPosition = set.readIntEntry("SETTINGS", "tabPosition", 0);
     m_commandsList = set.readStringEntry("SETTINGS", "commandsList");
@@ -2357,6 +2361,14 @@ void ConfigDialog::readConfig()
                 m_smileysMap.insert(StringPair(key, value));
         }
     }
+#ifdef HAVE_ENCHANT
+    if(utils::getLangsNum())
+        m_useSpell = set.readBoolEntry("SETTINGS", "useSpell", TRUE);
+    else
+        m_useSpell = FALSE;
+#else
+    m_useSpell = FALSE;
+#endif
 }
 
 void ConfigDialog::saveConfig()
@@ -2380,7 +2392,6 @@ void ConfigDialog::saveConfig()
             set.writeBoolEntry(FXStringFormat("SERVER%d", i).text(), "ssl", m_serverList[i].useSsl);
         }
     }
-    set.writeBoolEntry("SETTINGS", "usersShown", m_usersShown);
     set.writeBoolEntry("SETTINGS", "statusShown", m_statusShown);
     set.writeStringEntry("SETTINGS", "commandsList", m_commandsList.text());
     set.writeStringEntry("SETTINGS", "themePath", m_themePath.text());
@@ -2490,6 +2501,7 @@ void ConfigDialog::saveConfig()
             set.writeStringEntry("SMILEYS", FXStringFormat("path%d", i).text(), (*it).second.text());
         }
     }
+    set.writeBoolEntry("SETTINGS", "useSpell", m_useSpell);
     set.setModified();
     set.unparseFile(utils::getIniFile());
 }
