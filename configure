@@ -1414,10 +1414,10 @@ Optional Features:
                           specify multithreading API
   --disable-threads       build without multithread safety
   --disable-rpath         do not hardcode runtime library paths
-  --disable-tray          Disable trayicon
-  --disable-ssl           Disable Secure Sockets Layer support
-  --disable-lua           Disable Lua scripting
-  --disable-spellchecking Disable spellchecking support
+  --disable-tray          disable trayicon
+  --disable-ssl           disable Secure Sockets Layer support
+  --disable-lua           disable Lua scripting
+  --disable-enchant       disable spellchecking support
   --enable-debug          compile for debugging
   --enable-release        compile for release (advanced optimizations)
 
@@ -10556,13 +10556,13 @@ $as_echo "#define HAVE_DCGETTEXT 1" >>confdefs.h
 
 # Check whether --enable-tray was given.
 if test "${enable_tray+set}" = set; then :
-  enableval=$enable_tray;
+  enableval=$enable_tray; enable_tray="$enableval"
 else
-  enable_tray=yes
+  enable_tray="yes"
 fi
 
 
-if test "$enable_tray" = "yes"; then
+if test "x$enable_tray" = "xyes"; then
 
 $as_echo "#define HAVE_TRAY 1" >>confdefs.h
 
@@ -10587,13 +10587,13 @@ fi
 
 # Check whether --enable-ssl was given.
 if test "${enable_ssl+set}" = set; then :
-  enableval=$enable_ssl;
+  enableval=$enable_ssl; enable_ssl="$enableval"
 else
-  enable_ssl=yes
+  enable_ssl="yes"
 fi
 
 have_openssl=no
-if test "$enable_ssl" = "yes"; then
+if test "x$enable_ssl" = "xyes"; then
 
 
 
@@ -10855,13 +10855,13 @@ fi
 
 # Check whether --enable-lua was given.
 if test "${enable_lua+set}" = set; then :
-  enableval=$enable_lua;
+  enableval=$enable_lua; enable_lua="$enableval"
 else
-  enable_lua=yes
+  enable_lua="yes"
 fi
 
 have_lua=no
-if test "$enable_lua" = "yes"; then
+if test "x$enable_lua" = "xyes"; then
 
 pkg_failed=no
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for LUA" >&5
@@ -11694,13 +11694,13 @@ fi
 
 # Check whether --enable-enchant was given.
 if test "${enable_enchant+set}" = set; then :
-  enableval=$enable_enchant;
+  enableval=$enable_enchant; enable_enchant="$enableval"
 else
-  enable_enchant=yes
+  enable_enchant="yes"
 fi
 
 have_enchant=no
-if test "$enable_enchant" = "yes"; then
+if test "x$enable_enchant" = "xyes"; then
 
 pkg_failed=no
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ENCHANT" >&5

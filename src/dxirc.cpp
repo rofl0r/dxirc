@@ -232,13 +232,15 @@ dxirc::dxirc(FXApp *app)
     m_users = new FXMenuCheck(m_editmenu, _("Users list\tCtrl-U\tShow/Hide users list"), this, ID_USERS);
     m_users->setCheck(m_usersShown);
 #ifdef HAVE_ENCHANT
+    m_spellCombo = new FXMenuCheck(m_editmenu, _("Spellchecking language list\tCtrl-P\tShow/Hide spellchecking language list"), this, ID_SPELL);
     if(utils::getLangsNum())
-    {
         m_showSpellCombo = utils::getBoolIniEntry("SETTINGS", "showSpellCombo", FALSE);
-        m_spellCombo = new FXMenuCheck(m_editmenu, _("Spellchecking language list\tCtrl-P\tShow/Hide spellchecking language list"), this, ID_SPELL);
-        m_spellCombo->setCheck(m_showSpellCombo);
+    else
+    {
+        m_showSpellCombo = FALSE;
+        m_spellCombo->disable();
     }
-    else m_showSpellCombo = FALSE;
+    m_spellCombo->setCheck(m_showSpellCombo);
 #endif
     m_status = new FXMenuCheck(m_editmenu, _("Status bar"), this, ID_STATUS);
     m_status->setCheck(m_statusShown);
@@ -886,8 +888,10 @@ long dxirc::onCmdOptions(FXObject*, FXSelector, void*)
         readConfig();
         if(m_logging) m_logviewer->enable();
         else m_logviewer->disable();
+#ifdef HAVE_ENCHANT
         if(m_useSpell) m_spellCombo->enable();
         else m_spellCombo->disable();
+#endif
         m_ircFont->getFontDesc(newdescr);
         if(olddescr.encoding!=newdescr.encoding || olddescr.flags!=newdescr.flags ||
                 olddescr.setwidth!=newdescr.setwidth || olddescr.size!=newdescr.size ||
@@ -4343,7 +4347,7 @@ int dxirc::onLuaGetTabInfo(lua_State *lua)
     else id = -1;
     if(_pThis->m_tabbook->numChildren() && _pThis->isIdIrcTabItem(id))
     {
-		IrcTabItem *tab = NULL;
+        IrcTabItem *tab = NULL;
         for(FXint i = 0; i<_pThis->m_tabbook->numChildren(); i+=2)
         {
             if(_pThis->m_tabbook->childAtIndex(i)->getMetaClass()==&IrcTabItem::metaClass)

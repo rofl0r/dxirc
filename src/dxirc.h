@@ -166,7 +166,10 @@ class dxirc: public FXMainWindow
         FXMenuBar *m_menubar;
         FXMenuPane *m_servermenu, *m_helpmenu, *m_editmenu;
         FXMenuCommand *m_disconnect, *m_closeTab, *m_clearTab, *m_clearTabs, *m_logviewer;
-        FXMenuCheck *m_users, *m_status, *m_spellCombo;
+        FXMenuCheck *m_users, *m_status;
+#ifdef HAVE_ENCHANT
+        FXMenuCheck *m_spellCombo;
+#endif
         FXHorizontalFrame *m_statusbar;
         FXLabel *m_statuslabel;
         FXVerticalFrame *m_mainframe;
