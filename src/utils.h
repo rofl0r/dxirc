@@ -120,6 +120,7 @@ namespace utils
     dxStringArray getLangs();
     FXString getDefaultLang();
     FXString getLocale();
+    FXString getChannelLang(FXString channel);
 }
 
 

@@ -14,7 +14,7 @@ dxirc_SOURCES = configdialog.cpp \
                   tetristabitem.cpp \
                   scriptdialog.cpp \
                   dccdialog.cpp \
-		  dxtabbook.cpp \
+                  dxtabbook.cpp \
                   dxtextfield.cpp \
                   dxtext.cpp
 

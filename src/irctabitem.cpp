@@ -208,8 +208,11 @@ IrcTabItem::IrcTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *icon, FX
     if(m_sameCmd) m_commandline->setFont(font);
     m_commandline->setUseSpell(m_useSpell);
     m_spellLangs = new FXComboBox(m_commandframe, 6, this, ID_SPELL, COMBOBOX_STATIC);
+    m_spellLangs->setTipText(_("Spellchecking language list"));
     dxStringArray langs = utils::getLangs();
-    FXString lang = utils::getDefaultLang();
+    FXString lang;
+    if(m_type == CHANNEL) lang = utils::getChannelLang(getText());
+    else lang = utils::getDefaultLang();
     FXint index = 0;
     for(FXint i=0; i<langs.no(); i++)
     {
@@ -303,6 +306,14 @@ void IrcTabItem::clearChat()
 void IrcTabItem::makeLastRowVisible()
 {
     m_text->makeLastRowVisible(TRUE);
+}
+
+FXString IrcTabItem::getSpellLang()
+{
+#ifdef HAVE_ENCHANT
+    if(m_spellLangs->getNumItems()) return m_spellLangs->getItemText(m_spellLangs->getCurrentItem());
+#endif
+    return "";
 }
 
 void IrcTabItem::reparentTab()
@@ -481,11 +492,15 @@ void IrcTabItem::setIrcFont(FXFont *fnt)
     {
         m_commandline->setFont(fnt);
         m_commandline->recalc();
+        m_spellLangs->setFont(fnt);
+        m_spellLangs->recalc();
     }
     else
     {
         m_commandline->setFont(getApp()->getNormalFont());
         m_commandline->recalc();
+        m_spellLangs->setFont(getApp()->getNormalFont());
+        m_spellLangs->recalc();
     }
     if(m_sameList && m_users->getFont() != fnt)
     {

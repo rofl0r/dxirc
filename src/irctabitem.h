@@ -141,6 +141,7 @@ class IrcTabItem: public FXTabItem
         void setShowSpellCombo(FXbool showSpellCombo);
         void removeSmileys();
         void makeLastRowVisible();
+        FXString getSpellLang();
 
         long onCommandline(FXObject *, FXSelector, void*);
         long onKeyPress(FXObject *, FXSelector, void*);

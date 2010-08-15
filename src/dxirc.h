@@ -216,6 +216,7 @@ class dxirc: public FXMainWindow
         void readServersConfig();
         void readConfig();
         void saveConfig();
+        void saveLangs();
         void updateMenus();
         void updateTheme();
         void updateTrayColor();

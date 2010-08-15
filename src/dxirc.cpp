@@ -234,7 +234,7 @@ dxirc::dxirc(FXApp *app)
 #ifdef HAVE_ENCHANT
     m_spellCombo = new FXMenuCheck(m_editmenu, _("Spellchecking language list\tCtrl-P\tShow/Hide spellchecking language list"), this, ID_SPELL);
     if(utils::getLangsNum())
-        m_showSpellCombo = utils::getBoolIniEntry("SETTINGS", "showSpellCombo", FALSE);
+        m_showSpellCombo = utils::getBoolIniEntry("SETTINGS", "showSpellCombo", TRUE);
     else
     {
         m_showSpellCombo = FALSE;
@@ -764,8 +764,24 @@ void dxirc::saveConfig()
     set.unparseFile(utils::getIniFile());
 }
 
+void dxirc::saveLangs()
+{
+    m_app->reg().setModified(FALSE);
+    FXSettings set;
+    for(FXint i = 0; i<m_tabbook->numChildren(); i+=2)
+    {
+        if(m_tabbook->childAtIndex(i)->getMetaClass()==&IrcTabItem::metaClass
+                && static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))->getType()==CHANNEL)
+        {
+            set.writeStringEntry("LANGS", static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))->getText().prepend('_').text(), static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))->getSpellLang().text());
+        }
+    }
+    set.unparseFile(FXPath::directory(utils::getIniFile()).append(PATHSEPSTRING "langs"));
+}
+
 long dxirc::onCmdQuit(FXObject*, FXSelector, void*)
 {
+    saveLangs();
     while(m_servers.no())
     {
         if(m_servers[0]->getConnected()) m_servers[0]->disconnect();

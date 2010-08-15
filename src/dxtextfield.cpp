@@ -1363,17 +1363,16 @@ void dxTextField::drawSpellLine(FXDCWindow& dc, FXint x, FXint y, FXint w){
   register FXint step=2;
   register FXint xx=x;
   register FXint yy=y;
-  register FXbool down=TRUE;
+  register FXbool down=FALSE;
   while(xx+step<=x+w){
-    if(down) {dc.drawLine(xx,yy,xx+step,yy+step);yy+=step;down=FALSE;}
-    else {dc.drawLine(xx,yy,xx+step,yy-step);yy-=step;down=TRUE;}
+    if(down) {dc.drawLine(xx,yy,xx+step,yy);yy--;down=FALSE;}
+    else {dc.drawLine(xx,yy,xx+step,yy);yy++;down=TRUE;}
     xx+=step;
   }
   //draw rest
   if(xx<x+w){
       step=x+w-xx;
-      if(down) dc.drawLine(xx,yy,xx+step,yy+step);
-      else dc.drawLine(xx,yy,xx+step,yy-step);
+      dc.drawLine(xx,yy,xx+step,yy);
   }
   }
 
