@@ -900,6 +900,7 @@ long dxirc::onCmdOptions(FXObject*, FXSelector, void*)
     ConfigDialog dialog(this);
     if(dialog.execute(PLACEMENT_CURSOR))
     {
+        saveLangs(); //need current state of spell langs for update
         FXbool recreateSmileys = FALSE;
         readConfig();
         if(m_logging) m_logviewer->enable();

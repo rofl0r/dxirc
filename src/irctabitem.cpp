@@ -206,25 +206,23 @@ IrcTabItem::IrcTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *icon, FX
     m_commandframe = new FXHorizontalFrame(m_mainframe, LAYOUT_FILL_X, 0,0,0,0, 0,0,0,0);
     m_commandline = new dxTextField(m_commandframe, 25, this, ID_COMMANDLINE, TEXTFIELD_ENTER_ONLY|FRAME_SUNKEN|JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_BOTTOM, 0, 0, 0, 0, 1, 1, 1, 1);
     if(m_sameCmd) m_commandline->setFont(font);
-    m_commandline->setUseSpell(m_useSpell);
     m_spellLangs = new FXComboBox(m_commandframe, 6, this, ID_SPELL, COMBOBOX_STATIC);
     m_spellLangs->setTipText(_("Spellchecking language list"));
-    dxStringArray langs = utils::getLangs();
-    FXString lang;
-    if(m_type == CHANNEL) lang = utils::getChannelLang(getText());
-    else lang = utils::getDefaultLang();
-    FXint index = 0;
-    for(FXint i=0; i<langs.no(); i++)
-    {
-        m_spellLangs->appendItem(langs[i]);
-        if(langs[i]==lang) index=i;
-    }
+    m_spellLangs->hide();
     if(m_sameCmd) m_spellLangs->setFont(font);
-    if(!m_showSpellCombo || !langs.no()) m_spellLangs->hide();
-    if(langs.no())
+    if(m_useSpell && (m_type==CHANNEL || m_type==QUERY || m_type==DCCCHAT) && utils::getLangsNum())
     {
+        dxStringArray langs = utils::getLangs();
+        FXString lang = utils::getChannelLang(getText());
+        for(FXint i=0; i<langs.no(); i++)
+        {
+            m_spellLangs->appendItem(langs[i]);
+            if(langs[i]==lang) m_spellLangs->setCurrentItem(i);;
+        }
+        if(m_showSpellCombo) m_spellLangs->show();
+        m_commandline->setUseSpell(TRUE);
         m_commandline->setLanguage(lang);
-        m_spellLangs->setCurrentItem(index);
+        m_commandline->setTipText(FXStringFormat(_("Current spellchecking language: %s"),lang.text()));
     }
     
     dxHiliteStyle style = {m_colors.text,m_colors.back,getApp()->getSelforeColor(),getApp()->getSelbackColor(),0,FALSE};
@@ -377,6 +375,26 @@ void IrcTabItem::setType(const TYPE &typ, const FXString &tabtext)
     if(m_type == SERVER) this->setIcon(ICO_SERVER);
     else if(m_type == CHANNEL) this->setIcon(ICO_CHANNEL);
     else this->setIcon(ICO_QUERY);
+    if(m_useSpell && (m_type==CHANNEL || m_type==QUERY) && utils::getLangsNum())
+    {
+        dxStringArray langs = utils::getLangs();
+        FXString lang = utils::getChannelLang(getText());
+        for(FXint i=0; i<langs.no(); i++)
+        {
+            m_spellLangs->appendItem(langs[i]);
+            if(langs[i]==lang) m_spellLangs->setCurrentItem(i);;
+        }
+        if(m_showSpellCombo) m_spellLangs->show();
+        m_commandline->setUseSpell(TRUE);
+        m_commandline->setLanguage(lang);
+        m_commandline->setTipText(FXStringFormat(_("Current spellchecking language: %s"),lang.text()));
+    }
+    else
+    {
+        m_commandline->setUseSpell(FALSE);
+        m_commandline->setTipText("");
+        m_spellLangs->hide();
+    }
 }
 
 void IrcTabItem::setColor(IrcColor clrs)
@@ -542,9 +560,26 @@ void IrcTabItem::setSmileys(FXbool smiley, dxSmileyArray nsmileys)
 void IrcTabItem::setUseSpell(FXbool useSpell)
 {
     m_useSpell = useSpell;
-    m_commandline->setUseSpell(m_useSpell);
-    if(!m_useSpell) m_spellLangs->hide();
-    if(m_useSpell && m_showSpellCombo) m_spellLangs->show();
+    if(m_useSpell && (m_type==CHANNEL || m_type==QUERY || m_type==DCCCHAT) && utils::getLangsNum())
+    {
+        dxStringArray langs = utils::getLangs();
+        FXString lang = utils::getChannelLang(getText());
+        for(FXint i=0; i<langs.no(); i++)
+        {
+            m_spellLangs->appendItem(langs[i]);
+            if(langs[i]==lang) m_spellLangs->setCurrentItem(i);;
+        }
+        if(m_showSpellCombo) m_spellLangs->show();
+        m_commandline->setUseSpell(TRUE);
+        m_commandline->setLanguage(lang);
+        m_commandline->setTipText(FXStringFormat(_("Current spellchecking language: %s"),lang.text()));
+    }
+    else
+    {
+        m_commandline->setUseSpell(FALSE);
+        m_commandline->setTipText("");
+        m_spellLangs->hide();
+    }
     m_commandframe->recalc();
 }
 
@@ -4485,6 +4520,7 @@ long IrcTabItem::onRemoveAway(FXObject*, FXSelector, void*)
 long IrcTabItem::onSpellLang(FXObject*, FXSelector, void*)
 {
     m_commandline->setLanguage(m_spellLangs->getItemText(m_spellLangs->getCurrentItem()));
+    m_commandline->setTipText(FXStringFormat(_("Current spellchecking language: %s"),m_spellLangs->getItemText(m_spellLangs->getCurrentItem()).text()));
     return 1;
 }
 

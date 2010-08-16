@@ -46,7 +46,6 @@
 #include "config.h"
 #ifdef HAVE_SPELLUTILS
 #include "utils.h"
-#include "i18n.h"
 #endif
 
 
@@ -518,21 +517,10 @@ long dxTextField::onCmdGetTip(FXObject*,FXSelector,void* ptr){
 // We were asked about tip text
 long dxTextField::onQueryTip(FXObject* sender,FXSelector sel,void* ptr){
   if(FXWindow::onQueryTip(sender,sel,ptr)) return 1;
-#ifdef HAVE_SPELLUTILS
-  if(useSpell && !spellLang.empty()){
-      FXString string = FXStringFormat(_("Current spellchecking language: %s"), spellLang.text());
-      sender->handle(this,FXSEL(SEL_COMMAND,ID_SETSTRINGVALUE),(void*)&string);
-      return 1;
-  }
-  else
-#else
-  {
   if((flags&FLAG_TIP) && !tip.empty()){
     sender->handle(this,FXSEL(SEL_COMMAND,ID_SETSTRINGVALUE),(void*)&tip);
     return 1;
     }
-  }
-#endif
   return 0;
   }
 
@@ -1365,8 +1353,8 @@ void dxTextField::drawSpellLine(FXDCWindow& dc, FXint x, FXint y, FXint w){
   register FXint yy=y;
   register FXbool down=FALSE;
   while(xx+step<=x+w){
-    if(down) {dc.drawLine(xx,yy,xx+step,yy);yy--;down=FALSE;}
-    else {dc.drawLine(xx,yy,xx+step,yy);yy++;down=TRUE;}
+    if(down) {dc.drawLine(xx,yy,xx+step-1,yy);yy--;down=FALSE;}
+    else {dc.drawLine(xx,yy,xx+step-1,yy);yy++;down=TRUE;}
     xx+=step;
   }
   //draw rest
