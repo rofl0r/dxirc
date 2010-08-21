@@ -91,7 +91,7 @@ class IrcSocket: public FXObject
         FXString getNickName() const { return m_nickName; }
         void setUserName(const FXString &user);
         void setRealName(const FXString &realname) { m_realName = realname; }
-        void setStartChannels(const FXString &channels) { m_startChannels = utils::removeSpaces(channels); }
+        void setStartChannels(const FXString &channels) { m_startChannels = utils::instance().removeSpaces(channels); }
         void setStartCommands(const FXString &commands) { m_startCommands = commands; }
         void setUsersList(const dxIgnoreUserArray &userslist) { m_usersList = userslist; }
         dxIgnoreUserArray getUsersList() { return m_usersList; }

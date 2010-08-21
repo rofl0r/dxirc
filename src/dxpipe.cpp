@@ -110,8 +110,8 @@ int dxPipe::readData()
     if (size > 0)
     {
         buffer[size] = '\0';
-        if (utils::isUtf8(buffer, size)) data.append(buffer);
-        else data.append(utils::localeToUtf8(buffer));
+        if (utils::instance().isUtf8(buffer, size)) data.append(buffer);
+        else data.append(utils::instance().localeToUtf8(buffer));
         if(!data.contains('\n'))
         {
             m_target->handle(this, FXSEL(SEL_COMMAND, ID_PIPE), &data);

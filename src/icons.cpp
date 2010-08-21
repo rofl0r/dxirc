@@ -519,7 +519,7 @@ FXbool makeAllIcons(FXApp *app, const FXString &iniFile, const FXString &datadir
     FXString flagpath = datadir+PATHSEPSTRING+"icons"+PATHSEPSTRING+"flags";
     FXSettings set;
     set.parseFile(iniFile, TRUE);
-    FXString themepath = utils::checkThemePath(set.readStringEntry("SETTINGS", "themePath", DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "default"));
+    FXString themepath = utils::instance().checkThemePath(set.readStringEntry("SETTINGS", "themePath", DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "default"));
     menuColor = set.readColorEntry("SETTINGS", "basecolor", app->getBaseColor());
     textBackColor = set.readColorEntry("SETTINGS", "textBackColor", FXRGB(255,255,255));
 

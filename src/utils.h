@@ -20,7 +20,7 @@
  */
 
 #ifndef UTILS_H
-#define	UTILS_H
+#define UTILS_H
 
 #ifdef WIN32
  #define WIN32_LEAN_AND_MEAN
@@ -69,10 +69,40 @@
 #include <FXCP874Codec.h>
 #include <FXKOI8RCodec.h>
 #include <FXUTF8Codec.h>
-
-namespace utils
+#include "config.h"
+#include "i18n.h"
+#ifdef HAVE_ENCHANT
+namespace enchant 
 {
+    class Dict;
+}
+typedef std::map<FXString, enchant::Dict*> Checkers;
+#endif
+
+class utils
+{
+private:
+    utils();
+
+    FXTextCodec *m_lcodec;
+    FXString m_iniFile;
+    FXString m_locale;
+    dxStringMap m_aliases;
+    dxStringArray m_commands;
+    dxStringArray m_spellLang;
+    dxScriptCommandsArray m_scriptCommands;
+#ifdef HAVE_ENCHANT
+    Checkers m_checkers;
+#endif
+
+    void fillCommands();
     FXTextCodec* getCodec();
+    FXString getLocale();
+    FXString getDefaultLang();
+public:
+    virtual ~utils();
+
+    static utils &instance();
     FXString localeToUtf8(const FXchar *buffer);
     FXString localeToUtf8(const FXString &text);
     void setIniFile(const FXString &file);
@@ -113,16 +143,12 @@ namespace utils
     void playFile(const FXString&);
     void debugLine(const FXString&);
     FXbool checkWord(FXString word, FXString lang);
-    FXbool addLang(FXString lang);
-    void clearSpellCheckers();
     void setLangs();
     FXint getLangsNum();
     dxStringArray getLangs();
-    FXString getDefaultLang();
-    FXString getLocale();
     FXString getChannelLang(FXString channel);
-}
+};
 
 
-#endif	/* UTILS_H */
+#endif  /* UTILS_H */
 

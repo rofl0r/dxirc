@@ -2329,7 +2329,7 @@ void dxTextField::updateStyle() {
         {
             start=wordStart(i);
             end=wordEnd(i);
-            if(start<end-1 && !utils::checkWord(contents.mid(start,end-start).text(),spellLang))
+            if(start<end-1 && !utils::instance().checkWord(contents.mid(start,end-start).text(),spellLang))
             {
                 for(FXint j=start; j<end; j++)
                 {

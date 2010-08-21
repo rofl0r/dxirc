@@ -261,9 +261,9 @@ void DccDialog::updateTable()
             }
         }
         m_table->setItemText(i, 0, m_irc->m_dccfilesList[i].path.rafter(PATHSEP));
-        m_table->setItemText(i, 1, utils::getFileSize(m_irc->m_dccfilesList[i].size));
+        m_table->setItemText(i, 1, utils::instance().getFileSize(m_irc->m_dccfilesList[i].size));
         if(m_irc->m_dccfilesList[i].currentPosition < m_irc->m_dccfilesList[i].size)
-            m_table->setItemText(i, 2, utils::getFileSize(m_irc->m_dccfilesList[i].currentPosition));
+            m_table->setItemText(i, 2, utils::instance().getFileSize(m_irc->m_dccfilesList[i].currentPosition));
         else
             m_table->setItemText(i, 2, "--:--");
         if(m_irc->m_dccfilesList[i].currentPosition >= m_irc->m_dccfilesList[i].size || m_irc->m_dccfilesList[i].canceled)
@@ -280,8 +280,8 @@ void DccDialog::updateTable()
             }
             else
             {
-                m_table->setItemText(i, 3, utils::getSpeed(m_irc->m_dccfilesList[i].currentPosition-m_irc->m_dccfilesList[i].previousPostion));
-                m_table->setItemText(i, 4, utils::getRemaining(m_irc->m_dccfilesList[i].size-m_irc->m_dccfilesList[i].currentPosition, m_irc->m_dccfilesList[i].currentPosition-m_irc->m_dccfilesList[i].previousPostion));
+                m_table->setItemText(i, 3, utils::instance().getSpeed(m_irc->m_dccfilesList[i].currentPosition-m_irc->m_dccfilesList[i].previousPostion));
+                m_table->setItemText(i, 4, utils::instance().getRemaining(m_irc->m_dccfilesList[i].size-m_irc->m_dccfilesList[i].currentPosition, m_irc->m_dccfilesList[i].currentPosition-m_irc->m_dccfilesList[i].previousPostion));
             }
         }
     }

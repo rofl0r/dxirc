@@ -40,7 +40,7 @@ FXIMPLEMENT(AliasDialog, FXDialogBox, AliasDialogMap, ARRAYNUMBER(AliasDialogMap
 AliasDialog::AliasDialog(FXMainWindow *owner)
         : FXDialogBox(owner, _("Aliases list"), DECOR_TITLE|DECOR_BORDER|DECOR_RESIZE, 0,0,0,0, 0,0,0,0, 0,0)
 {
-    m_aliases = utils::getAliases();
+    m_aliases = utils::instance().getAliases();
 
     m_contents = new FXVerticalFrame(this, LAYOUT_FILL_X|LAYOUT_FILL_Y);
 
@@ -174,7 +174,7 @@ long AliasDialog::onCancel(FXObject*, FXSelector, void*)
 
 long AliasDialog::onSaveClose(FXObject*, FXSelector, void*)
 {
-    utils::setAliases(m_aliases);
+    utils::instance().setAliases(m_aliases);
     getApp()->stopModal(this,TRUE);
     hide();
     return 1;
@@ -220,6 +220,6 @@ FXbool AliasDialog::commandExist(const FXString &command)
     {
         if(!comparecase((*it).first, command)) return TRUE;
     }
-    if(utils::isCommand(command[0]=='/' ? command.after('/') : command)) return TRUE;
+    if(utils::instance().isCommand(command[0]=='/' ? command.after('/') : command)) return TRUE;
     return FALSE;
 }

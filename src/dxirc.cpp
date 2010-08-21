@@ -71,7 +71,7 @@ public:
         bindtextdomain(PACKAGE, LOCALEDIR);
         bind_textdomain_codeset(PACKAGE, "UTF-8");
         textdomain(PACKAGE);
-        utils::debugLine(FXStringFormat("localedir: %s", LOCALEDIR));
+        utils::instance().debugLine(FXStringFormat("localedir: %s", LOCALEDIR));
     };
 #else
 public:
@@ -84,7 +84,7 @@ public:
         bindtextdomain(PACKAGE, LOCALEDIR);
         bind_textdomain_codeset(PACKAGE, "UTF-8");
         textdomain(PACKAGE);
-        utils::debugLine(FXStringFormat("localedir: %s", LOCALEDIR));
+        utils::instance().debugLine(FXStringFormat("localedir: %s", LOCALEDIR));
     };
 #endif
 
@@ -229,13 +229,13 @@ dxirc::dxirc(FXApp *app)
     m_clearTab = new FXMenuCommand(m_editmenu, _("Clear window\tCtrl-L"), ICO_CLEAR, this, ID_CLEAR);
     m_clearTabs = new FXMenuCommand(m_editmenu, _("Clear all windows\tCtrl-Shift-L"), NULL, this, ID_CLEARALL);
     new FXMenuSeparator(m_editmenu);
-    m_usersShown = utils::getBoolIniEntry("SETTINGS", "usersShown", TRUE);
+    m_usersShown = utils::instance().getBoolIniEntry("SETTINGS", "usersShown", TRUE);
     m_users = new FXMenuCheck(m_editmenu, _("Users list\tCtrl-U\tShow/Hide users list"), this, ID_USERS);
     m_users->setCheck(m_usersShown);
 #ifdef HAVE_ENCHANT
     m_spellCombo = new FXMenuCheck(m_editmenu, _("Spellchecking language list\tCtrl-P\tShow/Hide spellchecking language list"), this, ID_SPELL);
-    if(utils::getLangsNum())
-        m_showSpellCombo = utils::getBoolIniEntry("SETTINGS", "showSpellCombo", TRUE);
+    if(utils::instance().getLangsNum())
+        m_showSpellCombo = utils::instance().getBoolIniEntry("SETTINGS", "showSpellCombo", TRUE);
     else
     {
         m_showSpellCombo = FALSE;
@@ -380,7 +380,6 @@ dxirc::~dxirc()
     }
 #endif
     delete m_ircFont;
-    utils::clearSpellCheckers();
     _pThis = NULL;
 }
 
@@ -388,7 +387,7 @@ void dxirc::create()
 {
     FXMainWindow::create();
     createIrcTab("(server)", ICO_SERVER, SERVER, m_servers[0]);
-    FXbool maximized = utils::getBoolIniEntry("SETTINGS", "maximized", FALSE);
+    FXbool maximized = utils::instance().getBoolIniEntry("SETTINGS", "maximized", FALSE);
     if(maximized) maximize();
     //Checking for screen resolution and correction size, position
     else
@@ -448,7 +447,7 @@ void dxirc::readConfig()
 {
     FXString ircfontspec;
     FXSettings set;
-    set.parseFile(utils::getIniFile(), TRUE);
+    set.parseFile(utils::instance().getIniFile(), TRUE);
     FXint xx=set.readIntEntry("SETTINGS","x",50);
     FXint yy=set.readIntEntry("SETTINGS","y",50);
     FXint ww=set.readIntEntry("SETTINGS","w",400);
@@ -470,8 +469,8 @@ void dxirc::readConfig()
     m_statusShown = set.readBoolEntry("SETTINGS", "statusShown", TRUE);
     m_tabPosition = set.readIntEntry("SETTINGS", "tabPosition", 0);
     m_commandsList = set.readStringEntry("SETTINGS", "commandsList");
-    m_themePath = utils::checkThemePath(set.readStringEntry("SETTINGS", "themePath", DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "default"));
-    m_themesList = utils::checkThemesList(set.readStringEntry("SETTINGS", "themesList", FXString(m_themePath+";").text()));
+    m_themePath = utils::instance().checkThemePath(set.readStringEntry("SETTINGS", "themePath", DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "default"));
+    m_themesList = utils::instance().checkThemesList(set.readStringEntry("SETTINGS", "themesList", FXString(m_themePath+";").text()));
     m_colors.text = set.readColorEntry("SETTINGS", "textColor", FXRGB(255,255,255));
     m_colors.back = set.readColorEntry("SETTINGS", "textBackColor", FXRGB(0,0,0));
     m_colors.user = set.readColorEntry("SETTINGS", "userColor", FXRGB(191,191,191));
@@ -554,7 +553,7 @@ void dxirc::readConfig()
     m_autoload = FALSE;
 #endif
     m_autoloadPath = set.readStringEntry("SETTINGS", "autoloadPath");
-    if(m_autoload && !FXStat::exists(utils::isUtf8(m_autoloadPath.text(), m_autoloadPath.length()) ? m_autoloadPath : utils::localeToUtf8(m_autoloadPath))) m_autoload = FALSE;
+    if(m_autoload && !FXStat::exists(utils::instance().isUtf8(m_autoloadPath.text(), m_autoloadPath.length()) ? m_autoloadPath : utils::instance().localeToUtf8(m_autoloadPath))) m_autoload = FALSE;
     m_dccIP = set.readStringEntry("SETTINGS", "dccIP");
     FXRex rex("\\l");
     if(m_dccIP.contains('.')!=3 || rex.match(m_dccIP))
@@ -586,7 +585,7 @@ void dxirc::readConfig()
         }
     }
 #ifdef HAVE_ENCHANT
-    if(utils::getLangsNum())
+    if(utils::instance().getLangsNum())
         m_useSpell = set.readBoolEntry("SETTINGS", "useSpell", TRUE);
     else
         m_useSpell = FALSE;
@@ -602,7 +601,7 @@ void dxirc::readConfig()
 void dxirc::readServersConfig()
 {
     FXSettings set;
-    set.parseFile(utils::getIniFile(), TRUE);
+    set.parseFile(utils::instance().getIniFile(), TRUE);
     FXint serversNum = set.readIntEntry("SERVERS", "number", 0);
     if(serversNum)
     {
@@ -613,7 +612,7 @@ void dxirc::readServersConfig()
             server.port = set.readIntEntry(FXStringFormat("SERVER%d", i).text(), "port", 6667);
             server.nick = set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "nick", "xxx");
             server.realname = set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "realname", "xxx");
-            server.passwd = utils::decrypt(set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "hes", ""));
+            server.passwd = utils::instance().decrypt(set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "hes", ""));
             server.channels = set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "channels", "");
             server.commands = set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "commands", "");
             server.autoConnect = set.readBoolEntry(FXStringFormat("SERVER%d", i).text(), "autoconnect", FALSE);
@@ -641,7 +640,7 @@ void dxirc::saveConfig()
             set.writeIntEntry(FXStringFormat("SERVER%d", i).text(), "port", m_serverList[i].port);
             set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "nick", m_serverList[i].nick.text());
             set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "realname", m_serverList[i].realname.text());
-            set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "hes", utils::encrypt(m_serverList[i].passwd).text());
+            set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "hes", utils::instance().encrypt(m_serverList[i].passwd).text());
             set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "channels", m_serverList[i].channels.text());
             set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "commands", m_serverList[i].commands.text());
             set.writeBoolEntry(FXStringFormat("SERVER%d", i).text(), "autoconnect", m_serverList[i].autoConnect);
@@ -719,7 +718,7 @@ void dxirc::saveConfig()
     set.writeColorEntry("SETTINGS", "selmenubackcolor", m_appTheme.menuback);
     set.writeColorEntry("SETTINGS", "traycolor", m_trayColor);
     set.writeStringEntry("SETTINGS", "normalfont", m_app->getNormalFont()->getFont().text());
-    dxStringMap aliases = utils::getAliases();
+    dxStringMap aliases = utils::instance().getAliases();
     set.writeIntEntry("ALIASES", "number", (FXint)aliases.size());
     if((FXint)aliases.size())
     {
@@ -762,7 +761,7 @@ void dxirc::saveConfig()
     set.writeBoolEntry("SETTINGS", "useSpell", m_useSpell);
     set.writeBoolEntry("SETTINGS", "showSpellCombo", m_showSpellCombo);
     set.setModified();
-    set.unparseFile(utils::getIniFile());
+    set.unparseFile(utils::instance().getIniFile());
 }
 
 void dxirc::saveLangs()
@@ -777,7 +776,7 @@ void dxirc::saveLangs()
             set.writeStringEntry("LANGS", static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))->getText().prepend('_').text(), static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))->getSpellLang().text());
         }
     }
-    set.unparseFile(FXPath::directory(utils::getIniFile()).append(PATHSEPSTRING "langs"));
+    set.unparseFile(FXPath::directory(utils::instance().getIniFile()).append(PATHSEPSTRING "langs"));
 }
 
 long dxirc::onCmdQuit(FXObject*, FXSelector, void*)
@@ -1477,7 +1476,7 @@ long dxirc::onCmdDccCancel(FXObject*, FXSelector, void *ptr)
 
 long dxirc::onCmdServers(FXObject*, FXSelector, void*)
 {
-    utils::debugLine("OnCommandServers");
+    utils::instance().debugLine("OnCommandServers");
     ServerDialog *dialog = new ServerDialog(this, m_serverList);
     if (dialog->execute(PLACEMENT_OWNER))
     {
@@ -1557,7 +1556,7 @@ long dxirc::onTabConnect(FXObject*, FXSelector, void *data)
 
 void dxirc::connectServer(FXString hostname, FXint port, FXString pass, FXString nick, FXString rname, FXString channels, FXString commands, FXbool ssl, DCCTYPE dccType, FXString dccNick, IrcSocket *dccParent, DccFile dccFile)
 {
-    utils::debugLine("ConnectServer");
+    utils::instance().debugLine("ConnectServer");
     FXbool dcc = (dccType == DCC_CHATIN || dccType == DCC_CHATOUT);
     if(m_servers.no() == 1 && !m_servers[0]->getConnected() && !m_servers[0]->getConnecting())
     {
@@ -1883,7 +1882,7 @@ void dxirc::onIrcQuery(IrcSocket *server, IrcEvent *ev)
 void dxirc::onIrcPart(IrcSocket *server, IrcEvent *ev)
 {
     if(isFriend(ev->param1, ev->param2, server->getServerName()) && m_sounds && m_soundDisconnect)
-        utils::playFile(m_pathDisconnect);
+        utils::instance().playFile(m_pathDisconnect);
     if(tabExist(server, ev->param2))
     {
         if(ev->param1 == server->getNickName())
@@ -2039,7 +2038,7 @@ void dxirc::onIrcPrivmsgAndAction(IrcSocket *server, IrcEvent *ev)
 void dxirc::onIrcJoin(IrcSocket *server, IrcEvent *ev)
 {
     if(isFriend(ev->param1, ev->param2, server->getServerName()) && m_sounds && m_soundConnect)
-        utils::playFile(m_pathConnect);
+        utils::instance().playFile(m_pathConnect);
 #ifdef HAVE_LUA
     if(server->isUserIgnored(ev->param1, ev->param2)) return;
     if(!m_scripts.no() || !m_scriptEvents.no()) return;
@@ -2076,7 +2075,7 @@ void dxirc::onIrcJoin(IrcSocket *server, IrcEvent *ev)
 void dxirc::onIrcQuit(IrcSocket *server, IrcEvent *ev)
 {
     if(isFriend(ev->param1, "all", server->getServerName()) && m_sounds && m_soundDisconnect)
-        utils::playFile(m_pathDisconnect);
+        utils::instance().playFile(m_pathDisconnect);
 }
 
 //handle IrcEvent IRC_DCCCHAT
@@ -2135,7 +2134,7 @@ void dxirc::onIrcDccIn(IrcSocket *server, IrcEvent *ev)
     else
     {
         if(isForResume(ev->param3)
-            &&FXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("%s offers file %s with size %s over DCC .\nFile is already partially downloaded.\nDo you want continue in download?"), ev->param1.text(), ev->param3.text(), utils::getFileSize(ev->param4).text()) == 1)
+            &&FXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("%s offers file %s with size %s over DCC .\nFile is already partially downloaded.\nDo you want continue in download?"), ev->param1.text(), ev->param3.text(), utils::instance().getFileSize(ev->param4).text()) == 1)
         {
             DccFile dcc;
             dcc.path = m_dccPath+PATHSEPSTRING+ev->param3;
@@ -2161,7 +2160,7 @@ void dxirc::onIrcDccIn(IrcSocket *server, IrcEvent *ev)
             server->sendCtcp(ev->param1, "DCC RESUME "+FXPath::name(dcc.path)+" "+FXStringVal(dcc.port)+" "+FXStringVal(FXStat::size(dcc.path+".part")));
             return;
         }
-        if(FXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("%s offers file %s with size %s over DCC .\nDo you want connect?"), ev->param1.text(), ev->param3.text(), utils::getFileSize(ev->param4).text()) == 1)
+        if(FXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("%s offers file %s with size %s over DCC .\nDo you want connect?"), ev->param1.text(), ev->param3.text(), utils::instance().getFileSize(ev->param4).text()) == 1)
         {
             FXFileDialog dialog(this, _("Save file"));
             dialog.setFilename(m_dccPath+PATHSEPSTRING+ev->param3);
@@ -2248,7 +2247,7 @@ void dxirc::onIrcDccPout(IrcSocket *server, IrcEvent *ev)
         }
     }
     m_dccfilesList.append(dcc);
-    server->sendCtcp(ev->param1, "DCC SEND "+utils::removeSpaces(dcc.path.rafter(PATHSEP))+" "+FXStringVal(server->getLocalIPBinary())+" 0 "+FXStringVal(dcc.size)+" "+FXStringVal(dcc.token));
+    server->sendCtcp(ev->param1, "DCC SEND "+utils::instance().removeSpaces(dcc.path.rafter(PATHSEP))+" "+FXStringVal(server->getLocalIPBinary())+" 0 "+FXStringVal(dcc.size)+" "+FXStringVal(dcc.token));
 }
 
 //handle IrcEvent IRC_DCCMYTOKEN
@@ -2309,7 +2308,7 @@ void dxirc::onIrcDccToken(IrcSocket *server, IrcEvent *ev)
     else
     {
         if(isForResume(ev->param2)
-                && FXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("%s offers file %s with size %s over DCC passive.\nFile is already partially downloaded.\nDo you want continue in download?"), ev->param1.text(), ev->param2.text(), utils::getFileSize(ev->param3).text()) == 1)
+                && FXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("%s offers file %s with size %s over DCC passive.\nFile is already partially downloaded.\nDo you want continue in download?"), ev->param1.text(), ev->param2.text(), utils::instance().getFileSize(ev->param3).text()) == 1)
         {
             DccFile dcc;
             dcc.path = m_dccPath+PATHSEPSTRING+ev->param2;
@@ -2333,7 +2332,7 @@ void dxirc::onIrcDccToken(IrcSocket *server, IrcEvent *ev)
             server->sendCtcp(ev->param1, "DCC RESUME "+FXPath::name(dcc.path)+" 0 "+FXStringVal(FXStat::size(dcc.path+".part"))+" "+FXStringVal(dcc.token));
             return;
         }
-        if(FXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("%s offers file %s with size %s over DCC passive.\n Do you want accept?"), ev->param1.text(), ev->param2.text(), utils::getFileSize(ev->param3).text()) == 1)
+        if(FXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("%s offers file %s with size %s over DCC passive.\n Do you want accept?"), ev->param1.text(), ev->param2.text(), utils::instance().getFileSize(ev->param3).text()) == 1)
         {
             FXFileDialog dialog(this, _("Save file"));
             dialog.setFilename(m_dccPath+PATHSEPSTRING+ev->param2);
@@ -2474,7 +2473,7 @@ void dxirc::onIrcDccResume(IrcSocket *server, IrcEvent *ev)
     m_dccfilesList[dccIndex].previousPostion = position;
     m_dccfilesList[dccIndex].finishedPosition = position;
     m_dccfilesList[dccIndex].canceled = FALSE;
-    server->sendCtcp(ev->param1, "DCC ACCEPT "+utils::removeSpaces(m_dccfilesList[dccIndex].path.rafter(PATHSEP))+" "+FXStringVal(m_dccfilesList[dccIndex].port)+" "+FXStringVal(position));
+    server->sendCtcp(ev->param1, "DCC ACCEPT "+utils::instance().removeSpaces(m_dccfilesList[dccIndex].path.rafter(PATHSEP))+" "+FXStringVal(m_dccfilesList[dccIndex].port)+" "+FXStringVal(position));
 }
 
 //handle IrcEvent IRC_DCCPRESUME
@@ -2497,7 +2496,7 @@ void dxirc::onIrcDccPresume(IrcSocket *server, IrcEvent *ev)
     m_dccfilesList[dccIndex].previousPostion = position;
     m_dccfilesList[dccIndex].finishedPosition = position;
     m_dccfilesList[dccIndex].canceled = FALSE;
-    server->sendCtcp(m_dccfilesList[dccIndex].nick, "DCC ACCEPT "+utils::removeSpaces(m_dccfilesList[dccIndex].path.rafter(PATHSEP))+" 0 "+FXStringVal(position)+" "+FXStringVal(token));
+    server->sendCtcp(m_dccfilesList[dccIndex].nick, "DCC ACCEPT "+utils::instance().removeSpaces(m_dccfilesList[dccIndex].path.rafter(PATHSEP))+" 0 "+FXStringVal(position)+" "+FXStringVal(token));
 }
 
 //handle IrcEvent IRC_DCCACCEPT
@@ -2553,7 +2552,7 @@ void dxirc::onIrcDccPaccept(IrcSocket *server, IrcEvent *ev)
 long dxirc::onTabBook(FXObject *, FXSelector, void *ptr)
 {
     FXint index = (FXint)(FXival)ptr*2;
-    utils::debugLine(FXStringFormat("OnTabBook(%d), Class: %s", index, m_tabbook->childAtIndex(index)->getClassName()));
+    utils::instance().debugLine(FXStringFormat("OnTabBook(%d), Class: %s", index, m_tabbook->childAtIndex(index)->getClassName()));
     if(m_tabbook->childAtIndex(index)->getMetaClass()==&IrcTabItem::metaClass)
     {
         IrcTabItem *currenttab = static_cast<IrcTabItem*>(m_tabbook->childAtIndex(index));
@@ -2931,7 +2930,7 @@ long dxirc::onNewMsg(FXObject *obj, FXSelector, void*)
         m_trayIcon->setIcon(ICO_NEWMSG);
 #endif
     if(m_sounds && m_soundMessage && (!shown() || isMinimized() || static_cast<IrcTabItem*>(m_tabbook->childAtIndex(m_tabbook->getCurrent()*2)) != static_cast<IrcTabItem*>(obj)))
-        utils::playFile(m_pathMessage);
+        utils::instance().playFile(m_pathMessage);
     if(static_cast<IrcTabItem*>(obj)->getType() == CHANNEL) updateStatus(FXStringFormat(_("New highlighted message on %s"), static_cast<IrcTabItem*>(obj)->getText().text()));
     else updateStatus(FXStringFormat(_("New message on %s"), static_cast<IrcTabItem*>(obj)->getText().text()));
     flash(TRUE);
@@ -3024,7 +3023,7 @@ long dxirc::onAddIgnoreUser(FXObject *sender, FXSelector, void *data)
     FXString text = static_cast<FXString*>(data)->text();
     FXString user = text.section(' ',0);
     FXString channel = text.section(' ',1);
-    FXString server = utils::getParam(text, 3, TRUE);
+    FXString server = utils::instance().getParam(text, 3, TRUE);
     if(m_usersList.no())
     {
         FXbool updated = FALSE;
@@ -3261,9 +3260,9 @@ long dxirc::onLua(FXObject *obj, FXSelector, void *data)
         FXString text = lua->text.after(' ');
         for(FXint i=0; i<m_scripts.no(); i++)
         {
-            if(comparecase(utils::getScriptName(command), m_scripts[i].name) == 0)
+            if(comparecase(utils::instance().getScriptName(command), m_scripts[i].name) == 0)
             {
-                lua_pushstring(m_scripts[i].L, utils::getFuncname(command).text());
+                lua_pushstring(m_scripts[i].L, utils::instance().getFuncname(command).text());
                 lua_gettable(m_scripts[i].L, LUA_GLOBALSINDEX);
                 if(lua_isfunction(m_scripts[i].L, -1))
                 {
@@ -3576,7 +3575,7 @@ FXbool dxirc::isFriend(const FXString &nick, const FXString &on, const FXString 
         {
             for(FXint j=1; j<m_friendsList[i].channel.contains(',')+2; j++)
             {
-                if(FXRex(FXString(utils::getParam(m_friendsList[i].channel, j, FALSE, ',')+"\\>").substitute("*","\\w*")).match(on))
+                if(FXRex(FXString(utils::instance().getParam(m_friendsList[i].channel, j, FALSE, ',')+"\\>").substitute("*","\\w*")).match(on))
                 {
                     bchannel = TRUE;
                     break;
@@ -3891,7 +3890,7 @@ FXint dxirc::unloadLuaScript(FXString name)
         {
             if(comparecase(name, m_scripts[i].name)==0)
             {
-                utils::removeScriptCommands(m_scripts[i].name);
+                utils::instance().removeScriptCommands(m_scripts[i].name);
                 lua_close(m_scripts[i].L);
                 m_scripts.erase(i);
                 success = TRUE;
@@ -3990,7 +3989,7 @@ int dxirc::onLuaAddCommand(lua_State *lua)
     if(lua_isstring(lua, 2)) funcname = lua_tostring(lua,2);
     if(lua_isstring(lua, 3)) helptext = lua_tostring(lua,3);
     if(name.empty() || funcname.empty() || helptext.empty()) return 0;
-    if(utils::isCommand(name))
+    if(utils::instance().isCommand(name))
     {
         _pThis->appendIrcStyledText(FXStringFormat(_("Command %s already exists"), name.text()), 4);
         return 0;
@@ -4008,7 +4007,7 @@ int dxirc::onLuaAddCommand(lua_State *lua)
     command.funcname = funcname;
     command.helptext = helptext;
     command.script = script;
-    utils::addScriptCommand(command);
+    utils::instance().addScriptCommand(command);
     return  1;
 #else
     return 0;
@@ -4158,7 +4157,7 @@ int dxirc::onLuaRemoveName(lua_State *lua)
     FXString command, script;
     if(lua_isstring(lua, 1)) command = lua_tostring(lua, 1);
     if(command.empty()) return 0;
-    if(utils::removeScriptCommand(command)) return 1;
+    if(utils::instance().removeScriptCommand(command)) return 1;
     if(_pThis->m_scripts.no())
     {
         for(FXint i=0; i<_pThis->m_scripts.no(); i++)
@@ -4505,7 +4504,7 @@ int dxirc::onLuaClear(lua_State *lua)
     FXint id = -1;
     if(lua_isnumber(lua, 1) && _pThis->isIdIrcTabItem(lua_tointeger(lua, 1)))  id = lua_tointeger(lua, 1);
     else return 0;
-    utils::debugLine(FXStringFormat("onLuaClear id:%d",id));
+    utils::instance().debugLine(FXStringFormat("onLuaClear id:%d",id));
     if(_pThis->m_tabbook->numChildren())
     {
         for(FXint i = 0; i < _pThis->m_tabbook->numChildren(); i+=2)
@@ -4558,14 +4557,14 @@ int main(int argc,char *argv[])
         }
         if(compare(argv[i],"-l")==0)
         {
-            utils::setIniFile(argv[i+1]);
+            utils::instance().setIniFile(argv[i+1]);
         }
         if(compare(argv[i],"-i")==0)
         {
             if(FXStat::exists(argv[i+1])) datadir = argv[i+1];
         }
     }
-    utils::setLangs();
+    utils::instance().setLangs();
 
 #ifdef HAVE_TRAY
     FXTrayApp app(PACKAGE, FXString::null);
@@ -4581,9 +4580,9 @@ int main(int argc,char *argv[])
     app.setTranslator(new dxTranslator());
 #endif
 #endif
-    loadIcon = makeAllIcons(&app, utils::getIniFile(), datadir);
+    loadIcon = makeAllIcons(&app, utils::instance().getIniFile(), datadir);
     new dxirc(&app);
     app.create();
-    utils::setAlias();
+    utils::instance().setAlias();
     return app.run();
 }

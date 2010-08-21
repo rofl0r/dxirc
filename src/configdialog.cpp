@@ -524,7 +524,7 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     if(!FXStat::exists(m_autoloadPath))
     {
 #ifdef WIN32
-        m_autoloadPath = utils::localeToUtf8(FXSystem::getHomeDirectory()+PATHSEPSTRING+"scripts");
+        m_autoloadPath = utils::instance().localeToUtf8(FXSystem::getHomeDirectory()+PATHSEPSTRING+"scripts");
 #else
         m_autoloadPath = FXSystem::getHomeDirectory()+PATHSEPSTRING+".dxirc"+PATHSEPSTRING+"scripts";
 #endif
@@ -755,7 +755,7 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     new FXButton(buttonframe, _("&Irc Text"), NULL, switcher, FXSwitcher::ID_OPEN_FIRST, FRAME_RAISED);
     new FXButton(buttonframe, _("I&gnore"), NULL, switcher, FXSwitcher::ID_OPEN_SECOND, FRAME_RAISED);
     new FXButton(buttonframe, _("&DCC"), NULL, switcher, FXSwitcher::ID_OPEN_FIFTH, FRAME_RAISED);
-    new FXButton(buttonframe, _("&Sounds"), NULL, switcher, FXSwitcher::ID_OPEN_SIXTH, FRAME_RAISED);
+    new FXButton(buttonframe, _("S&ounds"), NULL, switcher, FXSwitcher::ID_OPEN_SIXTH, FRAME_RAISED);
     new FXButton(buttonframe, _("S&mileys"), NULL, switcher, FXSwitcher::ID_OPEN_SEVENTH, FRAME_RAISED);
     switcher->setCurrent(2);
 
@@ -1867,13 +1867,13 @@ long ConfigDialog::onPlay(FXObject*, FXSelector sel, void*)
 {
     switch(FXSELID(sel)) {
         case ID_PLAYCONNECT:
-            utils::playFile(m_pathConnect);
+            utils::instance().instance().playFile(m_pathConnect);
             return 1;
         case ID_PLAYDISCONNECT:
-            utils::playFile(m_pathDisconnect);
+            utils::instance().playFile(m_pathDisconnect);
             return 1;
         case ID_PLAYMESSAGE:
-            utils::playFile(m_pathMessage);
+            utils::instance().playFile(m_pathMessage);
             return 1;
     }
     return 1;
@@ -2200,7 +2200,7 @@ void ConfigDialog::readConfig()
 {
     FXString ircfontspec;
     FXSettings set;
-    set.parseFile(utils::getIniFile(), TRUE);
+    set.parseFile(utils::instance().getIniFile(), TRUE);
     m_themeCurrent.base = set.readColorEntry("SETTINGS", "basecolor", getApp()->getBaseColor());
     m_themeCurrent.back = set.readColorEntry("SETTINGS", "backcolor", getApp()->getBackColor());
     m_themeCurrent.border = set.readColorEntry("SETTINGS", "bordercolor", getApp()->getBorderColor());
@@ -2217,8 +2217,8 @@ void ConfigDialog::readConfig()
     m_statusShown = set.readBoolEntry("SETTINGS", "statusShown", TRUE);
     m_tabPosition = set.readIntEntry("SETTINGS", "tabPosition", 0);
     m_commandsList = set.readStringEntry("SETTINGS", "commandsList");
-    m_themePath = utils::checkThemePath(set.readStringEntry("SETTINGS", "themePath", DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "default"));
-    m_themesList = utils::checkThemesList(set.readStringEntry("SETTINGS", "themesList", FXString(m_themePath+";").text()));
+    m_themePath = utils::instance().checkThemePath(set.readStringEntry("SETTINGS", "themePath", DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "default"));
+    m_themesList = utils::instance().checkThemesList(set.readStringEntry("SETTINGS", "themesList", FXString(m_themePath+";").text()));
     m_colors.text = set.readColorEntry("SETTINGS", "textColor", FXRGB(255,255,255));
     m_colors.back = set.readColorEntry("SETTINGS", "textBackColor", FXRGB(0,0,0));
     m_colors.user = set.readColorEntry("SETTINGS", "userColor", FXRGB(191,191,191));
@@ -2302,7 +2302,7 @@ void ConfigDialog::readConfig()
             server.port = set.readIntEntry(FXStringFormat("SERVER%d", i).text(), "port", 6667);
             server.nick = set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "nick", "xxx");
             server.realname = set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "realname", "xxx");
-            server.passwd = utils::decrypt(set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "hes", ""));
+            server.passwd = utils::instance().decrypt(set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "hes", ""));
             server.channels = set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "channels", "");
             server.commands = set.readStringEntry(FXStringFormat("SERVER%d", i).text(), "commands", "");
             server.autoConnect = set.readBoolEntry(FXStringFormat("SERVER%d", i).text(), "autoconnect", FALSE);
@@ -2316,7 +2316,7 @@ void ConfigDialog::readConfig()
     m_autoload = FALSE;
 #endif
     m_autoloadPath = set.readStringEntry("SETTINGS", "autoloadPath");
-    if(m_autoload && !FXStat::exists(utils::isUtf8(m_autoloadPath.text(), m_autoloadPath.length()) ? m_autoloadPath : utils::localeToUtf8(m_autoloadPath))) m_autoload = FALSE;
+    if(m_autoload && !FXStat::exists(utils::instance().isUtf8(m_autoloadPath.text(), m_autoloadPath.length()) ? m_autoloadPath : utils::instance().localeToUtf8(m_autoloadPath))) m_autoload = FALSE;
     FXString dccIP = set.readStringEntry("SETTINGS", "dccIP");
     FXRex rex("\\l");
     if(dccIP.empty() || dccIP.contains('.')!=3 || rex.match(dccIP))
@@ -2362,7 +2362,7 @@ void ConfigDialog::readConfig()
         }
     }
 #ifdef HAVE_ENCHANT
-    if(utils::getLangsNum())
+    if(utils::instance().getLangsNum())
         m_useSpell = set.readBoolEntry("SETTINGS", "useSpell", TRUE);
     else
         m_useSpell = FALSE;
@@ -2385,7 +2385,7 @@ void ConfigDialog::saveConfig()
             set.writeIntEntry(FXStringFormat("SERVER%d", i).text(), "port", m_serverList[i].port);
             set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "nick", m_serverList[i].nick.text());
             set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "realname", m_serverList[i].realname.text());
-            set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "hes", utils::encrypt(m_serverList[i].passwd).text());
+            set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "hes", utils::instance().encrypt(m_serverList[i].passwd).text());
             set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "channels", m_serverList[i].channels.text());
             set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "commands", m_serverList[i].commands.text());
             set.writeBoolEntry(FXStringFormat("SERVER%d", i).text(), "autoconnect", m_serverList[i].autoConnect);
@@ -2460,7 +2460,7 @@ void ConfigDialog::saveConfig()
     set.writeColorEntry("SETTINGS", "selmenubackcolor", m_themeCurrent.menuback);
     set.writeColorEntry("SETTINGS", "traycolor", m_trayColor);
     set.writeStringEntry("SETTINGS", "normalfont", m_font->getFont().text());
-    dxStringMap aliases = utils::getAliases();
+    dxStringMap aliases = utils::instance().getAliases();
     set.writeIntEntry("ALIASES", "number", (FXint)aliases.size());
     if((FXint)aliases.size())
     {
@@ -2503,5 +2503,5 @@ void ConfigDialog::saveConfig()
     }
     set.writeBoolEntry("SETTINGS", "useSpell", m_useSpell);
     set.setModified();
-    set.unparseFile(utils::getIniFile());
+    set.unparseFile(utils::instance().instance().getIniFile());
 }
