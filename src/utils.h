@@ -69,8 +69,6 @@
 #include <FXCP874Codec.h>
 #include <FXKOI8RCodec.h>
 #include <FXUTF8Codec.h>
-#include "config.h"
-#include "i18n.h"
 #ifdef HAVE_ENCHANT
 namespace enchant 
 {
@@ -125,7 +123,8 @@ public:
     FXbool removeScriptCommands(const FXString &script);
     FXbool isScriptCommand(const FXString &command);
     FXString availableCommands();
-    FXString availableScriptCommands();
+    FXString availableScriptsCommands();
+    FXString availableScriptCommands(const FXString &script);
     FXString getHelpText(const FXString &command);
     FXString getFuncname(const FXString &command);
     FXString getScriptName(const FXString &command);

@@ -19,6 +19,8 @@
  *      MA 02110-1301, USA.
  */
 
+#include "config.h"
+#include "i18n.h"
 #include "utils.h"
 #ifdef HAVE_ENCHANT
 #include <enchant++.h>
@@ -1032,7 +1034,7 @@ FXString utils::availableCommands()
     return commandstr;
 }
 
-FXString utils::availableScriptCommands()
+FXString utils::availableScriptsCommands()
 {
     FXString commandstr = _("Available commnads: ");
     for(FXint i=0; i < m_scriptCommands.no(); i++)
@@ -1040,6 +1042,23 @@ FXString utils::availableScriptCommands()
         commandstr += m_scriptCommands[i].name.upper()+(i != m_scriptCommands.no() - 1? ", " : "");
     }
     return commandstr;
+}
+
+FXString utils::availableScriptCommands(const FXString& script)
+{
+    FXbool result = FALSE;
+    FXString commandstr = _("Script commnads: ");
+    for(FXint i=m_scriptCommands.no()-1; i>-1; i--)
+    {
+        if(comparecase(script, m_scriptCommands[i].script) == 0)
+        {
+            if(result) commandstr += ", ";
+            commandstr += m_scriptCommands[i].name.upper();
+            result = TRUE;
+        }
+    }
+    if(result) return commandstr;
+    else return _("Script hasn't commands");
 }
 
 FXString utils::getHelpText(const FXString &command)

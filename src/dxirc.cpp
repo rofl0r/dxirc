@@ -1579,15 +1579,26 @@ void dxirc::connectServer(FXString hostname, FXint port, FXString pass, FXString
         m_servers[0]->setDccFile(dccFile);
         if(dccType != DCC_IN && dccType != DCC_OUT && dccType != DCC_PIN && dccType != DCC_POUT)
         {
-            if (!m_tabbook->numChildren())
+            if(!m_tabbook->numChildren())
             {
                 createIrcTab(dcc ? dccNick : hostname, dcc ? ICO_DCC : ICO_SERVER, dcc ? DCCCHAT : SERVER, m_servers[0]);
+                m_tabbook->recalc();
             }
-            if(m_tabbook->childAtIndex(0)->getMetaClass()==&IrcTabItem::metaClass)
+            else
             {
-                static_cast<IrcTabItem*>(m_tabbook->childAtIndex(0))->setType(SERVER, hostname);
-                m_tabbook->setCurrent(0, TRUE);
-                sortTabs();
+                FXbool needNewTab = TRUE;
+                for(FXint i = 0; i<m_tabbook->numChildren(); i+=2)
+                {
+                    if(m_tabbook->childAtIndex(i)->getMetaClass()==&IrcTabItem::metaClass
+                            && static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))->getType()==SERVER)
+                    {
+                        static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))->setText(hostname);
+                        sortTabs();
+                        needNewTab = FALSE;
+                        break;
+                    }
+                }
+                if(needNewTab) createIrcTab(dcc ? dccNick : hostname, dcc ? ICO_DCC : ICO_SERVER, dcc ? DCCCHAT : SERVER, m_servers[0]);
             }
             if(dcc)
             {
@@ -3248,6 +3259,7 @@ long dxirc::onLua(FXObject *obj, FXSelector, void *data)
                 appendIrcText(FXStringFormat(_("Description: %s"), m_scripts[i].description.text()));
                 appendIrcText(FXStringFormat(_("Version: %s"), m_scripts[i].version.text()));
                 appendIrcText(FXStringFormat(_("Path: %s"), m_scripts[i].path.text()));
+                appendIrcText(utils::instance().availableScriptCommands(m_scripts[i].name));
                 if(i+1<m_scripts.no()) appendIrcText("");
             }
         }
@@ -3592,7 +3604,7 @@ FXbool dxirc::isFriend(const FXString &nick, const FXString &on, const FXString 
     return bnick && bchannel && bserver;
 }
 
-void dxirc::createIrcTab(const FXString& tabtext, FXIcon* icon, TYPE typ, IrcSocket* socket)
+FXint dxirc::createIrcTab(const FXString& tabtext, FXIcon* icon, TYPE typ, IrcSocket* socket)
 {
     FXuint style;
     switch(m_tabPosition) {
@@ -3625,6 +3637,7 @@ void dxirc::createIrcTab(const FXString& tabtext, FXIcon* icon, TYPE typ, IrcSoc
     tabitem->setSmileys(m_useSmileys, m_smileys);
     if(socket) socket->appendTarget(tabitem);
     sortTabs();
+    return m_lastID-1;
 }
 
 FXbool dxirc::isLastTab(IrcSocket *server)
@@ -4480,8 +4493,7 @@ int dxirc::onLuaCreateTab(lua_State *lua)
             }
         }
     }
-    _pThis->createIrcTab(name, NULL, OTHER, NULL);
-    lua_pushnumber(lua, _pThis->m_lastID);
+    lua_pushnumber(lua, _pThis->createIrcTab(name, NULL, OTHER, NULL));
     return 1;
 #else
     return 0;

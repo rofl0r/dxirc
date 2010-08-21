@@ -1140,7 +1140,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         }
         if(command == "commands")
         {
-            appendIrcStyledText(utils::instance().availableScriptCommands(), 3, FXSystem::now());
+            appendIrcStyledText(utils::instance().availableScriptsCommands(), 3, FXSystem::now());
             return TRUE;
         }
         if(command == "egg")

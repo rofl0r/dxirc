@@ -237,7 +237,7 @@ class dxirc: public FXMainWindow
         void createSmileys();
         FXString getUniqueName(const FXString &path, const FXString &name, const FXString &extension);
         FXbool isForResume(const FXString &name);
-        void createIrcTab(const FXString &tabtext, FXIcon *icon, TYPE typ, IrcSocket *socket);
+        FXint createIrcTab(const FXString &tabtext, FXIcon *icon, TYPE typ, IrcSocket *socket);
 
     protected:
         dxScriptsArray m_scripts;
