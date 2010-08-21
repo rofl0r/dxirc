@@ -14,6 +14,7 @@ dxirc_SOURCES = configdialog.cpp \
                   tetristabitem.cpp \
                   scriptdialog.cpp \
                   dccdialog.cpp \
+                  aboutdialog.cpp \
                   dxtabbook.cpp \
                   dxtextfield.cpp \
                   dxtext.cpp
@@ -47,6 +48,7 @@ EXTRA_DIST =  configdialog.h \
               tetristabitem.h \
               scriptdialog.h \
               dccdialog.h \
+              aboutdialog.h \
               dxtabbook.h \
               dxtextfield.h \
               dxtext.h \

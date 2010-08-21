@@ -39,6 +39,7 @@
 #include "utils.h"
 #include "tetristabitem.h"
 #include "scriptdialog.h"
+#include "aboutdialog.h"
 
 #define DISPLAY(app) ((Display*)((app)->getDisplay()))
 
@@ -1450,40 +1451,8 @@ void dxirc::createSmileys()
 
 long dxirc::onCmdAbout(FXObject*, FXSelector, void*)
 {
-    FXDialogBox about(this, FXStringFormat(_("About %s"), PACKAGE), DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0);
-    FXVerticalFrame *content = new FXVerticalFrame(&about, LAYOUT_SIDE_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 10,10,10,10, 0,0);
-    FXFontDesc fontdescription;
-    getApp()->getNormalFont()->getFontDesc(fontdescription);
-    fontdescription.size  += 20;
-    fontdescription.weight = FXFont::Bold;
-    FXFont *boldfont = new FXFont(getApp(),fontdescription);
-    boldfont->create();
-    getApp()->getNormalFont()->getFontDesc(fontdescription);
-    fontdescription.size  -= 10;
-    FXFont *smallfont = new FXFont(getApp(),fontdescription);
-    smallfont->create();
-    new FXLabel(content, "", ICO_BIG, ICON_BELOW_TEXT|LAYOUT_CENTER_X|LAYOUT_FILL_Y);
-    FXLabel *label = new FXLabel(content, (FXString)"\n"+PACKAGE+" "+VERSION, 0, LAYOUT_CENTER_X|LAYOUT_FILL_Y);
-    label->setFont(boldfont);
-    new FXLabel(content, (FXString)"\n"+_("Copyright (C) 2008~ David Vachulka (david@konstrukce-cad.com)")+"\n", 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    label = new FXLabel(content, FXStringFormat(_("This software was built with the FOX Toolkit Library version %d.%d.%d (http://www.fox-toolkit.org)."),FOX_MAJOR,FOX_MINOR,FOX_LEVEL), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    label->setFont(smallfont);
-#ifdef HAVE_OPENSSL
-    label = new FXLabel(content, FXStringFormat(_("This software was built with %s"), OPENSSL_VERSION_TEXT), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    label->setFont(smallfont);
-#endif
-#ifdef HAVE_LUA
-    label = new FXLabel(content, FXStringFormat(_("This software was built with %s"), LUA_RELEASE), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    label->setFont(smallfont);
-#endif
-    label = new FXLabel(content, _("This sofware uses http://www.famfamfam.com/lab/icons/"), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    label->setFont(smallfont);
-    FXButton *button = new FXButton(content, _("C&lose"), 0, &about, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
-    button->setFocus();
+    AboutDialog about(this);
     about.execute(PLACEMENT_OWNER);
-    delete boldfont;
-    delete smallfont;
-
     return 1;
 }
 
