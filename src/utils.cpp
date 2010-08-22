@@ -1610,7 +1610,7 @@ FXString utils::getLocale()
 }
 
 //get spellchecking language for channel
-#if 1
+#ifdef HAVE_ENCHANT
 FXString utils::getChannelLang(FXString channel)
 {
     FXSettings set;
