@@ -56,6 +56,8 @@
 		<Unit filename="..\src\FXTrayApp.h" />
 		<Unit filename="..\src\FXTrayIcon.cpp" />
 		<Unit filename="..\src\FXTrayIcon.h" />
+		<Unit filename="..\src\aboutdialog.cpp" />
+		<Unit filename="..\src\aboutdialog.h" />
 		<Unit filename="..\src\aliasdialog.cpp" />
 		<Unit filename="..\src\aliasdialog.h" />
 		<Unit filename="..\src\configdialog.cpp" />
