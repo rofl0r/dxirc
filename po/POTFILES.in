@@ -10,6 +10,7 @@ src/logviewer.cpp
 src/scriptdialog.cpp
 src/tetristabitem.cpp
 src/dccdialog.cpp
+src/aboutdialog.cpp
 
 ../../fox-1.6.37/src/FXMessageBox.cpp
 ../../fox-1.6.37/src/FXColorSelector.cpp

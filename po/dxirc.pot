@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: david@konstrukce-cad.com\n"
-"POT-Creation-Date: 2010-08-21 15:36+0200\n"
+"POT-Creation-Date: 2010-08-24 19:48+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -699,8 +699,8 @@ msgstr ""
 msgid "&Help"
 msgstr ""
 
-#: src/dxirc.cpp:806 src/dxirc.cpp:2026 src/dxirc.cpp:2063 src/dxirc.cpp:3314
-#: src/dxirc.cpp:3404 src/dxirc.cpp:3454
+#: src/dxirc.cpp:806 src/dxirc.cpp:2037 src/dxirc.cpp:2074 src/dxirc.cpp:3326
+#: src/dxirc.cpp:3416 src/dxirc.cpp:3466
 #, c-format
 msgid "Lua plugin: error calling %s %s"
 msgstr ""
@@ -710,7 +710,7 @@ msgid "Help"
 msgstr ""
 
 #: src/dxirc.cpp:853 src/logviewer.cpp:72 src/scriptdialog.cpp:77
-#: src/scriptdialog.cpp:216 src/dccdialog.cpp:75
+#: src/scriptdialog.cpp:216 src/dccdialog.cpp:75 src/aboutdialog.cpp:74
 msgid "C&lose"
 msgstr ""
 
@@ -752,11 +752,11 @@ msgstr ""
 msgid "Commands on connection:"
 msgstr ""
 
-#: src/dxirc.cpp:1667
+#: src/dxirc.cpp:1678
 msgid "Confirm disconnect"
 msgstr ""
 
-#: src/dxirc.cpp:1669
+#: src/dxirc.cpp:1680
 #, c-format
 msgid ""
 "Disconnect server: %s\n"
@@ -764,35 +764,35 @@ msgid ""
 "Nick: %s"
 msgstr ""
 
-#: src/dxirc.cpp:1671 ../../fox-1.6.37/src/FXMessageBox.cpp:112
+#: src/dxirc.cpp:1682 ../../fox-1.6.37/src/FXMessageBox.cpp:112
 #: ../../fox-1.6.37/src/FXMessageBox.cpp:117
 msgid "&No"
 msgstr ""
 
-#: src/dxirc.cpp:1672 ../../fox-1.6.37/src/FXMessageBox.cpp:111
+#: src/dxirc.cpp:1683 ../../fox-1.6.37/src/FXMessageBox.cpp:111
 #: ../../fox-1.6.37/src/FXMessageBox.cpp:116
 msgid "&Yes"
 msgstr ""
 
-#: src/dxirc.cpp:2086 src/dxirc.cpp:2137 src/dxirc.cpp:2163 src/dxirc.cpp:2311
-#: src/dxirc.cpp:2335 src/dxirc.cpp:3809 src/logviewer.cpp:476
+#: src/dxirc.cpp:2097 src/dxirc.cpp:2148 src/dxirc.cpp:2174 src/dxirc.cpp:2322
+#: src/dxirc.cpp:2346 src/dxirc.cpp:3822 src/logviewer.cpp:476
 msgid "Question"
 msgstr ""
 
-#: src/dxirc.cpp:2086
+#: src/dxirc.cpp:2097
 #, c-format
 msgid ""
 "%s offers DCC Chat on %s port %s.\n"
 " Do you want connect?"
 msgstr ""
 
-#: src/dxirc.cpp:2131 src/dxirc.cpp:2193 src/dxirc.cpp:2305 src/dxirc.cpp:2363
-#: src/dxirc.cpp:2523 src/dxirc.cpp:2548
+#: src/dxirc.cpp:2142 src/dxirc.cpp:2204 src/dxirc.cpp:2316 src/dxirc.cpp:2374
+#: src/dxirc.cpp:2534 src/dxirc.cpp:2559
 #, c-format
 msgid "Receiving \"%s\" from %s"
 msgstr ""
 
-#: src/dxirc.cpp:2137
+#: src/dxirc.cpp:2148
 #, c-format
 msgid ""
 "%s offers file %s with size %s over DCC .\n"
@@ -800,18 +800,18 @@ msgid ""
 "Do you want continue in download?"
 msgstr ""
 
-#: src/dxirc.cpp:2163
+#: src/dxirc.cpp:2174
 #, c-format
 msgid ""
 "%s offers file %s with size %s over DCC .\n"
 "Do you want connect?"
 msgstr ""
 
-#: src/dxirc.cpp:2165 src/dxirc.cpp:2337
+#: src/dxirc.cpp:2176 src/dxirc.cpp:2348
 msgid "Save file"
 msgstr ""
 
-#: src/dxirc.cpp:2311
+#: src/dxirc.cpp:2322
 #, c-format
 msgid ""
 "%s offers file %s with size %s over DCC passive.\n"
@@ -819,131 +819,131 @@ msgid ""
 "Do you want continue in download?"
 msgstr ""
 
-#: src/dxirc.cpp:2335
+#: src/dxirc.cpp:2346
 #, c-format
 msgid ""
 "%s offers file %s with size %s over DCC passive.\n"
 " Do you want accept?"
 msgstr ""
 
-#: src/dxirc.cpp:2396 src/dxirc.cpp:2411
+#: src/dxirc.cpp:2407 src/dxirc.cpp:2422
 #, c-format
 msgid "Download of \"%s\" from %s canceled"
 msgstr ""
 
-#: src/dxirc.cpp:2400
+#: src/dxirc.cpp:2411
 #, c-format
 msgid "Download of \"%s\" from %s finished"
 msgstr ""
 
-#: src/dxirc.cpp:2421 src/dxirc.cpp:2436
+#: src/dxirc.cpp:2432 src/dxirc.cpp:2447
 #, c-format
 msgid "Upload of \"%s\" to %s canceled"
 msgstr ""
 
-#: src/dxirc.cpp:2425
+#: src/dxirc.cpp:2436
 #, c-format
 msgid "Upload of \"%s\" to %s finished"
 msgstr ""
 
-#: src/dxirc.cpp:2934
+#: src/dxirc.cpp:2945
 #, c-format
 msgid "New highlighted message on %s"
 msgstr ""
 
-#: src/dxirc.cpp:2935
+#: src/dxirc.cpp:2946
 #, c-format
 msgid "New message on %s"
 msgstr ""
 
-#: src/dxirc.cpp:2958
+#: src/dxirc.cpp:2969
 #, c-format
 msgid "'%s' can't be added to ignored commands"
 msgstr ""
 
-#: src/dxirc.cpp:2967
+#: src/dxirc.cpp:2978
 #, c-format
 msgid "'%s' is already added in ignored commands"
 msgstr ""
 
-#: src/dxirc.cpp:2971
+#: src/dxirc.cpp:2982
 #, c-format
 msgid "'%s' was added to ignored commands"
 msgstr ""
 
-#: src/dxirc.cpp:2998
+#: src/dxirc.cpp:3009
 #, c-format
 msgid "'%s' was removed from ignored commands"
 msgstr ""
 
-#: src/dxirc.cpp:3004
+#: src/dxirc.cpp:3015
 #, c-format
 msgid "'%s' isn't in ignored commands"
 msgstr ""
 
-#: src/dxirc.cpp:3037
+#: src/dxirc.cpp:3048
 #, c-format
 msgid "'%s' was updated in ignored users"
 msgstr ""
 
-#: src/dxirc.cpp:3048 src/dxirc.cpp:3058
+#: src/dxirc.cpp:3059 src/dxirc.cpp:3069
 #, c-format
 msgid "'%s' was added to ignored users"
 msgstr ""
 
-#: src/dxirc.cpp:3083
+#: src/dxirc.cpp:3094
 #, c-format
 msgid "'%s' was removed from ignored users"
 msgstr ""
 
-#: src/dxirc.cpp:3089
+#: src/dxirc.cpp:3100
 #, c-format
 msgid "'%s' wasn't removed from ignored users"
 msgstr ""
 
-#: src/dxirc.cpp:3239
+#: src/dxirc.cpp:3250
 msgid "Scripts aren't loaded"
 msgstr ""
 
-#: src/dxirc.cpp:3244
+#: src/dxirc.cpp:3255
 msgid "Loaded scrips:"
 msgstr ""
 
-#: src/dxirc.cpp:3247
+#: src/dxirc.cpp:3258
 #, c-format
 msgid "Name: %s"
 msgstr ""
 
-#: src/dxirc.cpp:3248
+#: src/dxirc.cpp:3259
 #, c-format
 msgid "Description: %s"
 msgstr ""
 
-#: src/dxirc.cpp:3249
+#: src/dxirc.cpp:3260
 #, c-format
 msgid "Version: %s"
 msgstr ""
 
-#: src/dxirc.cpp:3250
+#: src/dxirc.cpp:3261
 #, c-format
 msgid "Path: %s"
 msgstr ""
 
-#: src/dxirc.cpp:3271
+#: src/dxirc.cpp:3283
 #, c-format
 msgid "Error: %s"
 msgstr ""
 
-#: src/dxirc.cpp:3279 src/irctabitem.cpp:1857 src/irctabitem.cpp:2719
+#: src/dxirc.cpp:3291 src/irctabitem.cpp:1857 src/irctabitem.cpp:2719
 msgid "dxirc is compiled without support for Lua scripting"
 msgstr ""
 
-#: src/dxirc.cpp:3800
+#: src/dxirc.cpp:3813
 #, c-format
 msgid "Script %s is already loaded"
 msgstr ""
 
-#: src/dxirc.cpp:3809
+#: src/dxirc.cpp:3822
 #, c-format
 msgid ""
 "Script %s contains dxirc.AddAll\n"
@@ -951,66 +951,66 @@ msgid ""
 "Load it anyway?"
 msgstr ""
 
-#: src/dxirc.cpp:3811
+#: src/dxirc.cpp:3824
 #, c-format
 msgid "Script %s contains dxirc.AddAll. This can BREAK dxirc funcionality."
 msgstr ""
 
-#: src/dxirc.cpp:3816
+#: src/dxirc.cpp:3829
 msgid "Unable to initialize Lua."
 msgstr ""
 
-#: src/dxirc.cpp:3825
+#: src/dxirc.cpp:3838
 #, c-format
 msgid "Unable to load/run the file %s"
 msgstr ""
 
-#: src/dxirc.cpp:3832
+#: src/dxirc.cpp:3845
 #, c-format
 msgid "Lua plugin: error registering script %s"
 msgstr ""
 
-#: src/dxirc.cpp:3845
+#: src/dxirc.cpp:3858
 #, c-format
 msgid "Script with name %s is already loaded"
 msgstr ""
 
-#: src/dxirc.cpp:3857
+#: src/dxirc.cpp:3870
 #, c-format
 msgid "Script %s was loaded"
 msgstr ""
 
-#: src/dxirc.cpp:3866
+#: src/dxirc.cpp:3879
 #, c-format
 msgid "Lua plugin: error calling dxirc_Init() %s"
 msgstr ""
 
-#: src/dxirc.cpp:3884 src/dxirc.cpp:3909
+#: src/dxirc.cpp:3897 src/dxirc.cpp:3922
 #, c-format
 msgid "Script %s isn't loaded"
 msgstr ""
 
-#: src/dxirc.cpp:3908
+#: src/dxirc.cpp:3921
 #, c-format
 msgid "Script %s was unloaded"
 msgstr ""
 
-#: src/dxirc.cpp:3994
+#: src/dxirc.cpp:4007
 #, c-format
 msgid "Command %s already exists"
 msgstr ""
 
-#: src/dxirc.cpp:4038
+#: src/dxirc.cpp:4051
 #, c-format
 msgid "Function %s for event %s already exists"
 msgstr ""
 
-#: src/dxirc.cpp:4176
+#: src/dxirc.cpp:4189
 #, c-format
 msgid "Command/event %s in script %s was removed"
 msgstr ""
 
-#: src/dxirc.cpp:4527
+#: src/dxirc.cpp:4539
 msgid ""
 "\n"
 "Usage: dxirc [options] \n"
@@ -2879,6 +2879,31 @@ msgstr ""
 
 #: src/dccdialog.cpp:77
 msgid "Clear &canceled"
+msgstr ""
+
+#: src/aboutdialog.cpp:44
+#, c-format
+msgid "About %s"
+msgstr ""
+
+#: src/aboutdialog.cpp:60
+msgid "Copyright (C) 2008~ David Vachulka (david@konstrukce-cad.com)"
+msgstr ""
+
+#: src/aboutdialog.cpp:61
+#, c-format
+msgid ""
+"Built with the FOX Toolkit Library version %d.%d.%d (http://www.fox-toolkit."
+"org)"
+msgstr ""
+
+#: src/aboutdialog.cpp:64 src/aboutdialog.cpp:68
+#, c-format
+msgid "Built with %s"
+msgstr ""
+
+#: src/aboutdialog.cpp:71
+msgid "Uses http://www.famfamfam.com/lab/icons/"
 msgstr ""
 
 #: ../../fox-1.6.37/src/FXMessageBox.cpp:128

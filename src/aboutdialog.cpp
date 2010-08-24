@@ -58,17 +58,17 @@ AboutDialog::AboutDialog(FXMainWindow *owner)
     FXLabel *label = new FXLabel(m_contents, (FXString)"\n"+PACKAGE+" "+VERSION, 0, LAYOUT_CENTER_X|LAYOUT_FILL_Y);
     label->setFont(m_boldfont);
     new FXLabel(m_contents, (FXString)"\n"+_("Copyright (C) 2008~ David Vachulka (david@konstrukce-cad.com)")+"\n", 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    label = new FXLabel(m_contents, FXStringFormat(_("This software was built with the FOX Toolkit Library version %d.%d.%d (http://www.fox-toolkit.org)."),FOX_MAJOR,FOX_MINOR,FOX_LEVEL), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    label = new FXLabel(m_contents, FXStringFormat(_("Built with the FOX Toolkit Library version %d.%d.%d (http://www.fox-toolkit.org)"),FOX_MAJOR,FOX_MINOR,FOX_LEVEL), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     label->setFont(m_smallfont);
 #ifdef HAVE_OPENSSL
-    label = new FXLabel(m_contents, FXStringFormat(_("This software was built with %s"), OPENSSL_VERSION_TEXT), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    label = new FXLabel(m_contents, FXStringFormat(_("Built with %s"), OPENSSL_VERSION_TEXT), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     label->setFont(m_smallfont);
 #endif
 #ifdef HAVE_LUA
-    label = new FXLabel(m_contents, FXStringFormat(_("This software was built with %s"), LUA_RELEASE), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    label = new FXLabel(m_contents, FXStringFormat(_("Built with %s"), LUA_RELEASE), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     label->setFont(m_smallfont);
 #endif
-    label = new FXLabel(m_contents, _("This sofware uses http://www.famfamfam.com/lab/icons/"), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    label = new FXLabel(m_contents, _("Uses http://www.famfamfam.com/lab/icons/"), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     label->setFont(m_smallfont);
     m_buttonframe = new FXHorizontalFrame(m_contents, LAYOUT_FILL_X);
     m_buttonClose  = new FXButton(m_contents, _("C&lose"), 0, this, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
