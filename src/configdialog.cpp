@@ -577,8 +577,10 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     new FXColorWell(themeMatrix, FXRGB(0,0,255), &m_targetTipback, FXDataTarget::ID_VALUE);
     new FXLabel(themeMatrix, _("Tip Background Color"));
 #ifndef WIN32
+#ifdef HAVE_TRAY
     new FXColorWell(themeMatrix, FXRGB(0,0,255), &m_targetTrayColor, FXDataTarget::ID_VALUE);
     new FXLabel(themeMatrix, _("Tray Color"));
+#endif
 #endif
     m_label = new FXLabel(m_vframe2, "Label");
     m_textFrame1 = new FXHorizontalFrame(m_vframe2, LAYOUT_FILL_X);
@@ -2221,12 +2223,12 @@ void ConfigDialog::readConfig()
     m_themesList = utils::instance().checkThemesList(set.readStringEntry("SETTINGS", "themesList", FXString(m_themePath+";").text()));
     m_colors.text = set.readColorEntry("SETTINGS", "textColor", FXRGB(255,255,255));
     m_colors.back = set.readColorEntry("SETTINGS", "textBackColor", FXRGB(0,0,0));
-    m_colors.user = set.readColorEntry("SETTINGS", "userColor", FXRGB(191,191,191));
+    m_colors.user = set.readColorEntry("SETTINGS", "userColor", FXRGB(43,57,35));
     m_colors.action = set.readColorEntry("SETTINGS", "actionsColor", FXRGB(255,165,0));
-    m_colors.notice = set.readColorEntry("SETTINGS", "noticeColor", FXRGB(0,0,255));
+    m_colors.notice = set.readColorEntry("SETTINGS", "noticeColor", FXRGB(0,163,215));
     m_colors.error = set.readColorEntry("SETTINGS", "errorColor", FXRGB(255,0,0));
-    m_colors.hilight = set.readColorEntry("SETTINGS", "hilightColor", FXRGB(0,255,0));
-    m_colors.link = set.readColorEntry("SETTINGS", "linkColor", FXRGB(0,0,255));
+    m_colors.hilight = set.readColorEntry("SETTINGS", "hilightColor", FXRGB(11,154,11));
+    m_colors.link = set.readColorEntry("SETTINGS", "linkColor", FXRGB(142,196,210));
     ircfontspec = set.readStringEntry("SETTINGS", "ircFont", "");
     m_sameCmd = set.readBoolEntry("SETTINGS", "sameCmd", FALSE);
     m_sameList = set.readBoolEntry("SETTINGS", "sameList", FALSE);
