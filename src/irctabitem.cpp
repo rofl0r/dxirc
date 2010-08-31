@@ -3519,9 +3519,9 @@ void IrcTabItem::onIrcPart(IrcEvent* ev)
 //handle IrcEvent IRC_CHNOTICE
 void IrcTabItem::onIrcChnotice(IrcEvent* ev)
 {
-    if((comparecase(ev->param2, getText()) == 0 && m_type == CHANNEL) || (ev->param1 == getText() && m_type == QUERY && ev->param2 == getNickName()))
+    if(!isCommandIgnored("notice"))
     {
-        if(!isCommandIgnored("notice"))
+        if((comparecase(ev->param2, getText()) == 0 && m_type == CHANNEL) || (ev->param1 == getText() && m_type == QUERY && ev->param2 == getNickName()))
         {
             FXbool needHighlight = FALSE;
             if(ev->param3.contains(getNickName()))
@@ -3539,14 +3539,6 @@ void IrcTabItem::onIrcChnotice(IrcEvent* ev)
             }
             if((m_type == CHANNEL && needHighlight) || m_type == QUERY)
                 m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_NEWMSG), NULL);
-        }
-    }
-    else if(m_type == SERVER || isFirst())
-    {
-        if(!isCommandIgnored("notice"))
-        {
-            appendIrcStyledText(FXStringFormat(_("%s's NOTICE: %s"), ev->param1.text(), ev->param3.text()), 3, ev->time);
-            if(FXRGB(255,0,0) != this->getTextColor() && m_parent->getCurrent()*2 != m_parent->indexOfChild(this)) this->setTextColor(FXRGB(0,0,255));
         }
     }
 }
