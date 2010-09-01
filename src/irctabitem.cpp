@@ -3521,24 +3521,47 @@ void IrcTabItem::onIrcChnotice(IrcEvent* ev)
 {
     if(!isCommandIgnored("notice"))
     {
-        if((comparecase(ev->param2, getText()) == 0 && m_type == CHANNEL) || (ev->param1 == getText() && m_type == QUERY && ev->param2 == getNickName()))
+        FXbool tabExist = FALSE;
+        for(FXint i = 0; i<m_parent->numChildren(); i+=2)
         {
-            FXbool needHighlight = FALSE;
-            if(ev->param3.contains(getNickName()))
-                needHighlight = highlightNeeded(ev->param3);
-            appendIrcStyledText(FXStringFormat(_("%s's NOTICE: %s"), ev->param1.text(), ev->param3.text()), 2, ev->time);
-            if(FXRGB(255,0,0) != this->getTextColor() && m_parent->getCurrent()*2 != m_parent->indexOfChild(this))
+            if(m_parent->childAtIndex(i)->getMetaClass()==&IrcTabItem::metaClass && m_server->findTarget(static_cast<IrcTabItem*>(m_parent->childAtIndex(i))))
             {
-                if(needHighlight)
+                if((comparecase(ev->param2, static_cast<IrcTabItem*>(m_parent->childAtIndex(i))->getText()) == 0 && static_cast<IrcTabItem*>(m_parent->childAtIndex(i))->getType() == CHANNEL) 
+                    || (ev->param1 == static_cast<IrcTabItem*>(m_parent->childAtIndex(i))->getText() && static_cast<IrcTabItem*>(m_parent->childAtIndex(i))->getType() == QUERY && ev->param2 == static_cast<IrcTabItem*>(m_parent->childAtIndex(i))->getNickName()))
                 {
-                    this->setTextColor(FXRGB(255,0,0));
-                    if(m_type == CHANNEL) this->setIcon(ICO_CHANNELNEWMSG);
+                    tabExist = TRUE;
+                    break;
                 }
-                else this->setTextColor(FXRGB(0,0,255));
-                if(m_type == QUERY) this->setIcon(ICO_QUERYNEWMSG);
             }
-            if((m_type == CHANNEL && needHighlight) || m_type == QUERY)
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_NEWMSG), NULL);
+        }
+        if(tabExist)
+        {
+            if((comparecase(ev->param2, getText()) == 0 && m_type == CHANNEL) || (ev->param1 == getText() && m_type == QUERY && ev->param2 == getNickName()))
+            {
+                FXbool needHighlight = FALSE;
+                if(ev->param3.contains(getNickName()))
+                    needHighlight = highlightNeeded(ev->param3);
+                appendIrcStyledText(FXStringFormat(_("%s's NOTICE: %s"), ev->param1.text(), ev->param3.text()), 2, ev->time);
+                if(FXRGB(255,0,0) != this->getTextColor() && m_parent->getCurrent()*2 != m_parent->indexOfChild(this))
+                {
+                    if(needHighlight)
+                    {
+                        this->setTextColor(FXRGB(255,0,0));
+                        if(m_type == CHANNEL) this->setIcon(ICO_CHANNELNEWMSG);
+                    }
+                    else this->setTextColor(FXRGB(0,0,255));
+                    if(m_type == QUERY) this->setIcon(ICO_QUERYNEWMSG);
+                }
+                if((m_type == CHANNEL && needHighlight) || m_type == QUERY)
+                    m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_NEWMSG), NULL);
+            }
+        }
+        else
+        {
+            if(m_type == SERVER || isFirst())
+            {
+                appendIrcStyledText(FXStringFormat(_("%s's NOTICE: %s"), ev->param1.text(), ev->param3.text()), 3, ev->time);
+            }
         }
     }
 }

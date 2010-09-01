@@ -1821,10 +1821,7 @@ void IrcSocket::notice(const FXString &from, const FXString &params)
         else
         {
             if(!isUserIgnored(nick, from.after('!').before('@'), from.after('@'), to))
-            {
-                if(m_nickName == to) sendEvent(IRC_QUERY, nick);
                 sendEvent(IRC_CHNOTICE, nick, to, msg);
-            }
         }
     }
 }
