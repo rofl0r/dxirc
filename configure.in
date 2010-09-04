@@ -5,7 +5,7 @@ dnl
 
 dnl Initialize
 AC_INIT(src/dxirc.cpp)
-AM_INIT_AUTOMAKE(dxirc,0.60.svn)
+AM_INIT_AUTOMAKE(dxirc,0.70.svn)
 AM_CONFIG_HEADER(config.h)
 
 dnl Is this really necessary?
@@ -135,7 +135,7 @@ dnl Check for utils::checkWord
 dnl have_spellutils=no
 dnl AC_MSG_CHECKING(for utils::checkWord)
 dnl AC_TRY_COMPILE([#include "src/utils.h"],
-dnl [utils::checkWord("test","cs");],
+dnl [utils::instance().checkWord("test","cs");],
 dnl [AC_DEFINE(HAVE_SPELLUTILS,1, namespace utils have spellchecking support) have_spellutils=yes])
 dnl AC_MSG_RESULT($have_spellutils)
 dnl I know answer :)

@@ -12,14 +12,14 @@ src/tetristabitem.cpp
 src/dccdialog.cpp
 src/aboutdialog.cpp
 
-../../fox-1.6.37/src/FXMessageBox.cpp
-../../fox-1.6.37/src/FXColorSelector.cpp
-../../fox-1.6.37/src/FXFontSelector.cpp
-../../fox-1.6.37/src/FXDirSelector.cpp
-../../fox-1.6.37/src/FXFileList.cpp
-../../fox-1.6.37/src/FXFileSelector.cpp
-../../fox-1.6.37/src/FXReplaceDialog.cpp
-../../fox-1.6.37/src/FXSearchDialog.cpp
-../../fox-1.6.37/src/FXStatusLine.cpp
+../../fox-1.6/src/FXMessageBox.cpp
+../../fox-1.6/src/FXColorSelector.cpp
+../../fox-1.6/src/FXFontSelector.cpp
+../../fox-1.6/src/FXDirSelector.cpp
+../../fox-1.6/src/FXFileList.cpp
+../../fox-1.6/src/FXFileSelector.cpp
+../../fox-1.6/src/FXReplaceDialog.cpp
+../../fox-1.6/src/FXSearchDialog.cpp
+../../fox-1.6/src/FXStatusLine.cpp
 
 

@@ -1,3 +1,7 @@
+Version 0.60.0 (released 04-09-2010)
+- added support for spellchecking.
+- changes in Lua scripting support.
+
 Version 0.50.0 (released 29-05-2010)
 - added support for smileys.
 - added initial support for sounds.

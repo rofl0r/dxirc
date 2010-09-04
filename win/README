@@ -5,7 +5,18 @@ DevCpp
 
 You use dxirc.dev for compilation.
 Check OpenSSL or delete HAVE_OPENSSL.
+Check Lua or delete HAVE_LUA.
+Check Enchant or delete HAVE_ENCHANT and HAVE_SPELLUTILS in config.h.
 You have to installed fox, libpng, libtiff, libjpeg, lua (optional) and libintl (gettext) devpak.
+
+Code::Blocks
+============
+
+You use dxirc.cbp for compilation.
+Check OpenSSL or delete HAVE_OPENSSL.
+Check Lua or delete HAVE_LUA.
+Check Enchant or delete HAVE_ENCHANT and HAVE_SPELLUTILS in config.h.
+You have to installed fox, libpng, libtiff, libjpeg, lua (optional) and libintl (gettext).
 
 Visual C++
 ==========
@@ -13,6 +24,7 @@ Visual C++
 You use dxirc.sln for compilation.
 Set path for OpenSSL or delete HAVE_OPENSSL.
 Set path for Lua or delete HAVE_LUA.
+Set path for Enchant or delete HAVE_ENCHANT and HAVE_SPELLUTILS in config.h.
 You have to compiled fox with png support and libintl (gettext).
 You have to add "friend class FXTrayIcon;" in FXIcon.h.
 
@@ -20,3 +32,4 @@ Make setup
 ==========
 
 You use dxirc.iss and InnoSetup for make setup.exe.
+If you don't want enchant, change dxirc.iss
