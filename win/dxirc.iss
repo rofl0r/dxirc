@@ -20,23 +20,48 @@ Compression=lzma
 SolidCompression=yes
 
 [Languages]
-Name: "english"; MessagesFile: "compiler:Default.isl"
-Name: "czech"; MessagesFile: "compiler:Languages\Czech.isl"
+Name: "en"; MessagesFile: "compiler:Default.isl"
+Name: "cs"; MessagesFile: "compiler:Languages\Czech.isl"
+
+[CustomMessages]
+en.Program=Program
+cs.Program=Program
+en.Spell=Spellchecking
+cs.Spell=Kontrola pravopisu
+en.SpellEn=English
+cs.SpellEn=Angliètina
+en.SpellCs=Czech
+cs.SpellCs=Èeština
+en.FullInstallation=Full installation
+cs.FullInstallation=Úplná instalace
+en.CustomInstallation=Custom installation
+cs.CustomInstallation=Volitelná instalace
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0.0,6.0.1
 
+[Types]
+Name: "full"; Description: "{cm:FullInstallation}"
+Name: "custom"; Description: "{cm:CustomInstallation}"; Flags: iscustom
+
+[Components]
+Name: "program"; Description: "{cm:Program}"; Types: full custom; Flags: fixed
+Name: "spell"; Description: "{cm:Spell}"; Types: full
+Name: "spell\en"; Description: "{cm:SpellEn}"; Types: full
+Name: "spell\cs"; Description: "{cm:SpellCs}"; Types: full
+
 [Files]
-Source: "dxirc.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "*.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "icons\*.png"; DestDir: "{app}\icons"; Flags: recursesubdirs
-Source: "icons\smileys\dxirc.smiley"; DestDir: "{app}\icons\smileys"; Flags: ignoreversion
-Source: "locale\*.mo"; DestDir: "{app}\locale"; Flags: recursesubdirs
-Source: "sounds\*.wav"; DestDir: "{app}\sounds"; Flags: recursesubdirs
+Source: "dxirc.exe"; DestDir: "{app}"; Components: program; Flags: ignoreversion
+Source: "*.dll"; DestDir: "{app}"; Components: program; Flags: ignoreversion
+Source: "icons\*.png"; DestDir: "{app}\icons"; Components: program; Flags: recursesubdirs
+Source: "icons\smileys\dxirc.smiley"; DestDir: "{app}\icons\smileys"; Components: program; Flags: ignoreversion
+Source: "locale\*.mo"; DestDir: "{app}\locale"; Components: program; Flags: recursesubdirs
+Source: "sounds\*.wav"; DestDir: "{app}\sounds"; Components: program; Flags: recursesubdirs
 ; Spellcheking (enchant)
-Source: "lib\*.*"; DestDir: "{app}\lib"; Flags: recursesubdirs
-Source: "share\*.*"; DestDir: "{app}\share"; Flags: recursesubdirs
+Source: "lib\*.*"; DestDir: "{app}\lib"; Components: program; Flags: recursesubdirs
+Source: "share\enchant\myspell\*en_US*"; DestDir: "{app}\share\enchant\myspell"; Components: spell\en
+Source: "share\enchant\myspell\*cs_CZ*"; DestDir: "{app}\share\enchant\myspell"; Components: spell\cs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
@@ -48,6 +73,8 @@ Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\dxirc"; Filename: 
 
 [Run]
 Filename: "{app}\dxirc.exe"; Description: "{cm:LaunchProgram,dxirc}"; Flags: nowait postinstall skipifsilent
+
+
 
 
 
