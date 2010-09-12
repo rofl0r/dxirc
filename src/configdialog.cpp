@@ -503,6 +503,7 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
 #ifdef HAVE_TRAY
     new FXCheckButton(otherpane, _("Use trayicon"), &m_trayTarget, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
     m_closeToTrayButton = new FXCheckButton(otherpane, _("Close button hides application"), &m_targetCloseToTray, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
+    if(!m_useTray) m_closeToTrayButton->disable();
 #endif
 #ifdef HAVE_ENCHANT
     (new FXCheckButton(otherpane, _("Use spellchecking"), &m_targetUseSpell, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT))->setCheck(m_useSpell);
