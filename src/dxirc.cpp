@@ -3705,6 +3705,9 @@ void dxirc::sortTabs()
             m_tabbook->recalc();
             delete []tabpole;
         }
+        FXint index = m_tabbook->getCurrent()*2;
+        if(m_tabbook->childAtIndex(index)->getMetaClass()==&IrcTabItem::metaClass)
+            static_cast<IrcTabItem*>(m_tabbook->childAtIndex(index))->setCommandFocus();
     }
 }
 

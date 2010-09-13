@@ -291,6 +291,7 @@ IrcTabItem::~IrcTabItem()
 void IrcTabItem::createGeom()
 {
     m_mainframe->create();
+    m_commandline->setFocus();
 }
 
 void IrcTabItem::clearChat()
