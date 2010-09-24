@@ -1616,7 +1616,7 @@ FXString utils::getChannelLang(FXString channel)
     FXSettings set;
     debugLine(FXStringFormat("Lang file:%s",FXPath::directory(m_iniFile).append(PATHSEPSTRING "langs").text()));
     set.parseFile(FXPath::directory(m_iniFile).append(PATHSEPSTRING "langs"), TRUE);
-    FXString lang = set.readStringEntry("LANGS", channel.prepend('_').text(), getDefaultLang().text());
+    FXString lang = set.readStringEntry("LANGS", channel.lower().prepend('_').text(), getDefaultLang().text());
     if(m_checkers.find(lang) != m_checkers.end())
         return lang;
     else return getDefaultLang();

@@ -153,7 +153,8 @@ FXDEFMAP(dxirc) dxircMap[] = {
     FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_ADDIUSER,    dxirc::onAddIgnoreUser),
     FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_RMIUSER,     dxirc::onRemoveIgnoreUser),
     FXMAPFUNC(SEL_COMMAND,      DccDialog::ID_DCCCANCEL,    dxirc::onCmdDccCancel),
-    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_SPELL,            dxirc::onCmdSpell)
+    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_SPELL,            dxirc::onCmdSpell),
+    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_FORCEFOCUS,       dxirc::onCmdForceFocus)
 };
 
 FXIMPLEMENT(dxirc, FXMainWindow, dxircMap, ARRAYNUMBER(dxircMap))
@@ -304,6 +305,8 @@ dxirc::dxirc(FXApp *app)
     getAccelTable()->addAccel(MKUINT(KEY_Tab, CONTROLMASK), this, FXSEL(SEL_COMMAND, ID_NEXTTAB));
     getAccelTable()->addAccel(MKUINT(KEY_n, CONTROLMASK), this, FXSEL(SEL_COMMAND, ID_NEXTUNREAD));
     getAccelTable()->addAccel(MKUINT(KEY_N, CONTROLMASK), this, FXSEL(SEL_COMMAND, ID_NEXTUNREAD));
+    getAccelTable()->addAccel(MKUINT(KEY_f, CONTROLMASK), this, FXSEL(SEL_COMMAND, ID_FORCEFOCUS));
+    getAccelTable()->addAccel(MKUINT(KEY_F, CONTROLMASK), this, FXSEL(SEL_COMMAND, ID_FORCEFOCUS));
     getAccelTable()->addAccel(KEY_n, this, FXSEL(SEL_COMMAND, ID_TETRIS));
     getAccelTable()->addAccel(KEY_N, this, FXSEL(SEL_COMMAND, ID_TETRIS));
     getAccelTable()->addAccel(KEY_p, this, FXSEL(SEL_COMMAND, ID_TETRIS));
@@ -773,7 +776,7 @@ void dxirc::saveLangs()
         if(m_tabbook->childAtIndex(i)->getMetaClass()==&IrcTabItem::metaClass
                 && static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))->getType()==CHANNEL)
         {
-            set.writeStringEntry("LANGS", static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))->getText().prepend('_').text(), static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))->getSpellLang().text());
+            set.writeStringEntry("LANGS", static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))->getText().lower().prepend('_').text(), static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))->getSpellLang().text());
         }
     }
     set.unparseFile(FXPath::directory(utils::instance().getIniFile()).append(PATHSEPSTRING "langs"));
@@ -881,6 +884,17 @@ long dxirc::onCmdSpell(FXObject*, FXSelector, void*)
             IrcTabItem *tab = static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i));
             tab->setShowSpellCombo(m_showSpellCombo);
         }
+    }
+    return 1;
+}
+
+long dxirc::onCmdForceFocus(FXObject*, FXSelector, void*)
+{
+    if(m_tabbook->numChildren())
+    {
+        FXint index = m_tabbook->getCurrent()*2;
+        if(m_tabbook->childAtIndex(index)->getMetaClass()==&IrcTabItem::metaClass)
+            static_cast<IrcTabItem*>(m_tabbook->childAtIndex(index))->setCommandFocus();
     }
     return 1;
 }

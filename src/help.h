@@ -47,6 +47,7 @@ dxirc is a simple IRC client for various os (linux, *bsd, windows), written usin
     o Insert underline control char - Ctrl-i\n \
     o Insert reverse control char - Ctrl-r\n \
     o Insert reset control char - Ctrl-o\n \
+    o Force commandline focus in current tab - Ctrl-f\n \
 \n \
 \n \
   Configuration\n \

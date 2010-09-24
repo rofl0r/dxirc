@@ -76,6 +76,7 @@ class dxirc: public FXMainWindow
             ID_TETRIS,
             ID_TRANSFERS,
             ID_SPELL,
+            ID_FORCEFOCUS,
             ID_LAST
         };
 
@@ -120,6 +121,7 @@ class dxirc: public FXMainWindow
         long onAddIgnoreUser(FXObject*, FXSelector, void*);
         long onRemoveIgnoreUser(FXObject*, FXSelector, void*);
         long onCmdSpell(FXObject*, FXSelector, void*);
+        long onCmdForceFocus(FXObject*, FXSelector, void*);
         static int onLuaAddCommand(lua_State*);
         static int onLuaAddEvent(lua_State*);
         static int onLuaAddMyMsg(lua_State*);

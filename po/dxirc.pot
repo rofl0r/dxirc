@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: david@konstrukce-cad.com\n"
-"POT-Creation-Date: 2010-08-24 19:48+0200\n"
+"POT-Creation-Date: 2010-09-24 17:10+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,37 +16,37 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/configdialog.cpp:123 src/configdialog.cpp:384 src/configdialog.cpp:934
-#: src/configdialog.cpp:972 src/configdialog.cpp:1012
-#: src/configdialog.cpp:1318 src/configdialog.cpp:1358 src/dxirc.cpp:1537
-#: src/irctabitem.cpp:59 src/irctabitem.cpp:4403 src/irctabitem.cpp:4424
-#: src/irctabitem.cpp:4449 src/irctabitem.cpp:4479 src/irctabitem.cpp:4502
+#: src/configdialog.cpp:123 src/configdialog.cpp:384 src/configdialog.cpp:937
+#: src/configdialog.cpp:975 src/configdialog.cpp:1015
+#: src/configdialog.cpp:1321 src/configdialog.cpp:1361 src/dxirc.cpp:1551
+#: src/irctabitem.cpp:59 src/irctabitem.cpp:4419 src/irctabitem.cpp:4440
+#: src/irctabitem.cpp:4465 src/irctabitem.cpp:4495 src/irctabitem.cpp:4518
 #: src/serverdialog.cpp:101 src/serverdialog.cpp:181 src/serverdialog.cpp:268
 #: src/aliasdialog.cpp:53 src/aliasdialog.cpp:84 src/aliasdialog.cpp:127
-#: src/dccdialog.cpp:171 ../../fox-1.6.37/src/FXMessageBox.cpp:107
-#: ../../fox-1.6.37/src/FXMessageBox.cpp:118
-#: ../../fox-1.6.37/src/FXMessageBox.cpp:123
-#: ../../fox-1.6.37/src/FXMessageBox.cpp:129
-#: ../../fox-1.6.37/src/FXMessageBox.cpp:135
-#: ../../fox-1.6.37/src/FXMessageBox.cpp:142
-#: ../../fox-1.6.37/src/FXColorSelector.cpp:169
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:114
-#: ../../fox-1.6.37/src/FXDirSelector.cpp:135
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:205
-#: ../../fox-1.6.37/src/FXReplaceDialog.cpp:113
+#: src/dccdialog.cpp:171 ../../fox-1.6/src/FXMessageBox.cpp:107
+#: ../../fox-1.6/src/FXMessageBox.cpp:118
+#: ../../fox-1.6/src/FXMessageBox.cpp:123
+#: ../../fox-1.6/src/FXMessageBox.cpp:129
+#: ../../fox-1.6/src/FXMessageBox.cpp:135
+#: ../../fox-1.6/src/FXMessageBox.cpp:142
+#: ../../fox-1.6/src/FXColorSelector.cpp:169
+#: ../../fox-1.6/src/FXFontSelector.cpp:114
+#: ../../fox-1.6/src/FXDirSelector.cpp:135
+#: ../../fox-1.6/src/FXFileSelector.cpp:205
+#: ../../fox-1.6/src/FXReplaceDialog.cpp:113
 msgid "&Cancel"
 msgstr ""
 
-#: src/configdialog.cpp:124 src/configdialog.cpp:935 src/configdialog.cpp:973
-#: src/configdialog.cpp:1013 src/configdialog.cpp:1319
-#: src/configdialog.cpp:1359 src/dxirc.cpp:1538 src/irctabitem.cpp:4404
-#: src/irctabitem.cpp:4425 src/irctabitem.cpp:4450 src/irctabitem.cpp:4480
-#: src/irctabitem.cpp:4503 src/serverdialog.cpp:182 src/serverdialog.cpp:269
+#: src/configdialog.cpp:124 src/configdialog.cpp:938 src/configdialog.cpp:976
+#: src/configdialog.cpp:1016 src/configdialog.cpp:1322
+#: src/configdialog.cpp:1362 src/dxirc.cpp:1552 src/irctabitem.cpp:4420
+#: src/irctabitem.cpp:4441 src/irctabitem.cpp:4466 src/irctabitem.cpp:4496
+#: src/irctabitem.cpp:4519 src/serverdialog.cpp:182 src/serverdialog.cpp:269
 #: src/aliasdialog.cpp:85 src/aliasdialog.cpp:128
-#: ../../fox-1.6.37/src/FXMessageBox.cpp:102
-#: ../../fox-1.6.37/src/FXMessageBox.cpp:106
-#: ../../fox-1.6.37/src/FXDirSelector.cpp:134
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:198
+#: ../../fox-1.6/src/FXMessageBox.cpp:102
+#: ../../fox-1.6/src/FXMessageBox.cpp:106
+#: ../../fox-1.6/src/FXDirSelector.cpp:134
+#: ../../fox-1.6/src/FXFileSelector.cpp:198
 msgid "&OK"
 msgstr ""
 
@@ -58,12 +58,12 @@ msgstr ""
 msgid "Path:"
 msgstr ""
 
-#: src/configdialog.cpp:137 ../../fox-1.6.37/src/FXFontSelector.cpp:219
+#: src/configdialog.cpp:137 ../../fox-1.6/src/FXFontSelector.cpp:219
 msgid "Preview:"
 msgstr ""
 
-#: src/configdialog.cpp:162 src/configdialog.cpp:1050
-#: src/configdialog.cpp:1884 src/irctabitem.cpp:72 src/irctabitem.cpp:82
+#: src/configdialog.cpp:162 src/configdialog.cpp:1053
+#: src/configdialog.cpp:1887 src/irctabitem.cpp:72 src/irctabitem.cpp:82
 msgid "Select file"
 msgstr ""
 
@@ -111,7 +111,7 @@ msgstr ""
 msgid "Link color"
 msgstr ""
 
-#: src/configdialog.cpp:412 src/configdialog.cpp:600
+#: src/configdialog.cpp:412 src/configdialog.cpp:603
 msgid "Font"
 msgstr ""
 
@@ -140,12 +140,12 @@ msgid "Commands"
 msgstr ""
 
 #: src/configdialog.cpp:427 src/configdialog.cpp:433 src/configdialog.cpp:461
-#: src/configdialog.cpp:671 src/configdialog.cpp:718
+#: src/configdialog.cpp:674 src/configdialog.cpp:721
 msgid "Add"
 msgstr ""
 
 #: src/configdialog.cpp:428 src/configdialog.cpp:435 src/configdialog.cpp:462
-#: src/configdialog.cpp:673 src/configdialog.cpp:720 src/logviewer.cpp:431
+#: src/configdialog.cpp:676 src/configdialog.cpp:723 src/logviewer.cpp:431
 msgid "Delete"
 msgstr ""
 
@@ -153,20 +153,20 @@ msgstr ""
 msgid "Users"
 msgstr ""
 
-#: src/configdialog.cpp:434 src/configdialog.cpp:672 src/configdialog.cpp:719
+#: src/configdialog.cpp:434 src/configdialog.cpp:675 src/configdialog.cpp:722
 msgid "Modify"
 msgstr ""
 
-#: src/configdialog.cpp:439 ../../fox-1.6.37/src/FXFileList.cpp:196
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:731
+#: src/configdialog.cpp:439 ../../fox-1.6/src/FXFileList.cpp:196
+#: ../../fox-1.6/src/FXFileSelector.cpp:731
 msgid "User"
 msgstr ""
 
-#: src/configdialog.cpp:440 src/configdialog.cpp:678
+#: src/configdialog.cpp:440 src/configdialog.cpp:681
 msgid "Channel(s)"
 msgstr ""
 
-#: src/configdialog.cpp:441 src/configdialog.cpp:679
+#: src/configdialog.cpp:441 src/configdialog.cpp:682
 msgid "Server(s)"
 msgstr ""
 
@@ -235,528 +235,528 @@ msgstr ""
 msgid "Close button hides application"
 msgstr ""
 
-#: src/configdialog.cpp:508
+#: src/configdialog.cpp:509
 msgid "Use spellchecking"
 msgstr ""
 
-#: src/configdialog.cpp:510
+#: src/configdialog.cpp:511
 msgid "Special tab for server messages"
 msgstr ""
 
-#: src/configdialog.cpp:511
+#: src/configdialog.cpp:512
 msgid "Logging chats"
 msgstr ""
 
-#: src/configdialog.cpp:513
+#: src/configdialog.cpp:514
 msgid "Log path"
 msgstr ""
 
-#: src/configdialog.cpp:520
+#: src/configdialog.cpp:521
 msgid "Automatically load scripts"
 msgstr ""
 
-#: src/configdialog.cpp:522
+#: src/configdialog.cpp:523
 msgid "Path"
 msgstr ""
 
-#: src/configdialog.cpp:537
+#: src/configdialog.cpp:538
 msgid "Tab position"
 msgstr ""
 
-#: src/configdialog.cpp:539
+#: src/configdialog.cpp:540
 msgid "Bottom"
 msgstr ""
 
-#: src/configdialog.cpp:540
+#: src/configdialog.cpp:541
 msgid "Left"
 msgstr ""
 
-#: src/configdialog.cpp:541
+#: src/configdialog.cpp:542
 msgid "Top"
 msgstr ""
 
-#: src/configdialog.cpp:542
+#: src/configdialog.cpp:543
 msgid "Right"
 msgstr ""
 
-#: src/configdialog.cpp:548
+#: src/configdialog.cpp:549
 msgid "FOX toolkit look for dxirc"
 msgstr ""
 
-#: src/configdialog.cpp:553
+#: src/configdialog.cpp:554
 msgid "Theme:"
 msgstr ""
 
-#: src/configdialog.cpp:560
+#: src/configdialog.cpp:561
 msgid "Base Color"
 msgstr ""
 
-#: src/configdialog.cpp:562
+#: src/configdialog.cpp:563
 msgid "Border Color"
 msgstr ""
 
-#: src/configdialog.cpp:564
+#: src/configdialog.cpp:565
 msgid "Text Color"
 msgstr ""
 
-#: src/configdialog.cpp:566
+#: src/configdialog.cpp:567
 msgid "Background Color"
 msgstr ""
 
-#: src/configdialog.cpp:568
+#: src/configdialog.cpp:569
 msgid "Selected Text Color"
 msgstr ""
 
-#: src/configdialog.cpp:570
+#: src/configdialog.cpp:571
 msgid "Selected Background Color"
 msgstr ""
 
-#: src/configdialog.cpp:572
+#: src/configdialog.cpp:573
 msgid "Selected Menu Text Color"
 msgstr ""
 
-#: src/configdialog.cpp:574
+#: src/configdialog.cpp:575
 msgid "Selected Menu Background Color"
 msgstr ""
 
-#: src/configdialog.cpp:576
+#: src/configdialog.cpp:577
 msgid "Tip Text Color"
 msgstr ""
 
-#: src/configdialog.cpp:578
+#: src/configdialog.cpp:579
 msgid "Tip Background Color"
 msgstr ""
 
-#: src/configdialog.cpp:581
+#: src/configdialog.cpp:583
 msgid "Tray Color"
 msgstr ""
 
-#: src/configdialog.cpp:586
+#: src/configdialog.cpp:589
 msgid "Select this text, to see the selected colors"
 msgstr ""
 
-#: src/configdialog.cpp:588
+#: src/configdialog.cpp:591
 msgid "Selected Text (with focus)"
 msgstr ""
 
-#: src/configdialog.cpp:590
+#: src/configdialog.cpp:593
 msgid "Selected Text (no focus)"
 msgstr ""
 
-#: src/configdialog.cpp:592
+#: src/configdialog.cpp:595
 msgid "Tooltip example"
 msgstr ""
 
-#: src/configdialog.cpp:593
+#: src/configdialog.cpp:596
 msgid "Menu example"
 msgstr ""
 
-#: src/configdialog.cpp:595
+#: src/configdialog.cpp:598
 msgid "&Server list"
 msgstr ""
 
-#: src/configdialog.cpp:596
+#: src/configdialog.cpp:599
 msgid "Selected Menu Entry"
 msgstr ""
 
-#: src/configdialog.cpp:598 src/dxirc.cpp:282
-#: ../../fox-1.6.37/src/FXMessageBox.cpp:122
-#: ../../fox-1.6.37/src/FXMessageBox.cpp:127
+#: src/configdialog.cpp:601 src/dxirc.cpp:283
+#: ../../fox-1.6/src/FXMessageBox.cpp:122
+#: ../../fox-1.6/src/FXMessageBox.cpp:127
 msgid "&Quit"
 msgstr ""
 
-#: src/configdialog.cpp:604
+#: src/configdialog.cpp:607
 msgid "DCC settings"
 msgstr ""
 
-#: src/configdialog.cpp:606
+#: src/configdialog.cpp:609
 msgid "Directory for saving files:"
 msgstr ""
 
-#: src/configdialog.cpp:611
+#: src/configdialog.cpp:614
 msgid "DCC IP address:"
 msgstr ""
 
-#: src/configdialog.cpp:619
+#: src/configdialog.cpp:622
 msgid "(Leave blank for use IP address from server)"
 msgstr ""
 
-#: src/configdialog.cpp:622
+#: src/configdialog.cpp:625
 msgid "DCC ports:"
 msgstr ""
 
-#: src/configdialog.cpp:628
+#: src/configdialog.cpp:631
 msgid "(Set 0 for use ports from OS)"
 msgstr ""
 
-#: src/configdialog.cpp:630
+#: src/configdialog.cpp:633
 msgid "Time for waiting for connection in seconds"
 msgstr ""
 
-#: src/configdialog.cpp:632
+#: src/configdialog.cpp:635
 msgid "Automatically connect offered chat"
 msgstr ""
 
-#: src/configdialog.cpp:633
+#: src/configdialog.cpp:636
 msgid "Automatically receive offered file"
 msgstr ""
 
-#: src/configdialog.cpp:636
+#: src/configdialog.cpp:639
 msgid "Sound settings"
 msgstr ""
 
-#: src/configdialog.cpp:638
+#: src/configdialog.cpp:641
 msgid "Use sounds"
 msgstr ""
 
-#: src/configdialog.cpp:639
+#: src/configdialog.cpp:642
 msgid "Events"
 msgstr ""
 
-#: src/configdialog.cpp:641
+#: src/configdialog.cpp:644
 msgid "Friend connected"
 msgstr ""
 
-#: src/configdialog.cpp:647 src/configdialog.cpp:661 src/configdialog.cpp:703
+#: src/configdialog.cpp:650 src/configdialog.cpp:664 src/configdialog.cpp:706
 msgid "\tPlay"
 msgstr ""
 
-#: src/configdialog.cpp:655
+#: src/configdialog.cpp:658
 msgid "Friend disconnected"
 msgstr ""
 
-#: src/configdialog.cpp:669
+#: src/configdialog.cpp:672
 msgid "Friends"
 msgstr ""
 
-#: src/configdialog.cpp:677
+#: src/configdialog.cpp:680
 msgid "Friend"
 msgstr ""
 
-#: src/configdialog.cpp:697
+#: src/configdialog.cpp:700
 msgid "Highlighted message or query message"
 msgstr ""
 
-#: src/configdialog.cpp:713
+#: src/configdialog.cpp:716
 msgid "Smileys settings"
 msgstr ""
 
-#: src/configdialog.cpp:715
+#: src/configdialog.cpp:718
 msgid "Use smileys"
 msgstr ""
 
-#: src/configdialog.cpp:716
+#: src/configdialog.cpp:719
 msgid "Smileys"
 msgstr ""
 
-#: src/configdialog.cpp:721
+#: src/configdialog.cpp:724
 msgid "Import"
 msgstr ""
 
-#: src/configdialog.cpp:722
+#: src/configdialog.cpp:725
 msgid "Export"
 msgstr ""
 
-#: src/configdialog.cpp:753
+#: src/configdialog.cpp:756
 msgid "&General"
 msgstr ""
 
-#: src/configdialog.cpp:754
+#: src/configdialog.cpp:757
 msgid "&Look"
 msgstr ""
 
-#: src/configdialog.cpp:755
+#: src/configdialog.cpp:758
 msgid "&Irc Text"
 msgstr ""
 
-#: src/configdialog.cpp:756
+#: src/configdialog.cpp:759
 msgid "I&gnore"
 msgstr ""
 
-#: src/configdialog.cpp:757
+#: src/configdialog.cpp:760
 msgid "&DCC"
 msgstr ""
 
-#: src/configdialog.cpp:758
+#: src/configdialog.cpp:761
 msgid "S&ounds"
 msgstr ""
 
-#: src/configdialog.cpp:759
+#: src/configdialog.cpp:762
 msgid "S&mileys"
 msgstr ""
 
-#: src/configdialog.cpp:925
+#: src/configdialog.cpp:928
 msgid "Select ignore command"
 msgstr ""
 
-#: src/configdialog.cpp:929 src/aliasdialog.cpp:80 src/aliasdialog.cpp:122
+#: src/configdialog.cpp:932 src/aliasdialog.cpp:80 src/aliasdialog.cpp:122
 msgid "Command:"
 msgstr ""
 
-#: src/configdialog.cpp:956 src/irctabitem.cpp:4463
+#: src/configdialog.cpp:959 src/irctabitem.cpp:4479
 msgid "Add ignore user"
 msgstr ""
 
-#: src/configdialog.cpp:960 src/configdialog.cpp:1001
-#: src/configdialog.cpp:1306 src/configdialog.cpp:1347 src/irctabitem.cpp:4467
+#: src/configdialog.cpp:963 src/configdialog.cpp:1004
+#: src/configdialog.cpp:1309 src/configdialog.cpp:1350 src/irctabitem.cpp:4483
 msgid "Nick:"
 msgstr ""
 
-#: src/configdialog.cpp:963 src/configdialog.cpp:1004
-#: src/configdialog.cpp:1309 src/configdialog.cpp:1350 src/dxirc.cpp:1521
-#: src/irctabitem.cpp:4470 src/serverdialog.cpp:160 src/serverdialog.cpp:244
+#: src/configdialog.cpp:966 src/configdialog.cpp:1007
+#: src/configdialog.cpp:1312 src/configdialog.cpp:1353 src/dxirc.cpp:1535
+#: src/irctabitem.cpp:4486 src/serverdialog.cpp:160 src/serverdialog.cpp:244
 msgid "Channel(s):\tChannels need to be comma separated"
 msgstr ""
 
-#: src/configdialog.cpp:966 src/configdialog.cpp:1312 src/irctabitem.cpp:4473
+#: src/configdialog.cpp:969 src/configdialog.cpp:1315 src/irctabitem.cpp:4489
 #: src/serverdialog.cpp:163 src/serverdialog.cpp:247
 msgid "Channels need to be comma separated"
 msgstr ""
 
-#: src/configdialog.cpp:967 src/configdialog.cpp:1007
-#: src/configdialog.cpp:1313 src/configdialog.cpp:1353 src/irctabitem.cpp:4474
+#: src/configdialog.cpp:970 src/configdialog.cpp:1010
+#: src/configdialog.cpp:1316 src/configdialog.cpp:1356 src/irctabitem.cpp:4490
 msgid "Server:"
 msgstr ""
 
-#: src/configdialog.cpp:997
+#: src/configdialog.cpp:1000
 msgid "Modify ignore user"
 msgstr ""
 
-#: src/configdialog.cpp:1049
+#: src/configdialog.cpp:1052
 msgid "Warning"
 msgstr ""
 
-#: src/configdialog.cpp:1049
+#: src/configdialog.cpp:1052
 msgid "File import overwrites current settings"
 msgstr ""
 
-#: src/configdialog.cpp:1112
+#: src/configdialog.cpp:1115
 msgid "Save smiley settings as"
 msgstr ""
 
-#: src/configdialog.cpp:1302
+#: src/configdialog.cpp:1305
 msgid "Add friend"
 msgstr ""
 
-#: src/configdialog.cpp:1343
+#: src/configdialog.cpp:1346
 msgid "Modify friend"
 msgstr ""
 
-#: src/configdialog.cpp:1394
+#: src/configdialog.cpp:1397
 msgid "Select theme directory"
 msgstr ""
 
-#: src/configdialog.cpp:1460 src/configdialog.cpp:1479
+#: src/configdialog.cpp:1463 src/configdialog.cpp:1482
 msgid "Select font"
 msgstr ""
 
-#: src/configdialog.cpp:1738
+#: src/configdialog.cpp:1741
 msgid "Select log directory"
 msgstr ""
 
-#: src/configdialog.cpp:1749
+#: src/configdialog.cpp:1752
 msgid "Select autoload directory"
 msgstr ""
 
-#: src/configdialog.cpp:1760
+#: src/configdialog.cpp:1763
 msgid "Select directory"
 msgstr ""
 
-#: src/configdialog.cpp:1885
+#: src/configdialog.cpp:1888
 msgid "Sound file (*.wav)"
 msgstr ""
 
-#: src/configdialog.cpp:1946 src/configdialog.cpp:1954
-#: src/configdialog.cpp:1959 src/configdialog.cpp:1964
-#: src/configdialog.cpp:1985 src/configdialog.cpp:1990
-#: src/configdialog.cpp:1995 src/configdialog.cpp:2163 src/aliasdialog.cpp:93
+#: src/configdialog.cpp:1949 src/configdialog.cpp:1957
+#: src/configdialog.cpp:1962 src/configdialog.cpp:1967
+#: src/configdialog.cpp:1988 src/configdialog.cpp:1993
+#: src/configdialog.cpp:1998 src/configdialog.cpp:2166 src/aliasdialog.cpp:93
 #: src/aliasdialog.cpp:98 src/aliasdialog.cpp:103 src/aliasdialog.cpp:136
 #: src/aliasdialog.cpp:141 src/aliasdialog.cpp:146 src/logviewer.cpp:170
 #: src/logviewer.cpp:216 src/logviewer.cpp:304
 msgid "Information"
 msgstr ""
 
-#: src/configdialog.cpp:1946
+#: src/configdialog.cpp:1949
 msgid "Maximum number of 256 smileys is reached"
 msgstr ""
 
-#: src/configdialog.cpp:1949
+#: src/configdialog.cpp:1952
 msgid "Add smiley"
 msgstr ""
 
-#: src/configdialog.cpp:1954 src/configdialog.cpp:1985
+#: src/configdialog.cpp:1957 src/configdialog.cpp:1988
 #, c-format
 msgid "Icon file '%s' doesn't exist or isn't image file"
 msgstr ""
 
-#: src/configdialog.cpp:1959 src/configdialog.cpp:1990
+#: src/configdialog.cpp:1962 src/configdialog.cpp:1993
 msgid "Smiley text is empty"
 msgstr ""
 
-#: src/configdialog.cpp:1964 src/configdialog.cpp:1995
+#: src/configdialog.cpp:1967 src/configdialog.cpp:1998
 #, c-format
 msgid "Smiley '%s' already exist"
 msgstr ""
 
-#: src/configdialog.cpp:1980
+#: src/configdialog.cpp:1983
 msgid "Modify smiley"
 msgstr ""
 
-#: src/configdialog.cpp:2076
+#: src/configdialog.cpp:2079
 msgid "Current"
 msgstr ""
 
-#: src/configdialog.cpp:2083
+#: src/configdialog.cpp:2086
 msgid "User Defined"
 msgstr ""
 
-#: src/configdialog.cpp:2163
+#: src/configdialog.cpp:2166
 msgid "Some changes need restart application"
 msgstr ""
 
-#: src/dxirc.cpp:204
+#: src/dxirc.cpp:205
 msgid "&Server list\tF2"
 msgstr ""
 
-#: src/dxirc.cpp:205
+#: src/dxirc.cpp:206
 msgid "Quick &connect\tF7"
 msgstr ""
 
-#: src/dxirc.cpp:206
+#: src/dxirc.cpp:207
 msgid "&Disconnect\tCtrl-D"
 msgstr ""
 
-#: src/dxirc.cpp:209
+#: src/dxirc.cpp:210
 msgid "DCC &transfers\tCtrl-T"
 msgstr ""
 
-#: src/dxirc.cpp:212
+#: src/dxirc.cpp:213
 msgid "S&cripts\tCtrl-S"
 msgstr ""
 
-#: src/dxirc.cpp:215
+#: src/dxirc.cpp:216
 msgid "&Log viewer\tCtrl-G"
 msgstr ""
 
-#: src/dxirc.cpp:219
+#: src/dxirc.cpp:220
 msgid "&Quit\tAlt-F4"
 msgstr ""
 
-#: src/dxirc.cpp:221
+#: src/dxirc.cpp:222
 msgid "&Quit\tCtrl-Q"
 msgstr ""
 
-#: src/dxirc.cpp:223
+#: src/dxirc.cpp:224
 msgid "&Server"
 msgstr ""
 
-#: src/dxirc.cpp:226
+#: src/dxirc.cpp:227
 msgid "Close current tab\tCtrl-W"
 msgstr ""
 
-#: src/dxirc.cpp:229
+#: src/dxirc.cpp:230
 msgid "Clear window\tCtrl-L"
 msgstr ""
 
-#: src/dxirc.cpp:230
+#: src/dxirc.cpp:231
 msgid "Clear all windows\tCtrl-Shift-L"
 msgstr ""
 
-#: src/dxirc.cpp:233
+#: src/dxirc.cpp:234
 msgid "Users list\tCtrl-U\tShow/Hide users list"
 msgstr ""
 
-#: src/dxirc.cpp:236
+#: src/dxirc.cpp:237
 msgid ""
 "Spellchecking language list\tCtrl-P\tShow/Hide spellchecking language list"
 msgstr ""
 
-#: src/dxirc.cpp:246
+#: src/dxirc.cpp:247
 msgid "Status bar"
 msgstr ""
 
-#: src/dxirc.cpp:248
+#: src/dxirc.cpp:249
 msgid "&Aliases"
 msgstr ""
 
-#: src/dxirc.cpp:249
+#: src/dxirc.cpp:250
 msgid "&Preferences"
 msgstr ""
 
-#: src/dxirc.cpp:250
+#: src/dxirc.cpp:251
 msgid "&Edit"
 msgstr ""
 
-#: src/dxirc.cpp:253
+#: src/dxirc.cpp:254
 msgid "&Help\tF1"
 msgstr ""
 
-#: src/dxirc.cpp:254
+#: src/dxirc.cpp:255
 msgid "&About..."
 msgstr ""
 
-#: src/dxirc.cpp:255
+#: src/dxirc.cpp:256
 msgid "&Help"
 msgstr ""
 
-#: src/dxirc.cpp:806 src/dxirc.cpp:2037 src/dxirc.cpp:2074 src/dxirc.cpp:3326
-#: src/dxirc.cpp:3416 src/dxirc.cpp:3466
+#: src/dxirc.cpp:809 src/dxirc.cpp:2051 src/dxirc.cpp:2088 src/dxirc.cpp:3340
+#: src/dxirc.cpp:3430 src/dxirc.cpp:3480
 #, c-format
 msgid "Lua plugin: error calling %s %s"
 msgstr ""
 
-#: src/dxirc.cpp:844
+#: src/dxirc.cpp:847
 msgid "Help"
 msgstr ""
 
-#: src/dxirc.cpp:853 src/logviewer.cpp:72 src/scriptdialog.cpp:77
+#: src/dxirc.cpp:856 src/logviewer.cpp:72 src/scriptdialog.cpp:77
 #: src/scriptdialog.cpp:216 src/dccdialog.cpp:75 src/aboutdialog.cpp:74
 msgid "C&lose"
 msgstr ""
 
-#: src/dxirc.cpp:1497
+#: src/dxirc.cpp:1511
 msgid "Quick connect"
 msgstr ""
 
-#: src/dxirc.cpp:1502 src/serverdialog.cpp:55 src/serverdialog.cpp:141
+#: src/dxirc.cpp:1516 src/serverdialog.cpp:55 src/serverdialog.cpp:141
 #: src/serverdialog.cpp:223
 msgid "Hostname:"
 msgstr ""
 
-#: src/dxirc.cpp:1506 src/serverdialog.cpp:59 src/serverdialog.cpp:145
+#: src/dxirc.cpp:1520 src/serverdialog.cpp:59 src/serverdialog.cpp:145
 #: src/serverdialog.cpp:227 src/dccdialog.cpp:71
 msgid "Port:"
 msgstr ""
 
-#: src/dxirc.cpp:1511 src/serverdialog.cpp:63 src/serverdialog.cpp:150
+#: src/dxirc.cpp:1525 src/serverdialog.cpp:63 src/serverdialog.cpp:150
 #: src/serverdialog.cpp:232
 msgid "Password:"
 msgstr ""
 
-#: src/dxirc.cpp:1514 src/serverdialog.cpp:67 src/serverdialog.cpp:153
+#: src/dxirc.cpp:1528 src/serverdialog.cpp:67 src/serverdialog.cpp:153
 #: src/serverdialog.cpp:236
 msgid "Nickname:"
 msgstr ""
 
-#: src/dxirc.cpp:1518 src/serverdialog.cpp:71 src/serverdialog.cpp:157
+#: src/dxirc.cpp:1532 src/serverdialog.cpp:71 src/serverdialog.cpp:157
 #: src/serverdialog.cpp:240
 msgid "Realname:"
 msgstr ""
 
-#: src/dxirc.cpp:1526 src/serverdialog.cpp:90 src/serverdialog.cpp:173
+#: src/dxirc.cpp:1540 src/serverdialog.cpp:90 src/serverdialog.cpp:173
 #: src/serverdialog.cpp:258
 msgid "Use SSL:"
 msgstr ""
 
-#: src/dxirc.cpp:1530 src/serverdialog.cpp:82
+#: src/dxirc.cpp:1544 src/serverdialog.cpp:82
 msgid "Commands on connection:"
 msgstr ""
 
-#: src/dxirc.cpp:1678
+#: src/dxirc.cpp:1692
 msgid "Confirm disconnect"
 msgstr ""
 
-#: src/dxirc.cpp:1680
+#: src/dxirc.cpp:1694
 #, c-format
 msgid ""
 "Disconnect server: %s\n"
@@ -764,35 +764,35 @@ msgid ""
 "Nick: %s"
 msgstr ""
 
-#: src/dxirc.cpp:1682 ../../fox-1.6.37/src/FXMessageBox.cpp:112
-#: ../../fox-1.6.37/src/FXMessageBox.cpp:117
+#: src/dxirc.cpp:1696 ../../fox-1.6/src/FXMessageBox.cpp:112
+#: ../../fox-1.6/src/FXMessageBox.cpp:117
 msgid "&No"
 msgstr ""
 
-#: src/dxirc.cpp:1683 ../../fox-1.6.37/src/FXMessageBox.cpp:111
-#: ../../fox-1.6.37/src/FXMessageBox.cpp:116
+#: src/dxirc.cpp:1697 ../../fox-1.6/src/FXMessageBox.cpp:111
+#: ../../fox-1.6/src/FXMessageBox.cpp:116
 msgid "&Yes"
 msgstr ""
 
-#: src/dxirc.cpp:2097 src/dxirc.cpp:2148 src/dxirc.cpp:2174 src/dxirc.cpp:2322
-#: src/dxirc.cpp:2346 src/dxirc.cpp:3822 src/logviewer.cpp:476
+#: src/dxirc.cpp:2111 src/dxirc.cpp:2162 src/dxirc.cpp:2188 src/dxirc.cpp:2336
+#: src/dxirc.cpp:2360 src/dxirc.cpp:3839 src/logviewer.cpp:476
 msgid "Question"
 msgstr ""
 
-#: src/dxirc.cpp:2097
+#: src/dxirc.cpp:2111
 #, c-format
 msgid ""
 "%s offers DCC Chat on %s port %s.\n"
 " Do you want connect?"
 msgstr ""
 
-#: src/dxirc.cpp:2142 src/dxirc.cpp:2204 src/dxirc.cpp:2316 src/dxirc.cpp:2374
-#: src/dxirc.cpp:2534 src/dxirc.cpp:2559
+#: src/dxirc.cpp:2156 src/dxirc.cpp:2218 src/dxirc.cpp:2330 src/dxirc.cpp:2388
+#: src/dxirc.cpp:2548 src/dxirc.cpp:2573
 #, c-format
 msgid "Receiving \"%s\" from %s"
 msgstr ""
 
-#: src/dxirc.cpp:2148
+#: src/dxirc.cpp:2162
 #, c-format
 msgid ""
 "%s offers file %s with size %s over DCC .\n"
@@ -800,18 +800,18 @@ msgid ""
 "Do you want continue in download?"
 msgstr ""
 
-#: src/dxirc.cpp:2174
+#: src/dxirc.cpp:2188
 #, c-format
 msgid ""
 "%s offers file %s with size %s over DCC .\n"
 "Do you want connect?"
 msgstr ""
 
-#: src/dxirc.cpp:2176 src/dxirc.cpp:2348
+#: src/dxirc.cpp:2190 src/dxirc.cpp:2362
 msgid "Save file"
 msgstr ""
 
-#: src/dxirc.cpp:2322
+#: src/dxirc.cpp:2336
 #, c-format
 msgid ""
 "%s offers file %s with size %s over DCC passive.\n"
@@ -819,131 +819,131 @@ msgid ""
 "Do you want continue in download?"
 msgstr ""
 
-#: src/dxirc.cpp:2346
+#: src/dxirc.cpp:2360
 #, c-format
 msgid ""
 "%s offers file %s with size %s over DCC passive.\n"
 " Do you want accept?"
 msgstr ""
 
-#: src/dxirc.cpp:2407 src/dxirc.cpp:2422
+#: src/dxirc.cpp:2421 src/dxirc.cpp:2436
 #, c-format
 msgid "Download of \"%s\" from %s canceled"
 msgstr ""
 
-#: src/dxirc.cpp:2411
+#: src/dxirc.cpp:2425
 #, c-format
 msgid "Download of \"%s\" from %s finished"
 msgstr ""
 
-#: src/dxirc.cpp:2432 src/dxirc.cpp:2447
+#: src/dxirc.cpp:2446 src/dxirc.cpp:2461
 #, c-format
 msgid "Upload of \"%s\" to %s canceled"
 msgstr ""
 
-#: src/dxirc.cpp:2436
+#: src/dxirc.cpp:2450
 #, c-format
 msgid "Upload of \"%s\" to %s finished"
 msgstr ""
 
-#: src/dxirc.cpp:2945
+#: src/dxirc.cpp:2959
 #, c-format
 msgid "New highlighted message on %s"
 msgstr ""
 
-#: src/dxirc.cpp:2946
+#: src/dxirc.cpp:2960
 #, c-format
 msgid "New message on %s"
 msgstr ""
 
-#: src/dxirc.cpp:2969
+#: src/dxirc.cpp:2983
 #, c-format
 msgid "'%s' can't be added to ignored commands"
 msgstr ""
 
-#: src/dxirc.cpp:2978
+#: src/dxirc.cpp:2992
 #, c-format
 msgid "'%s' is already added in ignored commands"
 msgstr ""
 
-#: src/dxirc.cpp:2982
+#: src/dxirc.cpp:2996
 #, c-format
 msgid "'%s' was added to ignored commands"
 msgstr ""
 
-#: src/dxirc.cpp:3009
+#: src/dxirc.cpp:3023
 #, c-format
 msgid "'%s' was removed from ignored commands"
 msgstr ""
 
-#: src/dxirc.cpp:3015
+#: src/dxirc.cpp:3029
 #, c-format
 msgid "'%s' isn't in ignored commands"
 msgstr ""
 
-#: src/dxirc.cpp:3048
+#: src/dxirc.cpp:3062
 #, c-format
 msgid "'%s' was updated in ignored users"
 msgstr ""
 
-#: src/dxirc.cpp:3059 src/dxirc.cpp:3069
+#: src/dxirc.cpp:3073 src/dxirc.cpp:3083
 #, c-format
 msgid "'%s' was added to ignored users"
 msgstr ""
 
-#: src/dxirc.cpp:3094
+#: src/dxirc.cpp:3108
 #, c-format
 msgid "'%s' was removed from ignored users"
 msgstr ""
 
-#: src/dxirc.cpp:3100
+#: src/dxirc.cpp:3114
 #, c-format
 msgid "'%s' wasn't removed from ignored users"
 msgstr ""
 
-#: src/dxirc.cpp:3250
+#: src/dxirc.cpp:3264
 msgid "Scripts aren't loaded"
 msgstr ""
 
-#: src/dxirc.cpp:3255
+#: src/dxirc.cpp:3269
 msgid "Loaded scrips:"
 msgstr ""
 
-#: src/dxirc.cpp:3258
+#: src/dxirc.cpp:3272
 #, c-format
 msgid "Name: %s"
 msgstr ""
 
-#: src/dxirc.cpp:3259
+#: src/dxirc.cpp:3273
 #, c-format
 msgid "Description: %s"
 msgstr ""
 
-#: src/dxirc.cpp:3260
+#: src/dxirc.cpp:3274
 #, c-format
 msgid "Version: %s"
 msgstr ""
 
-#: src/dxirc.cpp:3261
+#: src/dxirc.cpp:3275
 #, c-format
 msgid "Path: %s"
 msgstr ""
 
-#: src/dxirc.cpp:3283
+#: src/dxirc.cpp:3297
 #, c-format
 msgid "Error: %s"
 msgstr ""
 
-#: src/dxirc.cpp:3291 src/irctabitem.cpp:1857 src/irctabitem.cpp:2719
+#: src/dxirc.cpp:3305 src/irctabitem.cpp:1858 src/irctabitem.cpp:2720
 msgid "dxirc is compiled without support for Lua scripting"
 msgstr ""
 
-#: src/dxirc.cpp:3813
+#: src/dxirc.cpp:3830
 #, c-format
 msgid "Script %s is already loaded"
 msgstr ""
 
-#: src/dxirc.cpp:3822
+#: src/dxirc.cpp:3839
 #, c-format
 msgid ""
 "Script %s contains dxirc.AddAll\n"
@@ -951,66 +951,66 @@ msgid ""
 "Load it anyway?"
 msgstr ""
 
-#: src/dxirc.cpp:3824
+#: src/dxirc.cpp:3841
 #, c-format
 msgid "Script %s contains dxirc.AddAll. This can BREAK dxirc funcionality."
 msgstr ""
 
-#: src/dxirc.cpp:3829
+#: src/dxirc.cpp:3846
 msgid "Unable to initialize Lua."
 msgstr ""
 
-#: src/dxirc.cpp:3838
+#: src/dxirc.cpp:3855
 #, c-format
 msgid "Unable to load/run the file %s"
 msgstr ""
 
-#: src/dxirc.cpp:3845
+#: src/dxirc.cpp:3862
 #, c-format
 msgid "Lua plugin: error registering script %s"
 msgstr ""
 
-#: src/dxirc.cpp:3858
+#: src/dxirc.cpp:3875
 #, c-format
 msgid "Script with name %s is already loaded"
 msgstr ""
 
-#: src/dxirc.cpp:3870
+#: src/dxirc.cpp:3887
 #, c-format
 msgid "Script %s was loaded"
 msgstr ""
 
-#: src/dxirc.cpp:3879
+#: src/dxirc.cpp:3896
 #, c-format
 msgid "Lua plugin: error calling dxirc_Init() %s"
 msgstr ""
 
-#: src/dxirc.cpp:3897 src/dxirc.cpp:3922
+#: src/dxirc.cpp:3914 src/dxirc.cpp:3939
 #, c-format
 msgid "Script %s isn't loaded"
 msgstr ""
 
-#: src/dxirc.cpp:3921
+#: src/dxirc.cpp:3938
 #, c-format
 msgid "Script %s was unloaded"
 msgstr ""
 
-#: src/dxirc.cpp:4007
+#: src/dxirc.cpp:4024
 #, c-format
 msgid "Command %s already exists"
 msgstr ""
 
-#: src/dxirc.cpp:4051
+#: src/dxirc.cpp:4068
 #, c-format
 msgid "Function %s for event %s already exists"
 msgstr ""
 
-#: src/dxirc.cpp:4189
+#: src/dxirc.cpp:4206
 #, c-format
 msgid "Command/event %s in script %s was removed"
 msgstr ""
 
-#: src/dxirc.cpp:4539
+#: src/dxirc.cpp:4556
 msgid ""
 "\n"
 "Usage: dxirc [options] \n"
@@ -1217,7 +1217,7 @@ msgstr ""
 msgid "%s : is signed on as account %s"
 msgstr ""
 
-#: src/ircsocket.cpp:1215 src/irctabitem.cpp:165 src/irctabitem.cpp:364
+#: src/ircsocket.cpp:1215 src/irctabitem.cpp:165 src/irctabitem.cpp:365
 msgid "No topic is set"
 msgstr ""
 
@@ -1510,11 +1510,11 @@ msgstr ""
 msgid "PONG from "
 msgstr ""
 
-#: src/ircsocket.cpp:2083
+#: src/ircsocket.cpp:2084
 msgid "Unable to send data"
 msgstr ""
 
-#: src/ircsocket.cpp:2262
+#: src/ircsocket.cpp:2263
 #, c-format
 msgid "Bad command on connection:%s"
 msgstr ""
@@ -1540,924 +1540,924 @@ msgstr ""
 msgid "Spellchecking language list"
 msgstr ""
 
-#: src/irctabitem.cpp:225 src/irctabitem.cpp:390 src/irctabitem.cpp:575
-#: src/irctabitem.cpp:4523
+#: src/irctabitem.cpp:225 src/irctabitem.cpp:391 src/irctabitem.cpp:576
+#: src/irctabitem.cpp:4539
 #, c-format
 msgid "Current spellchecking language: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:1128 src/irctabitem.cpp:1180 src/irctabitem.cpp:1199
-#: src/irctabitem.cpp:1219 src/irctabitem.cpp:1269 src/irctabitem.cpp:1311
-#: src/irctabitem.cpp:1410 src/irctabitem.cpp:1465 src/irctabitem.cpp:1520
-#: src/irctabitem.cpp:1698 src/irctabitem.cpp:1718 src/irctabitem.cpp:1788
-#: src/irctabitem.cpp:1814 src/irctabitem.cpp:1824 src/irctabitem.cpp:1977
-#: src/irctabitem.cpp:1997 src/irctabitem.cpp:2042 src/irctabitem.cpp:2069
-#: src/irctabitem.cpp:2096 src/irctabitem.cpp:2131 src/irctabitem.cpp:2186
-#: src/irctabitem.cpp:2207 src/irctabitem.cpp:2239 src/irctabitem.cpp:2265
-#: src/irctabitem.cpp:2280 src/irctabitem.cpp:2315 src/irctabitem.cpp:2326
-#: src/irctabitem.cpp:2341 src/irctabitem.cpp:2397 src/irctabitem.cpp:2452
-#: src/irctabitem.cpp:2484 src/irctabitem.cpp:2503 src/irctabitem.cpp:2513
-#: src/irctabitem.cpp:2532 src/irctabitem.cpp:2551 src/irctabitem.cpp:2585
+#: src/irctabitem.cpp:1129 src/irctabitem.cpp:1181 src/irctabitem.cpp:1200
+#: src/irctabitem.cpp:1220 src/irctabitem.cpp:1270 src/irctabitem.cpp:1312
+#: src/irctabitem.cpp:1411 src/irctabitem.cpp:1466 src/irctabitem.cpp:1521
+#: src/irctabitem.cpp:1699 src/irctabitem.cpp:1719 src/irctabitem.cpp:1789
+#: src/irctabitem.cpp:1815 src/irctabitem.cpp:1825 src/irctabitem.cpp:1978
+#: src/irctabitem.cpp:1998 src/irctabitem.cpp:2043 src/irctabitem.cpp:2070
+#: src/irctabitem.cpp:2097 src/irctabitem.cpp:2132 src/irctabitem.cpp:2187
+#: src/irctabitem.cpp:2208 src/irctabitem.cpp:2240 src/irctabitem.cpp:2266
+#: src/irctabitem.cpp:2281 src/irctabitem.cpp:2316 src/irctabitem.cpp:2327
+#: src/irctabitem.cpp:2342 src/irctabitem.cpp:2398 src/irctabitem.cpp:2453
+#: src/irctabitem.cpp:2485 src/irctabitem.cpp:2504 src/irctabitem.cpp:2514
+#: src/irctabitem.cpp:2533 src/irctabitem.cpp:2552 src/irctabitem.cpp:2586
 msgid "You aren't connected"
 msgstr ""
 
-#: src/irctabitem.cpp:1191
+#: src/irctabitem.cpp:1192
 #, c-format
 msgid "Warning: Away message is too long. Max. away message length is %d."
 msgstr ""
 
-#: src/irctabitem.cpp:1212
+#: src/irctabitem.cpp:1213
 msgid "/banlist <channel>, shows banlist for channel."
 msgstr ""
 
-#: src/irctabitem.cpp:1228
+#: src/irctabitem.cpp:1229
 msgid ""
 "/connect <server> [port] [nick] [password] [realname] [channels], connects "
 "for given server."
 msgstr ""
 
-#: src/irctabitem.cpp:1257
+#: src/irctabitem.cpp:1258
 msgid "/ctcp <nick> <message>, sends a CTCP message to a user."
 msgstr ""
 
-#: src/irctabitem.cpp:1262
+#: src/irctabitem.cpp:1263
 #, c-format
 msgid "Warning: ctcp message is too long. Max. ctcp message length is %d."
 msgstr ""
 
-#: src/irctabitem.cpp:1304
+#: src/irctabitem.cpp:1305
 msgid "/cycle <channel> [message], leaves and join channel."
 msgstr ""
 
-#: src/irctabitem.cpp:1326
+#: src/irctabitem.cpp:1327
 msgid "Nick for chat wasn't entered."
 msgstr ""
 
-#: src/irctabitem.cpp:1331
+#: src/irctabitem.cpp:1332
 msgid "Chat with yourself isn't good idea."
 msgstr ""
 
-#: src/irctabitem.cpp:1346 src/irctabitem.cpp:1377
+#: src/irctabitem.cpp:1347 src/irctabitem.cpp:1378
 msgid "Nick for sending file wasn't entered."
 msgstr ""
 
-#: src/irctabitem.cpp:1351 src/irctabitem.cpp:1382
+#: src/irctabitem.cpp:1352 src/irctabitem.cpp:1383
 msgid "Sending to yourself isn't good idea."
 msgstr ""
 
-#: src/irctabitem.cpp:1356 src/irctabitem.cpp:1387
+#: src/irctabitem.cpp:1357 src/irctabitem.cpp:1388
 msgid "Filename wasn't entered"
 msgstr ""
 
-#: src/irctabitem.cpp:1361 src/irctabitem.cpp:1392
+#: src/irctabitem.cpp:1362 src/irctabitem.cpp:1393
 #, c-format
 msgid "File '%s' doesn't exist"
 msgstr ""
 
-#: src/irctabitem.cpp:1404
+#: src/irctabitem.cpp:1405
 #, c-format
 msgid "'%s' isn't dcc command <chat|send|psend>"
 msgstr ""
 
-#: src/irctabitem.cpp:1424
+#: src/irctabitem.cpp:1425
 msgid "/deop <nicks>, removes operator status from one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:1429 src/irctabitem.cpp:1458
+#: src/irctabitem.cpp:1430 src/irctabitem.cpp:1459
 msgid ""
 "/deop <channel> <nicks>, removes operator status from one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:1479
+#: src/irctabitem.cpp:1480
 msgid "/devoice <nicks>, removes voice from one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:1484 src/irctabitem.cpp:1513
+#: src/irctabitem.cpp:1485 src/irctabitem.cpp:1514
 msgid "/devoice <channel> <nicks>, removes voice from one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:1572
+#: src/irctabitem.cpp:1573
 msgid ""
 "/exec [-o|-c] <command>, executes command, -o sends output to channel/query, "
 "-c closes running command."
 msgstr ""
 
-#: src/irctabitem.cpp:1608
+#: src/irctabitem.cpp:1609
 msgid ""
 "/ignore <list|addcmd|rmcmd|addusr|rmusr> [command|user] [channel] [server]"
 msgstr ""
 
-#: src/irctabitem.cpp:1613
+#: src/irctabitem.cpp:1614
 msgid "Ignored commands:"
 msgstr ""
 
-#: src/irctabitem.cpp:1614
+#: src/irctabitem.cpp:1615
 msgid "No ignored commands"
 msgstr ""
 
-#: src/irctabitem.cpp:1616
+#: src/irctabitem.cpp:1617
 msgid "Ignored users:"
 msgstr ""
 
-#: src/irctabitem.cpp:1618
+#: src/irctabitem.cpp:1619
 msgid "No ignored users"
 msgstr ""
 
-#: src/irctabitem.cpp:1623
+#: src/irctabitem.cpp:1624
 #, c-format
 msgid "%s on channel(s): %s and server(s): %s"
 msgstr ""
 
-#: src/irctabitem.cpp:1632
+#: src/irctabitem.cpp:1633
 msgid "/ignore addcmd <command>, adds command to ignored commands."
 msgstr ""
 
-#: src/irctabitem.cpp:1642
+#: src/irctabitem.cpp:1643
 msgid "/ignore rmcmd <command>, removes command from ignored commands."
 msgstr ""
 
-#: src/irctabitem.cpp:1652
+#: src/irctabitem.cpp:1653
 msgid "/ignore addusr <user> [channel] [server], adds user to ignored users."
 msgstr ""
 
-#: src/irctabitem.cpp:1662
+#: src/irctabitem.cpp:1663
 msgid "/ignore rmusr <user>, removes user from ignored users."
 msgstr ""
 
-#: src/irctabitem.cpp:1670
+#: src/irctabitem.cpp:1671
 #, c-format
 msgid "'%s' isn't <list|addcmd|rmcmd|addusr|rmusr>"
 msgstr ""
 
-#: src/irctabitem.cpp:1681 src/irctabitem.cpp:1686
+#: src/irctabitem.cpp:1682 src/irctabitem.cpp:1687
 msgid "/invite <nick> <channel>, invites someone to a channel."
 msgstr ""
 
-#: src/irctabitem.cpp:1710
+#: src/irctabitem.cpp:1711
 msgid "/join <channel>, joins a channel."
 msgstr ""
 
-#: src/irctabitem.cpp:1711
+#: src/irctabitem.cpp:1712
 #, c-format
 msgid "'%c' isn't valid char for channel."
 msgstr ""
 
-#: src/irctabitem.cpp:1732
+#: src/irctabitem.cpp:1733
 msgid "/kick <nick>, kicks a user from a channel."
 msgstr ""
 
-#: src/irctabitem.cpp:1737 src/irctabitem.cpp:1781
+#: src/irctabitem.cpp:1738 src/irctabitem.cpp:1782
 msgid "/kick <channel> <nick>, kicks a user from a channel."
 msgstr ""
 
-#: src/irctabitem.cpp:1747 src/irctabitem.cpp:1759 src/irctabitem.cpp:1774
+#: src/irctabitem.cpp:1748 src/irctabitem.cpp:1760 src/irctabitem.cpp:1775
 #, c-format
 msgid "Warning: reason of kick is too long. Max. reason length is %d."
 msgstr ""
 
-#: src/irctabitem.cpp:1802
+#: src/irctabitem.cpp:1803
 msgid "/kill <user> [reason], kills a user from the network."
 msgstr ""
 
-#: src/irctabitem.cpp:1807
+#: src/irctabitem.cpp:1808
 #, c-format
 msgid "Warning: reason of kill is too long. Max. reason length is %d."
 msgstr ""
 
-#: src/irctabitem.cpp:1837
+#: src/irctabitem.cpp:1838
 msgid "/lua <help|load|unload|list> [scriptpath|scriptname]"
 msgstr ""
 
-#: src/irctabitem.cpp:1842
+#: src/irctabitem.cpp:1843
 #, c-format
 msgid "For help about Lua scripting visit: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:1850
+#: src/irctabitem.cpp:1851
 #, c-format
 msgid "'%s' isn't <help|load|unload|list>"
 msgstr ""
 
-#: src/irctabitem.cpp:1870
+#: src/irctabitem.cpp:1871
 msgid "/me <message>, sends the action to the current channel."
 msgstr ""
 
-#: src/irctabitem.cpp:1925
+#: src/irctabitem.cpp:1926
 msgid "/me <message>, sends the action to the current query."
 msgstr ""
 
-#: src/irctabitem.cpp:1970
+#: src/irctabitem.cpp:1971
 msgid "/me <to> <message>, sends the action."
 msgstr ""
 
-#: src/irctabitem.cpp:1989
+#: src/irctabitem.cpp:1990
 msgid "/mode <channel> <modes>, sets modes for a channel."
 msgstr ""
 
-#: src/irctabitem.cpp:2036
+#: src/irctabitem.cpp:2037
 msgid "/msg <nick/channel> <message>, sends a normal message."
 msgstr ""
 
-#: src/irctabitem.cpp:2061
+#: src/irctabitem.cpp:2062
 msgid "/names <channel>, for nicks on a channel."
 msgstr ""
 
-#: src/irctabitem.cpp:2081
+#: src/irctabitem.cpp:2082
 msgid "/nick <nick>, changes nick."
 msgstr ""
 
-#: src/irctabitem.cpp:2086
+#: src/irctabitem.cpp:2087
 #, c-format
 msgid "Warning: nick is too long. Max. nick length is %d."
 msgstr ""
 
-#: src/irctabitem.cpp:2110
+#: src/irctabitem.cpp:2111
 #, c-format
 msgid "NOTICE to %s: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:2125
+#: src/irctabitem.cpp:2126
 msgid "/notice <nick/channel> <message>, sends a notice."
 msgstr ""
 
-#: src/irctabitem.cpp:2145
+#: src/irctabitem.cpp:2146
 msgid "/op <nicks>, gives operator status for one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:2150 src/irctabitem.cpp:2179
+#: src/irctabitem.cpp:2151 src/irctabitem.cpp:2180
 msgid "/op <channel> <nicks>, gives operator status for one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:2201
+#: src/irctabitem.cpp:2202
 msgid "/oper <login> <password>, oper up."
 msgstr ""
 
-#: src/irctabitem.cpp:2232
+#: src/irctabitem.cpp:2233
 msgid "/part <channel> [reason], leaves channel."
 msgstr ""
 
-#: src/irctabitem.cpp:2250
+#: src/irctabitem.cpp:2251
 msgid "/query <nick>, opens query with nick."
 msgstr ""
 
-#: src/irctabitem.cpp:2360 src/irctabitem.cpp:2369 src/irctabitem.cpp:2383
-#: src/irctabitem.cpp:4533
+#: src/irctabitem.cpp:2361 src/irctabitem.cpp:2370 src/irctabitem.cpp:2384
+#: src/irctabitem.cpp:4549
 #, c-format
 msgid "Warning: topic is too long. Max. topic length is %d."
 msgstr ""
 
-#: src/irctabitem.cpp:2390
+#: src/irctabitem.cpp:2391
 msgid "/topic <channel> [topic], views or changes channel topic."
 msgstr ""
 
-#: src/irctabitem.cpp:2411
+#: src/irctabitem.cpp:2412
 msgid "/voice <nicks>, gives voice for one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:2416 src/irctabitem.cpp:2445
+#: src/irctabitem.cpp:2417 src/irctabitem.cpp:2446
 msgid "/voice <channel> <nicks>, gives voice for one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:2464
+#: src/irctabitem.cpp:2465
 msgid "/wallops <message>, sends wallop message."
 msgstr ""
 
-#: src/irctabitem.cpp:2496
+#: src/irctabitem.cpp:2497
 msgid ""
 "/who <mask> [o], searchs for mask on network, if o is supplied, only search "
 "for opers."
 msgstr ""
 
-#: src/irctabitem.cpp:2525
+#: src/irctabitem.cpp:2526
 msgid "/whois <nick>, whois nick."
 msgstr ""
 
-#: src/irctabitem.cpp:2544
+#: src/irctabitem.cpp:2545
 msgid "/whowas <nick>, whowas nick."
 msgstr ""
 
-#: src/irctabitem.cpp:2556 src/irctabitem.cpp:2862
+#: src/irctabitem.cpp:2557 src/irctabitem.cpp:2863
 #, c-format
 msgid "Unknown command '%s', type /commands for available commands"
 msgstr ""
 
-#: src/irctabitem.cpp:2603
+#: src/irctabitem.cpp:2604
 msgid ""
 "ADMIN [server], finds information about administrator for current server or "
 "[server]."
 msgstr ""
 
-#: src/irctabitem.cpp:2608
+#: src/irctabitem.cpp:2609
 msgid "AWAY [message], sets away status."
 msgstr ""
 
-#: src/irctabitem.cpp:2613
+#: src/irctabitem.cpp:2614
 msgid "BANLIST <channel>, shows banlist for channel."
 msgstr ""
 
-#: src/irctabitem.cpp:2618
+#: src/irctabitem.cpp:2619
 msgid "COMMANDS, shows available commands"
 msgstr ""
 
-#: src/irctabitem.cpp:2623
+#: src/irctabitem.cpp:2624
 msgid ""
 "CONNECT <server> [port] [nick] [password] [realname] [channels], connects "
 "for given server."
 msgstr ""
 
-#: src/irctabitem.cpp:2628
+#: src/irctabitem.cpp:2629
 msgid "CTCP <nick> <message>, sends a CTCP message to a user."
 msgstr ""
 
-#: src/irctabitem.cpp:2633
+#: src/irctabitem.cpp:2634
 msgid "CYCLE <channel> [message], leaves and join channel."
 msgstr ""
 
-#: src/irctabitem.cpp:2638
+#: src/irctabitem.cpp:2639
 msgid "DCC chat <nick>, starts DCC chat."
 msgstr ""
 
-#: src/irctabitem.cpp:2639
+#: src/irctabitem.cpp:2640
 msgid "DCC send <nick> <filename>, sends file over DCC."
 msgstr ""
 
-#: src/irctabitem.cpp:2640
+#: src/irctabitem.cpp:2641
 msgid "DCC psend <nick> <filename>, sends file passive over DCC."
 msgstr ""
 
-#: src/irctabitem.cpp:2641
+#: src/irctabitem.cpp:2642
 msgid ""
 "More information about passive DCC on http://en.wikipedia.org/wiki/"
 "Direct_Client-to-Client#Passive_DCC"
 msgstr ""
 
-#: src/irctabitem.cpp:2646
+#: src/irctabitem.cpp:2647
 msgid "DEOP <channel> <nicks>, removes operator status from one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:2651
+#: src/irctabitem.cpp:2652
 msgid "DEVOICE <channel> <nicks>, removes voice from one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:2656
+#: src/irctabitem.cpp:2657
 msgid "DISCONNECT [reason], leaves server."
 msgstr ""
 
-#: src/irctabitem.cpp:2662
+#: src/irctabitem.cpp:2663
 msgid ""
 "EXEC [-o|-c] <command>, executes command, -o sends output to channel/query, -"
 "c closes running command."
 msgstr ""
 
-#: src/irctabitem.cpp:2668
+#: src/irctabitem.cpp:2669
 msgid "HELP <command>, shows help for command."
 msgstr ""
 
-#: src/irctabitem.cpp:2673
+#: src/irctabitem.cpp:2674
 msgid "IGNORE list, shows list ignored commands and users."
 msgstr ""
 
-#: src/irctabitem.cpp:2674
+#: src/irctabitem.cpp:2675
 msgid "IGNORE addcmd <command>, adds command to ignored commands."
 msgstr ""
 
-#: src/irctabitem.cpp:2675
+#: src/irctabitem.cpp:2676
 msgid "IGNORE rmcmd <command>, removes command from ignored commands."
 msgstr ""
 
-#: src/irctabitem.cpp:2676
+#: src/irctabitem.cpp:2677
 msgid "IGNORE addusr <user> [channel] [server], adds user to ignored users."
 msgstr ""
 
-#: src/irctabitem.cpp:2677
+#: src/irctabitem.cpp:2678
 msgid "IGNORE rmusr <user>, removes user from ignored users."
 msgstr ""
 
-#: src/irctabitem.cpp:2682
+#: src/irctabitem.cpp:2683
 msgid "INVITE <nick> <channel>, invites someone to a channel."
 msgstr ""
 
-#: src/irctabitem.cpp:2687
+#: src/irctabitem.cpp:2688
 msgid "JOIN <channel>, joins a channel."
 msgstr ""
 
-#: src/irctabitem.cpp:2692
+#: src/irctabitem.cpp:2693
 msgid "KICK <channel> <nick>, kicks a user from a channel."
 msgstr ""
 
-#: src/irctabitem.cpp:2697
+#: src/irctabitem.cpp:2698
 msgid "KILL <user> [reason], kills a user from the network."
 msgstr ""
 
-#: src/irctabitem.cpp:2702
+#: src/irctabitem.cpp:2703
 msgid "LIST [channel], lists channels and their topics."
 msgstr ""
 
-#: src/irctabitem.cpp:2708
+#: src/irctabitem.cpp:2709
 msgid "LUA help, shows help for lua scripting."
 msgstr ""
 
-#: src/irctabitem.cpp:2709
+#: src/irctabitem.cpp:2710
 msgid "LUA load <path>, loads script."
 msgstr ""
 
-#: src/irctabitem.cpp:2710
+#: src/irctabitem.cpp:2711
 msgid "Example: /lua load /home/dvx/test.lua"
 msgstr ""
 
-#: src/irctabitem.cpp:2711
+#: src/irctabitem.cpp:2712
 msgid "LUA unload <name>, unloads script."
 msgstr ""
 
-#: src/irctabitem.cpp:2712
+#: src/irctabitem.cpp:2713
 msgid "Example: /lua unload test"
 msgstr ""
 
-#: src/irctabitem.cpp:2713
+#: src/irctabitem.cpp:2714
 msgid "LUA list, shows list of loaded scripts"
 msgstr ""
 
-#: src/irctabitem.cpp:2725
+#: src/irctabitem.cpp:2726
 msgid "ME <to> <message>, sends the action."
 msgstr ""
 
-#: src/irctabitem.cpp:2730
+#: src/irctabitem.cpp:2731
 msgid "MODE <channel> <modes>, sets modes for a channel."
 msgstr ""
 
-#: src/irctabitem.cpp:2735
+#: src/irctabitem.cpp:2736
 msgid "MSG <nick/channel> <message>, sends a normal message."
 msgstr ""
 
-#: src/irctabitem.cpp:2740
+#: src/irctabitem.cpp:2741
 msgid "NAMES <channel>, for nicks on a channel."
 msgstr ""
 
-#: src/irctabitem.cpp:2745
+#: src/irctabitem.cpp:2746
 msgid "NICK <nick>, changes nick."
 msgstr ""
 
-#: src/irctabitem.cpp:2750
+#: src/irctabitem.cpp:2751
 msgid "NOTICE <nick/channel> <message>, sends a notice."
 msgstr ""
 
-#: src/irctabitem.cpp:2755
+#: src/irctabitem.cpp:2756
 msgid "OP <channel> <nicks>, gives operator status for one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:2760
+#: src/irctabitem.cpp:2761
 msgid "OPER <login> <password>, oper up."
 msgstr ""
 
-#: src/irctabitem.cpp:2765
+#: src/irctabitem.cpp:2766
 msgid "PART <channel> [reason], leaves channel."
 msgstr ""
 
-#: src/irctabitem.cpp:2770
+#: src/irctabitem.cpp:2771
 msgid "QUERY <nick>, opens query with nick."
 msgstr ""
 
-#: src/irctabitem.cpp:2775
+#: src/irctabitem.cpp:2776
 msgid "QUIT, closes application."
 msgstr ""
 
-#: src/irctabitem.cpp:2780
+#: src/irctabitem.cpp:2781
 msgid "QUOTE [text], sends text to server."
 msgstr ""
 
-#: src/irctabitem.cpp:2785
+#: src/irctabitem.cpp:2786
 msgid "SAY [text], sends text to current tab."
 msgstr ""
 
-#: src/irctabitem.cpp:2790
+#: src/irctabitem.cpp:2791
 msgid ""
 "STATS <type>, shows some irc server usage statistics. Available types vary "
 "slightly per server; some common ones are:"
 msgstr ""
 
-#: src/irctabitem.cpp:2791
+#: src/irctabitem.cpp:2792
 msgid ""
 "c - shows C and N lines for a given server.  These are the names of the "
 "servers that are allowed to connect."
 msgstr ""
 
-#: src/irctabitem.cpp:2792
+#: src/irctabitem.cpp:2793
 msgid "h - shows H and L lines for a given server (Hubs and Leaves)."
 msgstr ""
 
-#: src/irctabitem.cpp:2793
+#: src/irctabitem.cpp:2794
 msgid ""
 "k - show K lines for a server.  This shows who is not allowed to connect and "
 "possibly at what time they are not allowed to connect."
 msgstr ""
 
-#: src/irctabitem.cpp:2794
+#: src/irctabitem.cpp:2795
 msgid "i - shows I lines. This is who CAN connect to a server."
 msgstr ""
 
-#: src/irctabitem.cpp:2795
+#: src/irctabitem.cpp:2796
 msgid ""
 "l - shows information about amount of information passed to servers and "
 "users."
 msgstr ""
 
-#: src/irctabitem.cpp:2796
+#: src/irctabitem.cpp:2797
 msgid ""
 "m - shows a count for the number of times the various commands have been "
 "used since the server was booted."
 msgstr ""
 
-#: src/irctabitem.cpp:2797
+#: src/irctabitem.cpp:2798
 msgid "o - shows the list of authorized operators on the server."
 msgstr ""
 
-#: src/irctabitem.cpp:2798
+#: src/irctabitem.cpp:2799
 msgid "p - shows online operators and their idle times."
 msgstr ""
 
-#: src/irctabitem.cpp:2799
+#: src/irctabitem.cpp:2800
 msgid "u - shows the uptime for a server."
 msgstr ""
 
-#: src/irctabitem.cpp:2800
+#: src/irctabitem.cpp:2801
 msgid ""
 "y - shows Y lines, which lists the various connection classes for a given "
 "server."
 msgstr ""
 
-#: src/irctabitem.cpp:2806
+#: src/irctabitem.cpp:2807
 msgid "TETRIS, start small easteregg."
 msgstr ""
 
-#: src/irctabitem.cpp:2807 src/tetristabitem.cpp:424
+#: src/irctabitem.cpp:2808 src/tetristabitem.cpp:424
 msgid "Keys for playing:"
 msgstr ""
 
-#: src/irctabitem.cpp:2808
+#: src/irctabitem.cpp:2809
 msgid "N .. new game"
 msgstr ""
 
-#: src/irctabitem.cpp:2809
+#: src/irctabitem.cpp:2810
 msgid "P .. pause game"
 msgstr ""
 
-#: src/irctabitem.cpp:2810
+#: src/irctabitem.cpp:2811
 msgid "Num5 .. rotate piece"
 msgstr ""
 
-#: src/irctabitem.cpp:2811
+#: src/irctabitem.cpp:2812
 msgid "Num3 .. move piece right"
 msgstr ""
 
-#: src/irctabitem.cpp:2812
+#: src/irctabitem.cpp:2813
 msgid "Num2 .. drop piece"
 msgstr ""
 
-#: src/irctabitem.cpp:2813
+#: src/irctabitem.cpp:2814
 msgid "Num1 .. move piece left"
 msgstr ""
 
-#: src/irctabitem.cpp:2818
+#: src/irctabitem.cpp:2819
 msgid "TIME, displays the time of day, local to server."
 msgstr ""
 
-#: src/irctabitem.cpp:2823
+#: src/irctabitem.cpp:2824
 msgid "TOPIC [topic], sets or shows topic."
 msgstr ""
 
-#: src/irctabitem.cpp:2828
+#: src/irctabitem.cpp:2829
 msgid "VOICE <channel> <nicks>, gives voice for one or more nicks."
 msgstr ""
 
-#: src/irctabitem.cpp:2833
+#: src/irctabitem.cpp:2834
 msgid "WALLOPS <message>, sends wallop message."
 msgstr ""
 
-#: src/irctabitem.cpp:2838
+#: src/irctabitem.cpp:2839
 msgid ""
 "WHO <mask> [o], searchs for mask on network, if o is supplied, only search "
 "for opers."
 msgstr ""
 
-#: src/irctabitem.cpp:2843
+#: src/irctabitem.cpp:2844
 msgid "WHOAMI, whois about you."
 msgstr ""
 
-#: src/irctabitem.cpp:2848
+#: src/irctabitem.cpp:2849
 msgid "WHOIS <nick>, whois nick."
 msgstr ""
 
-#: src/irctabitem.cpp:2853
+#: src/irctabitem.cpp:2854
 msgid "WHOWAS <nick>, whowas nick."
 msgstr ""
 
-#: src/irctabitem.cpp:2861
+#: src/irctabitem.cpp:2862
 msgid "Command is empty, type /commands for available commands"
 msgstr ""
 
-#: src/irctabitem.cpp:3414
+#: src/irctabitem.cpp:3415
 #, c-format
 msgid "CTCP %s reply from %s: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3427
+#: src/irctabitem.cpp:3428
 #, c-format
 msgid "CTCP %s request from %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3482
+#: src/irctabitem.cpp:3483
 #, c-format
 msgid "%s has joined to %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3495 src/irctabitem.cpp:3504
+#: src/irctabitem.cpp:3496 src/irctabitem.cpp:3505
 #, c-format
 msgid "%s has quit"
 msgstr ""
 
-#: src/irctabitem.cpp:3499
+#: src/irctabitem.cpp:3500
 #, c-format
 msgid "%s has quit (%s)"
 msgstr ""
 
-#: src/irctabitem.cpp:3513
+#: src/irctabitem.cpp:3514
 #, c-format
 msgid "%s has parted %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3514
+#: src/irctabitem.cpp:3515
 #, c-format
 msgid "%s has parted %s (%s)"
 msgstr ""
 
-#: src/irctabitem.cpp:3529 src/irctabitem.cpp:3548 src/irctabitem.cpp:3566
+#: src/irctabitem.cpp:3545 src/irctabitem.cpp:3564 src/irctabitem.cpp:3582
 #, c-format
 msgid "%s's NOTICE: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3561
+#: src/irctabitem.cpp:3577
 #, c-format
 msgid "NOTICE for you: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3577
+#: src/irctabitem.cpp:3593
 #, c-format
 msgid "You're now known as %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3578
+#: src/irctabitem.cpp:3594
 #, c-format
 msgid "%s is now known as %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3592
+#: src/irctabitem.cpp:3608
 #, c-format
 msgid "%s set new topic for %s: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3602
+#: src/irctabitem.cpp:3618
 #, c-format
 msgid "%s invites you to: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3614
+#: src/irctabitem.cpp:3630
 #, c-format
 msgid "%s was kicked from %s by %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3615
+#: src/irctabitem.cpp:3631
 #, c-format
 msgid "%s was kicked from %s by %s (%s)"
 msgstr ""
 
-#: src/irctabitem.cpp:3621
+#: src/irctabitem.cpp:3637
 #, c-format
 msgid "You were kicked from %s by %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3622
+#: src/irctabitem.cpp:3638
 #, c-format
 msgid "You were kicked from %s by %s (%s)"
 msgstr ""
 
-#: src/irctabitem.cpp:3632
+#: src/irctabitem.cpp:3648
 #, c-format
 msgid "Mode change [%s] for %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3665
+#: src/irctabitem.cpp:3681
 #, c-format
 msgid "%s gave you admin"
 msgstr ""
 
-#: src/irctabitem.cpp:3666
+#: src/irctabitem.cpp:3682
 #, c-format
 msgid "%s gave %s admin"
 msgstr ""
 
-#: src/irctabitem.cpp:3674
+#: src/irctabitem.cpp:3690
 #, c-format
 msgid "%s removed you admin"
 msgstr ""
 
-#: src/irctabitem.cpp:3675
+#: src/irctabitem.cpp:3691
 #, c-format
 msgid "%s removed %s admin"
 msgstr ""
 
-#: src/irctabitem.cpp:3689
+#: src/irctabitem.cpp:3705
 #, c-format
 msgid "%s gave you op"
 msgstr ""
 
-#: src/irctabitem.cpp:3690
+#: src/irctabitem.cpp:3706
 #, c-format
 msgid "%s gave %s op"
 msgstr ""
 
-#: src/irctabitem.cpp:3698
+#: src/irctabitem.cpp:3714
 #, c-format
 msgid "%s removed you op"
 msgstr ""
 
-#: src/irctabitem.cpp:3699
+#: src/irctabitem.cpp:3715
 #, c-format
 msgid "%s removed %s op"
 msgstr ""
 
-#: src/irctabitem.cpp:3714
+#: src/irctabitem.cpp:3730
 #, c-format
 msgid "%s gave you voice"
 msgstr ""
 
-#: src/irctabitem.cpp:3715
+#: src/irctabitem.cpp:3731
 #, c-format
 msgid "%s gave %s voice"
 msgstr ""
 
-#: src/irctabitem.cpp:3723
+#: src/irctabitem.cpp:3739
 #, c-format
 msgid "%s removed you voice"
 msgstr ""
 
-#: src/irctabitem.cpp:3724
+#: src/irctabitem.cpp:3740
 #, c-format
 msgid "%s removed %s voice"
 msgstr ""
 
-#: src/irctabitem.cpp:3738
+#: src/irctabitem.cpp:3754
 #, c-format
 msgid "%s gave you halfop"
 msgstr ""
 
-#: src/irctabitem.cpp:3739
+#: src/irctabitem.cpp:3755
 #, c-format
 msgid "%s gave %s halfop"
 msgstr ""
 
-#: src/irctabitem.cpp:3747
+#: src/irctabitem.cpp:3763
 #, c-format
 msgid "%s removed you halfop"
 msgstr ""
 
-#: src/irctabitem.cpp:3748
+#: src/irctabitem.cpp:3764
 #, c-format
 msgid "%s removed %s halfop"
 msgstr ""
 
-#: src/irctabitem.cpp:3765
+#: src/irctabitem.cpp:3781
 #, c-format
 msgid "%s set Mode: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3780
+#: src/irctabitem.cpp:3796
 #, c-format
 msgid "Mode for %s: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3893 src/irctabitem.cpp:3901
+#: src/irctabitem.cpp:3909 src/irctabitem.cpp:3917
 #, c-format
 msgid "Unhandled command '%s' params: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3912
+#: src/irctabitem.cpp:3928
 #, c-format
 msgid "%s is away: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:4042
+#: src/irctabitem.cpp:4058
 #, c-format
 msgid "Users on %s: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:4279
+#: src/irctabitem.cpp:4295
 msgid "Give op"
 msgstr ""
 
-#: src/irctabitem.cpp:4280
+#: src/irctabitem.cpp:4296
 msgid "Remove op"
 msgstr ""
 
-#: src/irctabitem.cpp:4282
+#: src/irctabitem.cpp:4298
 msgid "Give voice"
 msgstr ""
 
-#: src/irctabitem.cpp:4283
+#: src/irctabitem.cpp:4299
 msgid "Remove voice"
 msgstr ""
 
-#: src/irctabitem.cpp:4285
+#: src/irctabitem.cpp:4301
 msgid "Kick"
 msgstr ""
 
-#: src/irctabitem.cpp:4287
+#: src/irctabitem.cpp:4303
 msgid "Ban"
 msgstr ""
 
-#: src/irctabitem.cpp:4288
+#: src/irctabitem.cpp:4304
 msgid "KickBan"
 msgstr ""
 
-#: src/irctabitem.cpp:4290
+#: src/irctabitem.cpp:4306
 #, c-format
 msgid "User: %s@%s"
 msgstr ""
 
-#: src/irctabitem.cpp:4291
+#: src/irctabitem.cpp:4307
 #, c-format
 msgid "Realname: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:4295
+#: src/irctabitem.cpp:4311
 msgid "Query"
 msgstr ""
 
-#: src/irctabitem.cpp:4296
+#: src/irctabitem.cpp:4312
 msgid "User information (WHOIS)"
 msgstr ""
 
-#: src/irctabitem.cpp:4297
+#: src/irctabitem.cpp:4313
 msgid "DCC chat"
 msgstr ""
 
-#: src/irctabitem.cpp:4298
+#: src/irctabitem.cpp:4314
 msgid "Send file"
 msgstr ""
 
-#: src/irctabitem.cpp:4299
+#: src/irctabitem.cpp:4315
 msgid "Ignore"
 msgstr ""
 
-#: src/irctabitem.cpp:4300
+#: src/irctabitem.cpp:4316
 msgid "Operator actions"
 msgstr ""
 
-#: src/irctabitem.cpp:4305
+#: src/irctabitem.cpp:4321
 msgid "Remove Away"
 msgstr ""
 
-#: src/irctabitem.cpp:4306
+#: src/irctabitem.cpp:4322
 msgid "Set Away"
 msgstr ""
 
-#: src/irctabitem.cpp:4395
+#: src/irctabitem.cpp:4411
 msgid "Kick dialog"
 msgstr ""
 
-#: src/irctabitem.cpp:4399 src/irctabitem.cpp:4440
+#: src/irctabitem.cpp:4415 src/irctabitem.cpp:4456
 msgid "Kick reason:"
 msgstr ""
 
-#: src/irctabitem.cpp:4415
+#: src/irctabitem.cpp:4431
 msgid "Ban dialog"
 msgstr ""
 
-#: src/irctabitem.cpp:4419 src/irctabitem.cpp:4444
+#: src/irctabitem.cpp:4435 src/irctabitem.cpp:4460
 msgid "Banmask:"
 msgstr ""
 
-#: src/irctabitem.cpp:4436
+#: src/irctabitem.cpp:4452
 msgid "Kick/Ban dialog"
 msgstr ""
 
-#: src/irctabitem.cpp:4493
+#: src/irctabitem.cpp:4509
 msgid "Away dialog"
 msgstr ""
 
-#: src/irctabitem.cpp:4497
+#: src/irctabitem.cpp:4513
 msgid "Message:"
 msgstr ""
 
-#: src/irctabitem.cpp:4499 src/irctabitem.cpp:4507
+#: src/irctabitem.cpp:4515 src/irctabitem.cpp:4523
 msgid "away"
 msgstr ""
 
-#: src/irctabitem.cpp:4561
+#: src/irctabitem.cpp:4577
 #, c-format
 msgid "You was banned by %s"
 msgstr ""
 
-#: src/irctabitem.cpp:4564
+#: src/irctabitem.cpp:4580
 #, c-format
 msgid "%s was banned by %s"
 msgstr ""
@@ -2467,7 +2467,7 @@ msgid "Servers list"
 msgstr ""
 
 #: src/serverdialog.cpp:52 src/scriptdialog.cpp:49 src/dccdialog.cpp:65
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:741
+#: ../../fox-1.6/src/FXFileSelector.cpp:741
 msgid "Details"
 msgstr ""
 
@@ -2605,6 +2605,7 @@ msgid ""
 "     o Insert underline control char - Ctrl-i\n"
 "     o Insert reverse control char - Ctrl-r\n"
 "     o Insert reset control char - Ctrl-o\n"
+"     o Force commandline focus in current tab - Ctrl-f\n"
 " \n"
 " \n"
 "   Configuration\n"
@@ -2654,7 +2655,7 @@ msgstr ""
 msgid "F3 for next"
 msgstr ""
 
-#: src/logviewer.cpp:86 ../../fox-1.6.37/src/FXSearchDialog.cpp:71
+#: src/logviewer.cpp:86 ../../fox-1.6/src/FXSearchDialog.cpp:71
 msgid "&Search"
 msgstr ""
 
@@ -2852,8 +2853,8 @@ msgstr ""
 msgid "File"
 msgstr ""
 
-#: src/dccdialog.cpp:56 ../../fox-1.6.37/src/FXFileList.cpp:194
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:729
+#: src/dccdialog.cpp:56 ../../fox-1.6/src/FXFileList.cpp:194
+#: ../../fox-1.6/src/FXFileSelector.cpp:729
 msgid "Size"
 msgstr ""
 
@@ -2906,518 +2907,518 @@ msgstr ""
 msgid "Uses http://www.famfamfam.com/lab/icons/"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXMessageBox.cpp:128
-#: ../../fox-1.6.37/src/FXMessageBox.cpp:143
+#: ../../fox-1.6/src/FXMessageBox.cpp:128
+#: ../../fox-1.6/src/FXMessageBox.cpp:143
 msgid "&Save"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXMessageBox.cpp:133
+#: ../../fox-1.6/src/FXMessageBox.cpp:133
 msgid "&Skip"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXMessageBox.cpp:134
+#: ../../fox-1.6/src/FXMessageBox.cpp:134
 msgid "Skip &All"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXMessageBox.cpp:140
+#: ../../fox-1.6/src/FXMessageBox.cpp:140
 msgid "&Don't Save"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXColorSelector.cpp:168
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:113
+#: ../../fox-1.6/src/FXColorSelector.cpp:168
+#: ../../fox-1.6/src/FXFontSelector.cpp:113
 msgid "&Accept"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXColorSelector.cpp:220
+#: ../../fox-1.6/src/FXColorSelector.cpp:220
 msgid "\tPick color"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXColorSelector.cpp:229
-#: ../../fox-1.6.37/src/FXColorSelector.cpp:274
+#: ../../fox-1.6/src/FXColorSelector.cpp:229
+#: ../../fox-1.6/src/FXColorSelector.cpp:274
 msgid "\tHue, Saturation, Value"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXColorSelector.cpp:239
+#: ../../fox-1.6/src/FXColorSelector.cpp:239
 msgid "\tRed, Green, Blue"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXColorSelector.cpp:245
+#: ../../fox-1.6/src/FXColorSelector.cpp:245
 msgid "&Red:"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXColorSelector.cpp:250
+#: ../../fox-1.6/src/FXColorSelector.cpp:250
 msgid "&Green:"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXColorSelector.cpp:255
+#: ../../fox-1.6/src/FXColorSelector.cpp:255
 msgid "&Blue:"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXColorSelector.cpp:260
+#: ../../fox-1.6/src/FXColorSelector.cpp:260
 msgid "&Alpha:"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXColorSelector.cpp:280
+#: ../../fox-1.6/src/FXColorSelector.cpp:280
 msgid "Hue:"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXColorSelector.cpp:285
+#: ../../fox-1.6/src/FXColorSelector.cpp:285
 msgid "Saturation:"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXColorSelector.cpp:290
+#: ../../fox-1.6/src/FXColorSelector.cpp:290
 msgid "Value:"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXColorSelector.cpp:295
-#: ../../fox-1.6.37/src/FXColorSelector.cpp:330
+#: ../../fox-1.6/src/FXColorSelector.cpp:295
+#: ../../fox-1.6/src/FXColorSelector.cpp:330
 msgid "Alpha:"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXColorSelector.cpp:309
+#: ../../fox-1.6/src/FXColorSelector.cpp:309
 msgid "\tCyan, Magenta, Yellow"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXColorSelector.cpp:315
+#: ../../fox-1.6/src/FXColorSelector.cpp:315
 msgid "Cyan:"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXColorSelector.cpp:320
+#: ../../fox-1.6/src/FXColorSelector.cpp:320
 msgid "Magenta:"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXColorSelector.cpp:325
+#: ../../fox-1.6/src/FXColorSelector.cpp:325
 msgid "Yellow:"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXColorSelector.cpp:344
+#: ../../fox-1.6/src/FXColorSelector.cpp:344
 msgid "\tBy Name"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:120
+#: ../../fox-1.6/src/FXFontSelector.cpp:120
 msgid "&Family:"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:129
+#: ../../fox-1.6/src/FXFontSelector.cpp:129
 msgid "&Weight:"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:135
+#: ../../fox-1.6/src/FXFontSelector.cpp:135
 msgid "&Style:"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:141
+#: ../../fox-1.6/src/FXFontSelector.cpp:141
 msgid "Si&ze:"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:149
+#: ../../fox-1.6/src/FXFontSelector.cpp:149
 msgid "Character Set:"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:152
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:184
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:200
+#: ../../fox-1.6/src/FXFontSelector.cpp:152
+#: ../../fox-1.6/src/FXFontSelector.cpp:184
+#: ../../fox-1.6/src/FXFontSelector.cpp:200
 msgid "Any"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:153
+#: ../../fox-1.6/src/FXFontSelector.cpp:153
 msgid "West European"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:154
+#: ../../fox-1.6/src/FXFontSelector.cpp:154
 msgid "East European"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:155
+#: ../../fox-1.6/src/FXFontSelector.cpp:155
 msgid "South European"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:156
+#: ../../fox-1.6/src/FXFontSelector.cpp:156
 msgid "North European"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:157
+#: ../../fox-1.6/src/FXFontSelector.cpp:157
 msgid "Cyrillic"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:158
+#: ../../fox-1.6/src/FXFontSelector.cpp:158
 msgid "Arabic"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:159
+#: ../../fox-1.6/src/FXFontSelector.cpp:159
 msgid "Greek"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:160
+#: ../../fox-1.6/src/FXFontSelector.cpp:160
 msgid "Hebrew"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:161
+#: ../../fox-1.6/src/FXFontSelector.cpp:161
 msgid "Turkish"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:162
+#: ../../fox-1.6/src/FXFontSelector.cpp:162
 msgid "Nordic"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:163
+#: ../../fox-1.6/src/FXFontSelector.cpp:163
 msgid "Thai"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:164
+#: ../../fox-1.6/src/FXFontSelector.cpp:164
 msgid "Baltic"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:165
+#: ../../fox-1.6/src/FXFontSelector.cpp:165
 msgid "Celtic"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:166
+#: ../../fox-1.6/src/FXFontSelector.cpp:166
 msgid "Russian"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:167
+#: ../../fox-1.6/src/FXFontSelector.cpp:167
 msgid "Central European (cp1250)"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:168
+#: ../../fox-1.6/src/FXFontSelector.cpp:168
 msgid "Russian (cp1251)"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:169
+#: ../../fox-1.6/src/FXFontSelector.cpp:169
 msgid "Latin1 (cp1252)"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:170
+#: ../../fox-1.6/src/FXFontSelector.cpp:170
 msgid "Greek (cp1253)"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:171
+#: ../../fox-1.6/src/FXFontSelector.cpp:171
 msgid "Turkish (cp1254)"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:172
+#: ../../fox-1.6/src/FXFontSelector.cpp:172
 msgid "Hebrew (cp1255)"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:173
+#: ../../fox-1.6/src/FXFontSelector.cpp:173
 msgid "Arabic (cp1256)"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:174
+#: ../../fox-1.6/src/FXFontSelector.cpp:174
 msgid "Baltic (cp1257)"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:175
+#: ../../fox-1.6/src/FXFontSelector.cpp:175
 msgid "Vietnam (cp1258)"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:176
+#: ../../fox-1.6/src/FXFontSelector.cpp:176
 msgid "Thai (cp874)"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:177
+#: ../../fox-1.6/src/FXFontSelector.cpp:177
 msgid "UNICODE"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:181
+#: ../../fox-1.6/src/FXFontSelector.cpp:181
 msgid "Set Width:"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:185
+#: ../../fox-1.6/src/FXFontSelector.cpp:185
 msgid "Ultra condensed"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:186
+#: ../../fox-1.6/src/FXFontSelector.cpp:186
 msgid "Extra condensed"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:187
+#: ../../fox-1.6/src/FXFontSelector.cpp:187
 msgid "Condensed"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:188
+#: ../../fox-1.6/src/FXFontSelector.cpp:188
 msgid "Semi condensed"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:189
+#: ../../fox-1.6/src/FXFontSelector.cpp:189
 msgid "Normal"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:190
+#: ../../fox-1.6/src/FXFontSelector.cpp:190
 msgid "Semi expanded"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:191
+#: ../../fox-1.6/src/FXFontSelector.cpp:191
 msgid "Expanded"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:192
+#: ../../fox-1.6/src/FXFontSelector.cpp:192
 msgid "Extra expanded"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:193
+#: ../../fox-1.6/src/FXFontSelector.cpp:193
 msgid "Ultra expanded"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:197
+#: ../../fox-1.6/src/FXFontSelector.cpp:197
 msgid "Pitch:"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:201
+#: ../../fox-1.6/src/FXFontSelector.cpp:201
 msgid "Fixed"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:202
+#: ../../fox-1.6/src/FXFontSelector.cpp:202
 msgid "Variable"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:207
+#: ../../fox-1.6/src/FXFontSelector.cpp:207
 msgid "Scalable:"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFontSelector.cpp:212
+#: ../../fox-1.6/src/FXFontSelector.cpp:212
 msgid "All Fonts:"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXDirSelector.cpp:137
+#: ../../fox-1.6/src/FXDirSelector.cpp:137
 msgid "&Directory:"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXDirSelector.cpp:281
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:521
+#: ../../fox-1.6/src/FXDirSelector.cpp:281
+#: ../../fox-1.6/src/FXFileSelector.cpp:521
 msgid "Create New Directory"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXDirSelector.cpp:284
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:524
+#: ../../fox-1.6/src/FXDirSelector.cpp:284
+#: ../../fox-1.6/src/FXFileSelector.cpp:524
 msgid "Already Exists"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXDirSelector.cpp:288
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:528
+#: ../../fox-1.6/src/FXDirSelector.cpp:288
+#: ../../fox-1.6/src/FXFileSelector.cpp:528
 msgid "Cannot Create"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXDirSelector.cpp:309
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:595
+#: ../../fox-1.6/src/FXDirSelector.cpp:309
+#: ../../fox-1.6/src/FXFileSelector.cpp:595
 msgid "Copy File"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXDirSelector.cpp:315
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:601
+#: ../../fox-1.6/src/FXDirSelector.cpp:315
+#: ../../fox-1.6/src/FXFileSelector.cpp:601
 msgid "Error Copying File"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXDirSelector.cpp:326
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:618
+#: ../../fox-1.6/src/FXDirSelector.cpp:326
+#: ../../fox-1.6/src/FXFileSelector.cpp:618
 msgid "Move File"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXDirSelector.cpp:332
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:624
+#: ../../fox-1.6/src/FXDirSelector.cpp:332
+#: ../../fox-1.6/src/FXFileSelector.cpp:624
 msgid "Error Moving File"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXDirSelector.cpp:343
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:641
+#: ../../fox-1.6/src/FXDirSelector.cpp:343
+#: ../../fox-1.6/src/FXFileSelector.cpp:641
 msgid "Link File"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXDirSelector.cpp:349
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:647
+#: ../../fox-1.6/src/FXDirSelector.cpp:349
+#: ../../fox-1.6/src/FXFileSelector.cpp:647
 msgid "Error Linking File"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXDirSelector.cpp:359
+#: ../../fox-1.6/src/FXDirSelector.cpp:359
 msgid "Deleting file"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXDirSelector.cpp:361
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:667
+#: ../../fox-1.6/src/FXDirSelector.cpp:361
+#: ../../fox-1.6/src/FXFileSelector.cpp:667
 msgid "Error Deleting File"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXDirSelector.cpp:381
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:719
+#: ../../fox-1.6/src/FXDirSelector.cpp:381
+#: ../../fox-1.6/src/FXFileSelector.cpp:719
 msgid "Up one level"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXDirSelector.cpp:382
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:720
+#: ../../fox-1.6/src/FXDirSelector.cpp:382
+#: ../../fox-1.6/src/FXFileSelector.cpp:720
 msgid "Home directory"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXDirSelector.cpp:383
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:721
+#: ../../fox-1.6/src/FXDirSelector.cpp:383
+#: ../../fox-1.6/src/FXFileSelector.cpp:721
 msgid "Work directory"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXDirSelector.cpp:387
+#: ../../fox-1.6/src/FXDirSelector.cpp:387
 msgid "Sorting"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXDirSelector.cpp:388
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:734
+#: ../../fox-1.6/src/FXDirSelector.cpp:388
+#: ../../fox-1.6/src/FXFileSelector.cpp:734
 msgid "Reverse"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXDirSelector.cpp:389
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:735
+#: ../../fox-1.6/src/FXDirSelector.cpp:389
+#: ../../fox-1.6/src/FXFileSelector.cpp:735
 msgid "Ignore case"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXDirSelector.cpp:390
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:746
+#: ../../fox-1.6/src/FXDirSelector.cpp:390
+#: ../../fox-1.6/src/FXFileSelector.cpp:746
 msgid "Hidden files"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXDirSelector.cpp:393
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:754
+#: ../../fox-1.6/src/FXDirSelector.cpp:393
+#: ../../fox-1.6/src/FXFileSelector.cpp:754
 msgid "Bookmarks"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXDirSelector.cpp:394
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:757
+#: ../../fox-1.6/src/FXDirSelector.cpp:394
+#: ../../fox-1.6/src/FXFileSelector.cpp:757
 msgid "Set bookmark"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXDirSelector.cpp:395
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:758
+#: ../../fox-1.6/src/FXDirSelector.cpp:395
+#: ../../fox-1.6/src/FXFileSelector.cpp:758
 msgid "Clear bookmarks"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXDirSelector.cpp:411
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:774
+#: ../../fox-1.6/src/FXDirSelector.cpp:411
+#: ../../fox-1.6/src/FXFileSelector.cpp:774
 msgid "New directory..."
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXDirSelector.cpp:412
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:775
+#: ../../fox-1.6/src/FXDirSelector.cpp:412
+#: ../../fox-1.6/src/FXFileSelector.cpp:775
 msgid "Copy..."
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXDirSelector.cpp:413
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:776
+#: ../../fox-1.6/src/FXDirSelector.cpp:413
+#: ../../fox-1.6/src/FXFileSelector.cpp:776
 msgid "Move..."
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXDirSelector.cpp:414
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:777
+#: ../../fox-1.6/src/FXDirSelector.cpp:414
+#: ../../fox-1.6/src/FXFileSelector.cpp:777
 msgid "Link..."
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXDirSelector.cpp:415
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:778
+#: ../../fox-1.6/src/FXDirSelector.cpp:415
+#: ../../fox-1.6/src/FXFileSelector.cpp:778
 msgid "Delete..."
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileList.cpp:192
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:727
+#: ../../fox-1.6/src/FXFileList.cpp:192
+#: ../../fox-1.6/src/FXFileSelector.cpp:727
 msgid "Name"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileList.cpp:193
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:728
+#: ../../fox-1.6/src/FXFileList.cpp:193
+#: ../../fox-1.6/src/FXFileSelector.cpp:728
 msgid "Type"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileList.cpp:195
+#: ../../fox-1.6/src/FXFileList.cpp:195
 msgid "Modified Date"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileList.cpp:197
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:732
+#: ../../fox-1.6/src/FXFileList.cpp:197
+#: ../../fox-1.6/src/FXFileSelector.cpp:732
 msgid "Group"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileList.cpp:198
+#: ../../fox-1.6/src/FXFileList.cpp:198
 msgid "Attributes"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileList.cpp:200
+#: ../../fox-1.6/src/FXFileList.cpp:200
 msgid "Link"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:196
+#: ../../fox-1.6/src/FXFileSelector.cpp:196
 msgid "&File Name:"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:200
+#: ../../fox-1.6/src/FXFileSelector.cpp:200
 msgid "File F&ilter:"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:204
+#: ../../fox-1.6/src/FXFileSelector.cpp:204
 msgid "Read Only"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:208
+#: ../../fox-1.6/src/FXFileSelector.cpp:208
 msgid "Directory:"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:228
+#: ../../fox-1.6/src/FXFileSelector.cpp:228
 msgid "&Set bookmark\t\tBookmark current directory."
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:229
+#: ../../fox-1.6/src/FXFileSelector.cpp:229
 msgid "&Clear bookmarks\t\tClear bookmarks."
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:244
+#: ../../fox-1.6/src/FXFileSelector.cpp:244
 msgid "\tGo up one directory\tMove up to higher directory."
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:245
+#: ../../fox-1.6/src/FXFileSelector.cpp:245
 msgid "\tGo to home directory\tBack to home directory."
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:246
+#: ../../fox-1.6/src/FXFileSelector.cpp:246
 msgid "\tGo to work directory\tBack to working directory."
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:247
+#: ../../fox-1.6/src/FXFileSelector.cpp:247
 msgid "\tBookmarks\tVisit bookmarked directories."
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:250
+#: ../../fox-1.6/src/FXFileSelector.cpp:250
 msgid "\tCreate new directory\tCreate new directory."
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:251
+#: ../../fox-1.6/src/FXFileSelector.cpp:251
 msgid "\tShow list\tDisplay directory with small icons."
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:252
+#: ../../fox-1.6/src/FXFileSelector.cpp:252
 msgid "\tShow icons\tDisplay directory with big icons."
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:253
+#: ../../fox-1.6/src/FXFileSelector.cpp:253
 msgid "\tShow details\tDisplay detailed directory listing."
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:254
+#: ../../fox-1.6/src/FXFileSelector.cpp:254
 msgid "\tShow hidden files\tShow hidden files and directories."
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:254
+#: ../../fox-1.6/src/FXFileSelector.cpp:254
 msgid "\tHide Hidden Files\tHide hidden files and directories."
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:521
+#: ../../fox-1.6/src/FXFileSelector.cpp:521
 msgid "Create new directory with name: "
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:524
+#: ../../fox-1.6/src/FXFileSelector.cpp:524
 #, c-format
 msgid "File or directory %s already exists.\n"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:528
+#: ../../fox-1.6/src/FXFileSelector.cpp:528
 #, c-format
 msgid "Cannot create directory %s.\n"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:594
+#: ../../fox-1.6/src/FXFileSelector.cpp:594
 #, c-format
 msgid ""
 "Copy file from location:\n"
@@ -3427,7 +3428,7 @@ msgid ""
 "to location: "
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:601
+#: ../../fox-1.6/src/FXFileSelector.cpp:601
 #, c-format
 msgid ""
 "Unable to copy file:\n"
@@ -3437,7 +3438,7 @@ msgid ""
 "Continue with operation?"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:617
+#: ../../fox-1.6/src/FXFileSelector.cpp:617
 #, c-format
 msgid ""
 "Move file from location:\n"
@@ -3447,7 +3448,7 @@ msgid ""
 "to location: "
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:624
+#: ../../fox-1.6/src/FXFileSelector.cpp:624
 #, c-format
 msgid ""
 "Unable to move file:\n"
@@ -3457,7 +3458,7 @@ msgid ""
 "Continue with operation?"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:640
+#: ../../fox-1.6/src/FXFileSelector.cpp:640
 #, c-format
 msgid ""
 "Link file from location:\n"
@@ -3467,7 +3468,7 @@ msgid ""
 "to location: "
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:647
+#: ../../fox-1.6/src/FXFileSelector.cpp:647
 #, c-format
 msgid ""
 "Unable to link file:\n"
@@ -3477,11 +3478,11 @@ msgid ""
 "Continue with operation?"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:663
+#: ../../fox-1.6/src/FXFileSelector.cpp:663
 msgid "Deleting files"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:663
+#: ../../fox-1.6/src/FXFileSelector.cpp:663
 #, c-format
 msgid ""
 "Are you sure you want to delete the file:\n"
@@ -3489,7 +3490,7 @@ msgid ""
 "%s"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:667
+#: ../../fox-1.6/src/FXFileSelector.cpp:667
 #, c-format
 msgid ""
 "Unable to delete file:\n"
@@ -3499,86 +3500,86 @@ msgid ""
 "Continue with operation?"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:722
+#: ../../fox-1.6/src/FXFileSelector.cpp:722
 msgid "Select all"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:726
+#: ../../fox-1.6/src/FXFileSelector.cpp:726
 msgid "Sort by"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:730
+#: ../../fox-1.6/src/FXFileSelector.cpp:730
 msgid "Time"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:738
+#: ../../fox-1.6/src/FXFileSelector.cpp:738
 msgid "View"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:739
+#: ../../fox-1.6/src/FXFileSelector.cpp:739
 msgid "Small icons"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:740
+#: ../../fox-1.6/src/FXFileSelector.cpp:740
 msgid "Big icons"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:743
+#: ../../fox-1.6/src/FXFileSelector.cpp:743
 msgid "Rows"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:744
+#: ../../fox-1.6/src/FXFileSelector.cpp:744
 msgid "Columns"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:747
+#: ../../fox-1.6/src/FXFileSelector.cpp:747
 msgid "Preview images"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:749
+#: ../../fox-1.6/src/FXFileSelector.cpp:749
 msgid "Normal images"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:750
+#: ../../fox-1.6/src/FXFileSelector.cpp:750
 msgid "Medium images"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXFileSelector.cpp:751
+#: ../../fox-1.6/src/FXFileSelector.cpp:751
 msgid "Giant images"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXReplaceDialog.cpp:111
+#: ../../fox-1.6/src/FXReplaceDialog.cpp:111
 msgid "&Replace"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXReplaceDialog.cpp:112
+#: ../../fox-1.6/src/FXReplaceDialog.cpp:112
 msgid "Re&place All"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXReplaceDialog.cpp:121
+#: ../../fox-1.6/src/FXReplaceDialog.cpp:121
 msgid "S&earch for:"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXReplaceDialog.cpp:129
+#: ../../fox-1.6/src/FXReplaceDialog.cpp:129
 msgid "Replace &with:"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXReplaceDialog.cpp:138
+#: ../../fox-1.6/src/FXReplaceDialog.cpp:138
 msgid "Ex&act"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXReplaceDialog.cpp:139
+#: ../../fox-1.6/src/FXReplaceDialog.cpp:139
 msgid "&Ignore Case"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXReplaceDialog.cpp:140
+#: ../../fox-1.6/src/FXReplaceDialog.cpp:140
 msgid "E&xpression"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXReplaceDialog.cpp:141
+#: ../../fox-1.6/src/FXReplaceDialog.cpp:141
 msgid "&Backward"
 msgstr ""
 
-#: ../../fox-1.6.37/src/FXStatusLine.cpp:82
+#: ../../fox-1.6/src/FXStatusLine.cpp:82
 msgid "Ready."
 msgstr ""

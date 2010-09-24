@@ -1,3 +1,7 @@
+Version 0.60.1
+- new key bindings Ctrl-f for force commandline focus in current tab
+- small issue in save spellchecking settings
+
 Version 0.60.0 (released 04-09-2010)
 - added support for spellchecking.
 - changes in Lua scripting support.
