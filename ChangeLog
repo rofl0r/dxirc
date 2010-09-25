@@ -1,6 +1,7 @@
-Version 0.60.1
+Version 0.70.svn
 - new key bindings Ctrl-f for force commandline focus in current tab
-- small issue in save spellchecking settings
+- small issue in save spellchecking settings fixed
+- small improvement in topicline
 
 Version 0.60.0 (released 04-09-2010)
 - added support for spellchecking.

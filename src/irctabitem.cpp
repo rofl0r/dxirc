@@ -181,6 +181,7 @@ IrcTabItem::IrcTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *icon, FX
     m_textframe = new FXVerticalFrame(m_splitter, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     m_topicline = new dxTextField(m_textframe, 50, this, ID_TOPIC, FRAME_SUNKEN|TEXTFIELD_ENTER_ONLY|JUSTIFY_LEFT|LAYOUT_FILL_X);
     m_topicline->setText(m_topic);
+    m_topicline->makePositionVisible(0);
     if(m_type != CHANNEL)
     {
         m_topicline->hide();
@@ -351,6 +352,7 @@ void IrcTabItem::setType(const TYPE &typ, const FXString &tabtext)
         if(m_usersShown) m_users->show();
         m_topicline->show();
         m_topicline->setText(m_topic);
+        m_topicline->makePositionVisible(0);
         m_splitter->recalc();
         setText(tabtext);
         if(m_server->getConnected()) m_server->sendMode(getText());
@@ -3606,7 +3608,9 @@ void IrcTabItem::onIrcTopic(IrcEvent* ev)
     if(comparecase(ev->param2, getText()) == 0)
     {
         appendIrcText(FXStringFormat(_("%s set new topic for %s: %s"), ev->param1.text(), ev->param2.text(), ev->param3.text()), ev->time);
-        m_topicline->setText(ev->param3);
+        m_topic = stripColors(ev->param3, TRUE);
+        m_topicline->setText(m_topic);
+        m_topicline->makePositionVisible(0);
     }
 }
 
@@ -4025,6 +4029,7 @@ void IrcTabItem::onIrc331332333(IrcEvent* ev)
             m_topic = stripColors(utils::instance().getParam(ev->param2, 2, TRUE, ':').after(' '), TRUE);
             m_topicline->setText(m_topic);
         }
+        m_topicline->makePositionVisible(0);
     }
 }
 
@@ -4552,7 +4557,11 @@ long IrcTabItem::onTopic(FXObject*, FXSelector, void*)
         }
         m_server->sendTopic(getText(), m_topicline->getText());
     }
-    else m_topicline->setText(m_topic);
+    else
+    {
+        m_topicline->setText(m_topic);
+        m_topicline->makePositionVisible(0);
+    }
     return 1;
 }
 
