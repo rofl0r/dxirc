@@ -85,8 +85,9 @@
 */
 
 
-#define JUSTIFY_MASK    (JUSTIFY_HZ_APART|JUSTIFY_VT_APART)
-#define TEXTFIELD_MASK  (TEXTFIELD_PASSWD|TEXTFIELD_INTEGER|TEXTFIELD_REAL|TEXTFIELD_READONLY|TEXTFIELD_ENTER_ONLY|TEXTFIELD_LIMITED|TEXTFIELD_OVERSTRIKE|TEXTFIELD_AUTOHIDE|TEXTFIELD_AUTOGRAY)
+#define JUSTIFY_MASK (JUSTIFY_HZ_APART|JUSTIFY_VT_APART)
+#define TEXTFIELD_MASK (TEXTFIELD_PASSWD|TEXTFIELD_INTEGER|TEXTFIELD_REAL|TEXTFIELD_READONLY|TEXTFIELD_ENTER_ONLY|TEXTFIELD_LIMITED|TEXTFIELD_OVERSTRIKE|TEXTFIELD_AUTOHIDE|TEXTFIELD_AUTOGRAY)
+#define MAX_TIP_WIDTH 466
 
 using namespace FX;
 
@@ -187,6 +188,7 @@ dxTextField::dxTextField(){
   columns=0;
   shift=0;
   useSpell=FALSE;
+  topic=FALSE;
   }
 
 
@@ -214,6 +216,7 @@ dxTextField::dxTextField(FXComposite* p,FXint ncols,FXObject* tgt,FXSelector sel
   columns=ncols;
   shift=0;
   useSpell=FALSE;
+  topic=FALSE;
   }
 
 
@@ -1997,6 +2000,7 @@ long dxTextField::onKeyPress(FXObject*,FXSelector,void* ptr){
         if(isEditable()){
           flags|=FLAG_UPDATE;
           flags&=~FLAG_CHANGED;
+          if(topic) createTipText();
           updateStyle();
           if(target) target->tryHandle(this,FXSEL(SEL_COMMAND,message),(void*)contents.text());
           }
@@ -2140,6 +2144,7 @@ void dxTextField::setText(const FXString& text,FXbool notify){
   if(contents!=text){
     contents=text;
     updateStyle();
+    if(topic) createTipText(); //if use as topicline need wrap tip
     anchor=contents.length();
     cursor=contents.length();
     if(xid) layout();
@@ -2174,7 +2179,7 @@ void dxTextField::setSpellColor(FXColor clr){
     }
   }
 
-// Set spell color
+// Set using spelling
 void dxTextField::setUseSpell(FXbool spell){
   if(useSpell!=spell){
     useSpell=spell;
@@ -2189,6 +2194,14 @@ void dxTextField::setLanguage(FXString lang){
     spellLang=lang;
     updateStyle();
     update();
+    }
+  }
+
+// Set use as topicline
+void dxTextField::setTopicline(FXbool tpc){
+  if(topic!=tpc){
+    topic=tpc;
+    if(topic) createTipText();
     }
   }
 
@@ -2317,14 +2330,14 @@ static FXbool Badchar(FXchar c)
 void dxTextField::updateStyle() {
     styles.length(contents.length());
     FXint i=0;
-    FXint start=0;
-    FXint end=0;
     FXint linkLength=0;
     FXint length=styles.length();
     for(FXint j=i; j<length; j++)
         styles[j]=0;
     while(i<length) {
 #ifdef HAVE_SPELLUTILS
+        FXint start=0;
+        FXint end=0;
         if(useSpell)
         {
             start=wordStart(i);
@@ -2460,6 +2473,49 @@ void dxTextField::load(FXStream& store){
   store >> help;
   store >> tip;
   }
+
+// Character width
+FXint dxTextField::charWidth(FXwchar ch, FXint col) const
+{
+    if (ch < ' ')
+    {
+        if (ch != '\t')
+        {
+            return font->getCharWidth('#');
+        }
+        return font->getCharWidth(' ')*(8 - col % 8);
+    }
+    return font->getCharWidth(ch);
+}
+
+// Create wraped tiptext for topicline
+void dxTextField::createTipText()
+{
+    if(topic)
+    {
+        tip = contents;
+        register FXint lw,cw;
+        register FXint sp, sc;
+        register FXint s=-1;
+        lw=0;
+        for (sp = sc = 0; sp < tip.length(); sp = tip.inc(sp), sc++)
+        {
+            cw = charWidth(tip.wc(sp), sc);
+            if(tip[sc] == ' ') s=sc;
+            if(lw+cw>MAX_TIP_WIDTH)
+            {
+                if(s!=-1)
+                {
+                    tip.replace(s,'\n');
+                    sp=sc=s+1;
+                    s=-1;
+                }
+                lw=0;
+            }
+            lw+=cw;
+        }
+    }
+}
 
 
 // Clean up

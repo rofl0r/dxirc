@@ -183,6 +183,7 @@ IrcTabItem::IrcTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *icon, FX
     m_topicline->setFont(font);
     m_topicline->setLinkColor(m_colors.link);
     m_topicline->setText(m_topic);
+    m_topicline->setTopicline(TRUE);
     if(m_type != CHANNEL)
     {
         m_topicline->hide();

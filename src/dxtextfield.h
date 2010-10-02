@@ -73,6 +73,7 @@ protected:
   FXString      tip;            // Tooltip
   FXbool        useSpell;       // Use spellchecking
   FXString      spellLang;      // Language for spelling
+  FXbool        topic;          // Used as topicline
 protected:
   dxTextField();
   FXint index(FXint x) const;
@@ -88,6 +89,8 @@ protected:
   FXint wordEnd(FXint pos) const;
   FXuint getStyle(FXint pos) const;
   void updateStyle();
+  FXint charWidth(FXwchar ch, FXint col) const;
+  void createTipText();
 private:
   dxTextField(const dxTextField&);
   dxTextField& operator=(const dxTextField&);
@@ -287,6 +290,12 @@ public:
 
   /// Return language for spelling
   FXString getLanguage() const { return spellLang; }
+
+  /// Change using as topicline
+  void setTopicline(FXbool tpc);
+
+  /// Return using as topicline
+  FXbool getTopicline() const { return topic; }
 
   /// Change selected background color
   void setSelBackColor(FXColor clr);
