@@ -74,6 +74,7 @@ protected:
   FXbool        useSpell;       // Use spellchecking
   FXString      spellLang;      // Language for spelling
   FXbool        topic;          // Used as topicline
+  FXbool        useLink;        // Use link
 protected:
   dxTextField();
   FXint index(FXint x) const;
@@ -272,6 +273,12 @@ public:
 
   /// Return link color
   FXColor getLinkColor() const { return linkColor; }
+
+  /// Change using link
+  void setUseLink(FXbool link);
+
+  /// Return using link
+  FXbool getUseLink() const { return useLink; }
 
   /// Change spell color
   void setSpellColor(FXColor clr);

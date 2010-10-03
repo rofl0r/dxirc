@@ -189,6 +189,7 @@ dxTextField::dxTextField(){
   shift=0;
   useSpell=FALSE;
   topic=FALSE;
+  useLink=FALSE;
   }
 
 
@@ -217,6 +218,7 @@ dxTextField::dxTextField(FXComposite* p,FXint ncols,FXObject* tgt,FXSelector sel
   shift=0;
   useSpell=FALSE;
   topic=FALSE;
+  useLink=FALSE;
   }
 
 
@@ -2170,6 +2172,14 @@ void dxTextField::setLinkColor(FXColor clr){
     }
   }
 
+// Set using link
+void dxTextField::setUseLink(FXbool link){
+  if(useLink!=link){
+    useLink=link;
+    updateStyle();
+    update();
+    }
+  }
 
 // Set spell color
 void dxTextField::setSpellColor(FXColor clr){
@@ -2334,8 +2344,8 @@ void dxTextField::updateStyle() {
     FXint length=styles.length();
     for(FXint j=i; j<length; j++)
         styles[j]=0;
-    while(i<length) {
 #ifdef HAVE_SPELLUTILS
+    while(i<length) {
         FXint start=0;
         FXint end=0;
         if(useSpell)
@@ -2352,7 +2362,12 @@ void dxTextField::updateStyle() {
             i=end;
         }
         else
+            i=length;
+    }
+    i=0;
 #endif
+    while(i<length) {
+        if(useLink)
         {
             if(contents[i]=='h' && !comparecase(contents.mid(i,7),"http://"))
             {
@@ -2439,6 +2454,8 @@ void dxTextField::updateStyle() {
                 i++;
             }
         }
+        else
+            i=length;
     }
     update();
 }
