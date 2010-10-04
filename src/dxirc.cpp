@@ -468,6 +468,8 @@ void dxirc::readConfig()
     m_appTheme.hilite = set.readColorEntry("SETTINGS", "hilitecolor", m_app->getHiliteColor());
     m_appTheme.shadow = set.readColorEntry("SETTINGS", "shadowcolor", m_app->getShadowColor());
     m_trayColor = set.readColorEntry("SETTINGS", "traycolor", m_appTheme.base);
+    m_unreadColor = set.readColorEntry("SETTINGS", "unreadcolor", FXRGB(0,0,255));
+    m_highlightColor = set.readColorEntry("SETTINGS", "highlightcolor", FXRGB(255,0,0));
     m_fontSpec = set.readStringEntry("SETTINGS", "normalfont", m_app->getNormalFont()->getFont().text());
     m_statusShown = set.readBoolEntry("SETTINGS", "statusShown", TRUE);
     m_tabPosition = set.readIntEntry("SETTINGS", "tabPosition", 0);
@@ -720,6 +722,8 @@ void dxirc::saveConfig()
     set.writeColorEntry("SETTINGS", "selmenutextcolor", m_appTheme.menufore);
     set.writeColorEntry("SETTINGS", "selmenubackcolor", m_appTheme.menuback);
     set.writeColorEntry("SETTINGS", "traycolor", m_trayColor);
+    set.writeColorEntry("SETTINGS", "unreadcolor", m_unreadColor);
+    set.writeColorEntry("SETTINGS", "highlightcolor", m_highlightColor);
     set.writeStringEntry("SETTINGS", "normalfont", m_app->getNormalFont()->getFont().text());
     dxStringMap aliases = utils::instance().getAliases();
     set.writeIntEntry("ALIASES", "number", (FXint)aliases.size());
@@ -1012,6 +1016,7 @@ void dxirc::updateTheme()
     FXImageFrame * imageframe;
 
     FXbool update = FALSE;
+    FXColor oldForeColor = m_app->getForeColor();
     if(m_app->getBaseColor() != m_appTheme.base)
     {
         update = TRUE;
@@ -1087,7 +1092,7 @@ void dxirc::updateTheme()
             frame->setBorderColor(m_appTheme.border);
             if ((label = dynamic_cast<FXLabel*> (w)))
             {
-                if(label->getTextColor() != FXRGB(255,0,0) && label->getTextColor() != FXRGB(0,0,255)) label->setTextColor(m_appTheme.fore);
+                if(label->getTextColor() == oldForeColor) label->setTextColor(m_appTheme.fore);
                 if ((button = dynamic_cast<FXButton*> (w)))
                 {
                     if (dynamic_cast<FXListBox*> (button->getParent()))
@@ -1368,6 +1373,8 @@ void dxirc::updateTabs(FXbool recreateSmileys)
             irctab->setStripColors(m_stripColors);
             irctab->setSmileys(m_useSmileys, m_smileys);
             irctab->setUseSpell(m_useSpell);
+            irctab->setUnreadTabColor(m_unreadColor);
+            irctab->setHighlightTabColor(m_highlightColor);
         }        
         if(m_tabbook->childAtIndex(i)->getMetaClass()==&TetrisTabItem::metaClass)
         {
@@ -3649,6 +3656,8 @@ FXint dxirc::createIrcTab(const FXString& tabtext, FXIcon* icon, TYPE typ, IrcSo
     tabitem->create();
     tabitem->createGeom();
     tabitem->setSmileys(m_useSmileys, m_smileys);
+    tabitem->setUnreadTabColor(m_unreadColor);
+    tabitem->setHighlightTabColor(m_highlightColor);
     if(socket) socket->appendTarget(tabitem);
     sortTabs();
     return m_lastID-1;

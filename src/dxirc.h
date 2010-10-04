@@ -164,7 +164,7 @@ class dxirc: public FXMainWindow
         FXuint m_lastID;
         dxStringMap m_smileysMap;
         dxSmileyArray m_smileys;
-        FXColor m_trayColor;
+        FXColor m_trayColor, m_unreadColor, m_highlightColor;
         FXMenuBar *m_menubar;
         FXMenuPane *m_servermenu, *m_helpmenu, *m_editmenu;
         FXMenuCommand *m_disconnect, *m_closeTab, *m_clearTab, *m_clearTabs, *m_logviewer;

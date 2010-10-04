@@ -142,6 +142,8 @@ class IrcTabItem: public FXTabItem
         void removeSmileys();
         void makeLastRowVisible();
         FXString getSpellLang();
+        void setUnreadTabColor(FXColor);
+        void setHighlightTabColor(FXColor);
 
         long onCommandline(FXObject *, FXSelector, void*);
         long onKeyPress(FXObject *, FXSelector, void*);
@@ -205,6 +207,7 @@ class IrcTabItem: public FXTabItem
         FXString m_nickCompletionChar;
         std::ofstream *m_logstream;
         FXComboBox *m_spellLangs;
+        FXColor m_unreadColor, m_highlightColor;
         
 
         void onIrcPrivmsg(IrcEvent *ev);

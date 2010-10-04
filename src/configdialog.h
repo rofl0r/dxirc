@@ -233,6 +233,7 @@ class ConfigDialog: public FXDialogBox
         FXDataTarget m_targetSound, m_targetSoundConnect, m_targetSoundDisconnect, m_targetSoundMessage;
         FXDataTarget m_targetPathConnect, m_targetPathDisconnect, m_targetPathMessage, m_targetStripColors;
         FXDataTarget m_targetUseSmileys, m_targetAutoDccChat, m_targetAutoDccFile, m_targetTrayColor;
+        FXDataTarget m_targetUnreadColor, m_targetHighlightColor;
         FXButton *m_selectConnect, *m_selectDisconnect, *m_selectMessage, *m_playConnect, *m_playDisconnect, *m_playMessage;
         FXString m_pathConnect, m_pathDisconnect, m_pathMessage;
         FXLabel *m_labelSelected, *m_labelNocurrent, *m_labelTip, *m_label;
@@ -243,9 +244,12 @@ class ConfigDialog: public FXDialogBox
         FXSeparator *m_sep1, *m_sep2;
         FXFont *m_font, *m_ircFont;
         FXListBox *m_listTabs;
+        FXTabBook *m_tabs;
+        FXTabItem *m_tab, *m_unread, *m_highlight;
+        FXVerticalFrame *m_tabframe1, *m_tabframe2, *m_tabframe3;
         FXMainWindow *m_owner;
         dxStringMap m_smileysMap;
-        FXColor m_trayColor;
+        FXColor m_trayColor, m_unreadColor, m_highlightColor;
         FXbool m_useSpell;
         FXDataTarget m_targetUseSpell;
 

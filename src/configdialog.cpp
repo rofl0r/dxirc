@@ -20,6 +20,8 @@
  *      MA 02110-1301, USA.
  */
 
+#include <signal.h>
+
 #include "configdialog.h"
 #include "config.h"
 #include "i18n.h"
@@ -372,6 +374,13 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
 
     m_targetUseSpell.connect(m_useSpell);
 
+    m_targetUnreadColor.connect(m_unreadColor);
+    m_targetUnreadColor.setTarget(this);
+    m_targetUnreadColor.setSelector(ID_COLORS);
+    m_targetHighlightColor.connect(m_highlightColor);
+    m_targetHighlightColor.setTarget(this);
+    m_targetHighlightColor.setSelector(ID_COLORS);
+
     getApp()->getNormalFont()->create();
     FXFontDesc fontdescription;
     getApp()->getNormalFont()->getFontDesc(fontdescription);
@@ -583,6 +592,10 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     new FXLabel(themeMatrix, _("Tray Color"));
 #endif
 #endif
+    new FXColorWell(themeMatrix, FXRGB(0,0,255), &m_targetUnreadColor, FXDataTarget::ID_VALUE);
+    new FXLabel(themeMatrix, _("Unreaded Tab Color"));
+    new FXColorWell(themeMatrix, FXRGB(0,0,255), &m_targetHighlightColor, FXDataTarget::ID_VALUE);
+    new FXLabel(themeMatrix, _("Highlighted Tab Color"));
     m_label = new FXLabel(m_vframe2, "Label");
     m_textFrame1 = new FXHorizontalFrame(m_vframe2, LAYOUT_FILL_X);
     m_textTest = new FXTextField(m_textFrame1, 30, NULL, 0, LAYOUT_FILL_X|FRAME_THICK|FRAME_SUNKEN);
@@ -595,8 +608,15 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     m_labelTip = new FXLabel(m_vframe2, _("Tooltip example"), NULL, FRAME_LINE|LAYOUT_CENTER_X);
     m_menuGroup = new FXGroupBox(m_vframe2, _("Menu example"), FRAME_GROOVE|LAYOUT_FILL_Y|LAYOUT_FILL_X);
     m_menuFrame = new FXVerticalFrame(m_menuGroup, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X|LAYOUT_CENTER_Y, 0,0,0,0,0,0,0,0,0,0);
-    m_menuLabels[0]=new FXLabel(m_menuFrame, _("&Server list"), NULL, LABEL_NORMAL, 0,0,0,0,16,4);
-    m_menuLabels[1]=new FXLabel(m_menuFrame, _("Selected Menu Entry"), NULL, LABEL_NORMAL, 0,0,0,0,16,4);
+    m_menuLabels[0] = new FXLabel(m_menuFrame, _("&Server list"), NULL, LABEL_NORMAL, 0,0,0,0,16,4);
+    m_menuLabels[1] = new FXLabel(m_menuFrame, _("Selected Menu Entry"), NULL, LABEL_NORMAL, 0,0,0,0,16,4);
+    m_tabs = new FXTabBook(m_vframe2, NULL, 0, LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    m_tab = new FXTabItem(m_tabs, _("Standard tab"));
+    m_tabframe1 = new FXVerticalFrame(m_tabs, FRAME_RAISED|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    m_unread = new FXTabItem(m_tabs, _("Unreaded tab"));
+    m_tabframe2 = new FXVerticalFrame(m_tabs, FRAME_RAISED|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    m_highlight = new FXTabItem(m_tabs, _("Highlighted tab"));
+    m_tabframe3 = new FXVerticalFrame(m_tabs, FRAME_RAISED|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     m_sep2 = new FXSeparator(m_menuFrame, LAYOUT_FILL_X|SEPARATOR_LINE);
     m_menuLabels[2]=new FXLabel(m_menuFrame, _("&Quit"), NULL, LABEL_NORMAL, 0,0,0,0,16,4);
     FXHorizontalFrame *fontframe = new FXHorizontalFrame(lookpane, LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, DEFAULT_SPACING,DEFAULT_SPACING,DEFAULT_SPACING,DEFAULT_SPACING);
@@ -1604,6 +1624,45 @@ void ConfigDialog::updateColors()
     m_menuLabels[1]->setTextColor(m_themeCurrent.menufore);
     m_menuLabels[1]->setShadowColor(m_themeCurrent.shadow);
     m_menuLabels[1]->setHiliteColor(m_themeCurrent.hilite);
+
+    m_tabs->setBorderColor(m_themeCurrent.border);
+    m_tabs->setBaseColor(m_themeCurrent.base);
+    m_tabs->setBackColor(m_themeCurrent.base);
+    m_tabs->setShadowColor(m_themeCurrent.shadow);
+    m_tabs->setHiliteColor(m_themeCurrent.hilite);
+    m_tabframe1->setBorderColor(m_themeCurrent.border);
+    m_tabframe1->setBaseColor(m_themeCurrent.base);
+    m_tabframe1->setBackColor(m_themeCurrent.base);
+    m_tabframe1->setShadowColor(m_themeCurrent.shadow);
+    m_tabframe1->setHiliteColor(m_themeCurrent.hilite);
+    m_tabframe2->setBorderColor(m_themeCurrent.border);
+    m_tabframe2->setBaseColor(m_themeCurrent.base);
+    m_tabframe2->setBackColor(m_themeCurrent.base);
+    m_tabframe2->setShadowColor(m_themeCurrent.shadow);
+    m_tabframe2->setHiliteColor(m_themeCurrent.hilite);
+    m_tabframe3->setBorderColor(m_themeCurrent.border);
+    m_tabframe3->setBaseColor(m_themeCurrent.base);
+    m_tabframe3->setBackColor(m_themeCurrent.base);
+    m_tabframe3->setShadowColor(m_themeCurrent.shadow);
+    m_tabframe3->setHiliteColor(m_themeCurrent.hilite);
+    m_tab->setBorderColor(m_themeCurrent.border);
+    m_tab->setBaseColor(m_themeCurrent.base);
+    m_tab->setBackColor(m_themeCurrent.base);
+    m_tab->setTextColor(m_themeCurrent.fore);
+    m_tab->setShadowColor(m_themeCurrent.shadow);
+    m_tab->setHiliteColor(m_themeCurrent.hilite);
+    m_unread->setBorderColor(m_themeCurrent.border);
+    m_unread->setBaseColor(m_themeCurrent.base);
+    m_unread->setBackColor(m_themeCurrent.base);
+    m_unread->setTextColor(m_unreadColor);
+    m_unread->setShadowColor(m_themeCurrent.shadow);
+    m_unread->setHiliteColor(m_themeCurrent.hilite);
+    m_highlight->setBorderColor(m_themeCurrent.border);
+    m_highlight->setBaseColor(m_themeCurrent.base);
+    m_highlight->setBackColor(m_themeCurrent.base);
+    m_highlight->setTextColor(m_highlightColor);
+    m_highlight->setShadowColor(m_themeCurrent.shadow);
+    m_highlight->setHiliteColor(m_themeCurrent.hilite);
 }
 
 static FXString weightToString(FXuint weight){
@@ -2217,6 +2276,8 @@ void ConfigDialog::readConfig()
     m_themeCurrent.hilite = set.readColorEntry("SETTINGS", "hilitecolor", getApp()->getHiliteColor());
     m_themeCurrent.shadow = set.readColorEntry("SETTINGS", "shadowcolor", getApp()->getShadowColor());
     m_trayColor = set.readColorEntry("SETTINGS", "traycolor", m_themeCurrent.base);
+    m_unreadColor = set.readColorEntry("SETTINGS", "unreadcolor", FXRGB(0,0,255));
+    m_highlightColor = set.readColorEntry("SETTINGS", "highlightcolor", FXRGB(255,0,0));
     m_statusShown = set.readBoolEntry("SETTINGS", "statusShown", TRUE);
     m_tabPosition = set.readIntEntry("SETTINGS", "tabPosition", 0);
     m_commandsList = set.readStringEntry("SETTINGS", "commandsList");
@@ -2462,6 +2523,8 @@ void ConfigDialog::saveConfig()
     set.writeColorEntry("SETTINGS", "selmenutextcolor", m_themeCurrent.menufore);
     set.writeColorEntry("SETTINGS", "selmenubackcolor", m_themeCurrent.menuback);
     set.writeColorEntry("SETTINGS", "traycolor", m_trayColor);
+    set.writeColorEntry("SETTINGS", "unreadcolor", m_unreadColor);
+    set.writeColorEntry("SETTINGS", "highlightcolor", m_highlightColor);
     set.writeStringEntry("SETTINGS", "normalfont", m_font->getFont().text());
     dxStringMap aliases = utils::instance().getAliases();
     set.writeIntEntry("ALIASES", "number", (FXint)aliases.size());
