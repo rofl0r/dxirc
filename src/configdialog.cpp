@@ -1473,6 +1473,16 @@ long ConfigDialog::onTheme(FXObject*, FXSelector, void *ptr)
         m_themeCurrent.selfore = themeSelected->selfore;
         m_themeCurrent.tipback = themeSelected->tipback;
         m_themeCurrent.tipfore = themeSelected->tipfore;
+        if(m_themeCurrent.fore == m_unreadColor)
+        {
+            if(m_themeCurrent.fore != FXRGB(0,0,255)) m_unreadColor = FXRGB(0,0,255);
+            else m_unreadColor = FXRGBA(FXREDVAL(m_themeCurrent.fore),FXGREENVAL(m_themeCurrent.fore),FXBLUEVAL(m_themeCurrent.fore)+1,FXALPHAVAL(m_themeCurrent.fore));
+        }
+        if(m_themeCurrent.fore == m_highlightColor)
+        {
+            if(m_themeCurrent.fore != FXRGB(255,0,0)) m_highlightColor = FXRGB(255,0,0);
+            else m_highlightColor = FXRGBA(FXREDVAL(m_themeCurrent.fore)+1,FXGREENVAL(m_themeCurrent.fore),FXBLUEVAL(m_themeCurrent.fore),FXALPHAVAL(m_themeCurrent.fore));
+        }
         updateColors();
     }
     return 1;
@@ -1519,6 +1529,16 @@ long ConfigDialog::onIrcFont(FXObject*, FXSelector, void*)
 long ConfigDialog::onThemeColorChanged(FXObject*, FXSelector, void*)
 {
     m_themes->setCurrentItem(m_themes->getNumItems()-1);
+    if(m_themeCurrent.fore == m_unreadColor)
+    {
+        if(m_themeCurrent.fore != FXRGB(0,0,255)) m_unreadColor = FXRGB(0,0,255);
+        else m_unreadColor = FXRGBA(FXREDVAL(m_themeCurrent.fore),FXGREENVAL(m_themeCurrent.fore),FXBLUEVAL(m_themeCurrent.fore)+1,FXALPHAVAL(m_themeCurrent.fore));
+    }
+    if(m_themeCurrent.fore == m_highlightColor)
+    {
+        if(m_themeCurrent.fore != FXRGB(255,0,0)) m_highlightColor = FXRGB(255,0,0);
+        else m_highlightColor = FXRGBA(FXREDVAL(m_themeCurrent.fore)+1,FXGREENVAL(m_themeCurrent.fore),FXBLUEVAL(m_themeCurrent.fore),FXALPHAVAL(m_themeCurrent.fore));
+    }
     updateColors();
     return 1;
 }
