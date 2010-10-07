@@ -240,6 +240,7 @@ class IrcSocket: public FXObject
         FXuint stringIPToBinary(const FXString &address);
         FXString binaryIPToString(const FXString &address);
         FXbool isRoutableIP(FXuint ipaddr);
+        void resetReconnect();
 
 #ifdef HAVE_OPENSSL
         SSL_CTX *m_ctx;

@@ -238,6 +238,7 @@ FXint IrcSocket::connectIRC()
         clearChannelsCommands(FALSE);
         m_connecting = FALSE;
         m_application->addTimeout(this, ID_ETIME, ETIMEOUT);
+        resetReconnect();
         return -1;
     }
 #endif
@@ -247,6 +248,7 @@ FXint IrcSocket::connectIRC()
         clearChannelsCommands(FALSE);
         m_connecting = FALSE;
         m_application->addTimeout(this, ID_ETIME, ETIMEOUT);
+        resetReconnect();
         return -1;
     }
     if ((m_serverid = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
@@ -258,6 +260,7 @@ FXint IrcSocket::connectIRC()
 #endif
         m_connecting = FALSE;
         m_application->addTimeout(this, ID_ETIME, ETIMEOUT);
+        resetReconnect();
         return -1;
     }
     if(m_dccType == DCC_IN)
@@ -285,6 +288,7 @@ FXint IrcSocket::connectIRC()
         m_connecting = FALSE;
         m_receivedFile.close();
         m_application->addTimeout(this, ID_ETIME, ETIMEOUT);
+        resetReconnect();
         return -1;
     }
 #ifdef WIN32
@@ -346,6 +350,7 @@ FXint IrcSocket::connectSSL()
         clearChannelsCommands(FALSE);
         m_connecting = FALSE;
         m_application->addTimeout(this, ID_ETIME, ETIMEOUT);
+        resetReconnect();
         return -1;
     }
 #endif
@@ -355,6 +360,7 @@ FXint IrcSocket::connectSSL()
         clearChannelsCommands(FALSE);
         m_connecting = FALSE;
         m_application->addTimeout(this, ID_ETIME, ETIMEOUT);
+        resetReconnect();
         return -1;
     }
     if ((m_serverid = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
@@ -366,6 +372,7 @@ FXint IrcSocket::connectSSL()
 #endif
         m_connecting = FALSE;
         m_application->addTimeout(this, ID_ETIME, ETIMEOUT);
+        resetReconnect();
         return -1;
     }
     m_serverSock.sin_family = AF_INET;
@@ -382,6 +389,7 @@ FXint IrcSocket::connectSSL()
 #endif
         m_connecting = FALSE;
         m_application->addTimeout(this, ID_ETIME, ETIMEOUT);
+        resetReconnect();
         return -1;
     }
     SSLeay_add_ssl_algorithms();
@@ -412,6 +420,7 @@ FXint IrcSocket::connectSSL()
         sendEvent(IRC_ERROR, _("SSL creation error"));
         m_connecting = FALSE;
         m_application->addTimeout(this, ID_ETIME, ETIMEOUT);
+        resetReconnect();
         return -1;
     }
     SSL_set_fd(m_ssl, m_serverid);
@@ -431,6 +440,7 @@ FXint IrcSocket::connectSSL()
         sendEvent(IRC_ERROR, FXStringFormat(_("SSL connect error %d"), SSL_get_error(m_ssl, m_err)));
         m_connecting = FALSE;
         m_application->addTimeout(this, ID_ETIME, ETIMEOUT);
+        resetReconnect();
         return -1;
     }
     m_connected = TRUE;
@@ -2739,6 +2749,21 @@ FXbool IrcSocket::isUserIgnored(const FXString &nick, const FXString &on)
         if(FXRex(FXString("\\<"+m_usersList[i].server+"\\>").substitute("*","\\w*")).match(m_serverName)) bserver = TRUE;
     }
     return bnick && buser && bhost && bchannel && bserver;
+}
+
+// reset running reconnect timeout
+void IrcSocket::resetReconnect()
+{
+    if(m_application->hasTimeout(this, ID_RTIME))
+    {
+        m_application->removeTimeout(this, ID_RTIME);
+        m_application->addTimeout(this, ID_RTIME, m_delayAttempt*1000);
+        return;
+    }
+    if(m_reconnect && m_attempts < m_numberAttempt)
+    {
+        m_application->addTimeout(this, ID_RTIME, m_delayAttempt*1000);
+    }
 }
 
 ConnectThread::ConnectThread(IrcSocket *socket) : m_socket(socket)
