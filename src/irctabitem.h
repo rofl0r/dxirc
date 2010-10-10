@@ -174,8 +174,8 @@ class IrcTabItem: public FXTabItem
         long onSpellLang(FXObject *, FXSelector, void*);
 
     protected:        
-        void appendText(FXString, FXbool);
-        void appendStyledText(FXString text, FXint style, FXbool highlight, FXbool disableStrip=FALSE);
+        void appendText(FXString msg, FXbool highlight, FXbool logLine=TRUE);
+        void appendStyledText(FXString text, FXint style, FXbool highlight, FXbool disableStrip=FALSE, FXbool logLine=TRUE);
         FXbool processLine(const FXString &);
         void hasAllCommand(FXbool);
         void hasMyMsg(FXbool);
@@ -245,9 +245,9 @@ class IrcTabItem: public FXTabItem
         void onIrcAway(IrcEvent *ev);
         void onIrcEndMotd();
         FXString stripColors(const FXString &text, const FXbool stripOther);
-        void appendIrcText(FXString msg, FXTime time, FXbool disableStrip=FALSE);
-        void appendIrcStyledText(FXString styled, FXint stylenum, FXTime time, FXbool disableStrip=FALSE);
-        void appendIrcNickText(FXString, FXString, FXint, FXTime);
+        void appendIrcText(FXString msg, FXTime time, FXbool disableStrip=FALSE, FXbool logLine=TRUE);
+        void appendIrcStyledText(FXString styled, FXint stylenum, FXTime time, FXbool disableStrip=FALSE, FXbool logLine=TRUE);
+        void appendIrcNickText(FXString nick, FXString msg, FXint style, FXTime time, FXbool logLine=TRUE);
         void appendLinkText(const FXString &, FXint);
         FXString getNick(FXint);
         FXbool isFirst();

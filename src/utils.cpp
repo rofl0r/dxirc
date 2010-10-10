@@ -1026,7 +1026,7 @@ FXbool utils::isScriptCommand(const FXString &command)
 
 FXString utils::availableCommands()
 {
-    FXString commandstr = _("Available commnads: ");
+    FXString commandstr = _("Available commands: ");
     for(FXint i=0; i < m_commands.no(); i++)
     {
         if(m_commands[i] != "commands") commandstr += m_commands[i].upper()+(i != m_commands.no() - 1? ", " : "");
@@ -1036,7 +1036,7 @@ FXString utils::availableCommands()
 
 FXString utils::availableScriptsCommands()
 {
-    FXString commandstr = _("Available commnads: ");
+    FXString commandstr = _("Available commands: ");
     for(FXint i=0; i < m_scriptCommands.no(); i++)
     {
         commandstr += m_scriptCommands[i].name.upper()+(i != m_scriptCommands.no() - 1? ", " : "");
@@ -1047,7 +1047,7 @@ FXString utils::availableScriptsCommands()
 FXString utils::availableScriptCommands(const FXString& script)
 {
     FXbool result = FALSE;
-    FXString commandstr = _("Script commnads: ");
+    FXString commandstr = _("Script commands: ");
     for(FXint i=m_scriptCommands.no()-1; i>-1; i--)
     {
         if(comparecase(script, m_scriptCommands[i].script) == 0)

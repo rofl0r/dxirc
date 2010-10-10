@@ -229,8 +229,8 @@ class dxirc: public FXMainWindow
         void updateStatus(FXString);
         FXbool hasTetrisTab();
         void sortTabs();
-        void appendIrcText(FXString);
-        void appendIrcStyledText(FXString, FXint);
+        void appendIrcText(FXString text, FXbool logLine=TRUE);
+        void appendIrcStyledText(FXString text, FXint style, FXbool logLine=TRUE);
         FXbool hasLuaAll(const FXString &);
         FXbool hasAllCommand();
         FXbool hasMyMsg();

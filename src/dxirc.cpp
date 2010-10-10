@@ -810,7 +810,7 @@ long dxirc::onCmdQuit(FXObject*, FXSelector, void*)
                     {
                         if (lua_pcall(m_scripts[j].L, 0, 0, 0))
                         {
-                            appendIrcStyledText(FXStringFormat(_("Lua plugin: error calling %s %s"), m_scriptEvents[i].funcname.text(), lua_tostring(m_scripts[j].L, -1)), 4);
+                            appendIrcStyledText(FXStringFormat(_("Lua plugin: error calling %s %s"), m_scriptEvents[i].funcname.text(), lua_tostring(m_scripts[j].L, -1)), 4, FALSE);
                             lua_pop(m_scripts[j].L, 1);
                         }
                     }
@@ -2055,7 +2055,7 @@ void dxirc::onIrcPrivmsgAndAction(IrcSocket *server, IrcEvent *ev)
                         lua_pushinteger(m_scripts[j].L, getTabId(server, ev->param2 == server->getNickName() ? ev->param1 : ev->param2));
                         if (lua_pcall(m_scripts[j].L, 3, 0, 0))
                         {
-                            appendIrcStyledText(FXStringFormat(_("Lua plugin: error calling %s %s"), m_scriptEvents[i].funcname.text(), lua_tostring(m_scripts[j].L, -1)), 4);
+                            appendIrcStyledText(FXStringFormat(_("Lua plugin: error calling %s %s"), m_scriptEvents[i].funcname.text(), lua_tostring(m_scripts[j].L, -1)), 4, FALSE);
                             lua_pop(m_scripts[j].L, 1);
                         }
                     }
@@ -2092,7 +2092,7 @@ void dxirc::onIrcJoin(IrcSocket *server, IrcEvent *ev)
                         lua_pushinteger(m_scripts[j].L, getTabId(server, ev->param2));
                         if (lua_pcall(m_scripts[j].L, 2, 0, 0))
                         {
-                            appendIrcStyledText(FXStringFormat(_("Lua plugin: error calling %s %s"), m_scriptEvents[i].funcname.text(), lua_tostring(m_scripts[j].L, -1)), 4);
+                            appendIrcStyledText(FXStringFormat(_("Lua plugin: error calling %s %s"), m_scriptEvents[i].funcname.text(), lua_tostring(m_scripts[j].L, -1)), 4, FALSE);
                             lua_pop(m_scripts[j].L, 1);
                         }
                     }
@@ -2160,7 +2160,7 @@ void dxirc::onIrcDccIn(IrcSocket *server, IrcEvent *ev)
         else
         {
             connectServer(ev->param2.before('@'), FXIntVal(ev->param2.after('@')), "", server->getNickName(), "", "", "", FALSE, DCC_IN, ev->param1, NULL, dcc);
-            appendIrcStyledText(FXStringFormat(_("Receiving \"%s\" from %s"), ev->param3.text(), ev->param1.text()),8);
+            appendIrcStyledText(FXStringFormat(_("Receiving \"%s\" from %s"), ev->param3.text(), ev->param1.text()),8,FALSE);
         }
     }
     else
@@ -2222,7 +2222,7 @@ void dxirc::onIrcDccIn(IrcSocket *server, IrcEvent *ev)
                 if(FXStat::exists(dcc.path+".part"))
                     FXFile::remove(dcc.path+".part");
                 connectServer(ev->param2.before('@'), FXIntVal(ev->param2.after('@')), "", server->getNickName(), "", "", "", FALSE, DCC_IN, ev->param1, NULL, dcc);
-                appendIrcStyledText(FXStringFormat(_("Receiving \"%s\" from %s"), ev->param3.text(), ev->param1.text()),8);
+                appendIrcStyledText(FXStringFormat(_("Receiving \"%s\" from %s"), ev->param3.text(), ev->param1.text()),8,FALSE);
                 m_dccfilesList.append(dcc);
                 onCmdTransfers(NULL, 0, NULL);
             }
@@ -2334,7 +2334,7 @@ void dxirc::onIrcDccToken(IrcSocket *server, IrcEvent *ev)
         else
         {
             connectServer(server->getLocalIP(), 0, "", server->getNickName(), "", "", "", FALSE, DCC_PIN, ev->param1, server, dcc);
-            appendIrcStyledText(FXStringFormat(_("Receiving \"%s\" from %s"), ev->param2.text(), ev->param1.text()),8);
+            appendIrcStyledText(FXStringFormat(_("Receiving \"%s\" from %s"), ev->param2.text(), ev->param1.text()),8,FALSE);
         }
     }
     else
@@ -2392,7 +2392,7 @@ void dxirc::onIrcDccToken(IrcSocket *server, IrcEvent *ev)
                 if(FXStat::exists(dcc.path+".part"))
                     FXFile::remove(dcc.path+".part");
                 connectServer(server->getLocalIP(), 0, "", server->getNickName(), "", "", "", FALSE, DCC_PIN, ev->param1, server, dcc);
-                appendIrcStyledText(FXStringFormat(_("Receiving \"%s\" from %s"), ev->param2.text(), ev->param1.text()),8);
+                appendIrcStyledText(FXStringFormat(_("Receiving \"%s\" from %s"), ev->param2.text(), ev->param1.text()),8,FALSE);
                 m_dccfilesList.append(dcc);
                 onCmdTransfers(NULL, 0, NULL);
             }
@@ -2425,11 +2425,11 @@ void dxirc::onIrcDccPosition(IrcSocket *server, IrcEvent *ev)
         {
             if(m_dccfilesList[index].canceled)
             {
-                appendIrcStyledText(FXStringFormat(_("Download of \"%s\" from %s canceled"), FXPath::name(m_dccfilesList[index].path).text(), m_dccfilesList[index].nick.text()), 4);
+                appendIrcStyledText(FXStringFormat(_("Download of \"%s\" from %s canceled"), FXPath::name(m_dccfilesList[index].path).text(), m_dccfilesList[index].nick.text()), 4, FALSE);
             }
             else
             {
-                appendIrcStyledText(FXStringFormat(_("Download of \"%s\" from %s finished"), FXPath::name(m_dccfilesList[index].path).text(), m_dccfilesList[index].nick.text()), 8);
+                appendIrcStyledText(FXStringFormat(_("Download of \"%s\" from %s finished"), FXPath::name(m_dccfilesList[index].path).text(), m_dccfilesList[index].nick.text()), 8, FALSE);
 #ifdef HAVE_TRAY
                 if(m_trayIcon && m_trayIcon->getIcon() != ICO_NEWFILE && !shown())
                     m_trayIcon->setIcon(ICO_NEWFILE);
@@ -2440,7 +2440,7 @@ void dxirc::onIrcDccPosition(IrcSocket *server, IrcEvent *ev)
         {
             if(m_dccfilesList[index].canceled)
             {
-                appendIrcStyledText(FXStringFormat(_("Download of \"%s\" from %s canceled"), FXPath::name(m_dccfilesList[index].path).text(), m_dccfilesList[index].nick.text()), 4);
+                appendIrcStyledText(FXStringFormat(_("Download of \"%s\" from %s canceled"), FXPath::name(m_dccfilesList[index].path).text(), m_dccfilesList[index].nick.text()), 4, FALSE);
             }
         }
     }
@@ -2450,11 +2450,11 @@ void dxirc::onIrcDccPosition(IrcSocket *server, IrcEvent *ev)
         {
             if(m_dccfilesList[index].canceled)
             {
-                appendIrcStyledText(FXStringFormat(_("Upload of \"%s\" to %s canceled"), FXPath::name(m_dccfilesList[index].path).text(), m_dccfilesList[index].nick.text()), 4);
+                appendIrcStyledText(FXStringFormat(_("Upload of \"%s\" to %s canceled"), FXPath::name(m_dccfilesList[index].path).text(), m_dccfilesList[index].nick.text()), 4, FALSE);
             }
             else
             {
-                appendIrcStyledText(FXStringFormat(_("Upload of \"%s\" to %s finished"), FXPath::name(m_dccfilesList[index].path).text(), m_dccfilesList[index].nick.text()), 8);
+                appendIrcStyledText(FXStringFormat(_("Upload of \"%s\" to %s finished"), FXPath::name(m_dccfilesList[index].path).text(), m_dccfilesList[index].nick.text()), 8, FALSE);
 #ifdef HAVE_TRAY
                 if(m_trayIcon && m_trayIcon->getIcon() != ICO_NEWFILE && !shown())
                     m_trayIcon->setIcon(ICO_NEWFILE);
@@ -2465,7 +2465,7 @@ void dxirc::onIrcDccPosition(IrcSocket *server, IrcEvent *ev)
         {
             if(m_dccfilesList[index].canceled)
             {
-                appendIrcStyledText(FXStringFormat(_("Upload of \"%s\" to %s canceled"), FXPath::name(m_dccfilesList[index].path).text(), m_dccfilesList[index].nick.text()), 4);
+                appendIrcStyledText(FXStringFormat(_("Upload of \"%s\" to %s canceled"), FXPath::name(m_dccfilesList[index].path).text(), m_dccfilesList[index].nick.text()), 4, FALSE);
             }
         }
     }
@@ -2552,7 +2552,7 @@ void dxirc::onIrcDccAccept(IrcSocket *server, IrcEvent *ev)
     m_dccfilesList[dccIndex].finishedPosition = position;
     m_dccfilesList[dccIndex].canceled = FALSE;
     connectServer(m_dccfilesList[dccIndex].ip, m_dccfilesList[dccIndex].port, "", server->getNickName(), "", "", "", FALSE, DCC_IN, m_dccfilesList[dccIndex].nick, NULL, m_dccfilesList[dccIndex]);
-    appendIrcStyledText(FXStringFormat(_("Receiving \"%s\" from %s"), FXPath::name(m_dccfilesList[dccIndex].path).text(), m_dccfilesList[dccIndex].nick.text()),8);
+    appendIrcStyledText(FXStringFormat(_("Receiving \"%s\" from %s"), FXPath::name(m_dccfilesList[dccIndex].path).text(), m_dccfilesList[dccIndex].nick.text()),8,FALSE);
     if(!m_autoDccFile) onCmdTransfers(NULL, 0, NULL);
 }
 
@@ -2577,7 +2577,7 @@ void dxirc::onIrcDccPaccept(IrcSocket *server, IrcEvent *ev)
     m_dccfilesList[dccIndex].finishedPosition = position;
     m_dccfilesList[dccIndex].canceled = FALSE;
     connectServer(server->getLocalIP(), 0, "", server->getNickName(), "", "", "", FALSE, DCC_PIN, m_dccfilesList[dccIndex].nick, server, m_dccfilesList[dccIndex]);
-    appendIrcStyledText(FXStringFormat(_("Receiving \"%s\" from %s"), FXPath::name(m_dccfilesList[dccIndex].path).text(), m_dccfilesList[dccIndex].nick.text()),8);
+    appendIrcStyledText(FXStringFormat(_("Receiving \"%s\" from %s"), FXPath::name(m_dccfilesList[dccIndex].path).text(), m_dccfilesList[dccIndex].nick.text()),8,FALSE);
     if(!m_autoDccFile) onCmdTransfers(NULL, 0, NULL);
 }
 
@@ -2987,7 +2987,7 @@ long dxirc::onAddIgnoreCommand(FXObject *sender, FXSelector, void *data)
     }
     if(!canAdd)
     {
-        tab->appendStyledText(FXStringFormat(_("'%s' can't be added to ignored commands"), text.text()), 4, FALSE);
+        tab->appendStyledText(FXStringFormat(_("'%s' can't be added to ignored commands"), text.text()), 4, FALSE, FALSE, FALSE);
         return 1;
     }
     else
@@ -2996,11 +2996,11 @@ long dxirc::onAddIgnoreCommand(FXObject *sender, FXSelector, void *data)
         {
             if(comparecase(text,m_commandsList.section(';', i))==0)
             {
-                tab->appendStyledText(FXStringFormat(_("'%s' is already added in ignored commands"), text.text()), 4, FALSE);
+                tab->appendStyledText(FXStringFormat(_("'%s' is already added in ignored commands"), text.text()), 4, FALSE, FALSE, FALSE);
                 return 1;
             }
         }
-        tab->appendStyledText(FXStringFormat(_("'%s' was added to ignored commands"), text.text()), 3, FALSE);
+        tab->appendStyledText(FXStringFormat(_("'%s' was added to ignored commands"), text.text()), 3, FALSE, FALSE, FALSE);
         m_commandsList.append(text+";");
         saveConfig();
         for(FXint i = 0; i<m_tabbook->numChildren(); i+=2)
@@ -3027,13 +3027,13 @@ long dxirc::onRemoveIgnoreCommand(FXObject *sender, FXSelector, void *data)
     {
         if(comparecase(text,m_commandsList.section(';', i))==0)
         {
-            tab->appendStyledText(FXStringFormat(_("'%s' was removed from ignored commands"), text.text()), 3, FALSE);
+            tab->appendStyledText(FXStringFormat(_("'%s' was removed from ignored commands"), text.text()), 3, FALSE, FALSE, FALSE);
             inCommands = TRUE;
         }
         else
             tempList.append(m_commandsList.section(';', i)+";");
     }
-    if(!inCommands) tab->appendStyledText(FXStringFormat(_("'%s' isn't in ignored commands"), text.text()), 4, FALSE);
+    if(!inCommands) tab->appendStyledText(FXStringFormat(_("'%s' isn't in ignored commands"), text.text()), 4, FALSE, FALSE, FALSE);
     m_commandsList = tempList;
     saveConfig();
     for(FXint i = 0; i<m_tabbook->numChildren(); i+=2)
@@ -3066,7 +3066,7 @@ long dxirc::onAddIgnoreUser(FXObject *sender, FXSelector, void *data)
                 updated = TRUE;
                 channel.empty() ? m_usersList[i].channel = "all" : m_usersList[i].channel = channel;
                 server.empty() ? m_usersList[i].server = "all" : m_usersList[i].server = server;
-                tab->appendStyledText(FXStringFormat(_("'%s' was updated in ignored users"), user.text()), 3, FALSE);
+                tab->appendStyledText(FXStringFormat(_("'%s' was updated in ignored users"), user.text()), 3, FALSE, FALSE, FALSE);
                 break;
             }
         }
@@ -3077,7 +3077,7 @@ long dxirc::onAddIgnoreUser(FXObject *sender, FXSelector, void *data)
             channel.empty() ? iuser.channel = "all" : iuser.channel = channel;
             server.empty() ? iuser.server = "all" : iuser.server = server;
             m_usersList.append(iuser);
-            tab->appendStyledText(FXStringFormat(_("'%s' was added to ignored users"), user.text()), 3, FALSE);
+            tab->appendStyledText(FXStringFormat(_("'%s' was added to ignored users"), user.text()), 3, FALSE, FALSE, FALSE);
         }
     }
     else
@@ -3087,7 +3087,7 @@ long dxirc::onAddIgnoreUser(FXObject *sender, FXSelector, void *data)
         channel.empty() ? iuser.channel = "all" : iuser.channel = channel;
         server.empty() ? iuser.server = "all" : iuser.server = server;
         m_usersList.append(iuser);
-        tab->appendStyledText(FXStringFormat(_("'%s' was added to ignored users"), user.text()), 3, FALSE);
+        tab->appendStyledText(FXStringFormat(_("'%s' was added to ignored users"), user.text()), 3, FALSE, FALSE, FALSE);
     }
     saveConfig();
     for(FXint i = 0; i<m_servers.no(); i++)
@@ -3112,13 +3112,13 @@ long dxirc::onRemoveIgnoreUser(FXObject *sender, FXSelector, void *data)
             {
                 updated = TRUE;
                 m_usersList.erase(i);
-                tab->appendStyledText(FXStringFormat(_("'%s' was removed from ignored users"), text.text()), 3, FALSE);
+                tab->appendStyledText(FXStringFormat(_("'%s' was removed from ignored users"), text.text()), 3, FALSE, FALSE, FALSE);
                 break;
             }
         }
         if(!updated)
         {
-            tab->appendStyledText(FXStringFormat(_("'%s' wasn't removed from ignored users"), text.text()), 3, FALSE);
+            tab->appendStyledText(FXStringFormat(_("'%s' wasn't removed from ignored users"), text.text()), 3, FALSE, FALSE, FALSE);
         }
     }
     saveConfig();
@@ -3268,20 +3268,20 @@ long dxirc::onLua(FXObject *obj, FXSelector, void *data)
     {
         if(!m_scripts.no())
         {
-            appendIrcStyledText(_("Scripts aren't loaded"), 4);
+            appendIrcStyledText(_("Scripts aren't loaded"), 4, FALSE);
             return 0;
         }
         else
         {
-            appendIrcStyledText(_("Loaded scrips:"), 7);
+            appendIrcStyledText(_("Loaded scrips:"), 7, FALSE);
             for(FXint i=0; i<m_scripts.no(); i++)
             {                
-                appendIrcText(FXStringFormat(_("Name: %s"), m_scripts[i].name.text()));
-                appendIrcText(FXStringFormat(_("Description: %s"), m_scripts[i].description.text()));
-                appendIrcText(FXStringFormat(_("Version: %s"), m_scripts[i].version.text()));
-                appendIrcText(FXStringFormat(_("Path: %s"), m_scripts[i].path.text()));
-                appendIrcText(utils::instance().availableScriptCommands(m_scripts[i].name));
-                if(i+1<m_scripts.no()) appendIrcText("");
+                appendIrcText(FXStringFormat(_("Name: %s"), m_scripts[i].name.text()), FALSE);
+                appendIrcText(FXStringFormat(_("Description: %s"), m_scripts[i].description.text()), FALSE);
+                appendIrcText(FXStringFormat(_("Version: %s"), m_scripts[i].version.text()), FALSE);
+                appendIrcText(FXStringFormat(_("Path: %s"), m_scripts[i].path.text()), FALSE);
+                appendIrcText(utils::instance().availableScriptCommands(m_scripts[i].name), FALSE);
+                if(i+1<m_scripts.no()) appendIrcText("", FALSE);
             }
         }
         return 1;
@@ -3301,7 +3301,7 @@ long dxirc::onLua(FXObject *obj, FXSelector, void *data)
                 {
                     lua_pushstring(m_scripts[i].L, text.text());
                     lua_pushnumber(m_scripts[i].L, tab->getID());
-                    if(lua_pcall(m_scripts[i].L, 2, 0, 0)) appendIrcStyledText(FXStringFormat(_("Error: %s"), lua_tostring(m_scripts[i].L, -1)), 4);
+                    if(lua_pcall(m_scripts[i].L, 2, 0, 0)) appendIrcStyledText(FXStringFormat(_("Error: %s"), lua_tostring(m_scripts[i].L, -1)), 4, FALSE);
                 }
                 else lua_pop(m_scripts[i].L, 1);
                 return 1;
@@ -3309,7 +3309,7 @@ long dxirc::onLua(FXObject *obj, FXSelector, void *data)
         }
     }
 #else
-    appendIrcStyledText(_("dxirc is compiled without support for Lua scripting"), 4);
+    appendIrcStyledText(_("dxirc is compiled without support for Lua scripting"), 4, FALSE);
 #endif
     return 1;
 }
@@ -3344,7 +3344,7 @@ long dxirc::onIrcMyMsg(FXObject *sender, FXSelector, void *data)
                         lua_pushinteger(m_scripts[j].L, tab->getID());
                         if (lua_pcall(m_scripts[j].L, 2, 0, 0))
                         {
-                            appendIrcStyledText(FXStringFormat(_("Lua plugin: error calling %s %s"), m_scriptEvents[i].funcname.text(), lua_tostring(m_scripts[j].L, -1)), 4);
+                            appendIrcStyledText(FXStringFormat(_("Lua plugin: error calling %s %s"), m_scriptEvents[i].funcname.text(), lua_tostring(m_scripts[j].L, -1)), 4, FALSE);
                             lua_pop(m_scripts[j].L, 1);
                         }
                     }
@@ -3434,7 +3434,7 @@ void dxirc::sendNewTab(IrcSocket *server, const FXString &name, FXint id, FXbool
                         lua_settable(m_scripts[j].L, -3);
                         if (lua_pcall(m_scripts[j].L, 1, 0, 0))
                         {
-                            appendIrcStyledText(FXStringFormat(_("Lua plugin: error calling %s %s"), m_scriptEvents[i].funcname.text(), lua_tostring(m_scripts[j].L, -1)), 4);
+                            appendIrcStyledText(FXStringFormat(_("Lua plugin: error calling %s %s"), m_scriptEvents[i].funcname.text(), lua_tostring(m_scripts[j].L, -1)), 4, FALSE);
                             lua_pop(m_scripts[j].L, 1);
                         }
                     }
@@ -3484,7 +3484,7 @@ long dxirc::onIrcCommand(FXObject *sender, FXSelector, void *data)
                         lua_pushinteger(m_scripts[j].L, tab->getID());
                         if (lua_pcall(m_scripts[j].L, 3, 0, 0))
                         {
-                            appendIrcStyledText(FXStringFormat(_("Lua plugin: error calling %s %s"), m_scriptEvents[i].funcname.text(), lua_tostring(m_scripts[j].L, -1)), 4);
+                            appendIrcStyledText(FXStringFormat(_("Lua plugin: error calling %s %s"), m_scriptEvents[i].funcname.text(), lua_tostring(m_scripts[j].L, -1)), 4, FALSE);
                             lua_pop(m_scripts[j].L, 1);
                         }
                     }
@@ -3781,7 +3781,7 @@ long dxirc::onStatusTimeout(FXObject*, FXSelector, void*)
     return 1;
 }
 
-void dxirc::appendIrcText(FXString text)
+void dxirc::appendIrcText(FXString text, FXbool logLine)
 {
     if(m_tabbook->numChildren())
     {
@@ -3799,12 +3799,12 @@ void dxirc::appendIrcText(FXString text)
         }
         IrcTabItem *currenttab = static_cast<IrcTabItem*>(m_tabbook->childAtIndex(index));
         FXASSERT(currenttab != 0);
-        currenttab->appendText(text, TRUE);
+        currenttab->appendText(text, TRUE, logLine);
         currenttab->makeLastRowVisible();
     }
 }
 
-void dxirc::appendIrcStyledText(FXString text, FXint style)
+void dxirc::appendIrcStyledText(FXString text, FXint style, FXbool logLine)
 {
     if(m_tabbook->numChildren())
     {
@@ -3822,7 +3822,7 @@ void dxirc::appendIrcStyledText(FXString text, FXint style)
         }
         IrcTabItem *currenttab = static_cast<IrcTabItem*>(m_tabbook->childAtIndex(index));
         FXASSERT(currenttab != 0);
-        currenttab->appendStyledText(text, style, TRUE);
+        currenttab->appendStyledText(text, style, TRUE, FALSE, logLine);
         currenttab->makeLastRowVisible();
     }
 }
@@ -3836,7 +3836,7 @@ FXint dxirc::loadLuaScript(FXString path, FXbool showMessage)
         {
             if(comparecase(path, m_scripts[i].path)==0)
             {
-                appendIrcStyledText(FXStringFormat(_("Script %s is already loaded"), path.text()), 4);
+                appendIrcStyledText(FXStringFormat(_("Script %s is already loaded"), path.text()), 4, FALSE);
                 return 0;
             }
         }
@@ -3847,12 +3847,12 @@ FXint dxirc::loadLuaScript(FXString path, FXbool showMessage)
         {
             if(FXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("Script %s contains dxirc.AddAll\nThis can BREAK dxirc funcionality.\nLoad it anyway?"), path.text()) == 2) return 0;
         }
-        else appendIrcStyledText(FXStringFormat(_("Script %s contains dxirc.AddAll. This can BREAK dxirc funcionality."), path.text()), 4);
+        else appendIrcStyledText(FXStringFormat(_("Script %s contains dxirc.AddAll. This can BREAK dxirc funcionality."), path.text()), 4, FALSE);
     }
     lua_State *L = luaL_newstate();
     if(L == NULL)
     {
-        appendIrcStyledText(_("Unable to initialize Lua."), 4);
+        appendIrcStyledText(_("Unable to initialize Lua."), 4, FALSE);
         return 0;
     }
     if(L)
@@ -3861,14 +3861,14 @@ FXint dxirc::loadLuaScript(FXString path, FXbool showMessage)
         luaL_register(L, "dxirc", dxircFunctions);
         if(luaL_dofile(L, path.text()))
         {
-            appendIrcStyledText(FXStringFormat(_("Unable to load/run the file %s"), lua_tostring(L, -1)), 4);
+            appendIrcStyledText(FXStringFormat(_("Unable to load/run the file %s"), lua_tostring(L, -1)), 4, FALSE);
             return 0;
         }
         lua_pushstring(L, "dxirc_Register");
         lua_gettable(L, LUA_GLOBALSINDEX);
         if(lua_pcall(L, 0, 3, 0))
         {
-            appendIrcStyledText(FXStringFormat(_("Lua plugin: error registering script %s"), lua_tostring(L, -1)), 4);
+            appendIrcStyledText(FXStringFormat(_("Lua plugin: error registering script %s"), lua_tostring(L, -1)), 4, FALSE);
             return 0;
         }
         FXString name = lua_tostring(L, -3);
@@ -3881,7 +3881,7 @@ FXint dxirc::loadLuaScript(FXString path, FXbool showMessage)
             {
                 if(comparecase(name, m_scripts[i].name)==0)
                 {
-                    appendIrcStyledText(FXStringFormat(_("Script with name %s is already loaded"), name.lower().text()), 4);
+                    appendIrcStyledText(FXStringFormat(_("Script with name %s is already loaded"), name.lower().text()), 4, FALSE);
                     return 0;
                 }
             }
@@ -3893,8 +3893,8 @@ FXint dxirc::loadLuaScript(FXString path, FXbool showMessage)
         script.description = description;
         script.path = path;
         m_scripts.append(script);
-        appendIrcStyledText(FXStringFormat(_("Script %s was loaded"), path.text()), 3);
-        appendIrcStyledText(FXStringFormat("%s: %s", script.name.text(), script.description.text()), 3);
+        appendIrcStyledText(FXStringFormat(_("Script %s was loaded"), path.text()), 3, FALSE);
+        appendIrcStyledText(FXStringFormat("%s: %s", script.name.text(), script.description.text()), 3, FALSE);
         lua_pushstring(L, "dxirc_Init");
         lua_gettable(L, LUA_GLOBALSINDEX);
         if (lua_type(L, -1) != LUA_TFUNCTION) lua_pop(L, 1);
@@ -3902,7 +3902,7 @@ FXint dxirc::loadLuaScript(FXString path, FXbool showMessage)
         {
             if (lua_pcall(L, 0, 0, 0))
             {
-                appendIrcStyledText(FXStringFormat(_("Lua plugin: error calling dxirc_Init() %s"), lua_tostring(L, -1)), 4);
+                appendIrcStyledText(FXStringFormat(_("Lua plugin: error calling dxirc_Init() %s"), lua_tostring(L, -1)), 4, FALSE);
                 lua_pop(L, 1);
             }
         }        
@@ -3920,7 +3920,7 @@ FXint dxirc::unloadLuaScript(FXString name)
     FXbool success = FALSE;
     if(!m_scripts.no())
     {
-        appendIrcStyledText(FXStringFormat(_("Script %s isn't loaded"), name.text()), 4);
+        appendIrcStyledText(FXStringFormat(_("Script %s isn't loaded"), name.text()), 4, FALSE);
         return 0;
     }
     else
@@ -3944,8 +3944,8 @@ FXint dxirc::unloadLuaScript(FXString name)
             success = TRUE;
         }
     }
-    if(success) appendIrcStyledText(FXStringFormat(_("Script %s was unloaded"), name.text()), 4);
-    else appendIrcStyledText(FXStringFormat(_("Script %s isn't loaded"), name.text()), 4);
+    if(success) appendIrcStyledText(FXStringFormat(_("Script %s was unloaded"), name.text()), 4, FALSE);
+    else appendIrcStyledText(FXStringFormat(_("Script %s isn't loaded"), name.text()), 4, FALSE);
     return 1;
 #else
     return 0;
@@ -4030,7 +4030,7 @@ int dxirc::onLuaAddCommand(lua_State *lua)
     if(name.empty() || funcname.empty() || helptext.empty()) return 0;
     if(utils::instance().isCommand(name))
     {
-        _pThis->appendIrcStyledText(FXStringFormat(_("Command %s already exists"), name.text()), 4);
+        _pThis->appendIrcStyledText(FXStringFormat(_("Command %s already exists"), name.text()), 4, FALSE);
         return 0;
     }
     if(_pThis->m_scripts.no())
@@ -4074,7 +4074,7 @@ int dxirc::onLuaAddEvent(lua_State *lua)
         {
             if(comparecase(name, _pThis->m_scriptEvents[i].name)==0 && comparecase(funcname, _pThis->m_scriptEvents[i].funcname)==0 && comparecase(script, _pThis->m_scriptEvents[i].script)==0)
             {
-                _pThis->appendIrcStyledText(FXStringFormat(_("Function %s for event %s already exists"), funcname.text(), name.text()), 4);
+                _pThis->appendIrcStyledText(FXStringFormat(_("Function %s for event %s already exists"), funcname.text(), name.text()), 4, FALSE);
                 return 0;
             }
         }
@@ -4212,7 +4212,7 @@ int dxirc::onLuaRemoveName(lua_State *lua)
             if(comparecase(command, _pThis->m_scriptEvents[i].name) == 0 && comparecase(script, _pThis->m_scriptEvents[i].script) == 0)
             {
                 _pThis->m_scriptEvents.erase(i);
-                _pThis->appendIrcStyledText(FXStringFormat(_("Command/event %s in script %s was removed"), command.text(), script.text()), 3);
+                _pThis->appendIrcStyledText(FXStringFormat(_("Command/event %s in script %s was removed"), command.text(), script.text()), 3, FALSE);
             }
         }
     }
@@ -4276,7 +4276,7 @@ int dxirc::onLuaPrint(lua_State *lua)
                 IrcTabItem *tab = static_cast<IrcTabItem*>(_pThis->m_tabbook->childAtIndex(i));
                 if(id==tab->getID())
                 {
-                    tab->appendStyledText(text, style, TRUE, TRUE);
+                    tab->appendStyledText(text, style, TRUE, TRUE, TRUE);
                     tab->makeLastRowVisible();
                     return 1;
                 }

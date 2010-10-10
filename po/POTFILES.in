@@ -11,6 +11,7 @@ src/scriptdialog.cpp
 src/tetristabitem.cpp
 src/dccdialog.cpp
 src/aboutdialog.cpp
+src/utils.cpp
 
 ../../fox-1.6/src/FXMessageBox.cpp
 ../../fox-1.6/src/FXColorSelector.cpp
