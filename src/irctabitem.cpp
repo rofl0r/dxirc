@@ -2932,11 +2932,13 @@ long IrcTabItem::onKeyPress(FXObject *, FXSelector, void *ptr)
                         if(comparecase(line, getNick(j).left(line.length())) == 0)
                         {
                             m_commandline->setText(getNick(j)+m_nickCompletionChar+" ");
+                            break;
                         }
                         else if(comparecase(line.section(m_nickCompletionChar, 0, 1), getNick(j)) == 0)
                         {
                             if((j+1) < m_users->getNumItems()) m_commandline->setText(getNick(++j)+m_nickCompletionChar+" ");
                             else m_commandline->setText(getNick(0)+m_nickCompletionChar+" ");
+                            break;
                         }
                     }
                     return 1;
@@ -3058,22 +3060,20 @@ long IrcTabItem::onKeyPress(FXObject *, FXSelector, void *ptr)
     return 0;
 }
 
-//Check is this tab current or first for server
-FXbool IrcTabItem::isFirst()
+//Check is this tab right for server message (e.g. not for IRC_SERVERREPLY)
+FXbool IrcTabItem::isRightForServerMsg()
 {
-    FXint indexOfCurrent = m_parent->getCurrent()*2;
-    FXbool hasCurrent = m_server->findTarget(static_cast<IrcTabItem*>(m_parent->childAtIndex(indexOfCurrent)));
-    FXint indexOfThis = m_parent->indexOfChild(this);
-    if(hasCurrent)
+    //Check if current tab is in server targets
+    if(m_server->findTarget(m_parent->childAtIndex(m_parent->getCurrent()*2)))
     {
-        if(indexOfCurrent == indexOfThis) return TRUE;
-        else return FALSE;
+        return m_parent->indexOfChild(this) == m_parent->getCurrent()*2;
     }
     else
     {
+        FXint indexOfThis = m_parent->indexOfChild(this);
         for(FXint i = 0; i<m_parent->numChildren(); i+=2)
         {
-            if(m_server->findTarget(static_cast<IrcTabItem*>(m_parent->childAtIndex(i))))
+            if(m_server->findTarget(m_parent->childAtIndex(i)))
             {
                 if(i == indexOfThis) return TRUE;
                 else return FALSE;
@@ -3433,11 +3433,11 @@ void IrcTabItem::onIrcAction(IrcEvent* ev)
 //handle IrcEvent IRC_CTCPREPLY
 void IrcTabItem::onIrcCtpcReply(IrcEvent* ev)
 {
-    if(m_type == SERVER || isFirst())
+    if(isRightForServerMsg())
     {
         if(!isCommandIgnored("ctcp"))
         {
-            appendIrcStyledText(FXStringFormat(_("CTCP %s reply from %s: %s"), utils::instance().getParam(ev->param2, 1, FALSE).text(), ev->param1.text(), utils::instance().getParam(ev->param2, 2, TRUE).text()), 2, ev->time);
+            appendIrcStyledText(FXStringFormat(_("CTCP %s reply from %s: %s"), utils::instance().getParam(ev->param2, 1, FALSE).text(), ev->param1.text(), utils::instance().getParam(ev->param2, 2, TRUE).text()), 2, ev->time, FALSE, FALSE);
             if(m_highlightColor != this->getTextColor() && m_parent->getCurrent()*2 != m_parent->indexOfChild(this)) this->setTextColor(m_unreadColor);
         }
     }
@@ -3446,11 +3446,11 @@ void IrcTabItem::onIrcCtpcReply(IrcEvent* ev)
 //handle IrcEvent IRC_CTCPREQUEST
 void IrcTabItem::onIrcCtcpRequest(IrcEvent* ev)
 {
-    if(m_type == SERVER || isFirst())
+    if(isRightForServerMsg())
     {
         if(!isCommandIgnored("ctcp"))
         {
-            appendIrcStyledText(FXStringFormat(_("CTCP %s request from %s"), ev->param2.text(), ev->param1.text()), 2, ev->time);
+            appendIrcStyledText(FXStringFormat(_("CTCP %s request from %s"), ev->param2.text(), ev->param1.text()), 2, ev->time, FALSE, FALSE);
             if(m_highlightColor != this->getTextColor() && m_parent->getCurrent()*2 != m_parent->indexOfChild(this)) this->setTextColor(m_unreadColor);
         }
     }
@@ -3584,7 +3584,7 @@ void IrcTabItem::onIrcChnotice(IrcEvent* ev)
         }
         else
         {
-            if(m_type == SERVER || isFirst())
+            if(isRightForServerMsg())
             {
                 appendIrcStyledText(FXStringFormat(_("%s's NOTICE: %s"), ev->param1.text(), ev->param3.text()), 3, ev->time);
             }
@@ -3595,7 +3595,7 @@ void IrcTabItem::onIrcChnotice(IrcEvent* ev)
 //handle IrcEvent IRC_NOTICE
 void IrcTabItem::onIrcNotice(IrcEvent* ev)
 {
-    if(m_type == SERVER || isFirst())
+    if(isRightForServerMsg())
     {
         if(ev->param1 == getNickName() && !isCommandIgnored("notice"))
         {
@@ -3641,7 +3641,7 @@ void IrcTabItem::onIrcTopic(IrcEvent* ev)
 //handle IrcEvent IRC_INVITE
 void IrcTabItem::onIrcInvite(IrcEvent* ev)
 {
-    if(m_type == SERVER || isFirst())
+    if(isRightForServerMsg())
     {
         appendIrcStyledText(FXStringFormat(_("%s invites you to: %s"), ev->param1.text(), ev->param3.text()), 3, ev->time, FALSE, FALSE);
         if(m_highlightColor != this->getTextColor() && m_parent->getCurrent()*2 != m_parent->indexOfChild(this)) this->setTextColor(m_unreadColor);
@@ -3660,7 +3660,7 @@ void IrcTabItem::onIrcKick(IrcEvent* ev)
             removeUser(ev->param2);
         }
     }
-    if(ev->param2 == getNickName() && (m_type == SERVER || isFirst()))
+    if(ev->param2 == getNickName() && isRightForServerMsg())
     {
         if(ev->param4.empty()) appendIrcStyledText(FXStringFormat(_("You were kicked from %s by %s"), ev->param3.text(), ev->param1.text()), 1, ev->time, FALSE, FALSE);
         else appendIrcStyledText(FXStringFormat(_("You were kicked from %s by %s (%s)"), ev->param3.text(), ev->param1.text(), ev->param4.text()), 1, ev->time, FALSE, FALSE);
@@ -3671,7 +3671,7 @@ void IrcTabItem::onIrcKick(IrcEvent* ev)
 //handle IrcEvent IRC_MODE
 void IrcTabItem::onIrcMode(IrcEvent* ev)
 {
-    if(m_type == SERVER || isFirst())
+    if(isRightForServerMsg())
     {
         appendIrcStyledText(FXStringFormat(_("Mode change [%s] for %s"), ev->param1.text(), ev->param2.text()), 1, ev->time, FALSE, FALSE);
         if(m_highlightColor != this->getTextColor() && m_parent->getCurrent()*2 != m_parent->indexOfChild(this)) this->setTextColor(m_unreadColor);
@@ -3833,13 +3833,13 @@ void IrcTabItem::onIrcServerReply(IrcEvent* ev)
         if(m_type == SERVER)
         {
             //this->setText(server->GetRealServerName());
-            appendIrcText(ev->param1, ev->time, FALSE, FALSE);
+            appendIrcText(ev->param1, ev->time);
             if(getApp()->getForeColor() == this->getTextColor() && m_parent->getCurrent()*2 != m_parent->indexOfChild(this)) this->setTextColor(m_unreadColor);
         }
     }
     else
     {
-        if(isFirst())
+        if(isRightForServerMsg())
         {
             appendIrcText(ev->param1, ev->time, FALSE, FALSE);
             if(m_highlightColor != this->getTextColor() && m_parent->getCurrent()*2 != m_parent->indexOfChild(this)) this->setTextColor(m_unreadColor);
@@ -3862,21 +3862,10 @@ void IrcTabItem::onIrcError(IrcEvent* ev)
 //handle IrcEvent IRC_SERVERERROR
 void IrcTabItem::onIrcServerError(IrcEvent* ev)
 {
-    if(m_ownServerWindow)
+    if(isRightForServerMsg())
     {
-        if(m_type == SERVER)
-        {
-            appendIrcStyledText(ev->param1, 4, ev->time, FALSE, FALSE);
-            if(getApp()->getForeColor() == this->getTextColor() && m_parent->getCurrent()*2 != m_parent->indexOfChild(this)) this->setTextColor(m_unreadColor);
-        }
-    }
-    else
-    {
-        if(isFirst())
-        {
-            appendIrcStyledText(ev->param1, 4, ev->time, FALSE, FALSE);
-            if(m_highlightColor != this->getTextColor() && m_parent->getCurrent()*2 != m_parent->indexOfChild(this)) this->setTextColor(m_unreadColor);
-        }
+        appendIrcStyledText(ev->param1, 4, ev->time, FALSE, FALSE);
+        if(m_highlightColor != this->getTextColor() && m_parent->getCurrent()*2 != m_parent->indexOfChild(this)) this->setTextColor(m_unreadColor);
     }
 }
 
@@ -3884,41 +3873,24 @@ void IrcTabItem::onIrcServerError(IrcEvent* ev)
 void IrcTabItem::onIrcDisconnect(IrcEvent* ev)
 {
     appendIrcStyledText(ev->param1, 4, ev->time, FALSE, FALSE);
-    if(m_ownServerWindow)
+    if(isRightForServerMsg())
     {
-        if(m_type == SERVER)
-        {
-            if(m_parent->getCurrent()*2 != m_parent->indexOfChild(this)) this->setTextColor(m_unreadColor);
-        }
-    }
-    else
-    {
-        if(isFirst())
-        {
-            if(m_parent->getCurrent()*2 != m_parent->indexOfChild(this)) this->setTextColor(m_highlightColor);
-        }
+        if(m_parent->getCurrent()*2 != m_parent->indexOfChild(this)) this->setTextColor(m_highlightColor);
     }
     if(m_type == CHANNEL)
+    {
         m_users->clearItems();
+        m_iamOp = FALSE;
+    }
 }
 
 //handle IrcEvent IRC_RECONNECT
 void IrcTabItem::onIrcReconnect(IrcEvent* ev)
 {
     appendIrcStyledText(ev->param1, 4, ev->time, FALSE, FALSE);
-    if(m_ownServerWindow)
+    if(isRightForServerMsg())
     {
-        if(m_type == SERVER)
-        {
-            if(m_parent->getCurrent()*2 != m_parent->indexOfChild(this)) this->setTextColor(m_highlightColor);
-        }
-    }
-    else
-    {
-        if(isFirst())
-        {
-            if(m_parent->getCurrent()*2 != m_parent->indexOfChild(this)) this->setTextColor(m_highlightColor);
-        }
+        if(m_parent->getCurrent()*2 != m_parent->indexOfChild(this)) this->setTextColor(m_highlightColor);
     }
     if(m_type == CHANNEL)
     {
@@ -3930,21 +3902,10 @@ void IrcTabItem::onIrcReconnect(IrcEvent* ev)
 //handle IrcEvent IRC_UNKNOWN
 void IrcTabItem::onIrcUnknown(IrcEvent* ev)
 {
-    if(m_ownServerWindow)
+    if(isRightForServerMsg())
     {
-        if(m_type == SERVER)
-        {
-            appendIrcStyledText(FXStringFormat(_("Unhandled command '%s' params: %s"), ev->param1.text(), ev->param2.text()), 4, ev->time, FALSE, FALSE);
-            if(getApp()->getForeColor() == this->getTextColor() && m_parent->getCurrent()*2 != m_parent->indexOfChild(this)) this->setTextColor(m_unreadColor);
-        }
-    }
-    else
-    {
-        if(isFirst())
-        {
-            appendIrcStyledText(FXStringFormat(_("Unhandled command '%s' params: %s"), ev->param1.text(), ev->param2.text()), 4, ev->time, FALSE, FALSE);
-            if(m_highlightColor != this->getTextColor() && m_parent->getCurrent()*2 != m_parent->indexOfChild(this)) this->setTextColor(m_unreadColor);
-        }
+        appendIrcStyledText(FXStringFormat(_("Unhandled command '%s' params: %s"), ev->param1.text(), ev->param2.text()), 4, ev->time, FALSE, FALSE);
+        if(m_highlightColor != this->getTextColor() && m_parent->getCurrent()*2 != m_parent->indexOfChild(this)) this->setTextColor(m_unreadColor);
     }
 }
 
@@ -4119,7 +4080,7 @@ void IrcTabItem::onIrc372(IrcEvent* ev)
     }
     else
     {
-        if(isFirst())
+        if(isRightForServerMsg())
         {
             appendIrcText(ev->param1, ev->time, FALSE, FALSE);
             if(m_highlightColor != this->getTextColor() && m_parent->getCurrent()*2 != m_parent->indexOfChild(this)) this->setTextColor(m_unreadColor);
@@ -4187,6 +4148,7 @@ long IrcTabItem::onPipeTimeout(FXObject*, FXSelector, void*)
     {
         if(m_pipeStrings.no() > 3)
         {
+            if(m_pipeStrings[0].empty()) m_pipeStrings[0] = " ";
             if(m_pipeStrings[0].length() > m_maxLen-10-getText().length())
             {
                 dxStringArray messages = cutText(m_pipeStrings[0], m_maxLen-10-getText().length());
@@ -4210,6 +4172,7 @@ long IrcTabItem::onPipeTimeout(FXObject*, FXSelector, void*)
         {
             while(m_pipeStrings.no())
             {
+                if(m_pipeStrings[0].empty()) m_pipeStrings[0] = " ";
                 if(m_pipeStrings[0].length() > m_maxLen-10-getText().length())
                 {
                     dxStringArray messages = cutText(m_pipeStrings[0], m_maxLen-10-getText().length());

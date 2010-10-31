@@ -5,6 +5,7 @@ Version 0.70.svn
 - small improvement in Look settings
 - small issue in translation fixed
 - small improvement in logging
+- small improvement in handle server message
 
 Version 0.60.0 (released 04-09-2010)
 - added support for spellchecking.

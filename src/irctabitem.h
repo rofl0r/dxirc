@@ -250,7 +250,7 @@ class IrcTabItem: public FXTabItem
         void appendIrcNickText(FXString nick, FXString msg, FXint style, FXTime time, FXbool logLine=TRUE);
         void appendLinkText(const FXString &, FXint);
         FXString getNick(FXint);
-        FXbool isFirst();
+        FXbool isRightForServerMsg();
         FXbool isCommandIgnored(const FXString &command);
         void addUser(const FXString &user);
         void removeUser(const FXString &user);
