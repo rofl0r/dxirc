@@ -102,6 +102,7 @@ class ConfigDialog: public FXDialogBox
             ID_IRCCOLORS,
             ID_IRCFONT,
             ID_COLORS,
+            ID_TABCOLORS,
             ID_THEME,
             ID_FONT,
             ID_ACCEPT,
@@ -171,6 +172,7 @@ class ConfigDialog: public FXDialogBox
         long onAutoloadPathSelect(FXObject*,FXSelector,void*);
         long onTheme(FXObject*,FXSelector,void*);
         long onThemeColorChanged(FXObject*,FXSelector,void*);
+        long onTabColorChanged(FXObject*,FXSelector,void*);
         long onFont(FXObject*,FXSelector,void*);
         long onIrcFont(FXObject*,FXSelector,void*);
         long onTray(FXObject*,FXSelector,void*);

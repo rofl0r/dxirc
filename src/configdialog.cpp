@@ -208,6 +208,8 @@ FXDEFMAP(ConfigDialog) ConfigDialogMap[] = {
     FXMAPFUNC(SEL_CHANGED, ConfigDialog::ID_IRCCOLORS, ConfigDialog::onColor),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_COLORS, ConfigDialog::onThemeColorChanged),
     FXMAPFUNC(SEL_CHANGED, ConfigDialog::ID_COLORS, ConfigDialog::onThemeColorChanged),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_TABCOLORS, ConfigDialog::onTabColorChanged),
+    FXMAPFUNC(SEL_CHANGED, ConfigDialog::ID_TABCOLORS, ConfigDialog::onTabColorChanged),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_THEME, ConfigDialog::onTheme),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_FONT, ConfigDialog::onFont),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_IRCFONT, ConfigDialog::onIrcFont),
@@ -376,10 +378,10 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
 
     m_targetUnreadColor.connect(m_unreadColor);
     m_targetUnreadColor.setTarget(this);
-    m_targetUnreadColor.setSelector(ID_COLORS);
+    m_targetUnreadColor.setSelector(ID_TABCOLORS);
     m_targetHighlightColor.connect(m_highlightColor);
     m_targetHighlightColor.setTarget(this);
-    m_targetHighlightColor.setSelector(ID_COLORS);
+    m_targetHighlightColor.setSelector(ID_TABCOLORS);
 
     getApp()->getNormalFont()->create();
     FXFontDesc fontdescription;
@@ -1526,19 +1528,9 @@ long ConfigDialog::onIrcFont(FXObject*, FXSelector, void*)
     return 1;
 }
 
-long ConfigDialog::onThemeColorChanged(FXObject*, FXSelector, void*)
+long ConfigDialog::onThemeColorChanged(FXObject*obj, FXSelector, void*)
 {
     m_themes->setCurrentItem(m_themes->getNumItems()-1);
-    if(m_themeCurrent.fore == m_unreadColor)
-    {
-        if(m_themeCurrent.fore != FXRGB(0,0,255)) m_unreadColor = FXRGB(0,0,255);
-        else m_unreadColor = FXRGBA(FXREDVAL(m_themeCurrent.fore),FXGREENVAL(m_themeCurrent.fore),FXBLUEVAL(m_themeCurrent.fore)+1,FXALPHAVAL(m_themeCurrent.fore));
-    }
-    if(m_themeCurrent.fore == m_highlightColor)
-    {
-        if(m_themeCurrent.fore != FXRGB(255,0,0)) m_highlightColor = FXRGB(255,0,0);
-        else m_highlightColor = FXRGBA(FXREDVAL(m_themeCurrent.fore)+1,FXGREENVAL(m_themeCurrent.fore),FXBLUEVAL(m_themeCurrent.fore),FXALPHAVAL(m_themeCurrent.fore));
-    }
     updateColors();
     return 1;
 }
@@ -1683,6 +1675,23 @@ void ConfigDialog::updateColors()
     m_highlight->setTextColor(m_highlightColor);
     m_highlight->setShadowColor(m_themeCurrent.shadow);
     m_highlight->setHiliteColor(m_themeCurrent.hilite);
+}
+
+long ConfigDialog::onTabColorChanged(FXObject*obj, FXSelector, void*)
+{
+    if(m_themeCurrent.fore == m_unreadColor)
+    {
+        if(m_themeCurrent.fore != FXRGB(0,0,255)) m_unreadColor = FXRGB(0,0,255);
+        else m_unreadColor = FXRGBA(FXREDVAL(m_themeCurrent.fore),FXGREENVAL(m_themeCurrent.fore),FXBLUEVAL(m_themeCurrent.fore)+1,FXALPHAVAL(m_themeCurrent.fore));
+    }
+    if(m_themeCurrent.fore == m_highlightColor)
+    {
+        if(m_themeCurrent.fore != FXRGB(255,0,0)) m_highlightColor = FXRGB(255,0,0);
+        else m_highlightColor = FXRGBA(FXREDVAL(m_themeCurrent.fore)+1,FXGREENVAL(m_themeCurrent.fore),FXBLUEVAL(m_themeCurrent.fore),FXALPHAVAL(m_themeCurrent.fore));
+    }
+    m_unread->setTextColor(m_unreadColor);
+    m_highlight->setTextColor(m_highlightColor);
+    return 1;
 }
 
 static FXString weightToString(FXuint weight){
