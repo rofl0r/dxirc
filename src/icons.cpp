@@ -521,7 +521,7 @@ FXbool makeAllIcons(FXApp *app, const FXString &iniFile, const FXString &datadir
     set.parseFile(iniFile, TRUE);
     FXString themepath = utils::instance().checkThemePath(set.readStringEntry("SETTINGS", "themePath", DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "default"));
     menuColor = set.readColorEntry("SETTINGS", "basecolor", app->getBaseColor());
-    textBackColor = set.readColorEntry("SETTINGS", "textBackColor", FXRGB(255,255,255));
+    textBackColor = set.readColorEntry("SETTINGS", "textBackColor", FXRGB(0,0,0));
 
     success = ((ICO_BIG = makeIcon(app, mainpath, "big_dxirc.png", TRUE)) != NULL) &success;
     success = ((ICO_SMALL = makeIcon(app, mainpath, "small_dxirc.png", TRUE)) != NULL) &success;

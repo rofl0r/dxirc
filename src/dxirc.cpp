@@ -391,7 +391,7 @@ void dxirc::create()
     FXMainWindow::create();
     createIrcTab("(server)", ICO_SERVER, SERVER, m_servers[0]);
     FXbool maximized = utils::instance().getBoolIniEntry("SETTINGS", "maximized", FALSE);
-    if(maximized) maximize();
+    if(maximized) maximize(TRUE);
     //Checking for screen resolution and correction size, position
     else
     {
@@ -505,12 +505,12 @@ void dxirc::readConfig()
     m_logging = set.readBoolEntry("SETTINGS", "logging", FALSE);
     m_ownServerWindow = set.readBoolEntry("SETTINGS", "serverWindow", TRUE);
 #ifdef HAVE_TRAY
-    m_useTray = set.readBoolEntry("SETTINGS", "tray", FALSE);
+    m_useTray = set.readBoolEntry("SETTINGS", "tray", TRUE);
 #else
     m_useTray = FALSE;
 #endif
     if(m_useTray)
-        m_closeToTray = set.readBoolEntry("SETTINGS", "closeToTray", FALSE);
+        m_closeToTray = set.readBoolEntry("SETTINGS", "closeToTray", TRUE);
     else
         m_closeToTray = FALSE;
     m_reconnect = set.readBoolEntry("SETTINGS", "reconnect", FALSE);
@@ -836,7 +836,7 @@ long dxirc::onCmdQuit(FXObject*, FXSelector, void*)
 long dxirc::onCmdClose(FXObject*, FXSelector, void*)
 {
 #ifdef HAVE_TRAY
-    if(m_closeToTray)
+    if(m_useTray && m_closeToTray)
         hide();
     else
         onCmdQuit(NULL, 0, NULL);

@@ -2341,12 +2341,12 @@ void ConfigDialog::readConfig()
     m_logging = set.readBoolEntry("SETTINGS", "logging", FALSE);
     m_serverWindow = set.readBoolEntry("SETTINGS", "serverWindow", TRUE);
 #ifdef HAVE_TRAY
-    m_useTray = set.readBoolEntry("SETTINGS", "tray", FALSE);
+    m_useTray = set.readBoolEntry("SETTINGS", "tray", TRUE);
 #else
     m_useTray = FALSE;
 #endif
     if(m_useTray)
-        m_closeToTray = set.readBoolEntry("SETTINGS", "closeToTray", FALSE);
+        m_closeToTray = set.readBoolEntry("SETTINGS", "closeToTray", TRUE);
     else
         m_closeToTray = FALSE;
     m_reconnect = set.readBoolEntry("SETTINGS", "reconnect", FALSE);

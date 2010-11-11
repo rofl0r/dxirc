@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: david@konstrukce-cad.com\n"
-"POT-Creation-Date: 2010-10-10 15:45+0200\n"
+"POT-Creation-Date: 2010-10-31 17:48+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,8 +19,8 @@ msgstr ""
 #: src/configdialog.cpp:125 src/configdialog.cpp:393 src/configdialog.cpp:957
 #: src/configdialog.cpp:995 src/configdialog.cpp:1035
 #: src/configdialog.cpp:1341 src/configdialog.cpp:1381 src/dxirc.cpp:1558
-#: src/irctabitem.cpp:59 src/irctabitem.cpp:4451 src/irctabitem.cpp:4472
-#: src/irctabitem.cpp:4497 src/irctabitem.cpp:4527 src/irctabitem.cpp:4550
+#: src/irctabitem.cpp:59 src/irctabitem.cpp:4414 src/irctabitem.cpp:4435
+#: src/irctabitem.cpp:4460 src/irctabitem.cpp:4490 src/irctabitem.cpp:4513
 #: src/serverdialog.cpp:101 src/serverdialog.cpp:181 src/serverdialog.cpp:268
 #: src/aliasdialog.cpp:53 src/aliasdialog.cpp:84 src/aliasdialog.cpp:127
 #: src/dccdialog.cpp:171 ../../fox-1.6/src/FXMessageBox.cpp:107
@@ -39,9 +39,9 @@ msgstr ""
 
 #: src/configdialog.cpp:126 src/configdialog.cpp:958 src/configdialog.cpp:996
 #: src/configdialog.cpp:1036 src/configdialog.cpp:1342
-#: src/configdialog.cpp:1382 src/dxirc.cpp:1559 src/irctabitem.cpp:4452
-#: src/irctabitem.cpp:4473 src/irctabitem.cpp:4498 src/irctabitem.cpp:4528
-#: src/irctabitem.cpp:4551 src/serverdialog.cpp:182 src/serverdialog.cpp:269
+#: src/configdialog.cpp:1382 src/dxirc.cpp:1559 src/irctabitem.cpp:4415
+#: src/irctabitem.cpp:4436 src/irctabitem.cpp:4461 src/irctabitem.cpp:4491
+#: src/irctabitem.cpp:4514 src/serverdialog.cpp:182 src/serverdialog.cpp:269
 #: src/aliasdialog.cpp:85 src/aliasdialog.cpp:128
 #: ../../fox-1.6/src/FXMessageBox.cpp:102
 #: ../../fox-1.6/src/FXMessageBox.cpp:106
@@ -513,28 +513,28 @@ msgstr ""
 msgid "Command:"
 msgstr ""
 
-#: src/configdialog.cpp:979 src/irctabitem.cpp:4511
+#: src/configdialog.cpp:979 src/irctabitem.cpp:4474
 msgid "Add ignore user"
 msgstr ""
 
 #: src/configdialog.cpp:983 src/configdialog.cpp:1024
-#: src/configdialog.cpp:1329 src/configdialog.cpp:1370 src/irctabitem.cpp:4515
+#: src/configdialog.cpp:1329 src/configdialog.cpp:1370 src/irctabitem.cpp:4478
 msgid "Nick:"
 msgstr ""
 
 #: src/configdialog.cpp:986 src/configdialog.cpp:1027
 #: src/configdialog.cpp:1332 src/configdialog.cpp:1373 src/dxirc.cpp:1542
-#: src/irctabitem.cpp:4518 src/serverdialog.cpp:160 src/serverdialog.cpp:244
+#: src/irctabitem.cpp:4481 src/serverdialog.cpp:160 src/serverdialog.cpp:244
 msgid "Channel(s):\tChannels need to be comma separated"
 msgstr ""
 
-#: src/configdialog.cpp:989 src/configdialog.cpp:1335 src/irctabitem.cpp:4521
+#: src/configdialog.cpp:989 src/configdialog.cpp:1335 src/irctabitem.cpp:4484
 #: src/serverdialog.cpp:163 src/serverdialog.cpp:247
 msgid "Channels need to be comma separated"
 msgstr ""
 
 #: src/configdialog.cpp:990 src/configdialog.cpp:1030
-#: src/configdialog.cpp:1336 src/configdialog.cpp:1376 src/irctabitem.cpp:4522
+#: src/configdialog.cpp:1336 src/configdialog.cpp:1376 src/irctabitem.cpp:4485
 msgid "Server:"
 msgstr ""
 
@@ -1561,7 +1561,7 @@ msgid "Spellchecking language list"
 msgstr ""
 
 #: src/irctabitem.cpp:229 src/irctabitem.cpp:395 src/irctabitem.cpp:601
-#: src/irctabitem.cpp:4571
+#: src/irctabitem.cpp:4534
 #, c-format
 msgid "Current spellchecking language: %s"
 msgstr ""
@@ -1821,7 +1821,7 @@ msgid "/query <nick>, opens query with nick."
 msgstr ""
 
 #: src/irctabitem.cpp:2386 src/irctabitem.cpp:2395 src/irctabitem.cpp:2409
-#: src/irctabitem.cpp:4581
+#: src/irctabitem.cpp:4544
 #, c-format
 msgid "Warning: topic is too long. Max. topic length is %d."
 msgstr ""
@@ -2355,129 +2355,129 @@ msgstr ""
 msgid "Mode for %s: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3937 src/irctabitem.cpp:3945
+#: src/irctabitem.cpp:3907
 #, c-format
 msgid "Unhandled command '%s' params: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:3956
+#: src/irctabitem.cpp:3917
 #, c-format
 msgid "%s is away: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:4090
+#: src/irctabitem.cpp:4051
 #, c-format
 msgid "Users on %s: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:4327
+#: src/irctabitem.cpp:4290
 msgid "Give op"
 msgstr ""
 
-#: src/irctabitem.cpp:4328
+#: src/irctabitem.cpp:4291
 msgid "Remove op"
 msgstr ""
 
-#: src/irctabitem.cpp:4330
+#: src/irctabitem.cpp:4293
 msgid "Give voice"
 msgstr ""
 
-#: src/irctabitem.cpp:4331
+#: src/irctabitem.cpp:4294
 msgid "Remove voice"
 msgstr ""
 
-#: src/irctabitem.cpp:4333
+#: src/irctabitem.cpp:4296
 msgid "Kick"
 msgstr ""
 
-#: src/irctabitem.cpp:4335
+#: src/irctabitem.cpp:4298
 msgid "Ban"
 msgstr ""
 
-#: src/irctabitem.cpp:4336
+#: src/irctabitem.cpp:4299
 msgid "KickBan"
 msgstr ""
 
-#: src/irctabitem.cpp:4338
+#: src/irctabitem.cpp:4301
 #, c-format
 msgid "User: %s@%s"
 msgstr ""
 
-#: src/irctabitem.cpp:4339
+#: src/irctabitem.cpp:4302
 #, c-format
 msgid "Realname: %s"
 msgstr ""
 
-#: src/irctabitem.cpp:4343
+#: src/irctabitem.cpp:4306
 msgid "Query"
 msgstr ""
 
-#: src/irctabitem.cpp:4344
+#: src/irctabitem.cpp:4307
 msgid "User information (WHOIS)"
 msgstr ""
 
-#: src/irctabitem.cpp:4345
+#: src/irctabitem.cpp:4308
 msgid "DCC chat"
 msgstr ""
 
-#: src/irctabitem.cpp:4346
+#: src/irctabitem.cpp:4309
 msgid "Send file"
 msgstr ""
 
-#: src/irctabitem.cpp:4347
+#: src/irctabitem.cpp:4310
 msgid "Ignore"
 msgstr ""
 
-#: src/irctabitem.cpp:4348
+#: src/irctabitem.cpp:4311
 msgid "Operator actions"
 msgstr ""
 
-#: src/irctabitem.cpp:4353
+#: src/irctabitem.cpp:4316
 msgid "Remove Away"
 msgstr ""
 
-#: src/irctabitem.cpp:4354
+#: src/irctabitem.cpp:4317
 msgid "Set Away"
 msgstr ""
 
-#: src/irctabitem.cpp:4443
+#: src/irctabitem.cpp:4406
 msgid "Kick dialog"
 msgstr ""
 
-#: src/irctabitem.cpp:4447 src/irctabitem.cpp:4488
+#: src/irctabitem.cpp:4410 src/irctabitem.cpp:4451
 msgid "Kick reason:"
 msgstr ""
 
-#: src/irctabitem.cpp:4463
+#: src/irctabitem.cpp:4426
 msgid "Ban dialog"
 msgstr ""
 
-#: src/irctabitem.cpp:4467 src/irctabitem.cpp:4492
+#: src/irctabitem.cpp:4430 src/irctabitem.cpp:4455
 msgid "Banmask:"
 msgstr ""
 
-#: src/irctabitem.cpp:4484
+#: src/irctabitem.cpp:4447
 msgid "Kick/Ban dialog"
 msgstr ""
 
-#: src/irctabitem.cpp:4541
+#: src/irctabitem.cpp:4504
 msgid "Away dialog"
 msgstr ""
 
-#: src/irctabitem.cpp:4545
+#: src/irctabitem.cpp:4508
 msgid "Message:"
 msgstr ""
 
-#: src/irctabitem.cpp:4547 src/irctabitem.cpp:4555
+#: src/irctabitem.cpp:4510 src/irctabitem.cpp:4518
 msgid "away"
 msgstr ""
 
-#: src/irctabitem.cpp:4614
+#: src/irctabitem.cpp:4577
 #, c-format
 msgid "You was banned by %s"
 msgstr ""
 
-#: src/irctabitem.cpp:4617
+#: src/irctabitem.cpp:4580
 #, c-format
 msgid "%s was banned by %s"
 msgstr ""
