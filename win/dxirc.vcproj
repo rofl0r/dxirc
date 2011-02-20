@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="."
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;DXIRC_DATADIR=\&quot;.\&quot;;FOXDLL;HAVE_TRAY;HAVE_OPENSSL;HAVE_LUA"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;DXIRC_DATADIR=\&quot;.\&quot;;FOXDLL;HAVE_TRAY;HAVE_OPENSSL;HAVE_LUA;ENABLE_IPV6"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -118,7 +118,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="."
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;DXIRC_DATADIR=\&quot;.\&quot;;FOXDLL;HAVE_TRAY;HAVE_OPENSSL;HAVE_LUA"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;DXIRC_DATADIR=\&quot;.\&quot;;FOXDLL;HAVE_TRAY;HAVE_OPENSSL;HAVE_LUA;ENABLE_IPV6"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
@@ -193,7 +193,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\dccengine.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\dcctabitem.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\src\dxirc.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\dxmessagechannel.cpp"
 				>
 			</File>
 			<File
@@ -201,7 +213,15 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\dxsocket.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\src\dxtabbook.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\dxtabitem.cpp"
 				>
 			</File>
 			<File
@@ -225,7 +245,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\src\ircsocket.cpp"
+				RelativePath="..\src\ircengine.cpp"
 				>
 			</File>
 			<File
@@ -279,6 +299,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\dccengine.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\dcctabitem.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\defs.h"
 				>
 			</File>
@@ -287,11 +315,23 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\dxmessagechannel.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\dxpipe.h"
 				>
 			</File>
 			<File
+				RelativePath="..\src\dxsocket.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\dxtabbook.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\dxtabitem.h"
 				>
 			</File>
 			<File
@@ -323,7 +363,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\src\ircsocket.h"
+				RelativePath="..\src\ircengine.h"
 				>
 			</File>
 			<File

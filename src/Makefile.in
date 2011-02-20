@@ -42,10 +42,11 @@ subdir = src
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/codeset.m4 \
-	$(top_srcdir)/m4/gettext.m4 $(top_srcdir)/m4/glibc2.m4 \
-	$(top_srcdir)/m4/glibc21.m4 $(top_srcdir)/m4/iconv.m4 \
-	$(top_srcdir)/m4/intdiv0.m4 $(top_srcdir)/m4/intl.m4 \
-	$(top_srcdir)/m4/intmax.m4 $(top_srcdir)/m4/inttypes-pri.m4 \
+	$(top_srcdir)/m4/curl-functions.m4 $(top_srcdir)/m4/gettext.m4 \
+	$(top_srcdir)/m4/glibc2.m4 $(top_srcdir)/m4/glibc21.m4 \
+	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/intdiv0.m4 \
+	$(top_srcdir)/m4/intl.m4 $(top_srcdir)/m4/intmax.m4 \
+	$(top_srcdir)/m4/inttypes-pri.m4 \
 	$(top_srcdir)/m4/inttypes_h.m4 $(top_srcdir)/m4/lcmessage.m4 \
 	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
 	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/lock.m4 \
@@ -66,19 +67,23 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__dxirc_SOURCES_DIST = configdialog.cpp dxirc.cpp icons.cpp \
-	ircsocket.cpp irctabitem.cpp serverdialog.cpp utils.cpp \
+	dxsocket.cpp ircengine.cpp dccengine.cpp dxtabitem.cpp \
+	irctabitem.cpp dcctabitem.cpp serverdialog.cpp utils.cpp \
 	aliasdialog.cpp dxpipe.cpp logviewer.cpp tetristabitem.cpp \
 	scriptdialog.cpp dccdialog.cpp aboutdialog.cpp dxtabbook.cpp \
-	dxtextfield.cpp dxtext.cpp FXTrayApp.cpp FXTrayIcon.cpp
+	dxtextfield.cpp dxtext.cpp dxmessagechannel.cpp FXTrayApp.cpp \
+	FXTrayIcon.cpp
 @HAVE_TRAY_TRUE@am__objects_1 = FXTrayApp.$(OBJEXT) \
 @HAVE_TRAY_TRUE@	FXTrayIcon.$(OBJEXT)
 am_dxirc_OBJECTS = configdialog.$(OBJEXT) dxirc.$(OBJEXT) \
-	icons.$(OBJEXT) ircsocket.$(OBJEXT) irctabitem.$(OBJEXT) \
-	serverdialog.$(OBJEXT) utils.$(OBJEXT) aliasdialog.$(OBJEXT) \
-	dxpipe.$(OBJEXT) logviewer.$(OBJEXT) tetristabitem.$(OBJEXT) \
-	scriptdialog.$(OBJEXT) dccdialog.$(OBJEXT) \
-	aboutdialog.$(OBJEXT) dxtabbook.$(OBJEXT) \
-	dxtextfield.$(OBJEXT) dxtext.$(OBJEXT) $(am__objects_1)
+	icons.$(OBJEXT) dxsocket.$(OBJEXT) ircengine.$(OBJEXT) \
+	dccengine.$(OBJEXT) dxtabitem.$(OBJEXT) irctabitem.$(OBJEXT) \
+	dcctabitem.$(OBJEXT) serverdialog.$(OBJEXT) utils.$(OBJEXT) \
+	aliasdialog.$(OBJEXT) dxpipe.$(OBJEXT) logviewer.$(OBJEXT) \
+	tetristabitem.$(OBJEXT) scriptdialog.$(OBJEXT) \
+	dccdialog.$(OBJEXT) aboutdialog.$(OBJEXT) dxtabbook.$(OBJEXT) \
+	dxtextfield.$(OBJEXT) dxtext.$(OBJEXT) \
+	dxmessagechannel.$(OBJEXT) $(am__objects_1)
 dxirc_OBJECTS = $(am_dxirc_OBJECTS)
 dxirc_DEPENDENCIES =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
@@ -249,11 +254,12 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-dxirc_SOURCES = configdialog.cpp dxirc.cpp icons.cpp ircsocket.cpp \
-	irctabitem.cpp serverdialog.cpp utils.cpp aliasdialog.cpp \
+dxirc_SOURCES = configdialog.cpp dxirc.cpp icons.cpp dxsocket.cpp \
+	ircengine.cpp dccengine.cpp dxtabitem.cpp irctabitem.cpp \
+	dcctabitem.cpp serverdialog.cpp utils.cpp aliasdialog.cpp \
 	dxpipe.cpp logviewer.cpp tetristabitem.cpp scriptdialog.cpp \
 	dccdialog.cpp aboutdialog.cpp dxtabbook.cpp dxtextfield.cpp \
-	dxtext.cpp $(am__append_1)
+	dxtext.cpp dxmessagechannel.cpp $(am__append_1)
 dxirc_LDADD = @LIBINTL@
 INCLUDES = -I. -I$(top_srcdir) -I$(top_srcdir)/intl
 EXTRA_DIST = configdialog.h \
@@ -262,8 +268,12 @@ EXTRA_DIST = configdialog.h \
               help.h \
               i18n.h \
               icons.h \
-              ircsocket.h \
+              dxsocket.h \
+              ircengine.h \
+              dccengine.h \
+              dxtabitem.h \
               irctabitem.h \
+              dcctabitem.h \
               serverdialog.h \
               utils.h \
               aliasdialog.h \
@@ -276,6 +286,7 @@ EXTRA_DIST = configdialog.h \
               dxtabbook.h \
               dxtextfield.h \
               dxtext.h \
+	      dxmessagechannel.h \
               FXTrayApp.h \
               FXTrayIcon.h
 
@@ -366,13 +377,18 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/aliasdialog.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/configdialog.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dccdialog.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dccengine.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dcctabitem.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dxirc.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dxmessagechannel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dxpipe.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dxsocket.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dxtabbook.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dxtabitem.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dxtext.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dxtextfield.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/icons.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ircsocket.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ircengine.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/irctabitem.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/logviewer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/scriptdialog.Po@am__quote@

@@ -30,8 +30,6 @@
 #include "config.h"
 #include "i18n.h"
 
-#define LUA_HELP_PATH "http://www.dxirc.org/dxirc-lua.html"
-
 FXDEFMAP(DccSendDialog) DccSendDialogMap[] = {
     FXMAPFUNC(SEL_COMMAND,  DccSendDialog::ID_FILE,     DccSendDialog::onFile),
     FXMAPFUNC(SEL_COMMAND,  DccSendDialog::ID_SEND,     DccSendDialog::onSend),
@@ -112,11 +110,67 @@ long DccSendDialog::onKeyPress(FXObject *sender, FXSelector sel, void *ptr)
     return 0;
 }
 
+FXDEFMAP(NickList) NickListMap [] = {
+    FXMAPFUNC(SEL_QUERY_TIP, 0, NickList::onQueryTip)
+};
+
+FXIMPLEMENT(NickList, FXList, NickListMap, ARRAYNUMBER(NickListMap))
+
+NickList::NickList(FXComposite* p, IrcTabItem* tgt, FXSelector sel, FXuint opts, FXint x, FXint y, FXint w, FXint h)
+        : FXList(p, tgt, sel, opts, x, y, w, h), m_parent(tgt)
+{
+}
+
+long NickList::onQueryTip(FXObject *sender, FXSelector sel, void *ptr)
+{
+    if(FXWindow::onQueryTip(sender, sel, ptr)) return 1;
+    if((flags&FLAG_TIP) && !(options&LIST_AUTOSELECT) && (0<=cursor)) // No tip when autoselect!
+    {
+        FXString string = items[cursor]->getText();
+        string.append('\n');
+        NickInfo nick = m_parent->m_engine->getNickInfo(items[cursor]->getText());
+        string.append(FXStringFormat(_("User: %s@%s\n"), nick.user.text(), nick.host.text()));
+        string.append(FXStringFormat(_("Realname: %s"), nick.real.text()));
+        sender->handle(this, FXSEL(SEL_COMMAND,ID_SETSTRINGVALUE), (void*)&string);
+        return 1;
+    }
+    return 0;
+}
+
+FXIMPLEMENT(NickListItem, FXListItem, NULL, 0)
+
+void NickListItem::setUserMode(UserMode mode)
+{
+    m_mode = mode;
+    FXbool away = m_tab->m_engine->getNickInfo(getText()).away;
+    m_parent->recalc();
+    switch(m_mode){
+        case ADMIN: setIcon(away? ICO_IRCAWAYADMIN:ICO_IRCADMIN);break;
+        case OWNER: setIcon(away? ICO_IRCAWAYOWNER:ICO_IRCOWNER);break;
+        case OP: setIcon(away? ICO_IRCAWAYOP:ICO_IRCOP);break;
+        case HALFOP: setIcon(away? ICO_IRCAWAYHALFOP:ICO_IRCHALFOP);break;
+        case VOICE: setIcon(away? ICO_IRCAWAYVOICE:ICO_IRCVOICE);break;
+        case NONE: setIcon(away? ICO_IRCAWAYNORMAL:ICO_IRCNORMAL);break;
+    }
+}
+
+void NickListItem::changeAway(FXbool away)
+{
+    m_parent->recalc();
+    switch(m_mode){
+        case ADMIN: setIcon(away? ICO_IRCAWAYADMIN:ICO_IRCADMIN);break;
+        case OWNER: setIcon(away? ICO_IRCAWAYOWNER:ICO_IRCOWNER);break;
+        case OP: setIcon(away? ICO_IRCAWAYOP:ICO_IRCOP);break;
+        case HALFOP: setIcon(away? ICO_IRCAWAYHALFOP:ICO_IRCHALFOP);break;
+        case VOICE: setIcon(away? ICO_IRCAWAYVOICE:ICO_IRCVOICE);break;
+        case NONE: setIcon(away? ICO_IRCAWAYNORMAL:ICO_IRCNORMAL);break;
+    }
+}
+
 FXDEFMAP(IrcTabItem) IrcTabItemMap[] = {
     FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_COMMANDLINE,     IrcTabItem::onCommandline),
     FXMAPFUNC(SEL_KEYPRESS,             IrcTabItem::ID_COMMANDLINE,     IrcTabItem::onKeyPress),
-    FXMAPFUNC(SEL_COMMAND,              IrcSocket::ID_SERVER,           IrcTabItem::onIrcEvent),
-    FXMAPFUNC(SEL_TIMEOUT,              IrcTabItem::ID_TIME,            IrcTabItem::onTimeout),
+    FXMAPFUNC(SEL_COMMAND,              IrcEngine::ID_SERVER,           IrcTabItem::onIrcEvent),
     FXMAPFUNC(SEL_TIMEOUT,              IrcTabItem::ID_PTIME,           IrcTabItem::onPipeTimeout),
     FXMAPFUNC(SEL_TIMEOUT,              IrcTabItem::ID_ETIME,           IrcTabItem::onEggTimeout),
     FXMAPFUNC(SEL_TEXTLINK,             IrcTabItem::ID_TEXT,            IrcTabItem::onTextLink),
@@ -142,25 +196,24 @@ FXDEFMAP(IrcTabItem) IrcTabItemMap[] = {
     FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_SPELL,           IrcTabItem::onSpellLang)
 };
 
-FXIMPLEMENT(IrcTabItem, FXTabItem, IrcTabItemMap, ARRAYNUMBER(IrcTabItemMap))
+FXIMPLEMENT(IrcTabItem, dxTabItem, IrcTabItemMap, ARRAYNUMBER(IrcTabItemMap))
 
 IrcTabItem::IrcTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *icon, FXuint opts,
-        FXint id, TYPE type, IrcSocket *socket, FXbool ownServerWindow, FXbool usersShown,
+        FXint id, TYPE type, IrcEngine *socket, FXbool ownServerWindow, FXbool usersShown,
         FXbool logging, FXString commandsList, FXString logPath, FXint maxAway, IrcColor colors,
         FXString nickChar, FXFont *font, FXbool sameCommand, FXbool sameList, FXbool coloredNick,
         FXbool stripColors, FXbool useSpell, FXbool showSpellCombo)
-    : FXTabItem(tab, tabtext, icon, opts), m_parent(tab), m_server(socket), m_type(type),
-        m_id(id),m_usersShown(usersShown), m_logging(logging),
+    : dxTabItem(tab, tabtext, icon, opts, id), m_engine(socket), m_parent(tab), m_type(type),
+        m_usersShown(usersShown), m_logging(logging),
         m_ownServerWindow(ownServerWindow), m_sameCmd(sameCommand), m_sameList(sameList),
         m_coloredNick(coloredNick), m_stripColors(stripColors), m_useSpell(useSpell),
-        m_showSpellCombo(showSpellCombo), m_colors(colors), m_commandsList(commandsList), m_logPath(logPath),
-        m_maxAway(maxAway), m_nickCompletionChar(nickChar), m_logstream(NULL)
+        m_showSpellCombo(showSpellCombo), m_colors(colors), m_commandsList(commandsList),
+        m_logPath(logPath), m_maxAway(maxAway), m_nickCompletionChar(nickChar), m_logstream(NULL)
 {
     m_currentPosition = 0;
     m_historyMax = 25;
     m_numberUsers = 0;
     m_maxLen = 460;
-    m_checkAway = FALSE;
     m_iamOp = FALSE;
     m_topic = _("No topic is set");
     m_editableTopic = TRUE;
@@ -171,9 +224,9 @@ IrcTabItem::IrcTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *icon, FX
     m_unreadColor = FXRGB(0,0,255);
     m_highlightColor = FXRGB(255,0,0);
 
-    if(m_type == CHANNEL && m_server->getConnected())
+    if(m_type == CHANNEL && m_engine->getConnected())
     {
-        m_server->sendMode(getText());
+        m_engine->sendMode(getText());
     }
 
     m_mainframe = new FXVerticalFrame(m_parent, FRAME_RAISED|LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
@@ -197,7 +250,7 @@ IrcTabItem::IrcTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *icon, FX
     m_text->setSelBackColor(getApp()->getSelbackColor());
 
     m_usersframe = new FXVerticalFrame(m_splitter, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y|LAYOUT_FIX_WIDTH);
-    m_users = new FXList(m_usersframe, this, ID_USERS, LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    m_users = new NickList(m_usersframe, this, ID_USERS, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     m_users->setSortFunc(FXList::ascendingCase);
     m_users->setScrollStyle(HSCROLLING_OFF);
     if(m_sameList) m_users->setFont(font);
@@ -214,7 +267,7 @@ IrcTabItem::IrcTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *icon, FX
     m_spellLangs->setTipText(_("Spellchecking language list"));
     m_spellLangs->hide();
     if(m_sameCmd) m_spellLangs->setFont(font);
-    if(m_useSpell && (m_type==CHANNEL || m_type==QUERY || m_type==DCCCHAT) && utils::instance().getLangsNum())
+    if(m_useSpell && (m_type==CHANNEL || m_type==QUERY) && utils::instance().getLangsNum())
     {
         dxStringArray langs = utils::instance().getLangs();
         FXString lang = utils::instance().getChannelLang(getText());
@@ -288,7 +341,6 @@ IrcTabItem::~IrcTabItem()
     this->stopLogging();
     if(m_pipe) m_pipe->stopCmd();
     m_pipeStrings.clear();
-    getApp()->removeTimeout(this, ID_TIME);
     getApp()->removeTimeout(this, ID_PTIME);
 }
 
@@ -357,7 +409,7 @@ void IrcTabItem::setType(const TYPE &typ, const FXString &tabtext)
         m_topicline->setText(m_topic);
         m_splitter->recalc();
         setText(tabtext);
-        if(m_server->getConnected()) m_server->sendMode(getText());
+        if(m_engine->getConnected()) m_engine->sendMode(getText());
         m_type = typ;
     }
     else if(typ == SERVER || typ == QUERY)
@@ -586,7 +638,7 @@ void IrcTabItem::setSmileys(FXbool smiley, dxSmileyArray nsmileys)
 void IrcTabItem::setUseSpell(FXbool useSpell)
 {
     m_useSpell = useSpell;
-    if(m_useSpell && (m_type==CHANNEL || m_type==QUERY || m_type==DCCCHAT) && utils::instance().getLangsNum())
+    if(m_useSpell && (m_type==CHANNEL || m_type==QUERY) && utils::instance().getLangsNum())
     {
         dxStringArray langs = utils::instance().getLangs();
         FXString lang = utils::instance().getChannelLang(getText());
@@ -1029,13 +1081,13 @@ void IrcTabItem::appendLinkText(const FXString &txt, FXint stylenum)
 
 void IrcTabItem::startLogging()
 {
-    if(m_logstream && FXStat::exists(m_logPath+PATHSEPSTRING+m_server->getServerName()+PATHSEPSTRING+getText()+PATHSEPSTRING+FXSystem::time("%Y-%m-%d", FXSystem::now()))) return;
-
+    if(m_logstream && FXStat::exists(m_logPath+PATHSEPSTRING+m_engine->getRealServerName()+PATHSEPSTRING+getText()+PATHSEPSTRING+FXSystem::time("%Y-%m-%d", FXSystem::now())))
+        return;
     if(m_logging && m_type != SERVER)
     {
-        if(!FXStat::exists(m_logPath+PATHSEPSTRING+m_server->getServerName())) FXDir::create(m_logPath+PATHSEPSTRING+m_server->getServerName());
-        if(!FXStat::exists(m_logPath+PATHSEPSTRING+m_server->getServerName()+PATHSEPSTRING+getText())) FXDir::create(m_logPath+PATHSEPSTRING+m_server->getServerName()+PATHSEPSTRING+getText());
-        m_logstream = new std::ofstream(FXString(m_logPath+PATHSEPSTRING+m_server->getServerName()+PATHSEPSTRING+getText()+PATHSEPSTRING+FXSystem::time("%Y-%m-%d", FXSystem::now())).text(), std::ios::out|std::ios::app);
+        if(!FXStat::exists(m_logPath+PATHSEPSTRING+m_engine->getRealServerName())) FXDir::create(m_logPath+PATHSEPSTRING+m_engine->getRealServerName());
+        if(!FXStat::exists(m_logPath+PATHSEPSTRING+m_engine->getRealServerName()+PATHSEPSTRING+getText())) FXDir::create(m_logPath+PATHSEPSTRING+m_engine->getRealServerName()+PATHSEPSTRING+getText());
+        m_logstream = new std::ofstream(FXString(m_logPath+PATHSEPSTRING+m_engine->getRealServerName()+PATHSEPSTRING+getText()+PATHSEPSTRING+FXSystem::time("%Y-%m-%d", FXSystem::now())).text(), std::ios::out|std::ios::app);
     }
 }
 
@@ -1060,7 +1112,7 @@ void IrcTabItem::logLine(const FXString &line, const FXTime &time)
 
 FXbool IrcTabItem::isChannel(const FXString &text)
 {
-    if(text.length()) return m_server->getChanTypes().contains(text[0]);
+    if(text.length()) return m_engine->getChanTypes().contains(text[0]);
     return FALSE;
 }
 
@@ -1128,32 +1180,6 @@ FXbool IrcTabItem::processLine(const FXString& commandtext)
 FXbool IrcTabItem::processCommand(const FXString& commandtext)
 {
     FXString command = (commandtext[0] == '/' ? commandtext.after('/').before(' ').lower() : "");
-    if(m_type == DCCCHAT)
-    {
-        if(m_server->getConnected())
-        {
-            if(command == "me")
-            {
-                appendIrcStyledText(getNickName()+" "+commandtext.after(' '), 2, FXSystem::now());
-                return m_server->sendDccChatText("\001ACTION "+commandtext.after(' ')+"\001");
-            }
-            if(command == "say")
-            {
-                if(m_coloredNick) appendIrcNickText(getNickName(), commandtext.after(' '), getNickColor(getNickName()), FXSystem::now());
-                else appendIrcNickText(getNickName(), commandtext.after(' '), 5, FXSystem::now());
-                return m_server->sendDccChatText(commandtext.after(' '));
-            }
-            if(commandtext[0] != '/')
-            {
-                if(m_coloredNick) appendIrcNickText(getNickName(), commandtext, getNickColor(getNickName()), FXSystem::now());
-                else appendIrcNickText(getNickName(), commandtext, 5, FXSystem::now());
-                return m_server->sendDccChatText(commandtext);
-            }
-        }
-        else
-            appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
-        return TRUE;
-    }
     if(m_type == OTHER)
     {
         if(utils::instance().isScriptCommand(command))
@@ -1200,7 +1226,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         }
         if(command == "admin")
         {
-            if(m_server->getConnected()) return m_server->sendAdmin(commandtext.after(' '));
+            if(m_engine->getConnected()) return m_engine->sendAdmin(commandtext.after(' '));
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
@@ -1210,15 +1236,15 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         }
         if(command == "away")
         {
-            if(m_server->getConnected())
+            if(m_engine->getConnected())
             {
-                if(commandtext.after(' ').length() > m_server->getAwayLen())
+                if(commandtext.after(' ').length() > m_engine->getAwayLen())
                 {
-                    appendIrcStyledText(FXStringFormat(_("Warning: Away message is too long. Max. away message length is %d."), m_server->getAwayLen()), 4, FXSystem::now(), FALSE, FALSE);
-                    return m_server->sendAway(commandtext.after(' '));
+                    appendIrcStyledText(FXStringFormat(_("Warning: Away message is too long. Max. away message length is %d."), m_engine->getAwayLen()), 4, FXSystem::now(), FALSE, FALSE);
+                    return m_engine->sendAway(commandtext.after(' '));
                 }
                 else
-                    return m_server->sendAway(commandtext.after(' '));
+                    return m_engine->sendAway(commandtext.after(' '));
             }
             else
             {
@@ -1229,16 +1255,16 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         }
         if(command == "banlist")
         {
-            if(m_server->getConnected())
+            if(m_engine->getConnected())
             {
                 FXString channel = commandtext.after(' ');
-                if(channel.empty() && m_type == CHANNEL) return m_server->sendBanlist(getText());
+                if(channel.empty() && m_type == CHANNEL) return m_engine->sendBanlist(getText());
                 else if(!isChannel(channel) && m_type != CHANNEL)
                 {
                     appendIrcStyledText(_("/banlist <channel>, shows banlist for channel."), 4, FXSystem::now(), FALSE, FALSE);
                     return FALSE;
                 }
-                else return m_server->sendBanlist(channel);
+                else return m_engine->sendBanlist(channel);
             }
             else
             {
@@ -1274,7 +1300,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         }
         if(command == "ctcp")
         {
-            if(m_server->getConnected())
+            if(m_engine->getConnected())
             {
                 FXString to = commandtext.after(' ').before(' ');
                 FXString msg = commandtext.after(' ', 2);
@@ -1286,9 +1312,9 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                 else if(msg.length() > m_maxLen-12-to.length())
                 {
                     appendIrcStyledText(FXStringFormat(_("Warning: ctcp message is too long. Max. ctcp message length is %d."), m_maxLen-12-to.length()), 4, FXSystem::now(), FALSE, FALSE);
-                    return m_server->sendCtcp(to, msg);
+                    return m_engine->sendCtcp(to, msg);
                 }
-                else return m_server->sendCtcp(to, msg);
+                else return m_engine->sendCtcp(to, msg);
             }
             else
             {
@@ -1299,7 +1325,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         }
         if(command == "cycle")
         {
-            if(m_server->getConnected())
+            if(m_engine->getConnected())
             {
                 if(m_type == CHANNEL)
                 {
@@ -1307,13 +1333,13 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                     {
                         FXString channel = commandtext.after(' ').before(' ');
                         FXString reason = commandtext.after(' ', 2);
-                        reason.empty() ? m_server->sendPart(channel) : m_server->sendPart(channel, reason);
-                        return m_server->sendJoin(channel);
+                        reason.empty() ? m_engine->sendPart(channel) : m_engine->sendPart(channel, reason);
+                        return m_engine->sendJoin(channel);
                     }
                     else
                     {
-                        commandtext.after(' ').empty() ? m_server->sendPart(getText()) : m_server->sendPart(getText(), commandtext.after(' '));
-                        return m_server->sendJoin(getText());
+                        commandtext.after(' ').empty() ? m_engine->sendPart(getText()) : m_engine->sendPart(getText(), commandtext.after(' '));
+                        return m_engine->sendJoin(getText());
                     }
                 }
                 else
@@ -1322,8 +1348,8 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                     {
                         FXString channel = commandtext.after(' ').before(' ');
                         FXString reason = commandtext.after(' ', 2);
-                        reason.empty() ? m_server->sendPart(channel) : m_server->sendPart(channel, reason);
-                        return m_server->sendJoin(channel);
+                        reason.empty() ? m_engine->sendPart(channel) : m_engine->sendPart(channel, reason);
+                        return m_engine->sendJoin(channel);
                     }
                     else
                     {
@@ -1341,7 +1367,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         }
         if(command == "dcc")
         {
-            if(m_server->getConnected())
+            if(m_engine->getConnected())
             {
                 FXString dccCommand = utils::instance().getParam(commandtext, 2, FALSE).lower();
                 if(dccCommand == "chat")
@@ -1360,7 +1386,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                     IrcEvent ev;
                     ev.eventType = IRC_DCCSERVER;
                     ev.param1 = nick;
-                    m_parent->getParent()->getParent()->handle(m_server, FXSEL(SEL_COMMAND, IrcSocket::ID_SERVER), &ev);
+                    m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine::ID_SERVER), &ev);
                     return TRUE;
                 }
                 else if(dccCommand == "send")
@@ -1391,7 +1417,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                     ev.eventType = IRC_DCCOUT;
                     ev.param1 = nick;
                     ev.param2 = file;
-                    m_parent->getParent()->getParent()->handle(m_server, FXSEL(SEL_COMMAND, IrcSocket::ID_SERVER), &ev);
+                    m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine::ID_SERVER), &ev);
                     return TRUE;
                 }
                 else if(dccCommand == "psend")
@@ -1422,7 +1448,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                     ev.eventType = IRC_DCCPOUT;
                     ev.param1 = nick;
                     ev.param2 = file;
-                    m_parent->getParent()->getParent()->handle(m_server, FXSEL(SEL_COMMAND, IrcSocket::ID_SERVER), &ev);
+                    m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine::ID_SERVER), &ev);
                     return TRUE;
                 }
                 else
@@ -1440,7 +1466,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         }
         if(command == "deop")
         {
-            if(m_server->getConnected())
+            if(m_engine->getConnected())
             {
                 FXString params = commandtext.after(' ');
                 if(m_type == CHANNEL)
@@ -1460,14 +1486,14 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                         FXString channel = params.before(' ');
                         FXString nicks = params.after(' ');
                         FXString modeparams = utils::instance().createModes('-', 'o', nicks);
-                        return m_server->sendMode(channel+" "+modeparams);
+                        return m_engine->sendMode(channel+" "+modeparams);
                     }
                     else
                     {
                         FXString channel = getText();
                         FXString nicks = params;
                         FXString modeparams = utils::instance().createModes('-', 'o', nicks);
-                        return m_server->sendMode(channel+" "+modeparams);
+                        return m_engine->sendMode(channel+" "+modeparams);
                     }
                 }
                 else
@@ -1477,7 +1503,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                         FXString channel = params.before(' ');
                         FXString nicks = params.after(' ');
                         FXString modeparams = utils::instance().createModes('-', 'o', nicks);
-                        return m_server->sendMode(channel+" "+modeparams);
+                        return m_engine->sendMode(channel+" "+modeparams);
                     }
                     else
                     {
@@ -1495,7 +1521,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         }
         if(command == "devoice")
         {
-            if(m_server->getConnected())
+            if(m_engine->getConnected())
             {
                 FXString params = commandtext.after(' ');
                 if(m_type == CHANNEL)
@@ -1515,14 +1541,14 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                         FXString channel = params.before(' ');
                         FXString nicks = params.after(' ');
                         FXString modeparams = utils::instance().createModes('-', 'v', nicks);
-                        return m_server->sendMode(channel+" "+modeparams);
+                        return m_engine->sendMode(channel+" "+modeparams);
                     }
                     else
                     {
                         FXString channel = getText();
                         FXString nicks = params;
                         FXString modeparams = utils::instance().createModes('-', 'v', nicks);
-                        return m_server->sendMode(channel+" "+modeparams);
+                        return m_engine->sendMode(channel+" "+modeparams);
                     }
                 }
                 else
@@ -1532,7 +1558,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                         FXString channel = params.before(' ');
                         FXString nicks = params.after(' ');
                         FXString modeparams = utils::instance().createModes('-', 'v', nicks);
-                        return m_server->sendMode(channel+" "+modeparams);
+                        return m_engine->sendMode(channel+" "+modeparams);
                     }
                     else
                     {
@@ -1550,15 +1576,15 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         }
         if(command == "disconnect")
         {
-            if(m_server->getConnected())
+            if(m_engine->getConnected())
             {
-                if(commandtext.after(' ').empty()) m_server->disconnect();
-                else m_server->disconnect(commandtext.after(' '));
+                if(commandtext.after(' ').empty()) m_engine->disconnect();
+                else m_engine->disconnect(commandtext.after(' '));
                 return TRUE;
             }
             else
             {
-                m_server->closeConnection(TRUE);
+                m_engine->closeConnection(TRUE);
                 return TRUE;
             }
         }
@@ -1640,7 +1666,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                 if(m_commandsList.empty()) appendIrcText(_("No ignored commands"), FXSystem::now(), FALSE, FALSE);
                 else appendIrcText(m_commandsList.rbefore(';'), FXSystem::now(), FALSE, FALSE);
                 appendIrcStyledText(_("Ignored users:"), 7, FXSystem::now(), FALSE, FALSE);
-                dxIgnoreUserArray users = m_server->getUsersList();
+                dxIgnoreUserArray users = m_engine->getUsersList();
                 if(!users.no()) appendIrcText(_("No ignored users"), FXSystem::now(), FALSE, FALSE);
                 else
                 {
@@ -1699,7 +1725,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         }
         if(command == "invite")
         {
-            if(m_server->getConnected())
+            if(m_engine->getConnected())
             {
                 FXString params = commandtext.after(' ');
                 if(params.empty())
@@ -1716,7 +1742,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                 {
                     FXString nick = params.before(' ');
                     FXString channel = params.after(' ');
-                    return m_server->sendInvite(nick, channel);
+                    return m_engine->sendInvite(nick, channel);
                 }
             }
             else
@@ -1728,7 +1754,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         }
         if(command == "join")
         {
-            if(m_server->getConnected())
+            if(m_engine->getConnected())
             {
                 FXString channel = commandtext.after(' ');
                 if(!isChannel(channel))
@@ -1737,7 +1763,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                     appendIrcStyledText(FXStringFormat(_("'%c' isn't valid char for channel."), channel[0]), 4, FXSystem::now(), FALSE, FALSE);
                     return FALSE;
                 }
-                else return m_server->sendJoin(channel);
+                else return m_engine->sendJoin(channel);
             }
             else
             {
@@ -1748,7 +1774,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         }
         if(command == "kick")
         {
-            if(m_server->getConnected())
+            if(m_engine->getConnected())
             {
                 FXString params = commandtext.after(' ');
                 if(m_type == CHANNEL)
@@ -1768,24 +1794,24 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                         FXString channel = params.before(' ');
                         FXString nick = params.after(' ');
                         FXString reason = params.after(' ', 2);
-                        if(reason.length() > m_server->getKickLen())
+                        if(reason.length() > m_engine->getKickLen())
                         {
-                            appendIrcStyledText(FXStringFormat(_("Warning: reason of kick is too long. Max. reason length is %d."), m_server->getKickLen()), 4, FXSystem::now(), FALSE, FALSE);
-                            return m_server->sendKick(channel, nick, reason);
+                            appendIrcStyledText(FXStringFormat(_("Warning: reason of kick is too long. Max. reason length is %d."), m_engine->getKickLen()), 4, FXSystem::now(), FALSE, FALSE);
+                            return m_engine->sendKick(channel, nick, reason);
                         }
-                        else return m_server->sendKick(channel, nick, reason);
+                        else return m_engine->sendKick(channel, nick, reason);
                     }
                     else
                     {
                         FXString channel = getText();
                         FXString nick = params.before(' ');
                         FXString reason = params.after(' ');
-                        if(reason.length() > m_server->getKickLen())
+                        if(reason.length() > m_engine->getKickLen())
                         {
-                            appendIrcStyledText(FXStringFormat(_("Warning: reason of kick is too long. Max. reason length is %d."), m_server->getKickLen()), 4, FXSystem::now(), FALSE, FALSE);
-                            return m_server->sendKick(channel, nick, reason);
+                            appendIrcStyledText(FXStringFormat(_("Warning: reason of kick is too long. Max. reason length is %d."), m_engine->getKickLen()), 4, FXSystem::now(), FALSE, FALSE);
+                            return m_engine->sendKick(channel, nick, reason);
                         }
-                        else return m_server->sendKick(channel, nick, reason);
+                        else return m_engine->sendKick(channel, nick, reason);
                     }
                 }
                 else
@@ -1795,12 +1821,12 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                         FXString channel = params.before(' ');
                         FXString nick = params.after(' ');
                         FXString reason = params.after(' ', 2);
-                        if(reason.length() > m_server->getKickLen())
+                        if(reason.length() > m_engine->getKickLen())
                         {
-                            appendIrcStyledText(FXStringFormat(_("Warning: reason of kick is too long. Max. reason length is %d."), m_server->getKickLen()), 4, FXSystem::now(), FALSE, FALSE);
-                            return m_server->sendKick(channel, nick, reason);
+                            appendIrcStyledText(FXStringFormat(_("Warning: reason of kick is too long. Max. reason length is %d."), m_engine->getKickLen()), 4, FXSystem::now(), FALSE, FALSE);
+                            return m_engine->sendKick(channel, nick, reason);
                         }
-                        else return m_server->sendKick(channel, nick, reason);
+                        else return m_engine->sendKick(channel, nick, reason);
                     }
                     else
                     {
@@ -1818,7 +1844,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         }
         if(command == "kill")
         {
-            if(m_server->getConnected())
+            if(m_engine->getConnected())
             {
                 FXString params = commandtext.after(' ');
                 FXString nick = params.before(' ');
@@ -1831,9 +1857,9 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                 if(reason.length() > m_maxLen-7-nick.length())
                 {
                     appendIrcStyledText(FXStringFormat(_("Warning: reason of kill is too long. Max. reason length is %d."), m_maxLen-7-nick.length()), 4, FXSystem::now(), FALSE, FALSE);
-                    return m_server->sendKill(nick, reason);
+                    return m_engine->sendKill(nick, reason);
                 }
-                else return m_server->sendKill(nick, reason);
+                else return m_engine->sendKill(nick, reason);
             }
             else
             {
@@ -1844,7 +1870,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         }
         if(command == "list")
         {
-            if(m_server->getConnected()) return m_server->sendList(commandtext.after(' '));
+            if(m_engine->getConnected()) return m_engine->sendList(commandtext.after(' '));
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
@@ -1886,7 +1912,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         }
         if(command == "me")
         {
-            if(m_server->getConnected())
+            if(m_engine->getConnected())
             {
                 FXString params = commandtext.after(' ');
                 if(m_type == CHANNEL)
@@ -1908,7 +1934,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                             ev.param1 = getNickName();
                             ev.param2 = channel;
                             ev.param3 = message;
-                            m_parent->getParent()->getParent()->handle(m_server, FXSEL(SEL_COMMAND, IrcSocket::ID_SERVER), &ev);
+                            m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine::ID_SERVER), &ev);
                         }
                         if(message.length() > m_maxLen-19-channel.length())
                         {
@@ -1916,11 +1942,11 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                             FXbool result = TRUE;
                             for(FXint i=0; i<messages.no(); i++)
                             {
-                                result = m_server->sendMe(channel, messages[i]) &result;
+                                result = m_engine->sendMe(channel, messages[i]) &result;
                             }
                             return result;
                         }
-                        else return m_server->sendMe(channel, message);
+                        else return m_engine->sendMe(channel, message);
                     }
                     else
                     {
@@ -1930,18 +1956,18 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                         ev.param1 = getNickName();
                         ev.param2 = getText();
                         ev.param3 = params;
-                        m_parent->getParent()->getParent()->handle(m_server, FXSEL(SEL_COMMAND, IrcSocket::ID_SERVER), &ev);
+                        m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine::ID_SERVER), &ev);
                         if(params.length() > m_maxLen-19-getText().length())
                         {
                             dxStringArray messages = cutText(params, m_maxLen-19-getText().length());
                             FXbool result = TRUE;
                             for(FXint i=0; i<messages.no(); i++)
                             {
-                                result = m_server->sendMe(getText(), messages[i]) &result;
+                                result = m_engine->sendMe(getText(), messages[i]) &result;
                             }
                             return result;
                         }
-                        else return m_server->sendMe(getText(), params);
+                        else return m_engine->sendMe(getText(), params);
                     }
                 }
                 else if(m_type == QUERY)
@@ -1959,18 +1985,18 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                         ev.param1 = getNickName();
                         ev.param2 = getText();
                         ev.param3 = params;
-                        m_parent->getParent()->getParent()->handle(m_server, FXSEL(SEL_COMMAND, IrcSocket::ID_SERVER), &ev);
+                        m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine::ID_SERVER), &ev);
                         if(params.length() > m_maxLen-19-getText().length())
                         {
                             dxStringArray messages = cutText(params, m_maxLen-19-getText().length());
                             FXbool result = TRUE;
                             for(FXint i=0; i<messages.no(); i++)
                             {
-                                result = m_server->sendMe(getText(), messages[i]) &result;
+                                result = m_engine->sendMe(getText(), messages[i]) &result;
                             }
                             return result;
                         }
-                        else return m_server->sendMe(getText(), params);
+                        else return m_engine->sendMe(getText(), params);
                     }
                 }
                 else
@@ -1985,11 +2011,11 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                             FXbool result = TRUE;
                             for(FXint i=0; i<messages.no(); i++)
                             {
-                                result = m_server->sendMe(to, messages[i]) &result;
+                                result = m_engine->sendMe(to, messages[i]) &result;
                             }
                             return result;
                         }
-                        else return m_server->sendMe(to, message);
+                        else return m_engine->sendMe(to, message);
                     }
                     else
                     {
@@ -2007,7 +2033,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         }
         if(command == "mode")
         {
-            if(m_server->getConnected())
+            if(m_engine->getConnected())
             {
                 FXString params = commandtext.after(' ');
                 if(params.empty())
@@ -2016,7 +2042,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                     return FALSE;
                 }
                 else
-                    return m_server->sendMode(params);
+                    return m_engine->sendMode(params);
             }
             else
             {
@@ -2027,7 +2053,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         }
         if(command == "msg")
         {
-            if(m_server->getConnected())
+            if(m_engine->getConnected())
             {
                 FXString params = commandtext.after(' ');
                 FXString to = params.before(' ');
@@ -2043,7 +2069,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                         ev.param1 = getNickName();
                         ev.param2 = to;
                         ev.param3 = message;
-                        m_parent->getParent()->getParent()->handle(m_server, FXSEL(SEL_COMMAND, IrcSocket::ID_SERVER), &ev);
+                        m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine::ID_SERVER), &ev);
                     }
                     if(message.length() > m_maxLen-10-to.length())
                     {
@@ -2051,11 +2077,11 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                         FXbool result = TRUE;
                         for(FXint i=0; i<messages.no(); i++)
                         {
-                            result = m_server->sendMsg(to, messages[i]) &result;
+                            result = m_engine->sendMsg(to, messages[i]) &result;
                         }
                         return result;
                     }
-                    else return m_server->sendMsg(to, message);
+                    else return m_engine->sendMsg(to, message);
                 }
                 else
                 {
@@ -2072,13 +2098,13 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         }
         if(command == "names")
         {
-            if(m_server->getConnected())
+            if(m_engine->getConnected())
             {
                 FXString params = commandtext.after(' ');
                 if(m_type == CHANNEL)
                 {
-                    if(params.empty()) return m_server->sendNames(getText());
-                    else return m_server->sendNames(params);
+                    if(params.empty()) return m_engine->sendNames(getText());
+                    else return m_engine->sendNames(params);
                 }
                 else
                 {
@@ -2087,7 +2113,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                         appendIrcStyledText(_("/names <channel>, for nicks on a channel."), 4, FXSystem::now(), FALSE, FALSE);
                         return FALSE;
                     }
-                    else return m_server->sendNames(params);
+                    else return m_engine->sendNames(params);
                 }
             }
             else
@@ -2099,7 +2125,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         }
         if(command == "nick")
         {
-            if(m_server->getConnected())
+            if(m_engine->getConnected())
             {
                 FXString nick = commandtext.after(' ');
                 if(nick.empty())
@@ -2107,14 +2133,14 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                     appendIrcStyledText(_("/nick <nick>, changes nick."), 4, FXSystem::now(), FALSE, FALSE);
                     return FALSE;
                 }
-                else if(nick.length() > m_server->getNickLen())
+                else if(nick.length() > m_engine->getNickLen())
                 {
-                    appendIrcStyledText(FXStringFormat(_("Warning: nick is too long. Max. nick length is %d."), m_server->getNickLen()), 4, FXSystem::now(), FALSE, FALSE);
-                    return m_server->sendNick(nick);
+                    appendIrcStyledText(FXStringFormat(_("Warning: nick is too long. Max. nick length is %d."), m_engine->getNickLen()), 4, FXSystem::now(), FALSE, FALSE);
+                    return m_engine->sendNick(nick);
                 }
                 else
                 {
-                    return m_server->sendNick(nick);
+                    return m_engine->sendNick(nick);
                 }
             }
             else
@@ -2126,7 +2152,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         }
         if(command == "notice")
         {
-            if(m_server->getConnected())
+            if(m_engine->getConnected())
             {
                 FXString params = commandtext.after(' ');
                 FXString to = params.before(' ');
@@ -2140,11 +2166,11 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                         FXbool result = TRUE;
                         for(FXint i=0; i<messages.no(); i++)
                         {
-                            result = m_server->sendNotice(to, messages[i]) &result;
+                            result = m_engine->sendNotice(to, messages[i]) &result;
                         }
                         return result;
                     }
-                    return m_server->sendNotice(to, message);
+                    return m_engine->sendNotice(to, message);
                 }
                 else
                 {
@@ -2161,7 +2187,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         }
         if(command == "op")
         {
-            if(m_server->getConnected())
+            if(m_engine->getConnected())
             {
                 FXString params = commandtext.after(' ');
                 if(m_type == CHANNEL)
@@ -2181,14 +2207,14 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                         FXString channel = params.before(' ');
                         FXString nicks = params.after(' ');
                         FXString modeparams = utils::instance().createModes('+', 'o', nicks);
-                        return m_server->sendMode(channel+" "+modeparams);
+                        return m_engine->sendMode(channel+" "+modeparams);
                     }
                     else
                     {
                         FXString channel = getText();
                         FXString nicks = params;
                         FXString modeparams = utils::instance().createModes('+', 'o', nicks);
-                        return m_server->sendMode(channel+" "+modeparams);
+                        return m_engine->sendMode(channel+" "+modeparams);
                     }
                 }
                 else
@@ -2198,7 +2224,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                         FXString channel = params.before(' ');
                         FXString nicks = params.after(' ');
                         FXString modeparams = utils::instance().createModes('+', 'o', nicks);
-                        return m_server->sendMode(channel+" "+modeparams);
+                        return m_engine->sendMode(channel+" "+modeparams);
                     }
                     else
                     {
@@ -2216,12 +2242,12 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         }
         if(command == "oper")
         {
-            if(m_server->getConnected())
+            if(m_engine->getConnected())
             {
                 FXString params = commandtext.after(' ');
                 FXString login = params.before(' ');
                 FXString password = params.after(' ');
-                if(!login.empty() && !password.empty()) return m_server->sendOper(login, password);
+                if(!login.empty() && !password.empty()) return m_engine->sendOper(login, password);
                 else
                 {
                     appendIrcStyledText(_("/oper <login> <password>, oper up."), 4, FXSystem::now(), FALSE, FALSE);
@@ -2237,12 +2263,12 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         }
         if(command == "part")
         {
-            if(m_server->getConnected())
+            if(m_engine->getConnected())
             {
                 if(m_type == CHANNEL)
                 {
-                    if(commandtext.after(' ').empty()) return m_server->sendPart(getText());
-                    else return m_server->sendPart(getText(), commandtext.after(' '));
+                    if(commandtext.after(' ').empty()) return m_engine->sendPart(getText());
+                    else return m_engine->sendPart(getText(), commandtext.after(' '));
                 }
                 else
                 {
@@ -2250,8 +2276,8 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                     {
                         FXString channel = commandtext.after(' ').before(' ');
                         FXString reason = commandtext.after(' ', 2);
-                        if(reason.empty()) return m_server->sendPart(channel);
-                        else return m_server->sendPart(channel, reason);
+                        if(reason.empty()) return m_engine->sendPart(channel);
+                        else return m_engine->sendPart(channel, reason);
                     }
                     else
                     {
@@ -2269,7 +2295,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         }
         if(command == "query")
         {
-            if(m_server->getConnected())
+            if(m_engine->getConnected())
             {
                 if(commandtext.after(' ').empty())
                 {
@@ -2282,7 +2308,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                     ev.eventType = IRC_QUERY;
                     ev.param1 = commandtext.after(' ').before(' ');
                     ev.param2 = getNickName();
-                    m_parent->getParent()->getParent()->handle(m_server, FXSEL(SEL_COMMAND, IrcSocket::ID_SERVER), &ev);
+                    m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine::ID_SERVER), &ev);
                     return TRUE;
                 }
             }
@@ -2300,7 +2326,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         }
         if(command == "quote")
         {
-            if(m_server->getConnected()) return m_server->sendQuote(commandtext.after(' '));
+            if(m_engine->getConnected()) return m_engine->sendQuote(commandtext.after(' '));
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
@@ -2310,7 +2336,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         }
         if(command == "say")
         {
-            if(m_server->getConnected())
+            if(m_engine->getConnected())
             {
                 if (m_type != SERVER && !commandtext.after(' ').empty())
                 {
@@ -2321,18 +2347,18 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                     ev.param1 = getNickName();
                     ev.param2 = getText();
                     ev.param3 = commandtext.after(' ');
-                    m_parent->getParent()->getParent()->handle(m_server, FXSEL(SEL_COMMAND, IrcSocket::ID_SERVER), &ev);
+                    m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine::ID_SERVER), &ev);
                     if(commandtext.after(' ').length() > m_maxLen-10-getText().length())
                     {
                         dxStringArray messages = cutText(commandtext.after(' '), m_maxLen-10-getText().length());
                         FXbool result = TRUE;
                         for(FXint i=0; i<messages.no(); i++)
                         {
-                            result = m_server->sendMsg(getText(), messages[i]) &result;
+                            result = m_engine->sendMsg(getText(), messages[i]) &result;
                         }
                         return result;
                     }
-                    else return m_server->sendMsg(getText(), commandtext.after(' '));
+                    else return m_engine->sendMsg(getText(), commandtext.after(' '));
                 }
                 return FALSE;
             }
@@ -2345,8 +2371,8 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         }
         if(command == "stats")
         {
-            if(m_server->getConnected())
-                return m_server->sendStats(commandtext.after(' '));
+            if(m_engine->getConnected())
+                return m_engine->sendStats(commandtext.after(' '));
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
@@ -2361,7 +2387,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         }
         if(command == "time")
         {
-            if(m_server->getConnected()) return m_server->sendQuote("TIME");
+            if(m_engine->getConnected()) return m_engine->sendQuote("TIME");
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
@@ -2371,31 +2397,31 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         }
         if(command == "topic")
         {
-            if(m_server->getConnected())
+            if(m_engine->getConnected())
             {
                 FXString params = commandtext.after(' ');
                 if(m_type == CHANNEL)
                 {
-                    if(params.empty()) return m_server->sendTopic(getText());
+                    if(params.empty()) return m_engine->sendTopic(getText());
                     else if(isChannel(params) && !params.after(' ').empty())
                     {
                         FXString channel = params.before(' ');
                         FXString topic = params.after(' ');
-                        if(topic.length() > m_server->getTopicLen())
+                        if(topic.length() > m_engine->getTopicLen())
                         {
-                            appendIrcStyledText(FXStringFormat(_("Warning: topic is too long. Max. topic length is %d."), m_server->getTopicLen()), 4, FXSystem::now(), FALSE, FALSE);
-                            return m_server->sendTopic(channel, topic);
+                            appendIrcStyledText(FXStringFormat(_("Warning: topic is too long. Max. topic length is %d."), m_engine->getTopicLen()), 4, FXSystem::now(), FALSE, FALSE);
+                            return m_engine->sendTopic(channel, topic);
                         }
-                        else return m_server->sendTopic(channel, topic);
+                        else return m_engine->sendTopic(channel, topic);
                     }
                     else
                     {
-                        if(params.length() > m_server->getTopicLen())
+                        if(params.length() > m_engine->getTopicLen())
                         {
-                            appendIrcStyledText(FXStringFormat(_("Warning: topic is too long. Max. topic length is %d."), m_server->getTopicLen()), 4, FXSystem::now(), FALSE, FALSE);
-                            return m_server->sendTopic(getText(), params);
+                            appendIrcStyledText(FXStringFormat(_("Warning: topic is too long. Max. topic length is %d."), m_engine->getTopicLen()), 4, FXSystem::now(), FALSE, FALSE);
+                            return m_engine->sendTopic(getText(), params);
                         }
-                        else return m_server->sendTopic(getText(), params);
+                        else return m_engine->sendTopic(getText(), params);
                     }
                 }
                 else
@@ -2404,12 +2430,12 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                     {
                         FXString channel = params.before(' ');
                         FXString topic = params.after(' ');
-                        if(topic.length() > m_server->getTopicLen())
+                        if(topic.length() > m_engine->getTopicLen())
                         {
-                            appendIrcStyledText(FXStringFormat(_("Warning: topic is too long. Max. topic length is %d."), m_server->getTopicLen()), 4, FXSystem::now(), FALSE, FALSE);
-                            return m_server->sendTopic(channel, params);
+                            appendIrcStyledText(FXStringFormat(_("Warning: topic is too long. Max. topic length is %d."), m_engine->getTopicLen()), 4, FXSystem::now(), FALSE, FALSE);
+                            return m_engine->sendTopic(channel, params);
                         }
-                        else return m_server->sendTopic(channel, topic);
+                        else return m_engine->sendTopic(channel, topic);
                     }
                     else
                     {
@@ -2427,7 +2453,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         }
         if(command == "voice")
         {
-            if(m_server->getConnected())
+            if(m_engine->getConnected())
             {
                 FXString params = commandtext.after(' ');
                 if(m_type == CHANNEL)
@@ -2447,14 +2473,14 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                         FXString channel = params.before(' ');
                         FXString nicks = params.after(' ');
                         FXString modeparams = utils::instance().createModes('+', 'v', nicks);
-                        return m_server->sendMode(channel+" "+modeparams);
+                        return m_engine->sendMode(channel+" "+modeparams);
                     }
                     else
                     {
                         FXString channel = getText();
                         FXString nicks = params;
                         FXString modeparams = utils::instance().createModes('+', 'v', nicks);
-                        return m_server->sendMode(channel+" "+modeparams);
+                        return m_engine->sendMode(channel+" "+modeparams);
                     }
                 }
                 else
@@ -2464,7 +2490,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                         FXString channel = params.before(' ');
                         FXString nicks = params.after(' ');
                         FXString modeparams = utils::instance().createModes('+', 'v', nicks);
-                        return m_server->sendMode(channel+" "+modeparams);
+                        return m_engine->sendMode(channel+" "+modeparams);
                     }
                     else
                     {
@@ -2482,7 +2508,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         }
         if(command == "wallops")
         {
-            if(m_server->getConnected())
+            if(m_engine->getConnected())
             {
                 FXString params = commandtext.after(' ');
                 if(params.empty())
@@ -2498,11 +2524,11 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                         FXbool result = TRUE;
                         for(FXint i=0; i<messages.no(); i++)
                         {
-                            result = m_server->sendWallops(messages[i]) &result;
+                            result = m_engine->sendWallops(messages[i]) &result;
                         }
                         return result;
                     }
-                    else return m_server->sendWallops(params);
+                    else return m_engine->sendWallops(params);
                 }
             }
             else
@@ -2514,7 +2540,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         }
         if(command == "who")
         {
-            if(m_server->getConnected())
+            if(m_engine->getConnected())
             {
                 FXString params = commandtext.after(' ');
                 if(params.empty())
@@ -2522,7 +2548,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                     appendIrcStyledText(_("/who <mask> [o], searchs for mask on network, if o is supplied, only search for opers."), 4, FXSystem::now(), FALSE, FALSE);
                     return FALSE;
                 }
-                else return m_server->sendWho(params);
+                else return m_engine->sendWho(params);
             }
             else
             {
@@ -2533,7 +2559,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         }
         if(command == "whoami")
         {
-            if(m_server->getConnected()) return m_server->sendWhoami();
+            if(m_engine->getConnected()) return m_engine->sendWhoami();
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
@@ -2543,15 +2569,17 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         }
         if(command == "whois")
         {
-            if(m_server->getConnected())
+            if(m_engine->getConnected())
             {
                 FXString params = commandtext.after(' ');
                 if(params.empty())
                 {
+                    if(m_type == QUERY)
+                        return m_engine->sendWhois(getText());
                     appendIrcStyledText(_("/whois <nick>, whois nick."), 4, FXSystem::now(), FALSE, FALSE);
                     return FALSE;
                 }
-                else return m_server->sendWhois(params);
+                else return m_engine->sendWhois(params);
             }
             else
             {
@@ -2562,7 +2590,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         }
         if(command == "whowas")
         {
-            if(m_server->getConnected())
+            if(m_engine->getConnected())
             {
                 FXString params = commandtext.after(' ');
                 if(params.empty())
@@ -2570,7 +2598,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                     appendIrcStyledText(_("/whowas <nick>, whowas nick."), 4, FXSystem::now(), FALSE, FALSE);
                     return FALSE;
                 }
-                else return m_server->sendWhowas(params);
+                else return m_engine->sendWhowas(params);
             }
             else
             {
@@ -2584,7 +2612,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
     }
     else
     {
-        if (command.empty() && m_type != SERVER && !commandtext.empty() && m_server->getConnected())
+        if (command.empty() && m_type != SERVER && !commandtext.empty() && m_engine->getConnected())
         {
             if(m_coloredNick) appendIrcNickText(getNickName(), commandtext, getNickColor(getNickName()), FXSystem::now());
             else appendIrcNickText(getNickName(), commandtext, 5, FXSystem::now());
@@ -2593,20 +2621,20 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
             ev.param1 = getNickName();
             ev.param2 = getText();
             ev.param3 = commandtext;
-            m_parent->getParent()->getParent()->handle(m_server, FXSEL(SEL_COMMAND, IrcSocket::ID_SERVER), &ev);
+            m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine::ID_SERVER), &ev);
             if(commandtext.length() > m_maxLen-10-getText().length())
             {
                 dxStringArray messages = cutText(commandtext, m_maxLen-10-getText().length());
                 FXbool result = TRUE;
                 for(FXint i=0; i<messages.no(); i++)
                 {
-                    result = m_server->sendMsg(getText(), messages[i]) &result;
+                    result = m_engine->sendMsg(getText(), messages[i]) &result;
                 }
                 return result;
             }
-            else return m_server->sendMsg(getText(), commandtext);
+            else return m_engine->sendMsg(getText(), commandtext);
         }
-        if(!m_server->getConnected())
+        if(!m_engine->getConnected())
         {
             appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
             m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
@@ -3064,7 +3092,7 @@ long IrcTabItem::onKeyPress(FXObject *, FXSelector, void *ptr)
 FXbool IrcTabItem::isRightForServerMsg()
 {
     //Check if current tab is in server targets
-    if(m_server->findTarget(m_parent->childAtIndex(m_parent->getCurrent()*2)))
+    if(m_engine->findTarget(m_parent->childAtIndex(m_parent->getCurrent()*2)))
     {
         return m_parent->indexOfChild(this) == m_parent->getCurrent()*2;
     }
@@ -3073,7 +3101,7 @@ FXbool IrcTabItem::isRightForServerMsg()
         FXint indexOfThis = m_parent->indexOfChild(this);
         for(FXint i = 0; i<m_parent->numChildren(); i+=2)
         {
-            if(m_server->findTarget(m_parent->childAtIndex(i)))
+            if(m_engine->findTarget(m_parent->childAtIndex(i)))
             {
                 if(i == indexOfThis) return TRUE;
                 else return FALSE;
@@ -3089,57 +3117,52 @@ FXbool IrcTabItem::isCommandIgnored(const FXString &command)
     return FALSE;
 }
 
-void IrcTabItem::addUser(const FXString& user)
+void IrcTabItem::addUser(const FXString& user, UserMode mode)
 {
-    if(user[0] == m_server->getAdminPrefix()
-            && m_users->findItem(user.after(m_server->getAdminPrefix())) == -1)
+    if(mode == ADMIN && m_users->findItem(user) == -1)
     {
-        m_users->appendItem(user.after(m_server->getAdminPrefix()), ICO_IRCADMIN);
+        NickListItem *item = new NickListItem(user, m_users, this, mode, ICO_IRCADMIN);
+        m_users->appendItem(item);
         m_numberUsers++;
         m_users->sortItems();
         return;
     }
-    if(user[0] == m_server->getOwnerPrefix()
-            && m_users->findItem(user.after(m_server->getOwnerPrefix())) == -1)
+    if(mode == OWNER && m_users->findItem(user) == -1)
     {
-        m_users->appendItem(user.after(m_server->getOwnerPrefix()), ICO_IRCOWNER);
+        NickListItem *item = new NickListItem(user, m_users, this, mode, ICO_IRCOWNER);
+        m_users->appendItem(item);
         m_numberUsers++;
         m_users->sortItems();
         return;
     }
-    if(user[0] == m_server->getOpPrefix()
-            && m_users->findItem(user.after(m_server->getOpPrefix())) == -1)
+    if(mode == OP && m_users->findItem(user) == -1)
     {
-        m_users->appendItem(user.after(m_server->getOpPrefix()), ICO_IRCOP);
+        NickListItem *item = new NickListItem(user, m_users, this, mode, ICO_IRCOP);
+        m_users->appendItem(item);
         m_numberUsers++;
         m_users->sortItems();
         return;
     }
-    if(user[0] == m_server->getVoicePrefix()
-            && m_users->findItem(user.after(m_server->getVoicePrefix())) == -1)
+    if(mode == VOICE && m_users->findItem(user) == -1)
     {
-        m_users->appendItem(user.after(m_server->getVoicePrefix()), ICO_IRCVOICE);
+        NickListItem *item = new NickListItem(user, m_users, this, mode, ICO_IRCVOICE);
+        m_users->appendItem(item);
         m_numberUsers++;
         m_users->sortItems();
         return;
     }
-    if(user[0] == m_server->getHalfopPrefix()
-            && m_users->findItem(user.after(m_server->getHalfopPrefix())) == -1)
+    if(mode == HALFOP && m_users->findItem(user) == -1)
     {
-        m_users->appendItem(user.after(m_server->getHalfopPrefix()), ICO_IRCHALFOP);
+        NickListItem *item = new NickListItem(user, m_users, this, mode, ICO_IRCHALFOP);
+        m_users->appendItem(item);
         m_numberUsers++;
         m_users->sortItems();
         return;
     }
-    if(user[0] == m_server->getAdminPrefix()
-            || user[0] == m_server->getOwnerPrefix()
-            || user[0] == m_server->getOpPrefix()
-            || user[0] == m_server->getVoicePrefix()
-            || user[0] == m_server->getHalfopPrefix())
-        return;
-    if(m_users->findItem(user) == -1)
+    if(mode == NONE && m_users->findItem(user) == -1)
     {
-        m_users->appendItem(user, ICO_IRCNORMAL);
+        NickListItem *item = new NickListItem(user, m_users, this, mode, ICO_IRCNORMAL);
+        m_users->appendItem(item);
         m_numberUsers++;
         m_users->sortItems();
         return;
@@ -3161,37 +3184,33 @@ void IrcTabItem::changeNickUser(const FXString& nick, const FXString& newnick)
     FXint i = m_users->findItem(nick);
     if(i != -1)
     {
-        if(m_users->getItemIcon(i) == ICO_IRCOWNER || m_users->getItemIcon(i) == ICO_IRCAWAYOWNER)
-        {
-            removeUser(nick);
-            addUser(m_server->getOwnerPrefix()+newnick);
-        }
-        else if(m_users->getItemIcon(i) == ICO_IRCADMIN || m_users->getItemIcon(i) == ICO_IRCAWAYADMIN)
-        {
-            removeUser(nick);
-            addUser(m_server->getAdminPrefix()+newnick);
-        }
-        else if(m_users->getItemIcon(i) == ICO_IRCOP || m_users->getItemIcon(i) == ICO_IRCAWAYOP)
-        {
-            removeUser(nick);
-            addUser(m_server->getOpPrefix()+newnick);
-        }
-        else if(m_users->getItemIcon(i) == ICO_IRCVOICE || m_users->getItemIcon(i) == ICO_IRCAWAYVOICE)
-        {
-            removeUser(nick);
-            addUser(m_server->getVoicePrefix()+newnick);
-        }
-        else if(m_users->getItemIcon(i) == ICO_IRCHALFOP || m_users->getItemIcon(i) == ICO_IRCAWAYHALFOP)
-        {
-            removeUser(nick);
-            addUser(m_server->getHalfopPrefix()+newnick);
-        }
-        else
-        {
-            removeUser(nick);
-            addUser(newnick);
-        }
+        m_users->getItem(i)->setText(newnick);
+        m_users->sortItems();
     }
+}
+
+void IrcTabItem::setUserMode(const FXString& nick, UserMode mode)
+{
+    FXint i = m_users->findItem(nick);
+    if(i != -1)
+    {
+        ((NickListItem*)m_users->getItem(i))->setUserMode(mode);
+    }
+}
+
+UserMode IrcTabItem::getUserMode(const FXchar mode)
+{
+    if(mode == m_engine->getAdminPrefix())
+        return ADMIN;
+    if(mode == m_engine->getOwnerPrefix())
+        return OWNER;
+    if(mode == m_engine->getOpPrefix())
+        return OP;
+    if(mode == m_engine->getHalfopPrefix())
+        return HALFOP;
+    if(mode == m_engine->getVoicePrefix())
+        return VOICE;
+    return NONE;
 }
 
 long IrcTabItem::onIrcEvent(FXObject *, FXSelector, void *data)
@@ -3215,16 +3234,6 @@ long IrcTabItem::onIrcEvent(FXObject *, FXSelector, void *data)
     if(ev->eventType == IRC_CTCPREQUEST)
     {
         onIrcCtcpRequest(ev);
-        return 1;
-    }
-    if(ev->eventType == IRC_DCCMSG && m_type == DCCCHAT)
-    {
-        onIrcDccMsg(ev);
-        return 1;
-    }
-    if(ev->eventType == IRC_DCCACTION && m_type == DCCCHAT)
-    {
-        onIrcDccAction(ev);
         return 1;
     }
     if(ev->eventType == IRC_JOIN)
@@ -3456,57 +3465,13 @@ void IrcTabItem::onIrcCtcpRequest(IrcEvent* ev)
     }
 }
 
-//handle IrcEvent IRC_DCCMSG
-void IrcTabItem::onIrcDccMsg(IrcEvent* ev)
-{
-    FXbool needHighlight = FALSE;
-    if(ev->param1.contains(getNickName()))
-        needHighlight = highlightNeeded(ev->param1);
-    if(m_coloredNick)
-    {
-        if(needHighlight) appendIrcStyledText(getText()+": "+ev->param1, 8, ev->time);
-        else appendIrcNickText(getText(), ev->param1, getNickColor(getText()), ev->time);
-    }
-    else
-    {
-        if(needHighlight) appendIrcStyledText(getText()+": "+ev->param1, 8, ev->time);
-        else appendIrcNickText(getText(), ev->param1, 5, ev->time);
-    }
-    if(m_highlightColor != this->getTextColor() && m_parent->getCurrent()*2 != m_parent->indexOfChild(this))
-    {
-        if(needHighlight)
-        {
-            this->setTextColor(m_highlightColor);
-        }
-        else this->setTextColor(m_unreadColor);
-        this->setIcon(ICO_DCCNEWMSG);
-        m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_NEWMSG), NULL);
-    }
-}
-
-//handle IrcEvent IRC_DCCACTION
-void IrcTabItem::onIrcDccAction(IrcEvent* ev)
-{
-    appendIrcStyledText(getText()+" "+ev->param1, 2, ev->time);
-    if(m_highlightColor != this->getTextColor() && m_parent->getCurrent()*2 != m_parent->indexOfChild(this))
-    {
-        if(ev->param1.contains(getNickName()) && highlightNeeded(ev->param1))
-        {
-            this->setTextColor(m_highlightColor);
-        }
-        else this->setTextColor(m_unreadColor);
-        this->setIcon(ICO_DCCNEWMSG);
-        m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_NEWMSG), NULL);
-    }
-}
-
 //handle IrcEvent IRC_JOIN
 void IrcTabItem::onIrcJoin(IrcEvent* ev)
 {
     if(comparecase(ev->param2, getText()) == 0 && ev->param1 != getNickName())
     {
-        if(!isCommandIgnored("join") && !m_server->isUserIgnored(ev->param1, getText())) appendIrcStyledText(FXStringFormat(_("%s has joined to %s"), ev->param1.text(), ev->param2.text()), 1, ev->time);
-        addUser(ev->param1);
+        if(!isCommandIgnored("join") && !m_engine->isUserIgnored(ev->param1, getText())) appendIrcStyledText(FXStringFormat(_("%s has joined to %s"), ev->param1.text(), ev->param2.text()), 1, ev->time);
+        addUser(ev->param1, NONE);
     }
 }
 
@@ -3518,11 +3483,11 @@ void IrcTabItem::onIrcQuit(IrcEvent* ev)
         removeUser(ev->param1);
         if(ev->param2.empty())
         {
-            if(!isCommandIgnored("quit") && !m_server->isUserIgnored(ev->param1, getText())) appendIrcStyledText(FXStringFormat(_("%s has quit"), ev->param1.text()), 1, ev->time);
+            if(!isCommandIgnored("quit") && !m_engine->isUserIgnored(ev->param1, getText())) appendIrcStyledText(FXStringFormat(_("%s has quit"), ev->param1.text()), 1, ev->time);
         }
         else
         {
-            if(!isCommandIgnored("quit") && !m_server->isUserIgnored(ev->param1, getText()))appendIrcStyledText(FXStringFormat(_("%s has quit (%s)"), ev->param1.text(), +ev->param2.text()), 1, ev->time);
+            if(!isCommandIgnored("quit") && !m_engine->isUserIgnored(ev->param1, getText()))appendIrcStyledText(FXStringFormat(_("%s has quit (%s)"), ev->param1.text(), +ev->param2.text()), 1, ev->time);
         }
     }
     else if(m_type == QUERY && getText() == ev->param1)
@@ -3536,8 +3501,8 @@ void IrcTabItem::onIrcPart(IrcEvent* ev)
 {
     if(comparecase(ev->param2, getText()) == 0)
     {
-        if(ev->param3.empty() && !isCommandIgnored("part") && !m_server->isUserIgnored(ev->param1, getText())) appendIrcStyledText(FXStringFormat(_("%s has parted %s"), ev->param1.text(), ev->param2.text()), 1, ev->time);
-        else if(!isCommandIgnored("part") && !m_server->isUserIgnored(ev->param1, getText())) appendIrcStyledText(FXStringFormat(_("%s has parted %s (%s)"), ev->param1.text(), ev->param2.text(), ev->param3.text()), 1, ev->time);
+        if(ev->param3.empty() && !isCommandIgnored("part") && !m_engine->isUserIgnored(ev->param1, getText())) appendIrcStyledText(FXStringFormat(_("%s has parted %s"), ev->param1.text(), ev->param2.text()), 1, ev->time);
+        else if(!isCommandIgnored("part") && !m_engine->isUserIgnored(ev->param1, getText())) appendIrcStyledText(FXStringFormat(_("%s has parted %s (%s)"), ev->param1.text(), ev->param2.text(), ev->param3.text()), 1, ev->time);
         removeUser(ev->param1);
     }
 }
@@ -3550,7 +3515,7 @@ void IrcTabItem::onIrcChnotice(IrcEvent* ev)
         FXbool tabExist = FALSE;
         for(FXint i = 0; i<m_parent->numChildren(); i+=2)
         {
-            if(m_parent->childAtIndex(i)->getMetaClass()==&IrcTabItem::metaClass && m_server->findTarget(static_cast<IrcTabItem*>(m_parent->childAtIndex(i))))
+            if(m_parent->childAtIndex(i)->getMetaClass()==&IrcTabItem::metaClass && m_engine->findTarget(static_cast<IrcTabItem*>(m_parent->childAtIndex(i))))
             {
                 if((comparecase(ev->param2, static_cast<IrcTabItem*>(m_parent->childAtIndex(i))->getText()) == 0 && static_cast<IrcTabItem*>(m_parent->childAtIndex(i))->getType() == CHANNEL) 
                     || (ev->param1 == static_cast<IrcTabItem*>(m_parent->childAtIndex(i))->getText() && static_cast<IrcTabItem*>(m_parent->childAtIndex(i))->getType() == QUERY && ev->param2 == static_cast<IrcTabItem*>(m_parent->childAtIndex(i))->getNickName()))
@@ -3616,12 +3581,13 @@ void IrcTabItem::onIrcNick(IrcEvent* ev)
     if(m_users->findItem(ev->param1) != -1)
     {
         if(ev->param2 == getNickName() && !isCommandIgnored("nick")) appendIrcStyledText(FXStringFormat(_("You're now known as %s"), ev->param2.text()), 1, ev->time);
-        else if(!isCommandIgnored("nick") && !m_server->isUserIgnored(ev->param1, getText())) appendIrcStyledText(FXStringFormat(_("%s is now known as %s"), ev->param1.text(), ev->param2.text()), 1, ev->time);
+        else if(!isCommandIgnored("nick") && !m_engine->isUserIgnored(ev->param1, getText())) appendIrcStyledText(FXStringFormat(_("%s is now known as %s"), ev->param1.text(), ev->param2.text()), 1, ev->time);
         changeNickUser(ev->param1, ev->param2);
     }
     if(m_type == QUERY && ev->param1 == getText())
     {
         this->setText(ev->param2);
+        stopLogging();
     }
 }
 
@@ -3700,11 +3666,10 @@ void IrcTabItem::onIrcUmode(IrcEvent* ev)
                 case 'a': //admin
                 {
                     FXString nick = utils::instance().getParam(args, argsiter, FALSE);
-                    removeUser(nick);
+                    setUserMode(nick, sign?ADMIN:NONE);
                     if(sign)
                     {
-                        addUser(m_server->getAdminPrefix()+nick);
-                        if(!isCommandIgnored("mode") && !m_server->isUserIgnored(nick, getText()))
+                        if(!isCommandIgnored("mode") && !m_engine->isUserIgnored(nick, getText()))
                         {
                             if(nick == getNickName()) appendIrcStyledText(FXStringFormat(_("%s gave you admin"), moderator.text()), 1, ev->time, FALSE, FALSE);
                             else appendIrcStyledText(FXStringFormat(_("%s gave %s admin"), moderator.text(), nick.text()), 1, ev->time, FALSE, FALSE);
@@ -3712,8 +3677,7 @@ void IrcTabItem::onIrcUmode(IrcEvent* ev)
                     }
                     else
                     {
-                        addUser(nick);
-                        if(!isCommandIgnored("mode") && !m_server->isUserIgnored(nick, getText()))
+                        if(!isCommandIgnored("mode") && !m_engine->isUserIgnored(nick, getText()))
                         {
                             if(nick == getNickName()) appendIrcStyledText(FXStringFormat(_("%s removed you admin"), moderator.text()), 1, ev->time, FALSE, FALSE);
                             else appendIrcStyledText(FXStringFormat(_("%s removed %s admin"), moderator.text(), nick.text()), 1, ev->time, FALSE, FALSE);
@@ -3724,11 +3688,10 @@ void IrcTabItem::onIrcUmode(IrcEvent* ev)
                 case 'o': //op
                 {
                     FXString nick = utils::instance().getParam(args, argsiter, FALSE);
-                    removeUser(nick);
+                    setUserMode(nick, sign?OP:NONE);
                     if(sign)
                     {
-                        addUser(m_server->getOpPrefix()+nick);
-                        if(!isCommandIgnored("mode") && !m_server->isUserIgnored(nick, getText()))
+                        if(!isCommandIgnored("mode") && !m_engine->isUserIgnored(nick, getText()))
                         {
                             if(nick == getNickName()) appendIrcStyledText(FXStringFormat(_("%s gave you op"), moderator.text()), 1, ev->time, FALSE, FALSE);
                             else appendIrcStyledText(FXStringFormat(_("%s gave %s op"), moderator.text(), nick.text()), 1, ev->time, FALSE, FALSE);
@@ -3736,8 +3699,7 @@ void IrcTabItem::onIrcUmode(IrcEvent* ev)
                     }
                     else
                     {
-                        addUser(nick);
-                        if(!isCommandIgnored("mode") && !m_server->isUserIgnored(nick, getText()))
+                        if(!isCommandIgnored("mode") && !m_engine->isUserIgnored(nick, getText()))
                         {
                             if(nick == getNickName()) appendIrcStyledText(FXStringFormat(_("%s removed you op"), moderator.text()), 1, ev->time, FALSE, FALSE);
                             else appendIrcStyledText(FXStringFormat(_("%s removed %s op"), moderator.text(), nick.text()), 1, ev->time, FALSE, FALSE);
@@ -3749,11 +3711,10 @@ void IrcTabItem::onIrcUmode(IrcEvent* ev)
                 case 'v': //voice
                 {
                     FXString nick = utils::instance().getParam(args, argsiter, FALSE);
-                    removeUser(nick);
+                    setUserMode(nick, sign?VOICE:NONE);
                     if(sign)
                     {
-                        addUser(m_server->getVoicePrefix()+nick);
-                        if(!isCommandIgnored("mode") && !m_server->isUserIgnored(nick, getText()))
+                        if(!isCommandIgnored("mode") && !m_engine->isUserIgnored(nick, getText()))
                         {
                             if(nick == getNickName()) appendIrcStyledText(FXStringFormat(_("%s gave you voice"), moderator.text()), 1, ev->time, FALSE, FALSE);
                             else appendIrcStyledText(FXStringFormat(_("%s gave %s voice"), moderator.text(), nick.text()), 1, ev->time, FALSE, FALSE);
@@ -3761,8 +3722,7 @@ void IrcTabItem::onIrcUmode(IrcEvent* ev)
                     }
                     else
                     {
-                        addUser(nick);
-                        if(!isCommandIgnored("mode") && !m_server->isUserIgnored(nick, getText()))
+                        if(!isCommandIgnored("mode") && !m_engine->isUserIgnored(nick, getText()))
                         {
                             if(nick == getNickName()) appendIrcStyledText(FXStringFormat(_("%s removed you voice"), moderator.text()), 1, ev->time, FALSE, FALSE);
                             else appendIrcStyledText(FXStringFormat(_("%s removed %s voice"), moderator.text(), nick.text()), 1, ev->time, FALSE, FALSE);
@@ -3773,11 +3733,10 @@ void IrcTabItem::onIrcUmode(IrcEvent* ev)
                 case 'h': //halfop
                 {
                     FXString nick = utils::instance().getParam(args, argsiter, FALSE);
-                    removeUser(nick);
+                    setUserMode(nick, sign?HALFOP:NONE);
                     if(sign)
                     {
-                        addUser(m_server->getHalfopPrefix()+nick);
-                        if(!isCommandIgnored("mode") && !m_server->isUserIgnored(nick, getText()))
+                        if(!isCommandIgnored("mode") && !m_engine->isUserIgnored(nick, getText()))
                         {
                             if(nick == getNickName()) appendIrcStyledText(FXStringFormat(_("%s gave you halfop"), moderator.text()), 1, ev->time, FALSE, FALSE);
                             else appendIrcStyledText(FXStringFormat(_("%s gave %s halfop"), moderator.text(), nick.text()), 1, ev->time, FALSE, FALSE);
@@ -3785,8 +3744,7 @@ void IrcTabItem::onIrcUmode(IrcEvent* ev)
                     }
                     else
                     {
-                        addUser(nick);
-                        if(!isCommandIgnored("mode") && !m_server->isUserIgnored(nick, getText()))
+                        if(!isCommandIgnored("mode") && !m_engine->isUserIgnored(nick, getText()))
                         {
                             if(nick == getNickName()) appendIrcStyledText(FXStringFormat(_("%s removed you halfop"), moderator.text()), 1, ev->time, FALSE, FALSE);
                             else appendIrcStyledText(FXStringFormat(_("%s removed %s halfop"), moderator.text(), nick.text()), 1, ev->time, FALSE, FALSE);
@@ -3914,7 +3872,7 @@ void IrcTabItem::onIrc301(IrcEvent* ev)
 {
     if(m_parent->getCurrent()*2 == m_parent->indexOfChild(this) || getText() == ev->param1)
     {
-        if(!isCommandIgnored("away") && !m_server->isUserIgnored(ev->param1, getText())) appendIrcStyledText(FXStringFormat(_("%s is away: %s"),ev->param1.text(), ev->param2.text()), 1, ev->time);
+        if(!isCommandIgnored("away") && !m_engine->isUserIgnored(ev->param1, getText())) appendIrcStyledText(FXStringFormat(_("%s is away: %s"),ev->param1.text(), ev->param2.text()), 1, ev->time);
     }
 }
 
@@ -3925,36 +3883,7 @@ void IrcTabItem::onIrc305(IrcEvent* ev)
     if(i != -1)
     {
         appendIrcStyledText(ev->param1, 1, ev->time, FALSE, FALSE);
-        if(m_users->getItemIcon(i) == ICO_IRCAWAYOWNER)
-        {
-            m_users->setItemIcon(i, ICO_IRCOWNER);
-            return;
-        }
-        if(m_users->getItemIcon(i) == ICO_IRCAWAYADMIN)
-        {
-            m_users->setItemIcon(i, ICO_IRCADMIN);
-            return;
-        }
-        if(m_users->getItemIcon(i) == ICO_IRCAWAYOP)
-        {
-            m_users->setItemIcon(i, ICO_IRCOP);
-            return;
-        }
-        if(m_users->getItemIcon(i) == ICO_IRCAWAYVOICE)
-        {
-            m_users->setItemIcon(i, ICO_IRCVOICE);
-            return;
-        }
-        if(m_users->getItemIcon(i) == ICO_IRCAWAYHALFOP)
-        {
-            m_users->setItemIcon(i, ICO_IRCHALFOP);
-            return;
-        }
-        if(m_users->getItemIcon(i) == ICO_IRCAWAYNORMAL)
-        {
-            m_users->setItemIcon(i, ICO_IRCNORMAL);
-            return;
-        }
+        ((NickListItem*)m_users->getItem(i))->changeAway(FALSE);
     }
 }
 
@@ -3965,36 +3894,7 @@ void IrcTabItem::onIrc306(IrcEvent* ev)
     if(i != -1)
     {
         appendIrcStyledText(ev->param1, 1, ev->time, FALSE, FALSE);
-        if(m_users->getItemIcon(i) == ICO_IRCOWNER)
-        {
-            m_users->setItemIcon(i, ICO_IRCAWAYOWNER);
-            return;
-        }
-        if(m_users->getItemIcon(i) == ICO_IRCADMIN)
-        {
-            m_users->setItemIcon(i, ICO_IRCAWAYADMIN);
-            return;
-        }
-        if(m_users->getItemIcon(i) == ICO_IRCOP)
-        {
-            m_users->setItemIcon(i, ICO_IRCAWAYOP);
-            return;
-        }
-        if(m_users->getItemIcon(i) == ICO_IRCVOICE)
-        {
-            m_users->setItemIcon(i, ICO_IRCAWAYVOICE);
-            return;
-        }
-        if(m_users->getItemIcon(i) == ICO_IRCHALFOP)
-        {
-            m_users->setItemIcon(i, ICO_IRCAWAYHALFOP);
-            return;
-        }
-        if(m_users->getItemIcon(i) == ICO_IRCNORMAL)
-        {
-            m_users->setItemIcon(i, ICO_IRCAWAYNORMAL);
-            return;
-        }
+        ((NickListItem*)m_users->getItem(i))->changeAway(TRUE);
     }
 }
 
@@ -4032,8 +3932,11 @@ void IrcTabItem::onIrc353(IrcEvent* ev)
     {
         while (usersStr.contains(' '))
         {
-            addUser(usersStr.before(' '));
-            if(usersStr[0] == m_server->getOpPrefix() && usersStr.before(' ').after(m_server->getOpPrefix()) == myNick) m_iamOp = TRUE;
+            FXString nick = usersStr.before(' ');
+            UserMode mode = getUserMode(nick[0]);
+            if(mode != NONE) nick = nick.after(nick[0]);
+            addUser(nick, mode);
+            if(mode == OP && nick == myNick) m_iamOp = TRUE;
             usersStr = usersStr.after(' ');
         }
     }
@@ -4042,7 +3945,7 @@ void IrcTabItem::onIrc353(IrcEvent* ev)
         FXbool channelOn = FALSE;
         for(FXint i = 0; i<m_parent->numChildren(); i+=2)
         {
-            if(m_server->findTarget(static_cast<IrcTabItem*>(m_parent->childAtIndex(i))) && comparecase(static_cast<FXTabItem*>(m_parent->childAtIndex(i))->getText(), channel) == 0)
+            if(m_engine->findTarget(static_cast<IrcTabItem*>(m_parent->childAtIndex(i))) && comparecase(static_cast<FXTabItem*>(m_parent->childAtIndex(i))->getText(), channel) == 0)
             {
                 channelOn = TRUE;
                 break;
@@ -4057,13 +3960,7 @@ void IrcTabItem::onIrc366(IrcEvent* ev)
 {
     if(comparecase(ev->param1, getText()) == 0)
     {
-        m_server->sendWho(getText());
-        m_server->addIgnoreCommands("who "+getText());
-        if(m_numberUsers < m_maxAway)
-        {
-            m_checkAway = TRUE;
-            getApp()->addTimeout(this, ID_TIME, 180000);
-        }
+        m_engine->addIgnoreWho(getText());
     }
 }
 
@@ -4101,6 +3998,8 @@ void IrcTabItem::onIrcAway(IrcEvent* ev)
 void IrcTabItem::onIrcEndMotd()
 {
     m_text->makeLastRowVisible(TRUE);
+    if(m_type == SERVER && !m_engine->getRealServerName().empty())
+        setText(m_engine->getRealServerName());
 }
 
 long IrcTabItem::onPipe(FXObject*, FXSelector, void *ptr)
@@ -4115,31 +4014,13 @@ long IrcTabItem::onPipe(FXObject*, FXSelector, void *ptr)
     return 1;
 }
 
-//timeout for checking away in channel
-long IrcTabItem::onTimeout(FXObject *, FXSelector, void*)
+//checking away in channel
+void IrcTabItem::checkAway()
 {
-    getApp()->addTimeout(this, ID_TIME, 180000);
-    if(m_checkAway)
+    if(m_type == CHANNEL && m_engine->getConnected() && m_numberUsers < m_maxAway)
     {
-        if(m_type == CHANNEL && m_server->getConnected())
-        {
-            m_server->sendWho(getText());
-            m_server->addIgnoreCommands("who "+getText());
-        }
+        m_engine->addIgnoreWho(getText());
     }
-    else
-    {
-        if(m_numberUsers < m_maxAway)
-        {
-            m_checkAway = TRUE;
-            if(m_type == CHANNEL && m_server->getConnected())
-            {
-                m_server->sendWho(getText());
-                m_server->addIgnoreCommands("who "+getText());
-            }
-        }
-    }
-    return 1;
 }
 
 long IrcTabItem::onPipeTimeout(FXObject*, FXSelector, void*)
@@ -4156,14 +4037,14 @@ long IrcTabItem::onPipeTimeout(FXObject*, FXSelector, void*)
                 {
                     if(m_coloredNick) appendIrcNickText(getNickName(), messages[i], getNickColor(getNickName()), FXSystem::now());
                     else appendIrcNickText(getNickName(), messages[i], 5, FXSystem::now());
-                    m_server->sendMsg(getText(), messages[i]);
+                    m_engine->sendMsg(getText(), messages[i]);
                 }
             }
             else
             {
                 if(m_coloredNick) appendIrcNickText(getNickName(), m_pipeStrings[0], getNickColor(getNickName()), FXSystem::now());
                 else appendIrcNickText(getNickName(), m_pipeStrings[0], 5, FXSystem::now());
-                m_server->sendMsg(getText(), m_pipeStrings[0]);
+                m_engine->sendMsg(getText(), m_pipeStrings[0]);
             }
             m_pipeStrings.erase(0);
             getApp()->addTimeout(this, ID_PTIME, 3000);
@@ -4180,14 +4061,14 @@ long IrcTabItem::onPipeTimeout(FXObject*, FXSelector, void*)
                     {
                         if(m_coloredNick) appendIrcNickText(getNickName(), messages[i], getNickColor(getNickName()), FXSystem::now());
                         else appendIrcNickText(getNickName(), messages[i], 5, FXSystem::now());
-                        m_server->sendMsg(getText(), messages[i]);
+                        m_engine->sendMsg(getText(), messages[i]);
                     }
                 }
                 else
                 {
                     if(m_coloredNick) appendIrcNickText(getNickName(), m_pipeStrings[0], getNickColor(getNickName()), FXSystem::now());
                     else appendIrcNickText(getNickName(), m_pipeStrings[0], 5, FXSystem::now());
-                    m_server->sendMsg(getText(), m_pipeStrings[0]);
+                    m_engine->sendMsg(getText(), m_pipeStrings[0]);
                 }
                 m_pipeStrings.erase(0);
             }
@@ -4226,48 +4107,26 @@ long IrcTabItem::onEggTimeout(FXObject*, FXSelector, void*)
 
 void IrcTabItem::onAway()
 {
-    if(m_checkAway)
+    if(m_numberUsers < m_maxAway)
     {
         for(FXint i = 0; i < m_users->getNumItems(); i++)
         {
-            NickInfo nick = m_server->getNickInfo(m_users->getItemText(i));
-            if(nick.away)
-            {
-                if(m_users->getItemIcon(i) == ICO_IRCOWNER) m_users->setItemIcon(i, ICO_IRCAWAYOWNER);
-                else if(m_users->getItemIcon(i) == ICO_IRCADMIN) m_users->setItemIcon(i, ICO_IRCAWAYADMIN);
-                else if(m_users->getItemIcon(i) == ICO_IRCOP) m_users->setItemIcon(i, ICO_IRCAWAYOP);
-                else if(m_users->getItemIcon(i) == ICO_IRCVOICE) m_users->setItemIcon(i, ICO_IRCAWAYVOICE);
-                else if(m_users->getItemIcon(i) == ICO_IRCHALFOP) m_users->setItemIcon(i, ICO_IRCAWAYHALFOP);
-                else if(m_users->getItemIcon(i) == ICO_IRCNORMAL) m_users->setItemIcon(i, ICO_IRCAWAYNORMAL);
-            }
-            else
-            {
-                if(m_users->getItemIcon(i) == ICO_IRCAWAYOWNER) m_users->setItemIcon(i, ICO_IRCOWNER);
-                else if(m_users->getItemIcon(i) == ICO_IRCAWAYADMIN) m_users->setItemIcon(i, ICO_IRCADMIN);
-                else if(m_users->getItemIcon(i) == ICO_IRCAWAYOP) m_users->setItemIcon(i, ICO_IRCOP);
-                else if(m_users->getItemIcon(i) == ICO_IRCAWAYVOICE) m_users->setItemIcon(i, ICO_IRCVOICE);
-                else if(m_users->getItemIcon(i) == ICO_IRCAWAYHALFOP) m_users->setItemIcon(i, ICO_IRCHALFOP);
-                else if(m_users->getItemIcon(i) == ICO_IRCAWAYNORMAL) m_users->setItemIcon(i, ICO_IRCNORMAL);
-            }
+            FXbool away = m_engine->getNickInfo(m_users->getItemText(i)).away;
+            ((NickListItem*)m_users->getItem(i))->changeAway(away);
         }
     }
     else
     {
         for(FXint i = 0; i < m_users->getNumItems(); i++)
         {
-            if(m_users->getItemIcon(i) == ICO_IRCAWAYOWNER) m_users->setItemIcon(i, ICO_IRCOWNER);
-            else if(m_users->getItemIcon(i) == ICO_IRCAWAYADMIN) m_users->setItemIcon(i, ICO_IRCADMIN);
-            else if(m_users->getItemIcon(i) == ICO_IRCAWAYOP) m_users->setItemIcon(i, ICO_IRCOP);
-            else if(m_users->getItemIcon(i) == ICO_IRCAWAYVOICE) m_users->setItemIcon(i, ICO_IRCVOICE);
-            else if(m_users->getItemIcon(i) == ICO_IRCAWAYHALFOP) m_users->setItemIcon(i, ICO_IRCHALFOP);
-            else if(m_users->getItemIcon(i) == ICO_IRCAWAYNORMAL) m_users->setItemIcon(i, ICO_IRCNORMAL);
+            ((NickListItem*)m_users->getItem(i))->changeAway(FALSE);
         }
     }
 }
 
 long IrcTabItem::onTextLink(FXObject *, FXSelector, void *data)
 {
-    launchLink(static_cast<FXchar*>(data));
+    utils::instance().launchLink(static_cast<FXchar*>(data));
     return 1;
 }
 
@@ -4279,7 +4138,7 @@ long IrcTabItem::onRightMouse(FXObject *, FXSelector, void *ptr)
     FXint index = m_users->getItemAt(event->win_x,event->win_y);
     if(index >= 0)
     {
-        NickInfo nick = m_server->getNickInfo(m_users->getItemText(index));
+        NickInfo nick = m_engine->getNickInfo(m_users->getItemText(index));
         m_nickOnRight = nick;
         FXString flagpath = DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "flags";
         delete ICO_FLAG;
@@ -4313,7 +4172,7 @@ long IrcTabItem::onRightMouse(FXObject *, FXSelector, void *ptr)
         else
         {
             new FXMenuSeparator(&popup);
-            if(m_server->isAway(getNickName())) new FXMenuCommand(&popup, _("Remove Away"), NULL, this, ID_DEAWAY);
+            if(m_engine->isAway(getNickName())) new FXMenuCommand(&popup, _("Remove Away"), NULL, this, ID_DEAWAY);
             else new FXMenuCommand(&popup, _("Set Away"), NULL, this, ID_AWAY);
         }
         popup.create();
@@ -4333,7 +4192,7 @@ long IrcTabItem::onDoubleclick(FXObject*, FXSelector, void*)
         ev.eventType = IRC_QUERY;
         ev.param1 = m_users->getItemText(index);
         ev.param2 = getNickName();
-        m_parent->getParent()->getParent()->handle(m_server, FXSEL(SEL_COMMAND, IrcSocket::ID_SERVER), &ev);
+        m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine::ID_SERVER), &ev);
     }
     return 1;
 }
@@ -4344,13 +4203,13 @@ long IrcTabItem::onNewQuery(FXObject *, FXSelector, void *)
     ev.eventType = IRC_QUERY;
     ev.param1 = m_nickOnRight.nick;
     ev.param2 = getNickName();
-    m_parent->getParent()->getParent()->handle(m_server, FXSEL(SEL_COMMAND, IrcSocket::ID_SERVER), &ev);
+    m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine::ID_SERVER), &ev);
     return 1;
 }
 
 long IrcTabItem::onWhois(FXObject *, FXSelector, void *)
 {
-    m_server->sendWhois(m_nickOnRight.nick);
+    m_engine->sendWhois(m_nickOnRight.nick);
     return 1;
 }
 
@@ -4359,7 +4218,7 @@ long IrcTabItem::onDccChat(FXObject*, FXSelector, void*)
     IrcEvent ev;
     ev.eventType = IRC_DCCSERVER;
     ev.param1 = m_nickOnRight.nick;
-    m_parent->getParent()->getParent()->handle(m_server, FXSEL(SEL_COMMAND, IrcSocket::ID_SERVER), &ev);
+    m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine::ID_SERVER), &ev);
     return 1;
 }
 
@@ -4372,32 +4231,32 @@ long IrcTabItem::onDccSend(FXObject*, FXSelector, void*)
         ev.eventType = dialog.getPassive() ? IRC_DCCPOUT: IRC_DCCOUT;
         ev.param1 = m_nickOnRight.nick;
         ev.param2 = dialog.getFilename();
-        m_parent->getParent()->getParent()->handle(m_server, FXSEL(SEL_COMMAND, IrcSocket::ID_SERVER), &ev);
+        m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine::ID_SERVER), &ev);
     }
     return 1;
 }
 
 long IrcTabItem::onOp(FXObject *, FXSelector, void *)
 {
-    m_server->sendMode(getText()+" +o "+m_nickOnRight.nick);
+    m_engine->sendMode(getText()+" +o "+m_nickOnRight.nick);
     return 1;
 }
 
 long IrcTabItem::onDeop(FXObject *, FXSelector, void *)
 {
-    m_server->sendMode(getText()+" -o "+m_nickOnRight.nick);
+    m_engine->sendMode(getText()+" -o "+m_nickOnRight.nick);
     return 1;
 }
 
 long IrcTabItem::onVoice(FXObject *, FXSelector, void *)
 {
-    m_server->sendMode(getText()+" +v "+m_nickOnRight.nick);
+    m_engine->sendMode(getText()+" +v "+m_nickOnRight.nick);
     return 1;
 }
 
 long IrcTabItem::onDevoice(FXObject *, FXSelector, void *)
 {
-    m_server->sendMode(getText()+" -v "+m_nickOnRight.nick);
+    m_engine->sendMode(getText()+" -v "+m_nickOnRight.nick);
     return 1;
 }
 
@@ -4416,7 +4275,7 @@ long IrcTabItem::onKick(FXObject *, FXSelector, void *)
 
     if(kickDialog.execute(PLACEMENT_CURSOR))
     {
-        m_server->sendKick(getText(), m_nickOnRight.nick, reasonEdit->getText());
+        m_engine->sendKick(getText(), m_nickOnRight.nick, reasonEdit->getText());
     }
     return 1;
 }
@@ -4437,7 +4296,7 @@ long IrcTabItem::onBan(FXObject *, FXSelector, void *)
 
     if(banDialog.execute(PLACEMENT_CURSOR))
     {
-        m_server->sendMode(getText()+" +b "+banEdit->getText());
+        m_engine->sendMode(getText()+" +b "+banEdit->getText());
     }
     return 1;
 }
@@ -4462,8 +4321,8 @@ long IrcTabItem::onKickban(FXObject *, FXSelector, void *)
 
     if(banDialog.execute(PLACEMENT_CURSOR))
     {
-        m_server->sendKick(getText(), m_nickOnRight.nick, reasonEdit->getText());
-        m_server->sendMode(getText()+" +b "+banEdit->getText());
+        m_engine->sendKick(getText(), m_nickOnRight.nick, reasonEdit->getText());
+        m_engine->sendMode(getText()+" +b "+banEdit->getText());
     }
     return 1;
 }
@@ -4515,7 +4374,7 @@ long IrcTabItem::onSetAway(FXObject*, FXSelector, void*)
 
     if(awayDialog.execute(PLACEMENT_CURSOR))
     {
-        m_server->sendAway(msgEdit->getText().empty() ? _("away"): msgEdit->getText());
+        m_engine->sendAway(msgEdit->getText().empty() ? _("away"): msgEdit->getText());
     }
     return 1;
 }
@@ -4523,7 +4382,7 @@ long IrcTabItem::onSetAway(FXObject*, FXSelector, void*)
 //handle ID_DEAWAY
 long IrcTabItem::onRemoveAway(FXObject*, FXSelector, void*)
 {
-    m_server->sendAway("");
+    m_engine->sendAway("");
     return 1;
 }
 
@@ -4539,13 +4398,13 @@ long IrcTabItem::onTopic(FXObject*, FXSelector, void*)
 {
     if(m_editableTopic || m_iamOp)
     {
-        if(m_topicline->getText().length() > m_server->getTopicLen())
+        if(m_topicline->getText().length() > m_engine->getTopicLen())
         {
-            appendIrcStyledText(FXStringFormat(_("Warning: topic is too long. Max. topic length is %d."), m_server->getTopicLen()), 4, FXSystem::now(), FALSE, FALSE);
-            m_server->sendTopic(getText(), m_topicline->getText());
+            appendIrcStyledText(FXStringFormat(_("Warning: topic is too long. Max. topic length is %d."), m_engine->getTopicLen()), 4, FXSystem::now(), FALSE, FALSE);
+            m_engine->sendTopic(getText(), m_topicline->getText());
             return 1;
         }
-        m_server->sendTopic(getText(), m_topicline->getText());
+        m_engine->sendTopic(getText(), m_topicline->getText());
     }
     else
     {
@@ -4558,7 +4417,7 @@ long IrcTabItem::onTopic(FXObject*, FXSelector, void*)
 
 long IrcTabItem::onTopicLink(FXObject*, FXSelector, void *data)
 {
-    launchLink(static_cast<FXchar*>(data));
+    utils::instance().launchLink(static_cast<FXchar*>(data));
     return 1;
 }
 
@@ -4566,7 +4425,7 @@ void IrcTabItem::onBan(const FXString &banmask, const FXbool &sign, const FXStri
 {
     if(sign)
     {
-        FXString nicks = m_server->getBannedNick(banmask);
+        FXString nicks = m_engine->getBannedNick(banmask);
         FXString myNick = getNickName();
         while(nicks.contains(';'))
         {
@@ -4577,7 +4436,7 @@ void IrcTabItem::onBan(const FXString &banmask, const FXbool &sign, const FXStri
                     if(m_users->getItemText(i) == myNick) appendIrcStyledText(FXStringFormat(_("You was banned by %s"), sender.text()), 1, time, FALSE, FALSE);
                     else
                     {
-                        if(!isCommandIgnored("ban") && !m_server->isUserIgnored(m_users->getItemText(i), getText())) appendIrcStyledText(FXStringFormat(_("%s was banned by %s"), m_users->getItemText(i).text(), sender.text()), 1, time, FALSE, FALSE);
+                        if(!isCommandIgnored("ban") && !m_engine->isUserIgnored(m_users->getItemText(i), getText())) appendIrcStyledText(FXStringFormat(_("%s was banned by %s"), m_users->getItemText(i).text(), sender.text()), 1, time, FALSE, FALSE);
                         //RemoveUser(users->getItemText(i));
                     }
                 }
@@ -4644,26 +4503,6 @@ FXString IrcTabItem::stripColors(const FXString &text, const FXbool stripOther)
 FXString IrcTabItem::getNick(FXint i)
 {
     return m_users->getItemText(i);
-}
-
-FXint IrcTabItem::launchLink(const FXString &link)
-{
-#ifdef WIN32
-    return ((FXint)ShellExecuteA(NULL,"open",FXPath::enquote(link).text(),NULL,NULL,SW_SHOWNORMAL)) > 32;
-#else
-    static const char * browsers[]={"xdg-open","firefox","iceweasel","konqueror","opera","netscape","dillo","open",NULL};
-    FXString path = FXSystem::getExecPath();
-    FXString exec;
-    for(int i=0; browsers[i]!=NULL; i++)
-    {
-        exec = FXPath::search(path, browsers[i]);
-        if(!exec.empty()) break;
-    }
-    if(exec.empty()) return 0;
-    exec += " "+FXPath::enquote(link)+" &";
-    system(exec.text());
-    return 1;
-#endif
 }
 
 FXint IrcTabItem::getNickColor(const FXString &nick)

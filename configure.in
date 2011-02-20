@@ -39,6 +39,35 @@ else
   AM_CONDITIONAL([HAVE_TRAY], false)
 fi
 
+dnl Checks for IPv6
+AC_MSG_CHECKING([whether to enable IPv6])
+AC_ARG_ENABLE(ipv6,[AC_HELP_STRING([--disable-ipv6],[disable IPv6 support])],enable_ipv6="$enableval",enable_ipv6="yes")
+have_ipv6=no
+AC_RUN_IFELSE([AC_LANG_SOURCE([ /* is AF_INET6 available? */
+#include <sys/types.h>
+#include <sys/socket.h>
+main()
+{
+ if (socket(AF_INET6, SOCK_STREAM, 0) < 0)
+   exit(1);
+ else
+   exit(0);
+}
+])],
+AC_MSG_RESULT(yes)
+have_ipv6=yes,
+AC_MSG_RESULT(no)
+have_ipv6=no,
+AC_MSG_RESULT(no)
+have_ipv6=no
+)
+if test "$have_ipv6" = "yes"; then
+  AC_DEFINE(ENABLE_IPV6,1, system has IPv6 support)
+fi
+
+CURL_CHECK_FUNC_INET_NTOP
+CURL_CHECK_FUNC_INET_PTON
+
 dnl Check for SSL (OpenSSL)
 AC_ARG_ENABLE(ssl,[AC_HELP_STRING([--disable-ssl],[disable Secure Sockets Layer support])],enable_ssl="$enableval",enable_ssl="yes")
 have_openssl=no
@@ -173,6 +202,7 @@ AC_OUTPUT(Makefile intl/Makefile m4/Makefile po/Makefile.in dxirc.spec src/Makef
 echo
 echo "Configure finished!"
 echo "Install prefix:                             $prefix"
+echo "Build with IPv6:                            $have_ipv6"
 echo "Build with tray support:                    $enable_tray"
 echo "Build with lua scripting support:           $have_lua"
 echo "Build with SSL:                             $have_openssl"

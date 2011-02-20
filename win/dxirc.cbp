@@ -36,6 +36,7 @@
 			<Add option="-DHAVE_OPENSSL" />
 			<Add option="-DHAVE_TRAY" />
 			<Add option="-DHAVE_LUA" />
+			<Add option="-DENABLE_IPV6" />
 			<Add directory="." />
 			<Add directory="$(#mingw.include)\FOX-1.6" />
 		</Compiler>
@@ -50,7 +51,7 @@
 			<Add library="eay32" />
 			<Add library="ssl32" />
 			<Add library="winmm" />
-                        <Add library="enchant.dll" />
+			<Add library="enchant.dll" />
 		</Linker>
 		<Unit filename="..\src\FXTrayApp.cpp" />
 		<Unit filename="..\src\FXTrayApp.h" />
@@ -64,13 +65,23 @@
 		<Unit filename="..\src\configdialog.h" />
 		<Unit filename="..\src\dccdialog.cpp" />
 		<Unit filename="..\src\dccdialog.h" />
+		<Unit filename="..\src\dccengine.cpp" />
+		<Unit filename="..\src\dccengine.h" />
+		<Unit filename="..\src\dcctabitem.cpp" />
+		<Unit filename="..\src\dcctabitem.h" />
 		<Unit filename="..\src\defs.h" />
 		<Unit filename="..\src\dxirc.cpp" />
 		<Unit filename="..\src\dxirc.h" />
+		<Unit filename="..\src\dxmessagechannel.cpp" />
+		<Unit filename="..\src\dxmessagechannel.h" />
 		<Unit filename="..\src\dxpipe.cpp" />
 		<Unit filename="..\src\dxpipe.h" />
+		<Unit filename="..\src\dxsocket.cpp" />
+		<Unit filename="..\src\dxsocket.h" />
 		<Unit filename="..\src\dxtabbook.cpp" />
 		<Unit filename="..\src\dxtabbook.h" />
+		<Unit filename="..\src\dxtabitem.cpp" />
+		<Unit filename="..\src\dxtabitem.h" />
 		<Unit filename="..\src\dxtext.cpp" />
 		<Unit filename="..\src\dxtext.h" />
 		<Unit filename="..\src\dxtextfield.cpp" />
@@ -79,8 +90,8 @@
 		<Unit filename="..\src\i18n.h" />
 		<Unit filename="..\src\icons.cpp" />
 		<Unit filename="..\src\icons.h" />
-		<Unit filename="..\src\ircsocket.cpp" />
-		<Unit filename="..\src\ircsocket.h" />
+		<Unit filename="..\src\ircengine.cpp" />
+		<Unit filename="..\src\ircengine.h" />
 		<Unit filename="..\src\irctabitem.cpp" />
 		<Unit filename="..\src\irctabitem.h" />
 		<Unit filename="..\src\logviewer.cpp" />

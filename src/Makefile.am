@@ -4,8 +4,12 @@ bin_PROGRAMS = dxirc
 dxirc_SOURCES = configdialog.cpp \
                   dxirc.cpp \
                   icons.cpp \
-                  ircsocket.cpp \
+                  dxsocket.cpp \
+                  ircengine.cpp \
+                  dccengine.cpp \
+                  dxtabitem.cpp \
                   irctabitem.cpp \
+                  dcctabitem.cpp \
                   serverdialog.cpp \
                   utils.cpp \
                   aliasdialog.cpp \
@@ -17,7 +21,8 @@ dxirc_SOURCES = configdialog.cpp \
                   aboutdialog.cpp \
                   dxtabbook.cpp \
                   dxtextfield.cpp \
-                  dxtext.cpp
+                  dxtext.cpp \
+		  dxmessagechannel.cpp
 
 if HAVE_TRAY
 dxirc_SOURCES += FXTrayApp.cpp \
@@ -38,8 +43,12 @@ EXTRA_DIST =  configdialog.h \
               help.h \
               i18n.h \
               icons.h \
-              ircsocket.h \
+              dxsocket.h \
+              ircengine.h \
+              dccengine.h \
+              dxtabitem.h \
               irctabitem.h \
+              dcctabitem.h \
               serverdialog.h \
               utils.h \
               aliasdialog.h \
@@ -52,6 +61,7 @@ EXTRA_DIST =  configdialog.h \
               dxtabbook.h \
               dxtextfield.h \
               dxtext.h \
+	      dxmessagechannel.h \
               FXTrayApp.h \
               FXTrayIcon.h
 

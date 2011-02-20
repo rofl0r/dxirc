@@ -1,7 +1,7 @@
 [Project]
 FileName=dxirc.dev
 Name=dxirc
-UnitCount=43
+UnitCount=53
 Type=0
 Ver=1
 ObjFiles=
@@ -11,7 +11,7 @@ PrivateResource=dxirc_private.rc
 ResourceIncludes=.
 MakeIncludes=
 Compiler=-I"<INCLUDE>\Fox-1.6"_@@__@@__@@_
-CppCompiler=-I"<INCLUDE>\Fox-1.6"_@@_-I"<INCLUDE>\enchant"_@@_-DDXIRC_DATADIR=\".\"_@@_-DFOXDLL_@@_-DUNICODE_@@_-DHAVE_OPENSSL_@@_-DHAVE_TRAY_@@_-DHAVE_LUA_@@_
+CppCompiler=-I"<INCLUDE>\Fox-1.6"_@@_-I"<INCLUDE>\enchant"_@@_-DDXIRC_DATADIR=\".\"_@@_-DFOXDLL_@@_-DUNICODE_@@_-DHAVE_OPENSSL_@@_-DHAVE_TRAY_@@_-DHAVE_LUA_@@_-DENABLE_IPV6_@@_
 Linker=-lFOXDLL-1.6_@@_-lws2_32_@@_-lpng12_@@_-lintl_@@_-ljpeg_@@_-llua_@@_-ltiff_@@_-leay32_@@_-lssl32_@@_-lwinmm_@@_-lenchant.dll_@@_
 IsCpp=1
 Icon=dxirc.ico
@@ -138,26 +138,6 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit10]
-FileName=..\src\ircsocket.cpp
-CompileCpp=1
-Folder=dxirc
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit11]
-FileName=..\src\ircsocket.h
-CompileCpp=1
-Folder=dxirc
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit12]
 FileName=..\src\irctabitem.cpp
 CompileCpp=1
 Folder=dxirc
@@ -167,7 +147,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit13]
+[Unit11]
 FileName=..\src\irctabitem.h
 CompileCpp=1
 Folder=dxirc
@@ -177,7 +157,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit14]
+[Unit12]
 FileName=..\src\serverdialog.cpp
 CompileCpp=1
 Folder=dxirc
@@ -187,7 +167,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit15]
+[Unit13]
 FileName=..\src\serverdialog.h
 CompileCpp=1
 Folder=dxirc
@@ -197,7 +177,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit16]
+[Unit14]
 FileName=config.h
 CompileCpp=1
 Folder=dxirc
@@ -207,7 +187,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit17]
+[Unit15]
 FileName=..\src\utils.h
 CompileCpp=1
 Folder=dxirc
@@ -217,7 +197,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit18]
+[Unit16]
 FileName=..\src\utils.cpp
 CompileCpp=1
 Folder=dxirc
@@ -227,7 +207,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit19]
+[Unit17]
 FileName=..\src\aliasdialog.h
 CompileCpp=1
 Folder=dxirc
@@ -237,7 +217,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit20]
+[Unit18]
 FileName=..\src\aliasdialog.cpp
 CompileCpp=1
 Folder=dxirc
@@ -247,7 +227,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit21]
+[Unit19]
 FileName=..\src\dxpipe.h
 CompileCpp=1
 Folder=dxirc
@@ -257,7 +237,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit22]
+[Unit20]
 FileName=..\src\dxpipe.cpp
 CompileCpp=1
 Folder=dxirc
@@ -267,7 +247,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit23]
+[Unit21]
 FileName=..\src\FXTrayIcon.h
 CompileCpp=1
 Folder=dxirc
@@ -277,7 +257,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit24]
+[Unit22]
 FileName=..\src\FXTrayApp.cpp
 CompileCpp=1
 Folder=dxirc
@@ -287,7 +267,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit25]
+[Unit23]
 FileName=..\src\FXTrayApp.h
 CompileCpp=1
 Folder=dxirc
@@ -297,7 +277,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit26]
+[Unit24]
 FileName=..\src\FXTrayIcon.cpp
 CompileCpp=1
 Folder=dxirc
@@ -307,7 +287,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit27]
+[Unit25]
 FileName=..\src\logviewer.h
 CompileCpp=1
 Folder=dxirc
@@ -317,7 +297,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit28]
+[Unit26]
 FileName=..\src\logviewer.cpp
 CompileCpp=1
 Folder=dxirc
@@ -327,7 +307,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit29]
+[Unit27]
 FileName=..\src\tetristabitem.h
 CompileCpp=1
 Folder=dxirc
@@ -337,7 +317,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit30]
+[Unit28]
 FileName=..\src\tetristabitem.cpp
 CompileCpp=1
 Folder=dxirc
@@ -347,7 +327,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit31]
+[Unit29]
 FileName=..\src\scriptdialog.h
 CompileCpp=1
 Folder=dxirc
@@ -357,7 +337,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit32]
+[Unit30]
 FileName=..\src\scriptdialog.cpp
 CompileCpp=1
 Folder=dxirc
@@ -367,7 +347,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit33]
+[Unit31]
 FileName=..\src\dccdialog.h
 CompileCpp=1
 Folder=dxirc
@@ -377,7 +357,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit34]
+[Unit32]
 FileName=..\src\dccdialog.cpp
 CompileCpp=1
 Folder=dxirc
@@ -387,7 +367,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit35]
+[Unit33]
 FileName=..\src\dxtabbook.h
 CompileCpp=1
 Folder=dxirc
@@ -397,7 +377,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit36]
+[Unit34]
 FileName=..\src\dxtabbook.cpp
 CompileCpp=1
 Folder=dxirc
@@ -407,7 +387,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit37]
+[Unit35]
 FileName=..\src\dxtextfield.h
 CompileCpp=1
 Folder=dxirc
@@ -417,7 +397,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit38]
+[Unit36]
 FileName=..\src\dxtextfield.cpp
 CompileCpp=1
 Folder=dxirc
@@ -427,7 +407,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit39]
+[Unit37]
 FileName=..\src\dxtext.h
 CompileCpp=1
 Folder=dxirc
@@ -437,7 +417,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit40]
+[Unit38]
 FileName=..\src\dxtext.cpp
 CompileCpp=1
 Folder=dxirc
@@ -447,8 +427,9 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit41]
+[Unit39]
 FileName=dxirc.rc
+CompileCpp=1
 Folder=dxirc
 Compile=1
 Link=0
@@ -456,7 +437,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit42]
+[Unit40]
 FileName=..\src\aboutdialog.h
 CompileCpp=1
 Folder=dxirc
@@ -466,8 +447,128 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit43]
+[Unit41]
 FileName=..\src\aboutdialog.cpp
+Folder=dxirc
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+CompileCpp=1
+
+[Unit42]
+FileName=..\src\dccengine.cpp
+CompileCpp=1
+Folder=dxirc
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit43]
+FileName=..\src\dccengine.h
+CompileCpp=1
+Folder=dxirc
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit44]
+FileName=..\src\dcctabitem.cpp
+CompileCpp=1
+Folder=dxirc
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit45]
+FileName=..\src\dcctabitem.h
+CompileCpp=1
+Folder=dxirc
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit46]
+FileName=..\src\dxsocket.cpp
+CompileCpp=1
+Folder=dxirc
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit47]
+FileName=..\src\dxsocket.h
+CompileCpp=1
+Folder=dxirc
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit48]
+FileName=..\src\dxtabitem.cpp
+CompileCpp=1
+Folder=dxirc
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit49]
+FileName=..\src\dxtabitem.h
+CompileCpp=1
+Folder=dxirc
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit50]
+FileName=..\src\ircengine.cpp
+CompileCpp=1
+Folder=dxirc
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit51]
+FileName=..\src\ircengine.h
+CompileCpp=1
+Folder=dxirc
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit52]
+FileName=..\src\dxmessagechannel.cpp
+CompileCpp=1
+Folder=dxirc
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit53]
+FileName=..\src\dxmessagechannel.h
 CompileCpp=1
 Folder=dxirc
 Compile=1

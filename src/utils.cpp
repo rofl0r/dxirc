@@ -19,6 +19,12 @@
  *      MA 02110-1301, USA.
  */
 
+#ifdef WIN32
+ #define WIN32_LEAN_AND_MEAN
+ #include <windows.h>
+ #include <mmsystem.h>
+ #include <shellapi.h>
+#endif
 #include "config.h"
 #include "i18n.h"
 #include "utils.h"
@@ -70,18 +76,20 @@ utils::~utils()
 
 utils &utils::instance()
 {
-    static utils iutils;
-    return iutils;
+    static utils p;
+    return p;
 }
 
 void utils::fillCommands()
 {
     m_commands.clear();
+    m_dcccommands.clear();
     m_commands.append("ADMIN");
     m_commands.append("AWAY");
     m_commands.append("BANLIST");
     m_commands.append("CONNECT");
     m_commands.append("COMMANDS");
+    m_dcccommands.append("COMMANDS");
     m_commands.append("CTCP");
     m_commands.append("CYCLE");
     m_commands.append("DCC");
@@ -90,8 +98,10 @@ void utils::fillCommands()
     m_commands.append("DISCONNECT");
 #ifndef WIN32
     m_commands.append("EXEC");
+    m_dcccommands.append("EXEC");
 #endif
     m_commands.append("HELP");
+    m_dcccommands.append("HELP");
     m_commands.append("IGNORE");
     m_commands.append("INVITE");
     m_commands.append("JOIN");
@@ -100,8 +110,10 @@ void utils::fillCommands()
     m_commands.append("LIST");
 #ifdef HAVE_LUA
     m_commands.append("LUA");
+    m_dcccommands.append("LUA");
 #endif
     m_commands.append("ME");
+    m_dcccommands.append("ME");
     m_commands.append("MODE");
     m_commands.append("MSG");
     m_commands.append("NAMES");
@@ -114,6 +126,7 @@ void utils::fillCommands()
     m_commands.append("QUIT");
     m_commands.append("QUOTE");
     m_commands.append("SAY");
+    m_dcccommands.append("SAY");
     m_commands.append("STATS");
     m_commands.append("TIME");
     m_commands.append("TOPIC");
@@ -131,6 +144,7 @@ void utils::fillCommands()
     for(FXint i=0; i<m_scriptCommands.no(); i++)
     {
         m_commands.append(m_scriptCommands[i].name);
+        m_dcccommands.append(m_scriptCommands[i].name);
     }
     FXString v;
     register FXint i,j,h;
@@ -147,6 +161,21 @@ void utils::fillCommands()
                 j -= h;
             }
             m_commands[j - 1] = v;
+        }
+    }
+    for(h=1; h<=m_dcccommands.no()/9; h=3*h+1);
+    for(; h > 0; h /= 3)
+    {
+        for(i = h + 1; i <= m_dcccommands.no(); i++)
+        {
+            v = m_dcccommands[i - 1];
+            j = i;
+            while (j > h && comparecase(m_dcccommands[j - h - 1], v) > 0)
+            {
+                m_dcccommands[j - 1] = m_dcccommands[j - h - 1];
+                j -= h;
+            }
+            m_dcccommands[j - 1] = v;
         }
     }
 }
@@ -934,6 +963,26 @@ FXbool utils::isCommand(const FXString &command)
     return FALSE;
 }
 
+FXint utils::dcccommandsNo()
+{
+    return m_dcccommands.no();
+}
+
+FXString utils::dcccommandsAt(FXint i)
+{
+    return m_dcccommands.at(i);
+}
+
+FXbool utils::isDccCommand(const FXString &command)
+{
+    if(!m_dcccommands.no()) return FALSE;
+    for(FXint i=0; i<m_dcccommands.no(); i++)
+    {
+        if(comparecase(command, m_dcccommands.at(i)) == 0) return TRUE;
+    }
+    return FALSE;
+}
+
 //This's from Xfe, thanks
 FXbool utils::isUtf8(const FXchar* string, FXuint length)
 {
@@ -1030,6 +1079,16 @@ FXString utils::availableCommands()
     for(FXint i=0; i < m_commands.no(); i++)
     {
         if(m_commands[i] != "commands") commandstr += m_commands[i].upper()+(i != m_commands.no() - 1? ", " : "");
+    }
+    return commandstr;
+}
+
+FXString utils::availableDccCommands()
+{
+    FXString commandstr = _("Available commands: ");
+    for(FXint i=0; i < m_dcccommands.no(); i++)
+    {
+        if(m_dcccommands[i] != "commands") commandstr += m_dcccommands[i].upper()+(i != m_dcccommands.no() - 1? ", " : "");
     }
     return commandstr;
 }
@@ -1156,6 +1215,14 @@ FXbool utils::getBoolIniEntry(const FXchar* section, const FXchar* key, FXbool d
     return set.readBoolEntry(section, key, def);
 }
 
+// return color entry in inifile
+FXColor utils::getColorIniEntry(const FXchar* section, const FXchar* key, FXColor def)
+{
+    FXSettings set;
+    set.parseFile(m_iniFile, TRUE);
+    return set.readColorEntry(section, key, def);
+}
+
 //Return file size in human readable form
 FXString utils::getFileSize(FXlong size)
 {
@@ -1163,26 +1230,17 @@ FXString utils::getFileSize(FXlong size)
     if(size > 1000000000)
     {
         fsize = size/1073741824.0;
-        if(fsize == (FXint)fsize)
-            return FXStringFormat("%.0f %s", fsize, _("GB"));
-        else
-            return FXStringFormat("%.2f %s", fsize, _("GB"));
+        return FXStringFormat("%.2f %s", fsize, _("GB"));
     }
     if(size > 100000)
     {
         fsize = size/1048576.0;
-        if(fsize == (FXint)fsize)
-            return FXStringFormat("%.0f %s", fsize, _("MB"));
-        else
-            return FXStringFormat("%.2f %s", fsize, _("MB"));
+        return FXStringFormat("%.2f %s", fsize, _("MB"));
     }
     if(size > 1000)
     {
         fsize = size/1024.0;
-        if(fsize == (FXint)fsize)
-            return FXStringFormat("%.0f %s", fsize, _("KB"));
-        else
-            return FXStringFormat("%.2f %s", fsize, _("KB"));
+        return FXStringFormat("%.2f %s", fsize, _("KB"));
     }
     return FXStringFormat("%s %s", FXStringVal(size).text(), _("bytes"));
 }
@@ -1195,26 +1253,17 @@ FXString utils::getFileSize(const FXString &ssize)
     if(size > 1000000000)
     {
         fsize = size/1073741824.0;
-        if(fsize == (FXuint)fsize)
-            return FXStringFormat("%.0f %s", fsize, _("GB"));
-        else
-            return FXStringFormat("%.2f %s", fsize, _("GB"));
+        return FXStringFormat("%.2f %s", fsize, _("GB"));
     }
     if(size > 100000)
     {
         fsize = size/1048576.0;
-        if(fsize == (FXuint)fsize)
-            return FXStringFormat("%.0f %s", fsize, _("MB"));
-        else
-            return FXStringFormat("%.2f %s", fsize, _("MB"));
+        return FXStringFormat("%.2f %s", fsize, _("MB"));
     }
     if(size > 1000)
     {
         fsize = size/1024.0;
-        if(fsize == (FXuint)fsize)
-            return FXStringFormat("%.0f %s", fsize, _("KB"));
-        else
-            return FXStringFormat("%.2f %s", fsize, _("KB"));
+        return FXStringFormat("%.2f %s", fsize, _("KB"));
     }
     return FXStringFormat("%s %s", ssize.text(), _("bytes"));
 }
@@ -1228,38 +1277,55 @@ FXString utils::getSpeed(FXlong speed)
     if(speed > 100000)
     {
         fspeed = speed/(1048576.0);
-        if(fspeed == (FXuint)fspeed)
-            return FXStringFormat("%.0f %s", fspeed, _("MB/s"));
-        else
-            return FXStringFormat("%.2f %s", fspeed, _("MB/s"));
+        return FXStringFormat("%.2f %s", fspeed, _("MB/s"));
     }
     fspeed = speed/(1024.0);
-    if(fspeed == (FXuint)fspeed)
-        return FXStringFormat("%.0f %s", fspeed, _("KB/s"));
-    else
-        return FXStringFormat("%.2f %s", fspeed, _("KB/s"));
+    return FXStringFormat("%.2f %s", fspeed, _("KB/s"));
 }
 
 //Return remaining time of download/send
 FXString utils::getRemaining(FXlong size, FXlong speed)
 {
-    FXfloat fsize = 0.0;
-    FXfloat fspeed = 0.0;
-    FXfloat fremain = 0.0;
-    fspeed = speed/1024.0;
-    fsize = size/1024.0;
-    fremain = fsize/fspeed;
-    if(fremain <= 0 || fremain > 86400.0) return "?";
+    if(!speed) return "?";
+    FXlong remainingTime = size/speed;
+    if(remainingTime <= 0 || remainingTime > 360000) return "?";
     else
     {
-        FXint remainingTime = (FXint)fremain;
-        FXint secs = remainingTime;
-        FXint hours = remainingTime/3600;
+        FXlong secs = remainingTime;
+        FXlong hours = remainingTime/3600;
         secs -= hours*3600;
-        FXint mins = remainingTime/60;
+        FXlong mins = secs/60;
         secs -= mins*60;
-        return FXStringFormat("%02d:%02d:%02d", hours, mins, secs);
+        return FXStringFormat("%lld:%02lld:%02lld", hours, mins, secs);
     }
+}
+
+//Return position in file in percent string
+FXString utils::getPercentPosition(FXlong size, FXlong position)
+{
+    if(!size) return "0%";
+    return FXStringFormat("%lld%%", (100*position)/size);
+}
+
+// launch link in browser
+FXint utils::launchLink(const FXString &link)
+{
+#ifdef WIN32
+    return ((FXint)ShellExecuteA(NULL,"open",FXPath::enquote(link).text(),NULL,NULL,SW_SHOWNORMAL)) > 32;
+#else
+    static const char * browsers[]={"xdg-open","firefox","iceweasel","konqueror","opera","netscape","dillo","open",NULL};
+    FXString path = FXSystem::getExecPath();
+    FXString exec;
+    for(int i=0; browsers[i]!=NULL; i++)
+    {
+        exec = FXPath::search(path, browsers[i]);
+        if(!exec.empty()) break;
+    }
+    if(exec.empty()) return 0;
+    exec += " "+FXPath::enquote(link)+" &";
+    system(exec.text());
+    return 1;
+#endif
 }
 
 //play event sound

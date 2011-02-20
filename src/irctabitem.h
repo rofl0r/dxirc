@@ -24,10 +24,9 @@
 #define IRCTABITEM_H
 
 #include <fstream>
-#include "ircsocket.h"
-#include "dxtabbook.h"
+#include "ircengine.h"
+#include "dxtabitem.h"
 #include "dxpipe.h"
-#include "dxtextfield.h"
 #include "defs.h"
 #ifndef DXTEXT_H
 #include "dxtext.h"
@@ -67,18 +66,56 @@ private:
     FXCheckButton *m_checkPassive;
 };
 
-class IrcTabItem: public FXTabItem
+class IrcTabItem;
+
+class NickList : public FXList
+{
+    FXDECLARE(NickList)
+public:
+    NickList(FXComposite *p, IrcTabItem *tgt=NULL, FXSelector sel=0, FXuint opts=LIST_NORMAL, FXint x=0, FXint y=0, FXint w=0, FXint h=0);
+    long onQueryTip(FXObject*,FXSelector,void*);
+protected:
+    NickList() {}
+private:
+    NickList(const NickList&);
+    NickList& operator=(const NickList&);
+    IrcTabItem *m_parent;
+};
+
+class NickListItem : public FXListItem
+{
+    FXDECLARE(NickListItem)
+    friend class NickList;
+    friend class IrcTabItem;
+public:
+    NickListItem(const FXString& text, NickList *parent, IrcTabItem *tab, UserMode mode=NONE, FXIcon* ic=NULL, void* ptr=NULL):FXListItem(text, ic, ptr),m_mode(mode),m_tab(tab),m_parent(parent){}
+protected:
+    NickListItem() {}
+
+    void setUserMode(UserMode mode);
+    UserMode getUserMode() const { return m_mode; }
+    void changeAway(FXbool away);
+private:
+    NickListItem(const NickListItem&);
+    NickListItem& operator=(const NickListItem&);
+    UserMode m_mode;
+    IrcTabItem *m_tab;
+    NickList *m_parent;
+};
+
+class IrcTabItem: public dxTabItem
 {
     FXDECLARE(IrcTabItem)
     friend class dxirc;
+    friend class NickList;
+    friend class NickListItem;
     public:
-        IrcTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *icon=0, FXuint opts=TAB_TOP_NORMAL, FXint id=0, TYPE type=CHANNEL, IrcSocket *socket=NULL, FXbool ownServerWindow=FALSE, FXbool usersShown=TRUE, FXbool logging=FALSE, FXString commandsList="", FXString logPath="", FXint maxAway=200, IrcColor colorss=IrcColor(), FXString nickChar=":", FXFont *font=NULL, FXbool sameCommand=FALSE, FXbool sameList=FALSE, FXbool coloredNick=FALSE, FXbool stripColors=TRUE, FXbool useSpell=TRUE, FXbool showSpellCombo=FALSE);
+        IrcTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *icon=0, FXuint opts=TAB_TOP_NORMAL, FXint id=0, TYPE type=CHANNEL, IrcEngine *socket=NULL, FXbool ownServerWindow=FALSE, FXbool usersShown=TRUE, FXbool logging=FALSE, FXString commandsList="", FXString logPath="", FXint maxAway=200, IrcColor colorss=IrcColor(), FXString nickChar=":", FXFont *font=NULL, FXbool sameCommand=FALSE, FXbool sameList=FALSE, FXbool coloredNick=FALSE, FXbool stripColors=TRUE, FXbool useSpell=TRUE, FXbool showSpellCombo=FALSE);
         virtual ~IrcTabItem();
         enum {
             ID_COMMANDLINE = FXMainWindow::ID_LAST+25,
             ID_CDIALOG,
             ID_CQUIT,
-            ID_TIME,
             ID_PTIME,
             ID_ETIME,
             ID_USERS,
@@ -117,12 +154,12 @@ class IrcTabItem: public FXTabItem
         void clearChat();
         void hideUsers();
         void showUsers();
-        FXString getServerName() { return m_server ? m_server->getServerName() : ""; }
-        FXint getServerPort() { return m_server ? m_server->getServerPort() : 0; }
-        FXString getNickName() { return m_server ? m_server->getNickName() : ""; }
+        FXString getServerName() { return m_engine ? m_engine->getServerName() : ""; }
+        FXint getServerPort() { return m_engine ? m_engine->getServerPort() : 0; }
+        FXString getNickName() { return m_engine ? m_engine->getNickName() : ""; }
+        FXString getRealServerName() { return m_engine ? m_engine->getRealServerName() : ""; }
         void setType(const TYPE &typ, const FXString &tabtext);
         TYPE getType() { return m_type; }
-        FXint getID() { return m_id; }
         void reparentTab();
         void setColor(IrcColor);
         void setCommandsList(FXString clst);
@@ -144,11 +181,11 @@ class IrcTabItem: public FXTabItem
         FXString getSpellLang();
         void setUnreadTabColor(FXColor);
         void setHighlightTabColor(FXColor);
+        void checkAway();
 
         long onCommandline(FXObject *, FXSelector, void*);
         long onKeyPress(FXObject *, FXSelector, void*);
         long onIrcEvent(FXObject *, FXSelector, void*);
-        long onTimeout(FXObject *, FXSelector, void*);
         long onEggTimeout(FXObject *, FXSelector, void*);
         long onPipeTimeout(FXObject *, FXSelector, void*);
         long onRightMouse(FXObject *, FXSelector, void*);
@@ -180,22 +217,22 @@ class IrcTabItem: public FXTabItem
         void hasAllCommand(FXbool);
         void hasMyMsg(FXbool);
 
+        IrcEngine *m_engine;
     private:
         IrcTabItem(){}
 
         dxTabBook *m_parent;
-        IrcSocket *m_server;
         dxPipe *m_pipe;
         TYPE m_type;
         FXVerticalFrame *m_textframe, *m_usersframe, *m_mainframe;
         FXHorizontalFrame *m_commandframe;
         FXSplitter *m_splitter;
         dxText *m_text;
-        FXList *m_users;
+        NickList *m_users;
         dxTextField *m_commandline;
         dxTextField *m_topicline;
-        FXint m_currentPosition, m_historyMax, m_numberUsers, m_pics, m_id;
-        FXbool m_checkAway, m_iamOp, m_usersShown, m_logging, m_ownServerWindow;
+        FXint m_currentPosition, m_historyMax, m_numberUsers, m_pics;
+        FXbool m_iamOp, m_usersShown, m_logging, m_ownServerWindow;
         FXbool m_sameCmd, m_sameList, m_coloredNick, m_editableTopic, m_sendPipe;
         FXbool m_scriptHasAll, m_scriptHasMyMsg, m_stripColors, m_useSpell, m_showSpellCombo;
         dxStringArray m_commandsHistory, m_pipeStrings;
@@ -214,8 +251,6 @@ class IrcTabItem: public FXTabItem
         void onIrcAction(IrcEvent *ev);
         void onIrcCtpcReply(IrcEvent *ev);
         void onIrcCtcpRequest(IrcEvent *ev);
-        void onIrcDccMsg(IrcEvent *ev);
-        void onIrcDccAction(IrcEvent *ev);
         void onIrcJoin(IrcEvent *ev);
         void onIrcQuit(IrcEvent *ev);
         void onIrcPart(IrcEvent *ev);
@@ -252,9 +287,11 @@ class IrcTabItem: public FXTabItem
         FXString getNick(FXint);
         FXbool isRightForServerMsg();
         FXbool isCommandIgnored(const FXString &command);
-        void addUser(const FXString &user);
+        void addUser(const FXString &user, UserMode mode);
         void removeUser(const FXString &user);
         void changeNickUser(const FXString &nick, const FXString &newnick);
+        void setUserMode(const FXString &nick, UserMode mode);
+        UserMode getUserMode(const FXchar mode);
         void onBan(const FXString &banmask, const FXbool &sign, const FXString &sender, const FXTime &time);
         void onAway();
         void startLogging();
@@ -271,7 +308,6 @@ class IrcTabItem: public FXTabItem
         void setLinkColor(FXColor);
         FXbool processCommand(const FXString &);
         FXbool showHelp(FXString);
-        FXint launchLink(const FXString &);
         FXint getNickColor(const FXString &);
         FXColor getIrcColor(FXint code);
         FXint hiliteStyleExist(FXColor foreColor, FXColor backColor, FXuint style);

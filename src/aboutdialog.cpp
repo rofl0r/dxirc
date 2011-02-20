@@ -57,7 +57,7 @@ AboutDialog::AboutDialog(FXMainWindow *owner)
     new FXLabel(m_contents, "", ICO_BIG, ICON_BELOW_TEXT|LAYOUT_CENTER_X|LAYOUT_FILL_Y);
     FXLabel *label = new FXLabel(m_contents, (FXString)"\n"+PACKAGE+" "+VERSION, 0, LAYOUT_CENTER_X|LAYOUT_FILL_Y);
     label->setFont(m_boldfont);
-    new FXLabel(m_contents, (FXString)"\n"+_("Copyright (C) 2008~ David Vachulka (david@konstrukce-cad.com)")+"\n", 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    new FXLabel(m_contents, (FXString)"\n"+_("Copyright (C) 2008~ David Vachulka (david@konstrukce-cad.com)\nand others")+"\n", 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     label = new FXLabel(m_contents, FXStringFormat(_("Built with the FOX Toolkit Library version %d.%d.%d (http://www.fox-toolkit.org)"),FOX_MAJOR,FOX_MINOR,FOX_LEVEL), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     label->setFont(m_smallfont);
 #ifdef HAVE_OPENSSL

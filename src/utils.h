@@ -22,11 +22,6 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#ifdef WIN32
- #define WIN32_LEAN_AND_MEAN
- #include <windows.h>
- #include <mmsystem.h>
-#endif
 #include "defs.h"
 #include <FX885910Codec.h>
 #include <FX885911Codec.h>
@@ -87,6 +82,7 @@ private:
     FXString m_locale;
     dxStringMap m_aliases;
     dxStringArray m_commands;
+    dxStringArray m_dcccommands;
     dxStringArray m_spellLang;
     dxScriptCommandsArray m_scriptCommands;
 #ifdef HAVE_ENCHANT
@@ -117,12 +113,16 @@ public:
     FXint commandsNo();
     FXString commandsAt(FXint);
     FXbool isCommand(const FXString&);
+    FXint dcccommandsNo();
+    FXString dcccommandsAt(FXint);
+    FXbool isDccCommand(const FXString&);
     FXbool isUtf8(const FXchar* string, FXuint length);
     void addScriptCommand(LuaScriptCommand command);
     FXbool removeScriptCommand(const FXString &command);
     FXbool removeScriptCommands(const FXString &script);
     FXbool isScriptCommand(const FXString &command);
     FXString availableCommands();
+    FXString availableDccCommands();
     FXString availableScriptsCommands();
     FXString availableScriptCommands(const FXString &script);
     FXString getHelpText(const FXString &command);
@@ -135,10 +135,13 @@ public:
     FXString getStringIniEntry(const FXchar *section,const FXchar *key,const FXchar *def=NULL);
     FXint getIntIniEntry(const FXchar *section, const FXchar *key, FXint def=0);
     FXbool getBoolIniEntry(const FXchar* section, const FXchar* key, FXbool def=FALSE);
+    FXColor getColorIniEntry(const FXchar* section, const FXchar* key, FXColor def=FXRGB(255,255,255));
     FXString getFileSize(FXlong);
     FXString getFileSize(const FXString&);
     FXString getSpeed(FXlong);
     FXString getRemaining(FXlong, FXlong);
+    FXString getPercentPosition(FXlong, FXlong);
+    FXint launchLink(const FXString &);
     void playFile(const FXString&);
     void debugLine(const FXString&);
     FXbool checkWord(FXString word, FXString lang);

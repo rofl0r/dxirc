@@ -8,6 +8,9 @@
 /* Define to 1 if using `alloca.c'. */
 #undef C_ALLOCA
 
+/* system has IPv6 support */
+#undef ENABLE_IPV6
+
 /* Define to 1 if translation of program messages to the user's native
    language is requested. */
 #undef ENABLE_NLS
@@ -30,6 +33,9 @@
 
 /* Define to 1 if you have the `argz_stringify' function. */
 #undef HAVE_ARGZ_STRINGIFY
+
+/* Define to 1 if you have the <arpa/inet.h> header file. */
+#undef HAVE_ARPA_INET_H
 
 /* Define to 1 if you have the `asprintf' function. */
 #undef HAVE_ASPRINTF
@@ -102,6 +108,12 @@
 /* Define if you have the iconv() function. */
 #undef HAVE_ICONV
 
+/* Define to 1 if you have a IPv6 capable working inet_ntop function. */
+#undef HAVE_INET_NTOP
+
+/* Define to 1 if you have a IPv6 capable working inet_pton function. */
+#undef HAVE_INET_PTON
+
 /* Define if you have the 'intmax_t' type in <stdint.h> or <inttypes.h>. */
 #undef HAVE_INTMAX_T
 
@@ -156,6 +168,9 @@
 
 /* Define to 1 if you have the `munmap' function. */
 #undef HAVE_MUNMAP
+
+/* Define to 1 if you have the <netinet/in.h> header file. */
+#undef HAVE_NETINET_IN_H
 
 /* Define if you have <langinfo.h> and it defines the NL_LOCALE_NAME macro if
    _GNU_SOURCE is defined. */
@@ -230,6 +245,9 @@
 
 /* Define to 1 if you have the <sys/param.h> header file. */
 #undef HAVE_SYS_PARAM_H
+
+/* Define to 1 if you have the <sys/socket.h> header file. */
+#undef HAVE_SYS_SOCKET_H
 
 /* Define to 1 if you have the <sys/stat.h> header file. */
 #undef HAVE_SYS_STAT_H

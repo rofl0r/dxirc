@@ -1,6 +1,6 @@
      ../src/configdialog.cpp \
      ../src/dxirc.cpp \
-     ../src/ircsocket.cpp \
+     ../src/ircengine.cpp \
      ../src/irctabitem.cpp \
      ../src/serverdialog.cpp \
      ../src/aliasdialog.cpp \
@@ -10,8 +10,11 @@
      ../src/scriptdialog.cpp \
      ../src/tetristabitem.cpp \
      ../src/dccdialog.cpp \
+     ../src/dccengine.cpp \
+     ../src/dcctabitem.cpp \
      ../src/aboutdialog.cpp \
      ../src/utils.cpp \
+     ../src/dxsocket.cpp \
      ../../../fox-1.6/src/FXMessageBox.cpp \
      ../../../fox-1.6/src/FXColorSelector.cpp \
      ../../../fox-1.6/src/FXFontSelector.cpp \

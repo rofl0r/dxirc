@@ -33,6 +33,7 @@
 #include "i18n.h"
 #include "help.h"
 #include "irctabitem.h"
+#include "dcctabitem.h"
 #include "configdialog.h"
 #include "serverdialog.h"
 #include "aliasdialog.h"
@@ -52,12 +53,9 @@ class dxTranslator : public FXTranslator
 {
     FXDECLARE(dxTranslator)
 private:
-private:
     dxTranslator(const dxTranslator&);
     dxTranslator & operator=(const dxTranslator&);
-#if FOXVERSION < FXVERSION(1,7,16)
 protected:
-
     dxTranslator() {
     }
 public:
@@ -67,50 +65,24 @@ public:
 #ifndef WIN32
         setlocale(LC_MESSAGES, "");
         setlocale(LC_NUMERIC, "C");
-#endif
+#endif //WIN32
         bindtextdomain(PACKAGE, LOCALEDIR);
         bind_textdomain_codeset(PACKAGE, "UTF-8");
         textdomain(PACKAGE);
         utils::instance().debugLine(FXStringFormat("localedir: %s", LOCALEDIR));
     };
-#else
-public:
 
-    dxTranslator() {
-#ifndef WIN32
-        setlocale(LC_MESSAGES, "");
-        setlocale(LC_NUMERIC, "C");
-#endif
-        bindtextdomain(PACKAGE, LOCALEDIR);
-        bind_textdomain_codeset(PACKAGE, "UTF-8");
-        textdomain(PACKAGE);
-        utils::instance().debugLine(FXStringFormat("localedir: %s", LOCALEDIR));
-    };
-#endif
-
-#if FOXVERSION < FXVERSION(1,7,16)
     virtual const FXchar* tr(const FXchar* context, const FXchar* message, const FXchar* hint = NULL) const;
-#else
-    virtual const FXchar* tr(const FXchar* context, const FXchar* message, const FXchar* hint = NULL, FXint count = -1) const;
-#endif
 
-    ~dxTranslator() {
-    }
-
+    ~dxTranslator() {}
 };
 
 FXIMPLEMENT(dxTranslator, FXTranslator, NULL, 0)
 
-#if FOXVERSION < FXVERSION(1,7,16)
 const FXchar* dxTranslator::tr(const FXchar*, const FXchar* message, const FXchar*) const {
     return gettext(message);
 }
-#else
-const FXchar* dxTranslator::tr(const FXchar*, const FXchar* message, const FXchar*, FXint) const {
-    return gettext(message);
-}
-#endif
-#endif
+#endif //ENABLE_NLS
 
 FXDEFMAP(dxirc) dxircMap[] = {
     FXMAPFUNC(SEL_CLOSE,        0,                          dxirc::onCmdClose),
@@ -130,6 +102,7 @@ FXDEFMAP(dxirc) dxircMap[] = {
     FXMAPFUNC(SEL_COMMAND,      dxirc::ID_SELECTTAB,        dxirc::onCmdSelectTab),
     FXMAPFUNC(SEL_COMMAND,      dxirc::ID_NEXTTAB,          dxirc::onCmdNextTab),
     FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_NEXTTAB,     dxirc::onCmdNextTab),
+    FXMAPFUNC(SEL_COMMAND,      DccTabItem::ID_NEXTTAB,     dxirc::onCmdNextTab),
     FXMAPFUNC(SEL_MOUSEWHEEL,   dxirc::ID_TABS,             dxirc::onMouseWheel),
     FXMAPFUNC(SEL_COMMAND,      dxirc::ID_NEXTUNREAD,       dxirc::onCmdNextUnread),
     FXMAPFUNC(SEL_COMMAND,      dxirc::ID_ALIAS,            dxirc::onCmdAlias),
@@ -139,22 +112,29 @@ FXDEFMAP(dxirc) dxircMap[] = {
     FXMAPFUNC(SEL_COMMAND,      dxirc::ID_SCRIPTS,          dxirc::onCmdScripts),
     FXMAPFUNC(SEL_TIMEOUT,      dxirc::ID_STIMEOUT,         dxirc::onStatusTimeout),
     FXMAPFUNC(SEL_COMMAND,      dxirc::ID_TETRIS,           dxirc::onTetrisKey),
-    FXMAPFUNC(SEL_COMMAND,      IrcSocket::ID_SERVER,       dxirc::onIrcEvent),
+    FXMAPFUNC(SEL_COMMAND,      IrcEngine::ID_SERVER,       dxirc::onIrcEvent),
+    FXMAPFUNC(SEL_COMMAND,      DccEngine::ID_DCC,          dxirc::onDccEvent),
     FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_CDIALOG,     dxirc::onCmdConnect),
     FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_CSERVER,     dxirc::onTabConnect),
     FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_CQUIT,       dxirc::onCmdQuit),
     FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_NEWMSG,      dxirc::onNewMsg),
+    FXMAPFUNC(SEL_COMMAND,      DccTabItem::ID_NEWMSG,      dxirc::onNewMsg),
     FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_LUA,         dxirc::onLua),
+    FXMAPFUNC(SEL_COMMAND,      DccTabItem::ID_LUA,         dxirc::onLua),
     FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_COMMAND,     dxirc::onIrcCommand),
+    FXMAPFUNC(SEL_COMMAND,      DccTabItem::ID_COMMAND,     dxirc::onIrcCommand),
     FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_MYMSG,       dxirc::onIrcMyMsg),
+    FXMAPFUNC(SEL_COMMAND,      DccTabItem::ID_MYMSG,       dxirc::onIrcMyMsg),
     FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_NEWTETRIS,   dxirc::onNewTetris),
+    FXMAPFUNC(SEL_COMMAND,      DccTabItem::ID_NEWTETRIS,   dxirc::onNewTetris),
     FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_ADDICOMMAND, dxirc::onAddIgnoreCommand),
     FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_RMICOMMAND,  dxirc::onRemoveIgnoreCommand),
     FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_ADDIUSER,    dxirc::onAddIgnoreUser),
     FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_RMIUSER,     dxirc::onRemoveIgnoreUser),
     FXMAPFUNC(SEL_COMMAND,      DccDialog::ID_DCCCANCEL,    dxirc::onCmdDccCancel),
     FXMAPFUNC(SEL_COMMAND,      dxirc::ID_SPELL,            dxirc::onCmdSpell),
-    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_FORCEFOCUS,       dxirc::onCmdForceFocus)
+    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_FORCEFOCUS,       dxirc::onCmdForceFocus),
+    FXMAPFUNC(SEL_TIMEOUT,      dxirc::ID_AWAYTIMEOUT,      dxirc::onAwayTimeout)
 };
 
 FXIMPLEMENT(dxirc, FXMainWindow, dxircMap, ARRAYNUMBER(dxircMap))
@@ -182,7 +162,7 @@ static luaL_reg dxircFunctions[] = {
     {"Clear",           dxirc::onLuaClear},
     {NULL,              NULL}
 };
-#endif
+#endif //HAVE_LUA
 
 dxirc::dxirc(FXApp *app)
     : FXMainWindow(app, PACKAGE, 0, 0, DECOR_ALL, 0, 0, 800, 600), m_app(app), m_trayIcon(NULL)
@@ -211,7 +191,7 @@ dxirc::dxirc(FXApp *app)
 #ifdef HAVE_LUA
     new FXMenuSeparator(m_servermenu);
     new FXMenuCommand(m_servermenu, _("S&cripts\tCtrl-S"), ICO_SCRIPT, this, ID_SCRIPTS);
-#endif
+#endif //HAVE_LUA
     new FXMenuSeparator(m_servermenu);
     m_logviewer = new FXMenuCommand(m_servermenu, _("&Log viewer\tCtrl-G"), ICO_LOGS, this, ID_LOG);
     if(!m_logging) m_logviewer->disable();
@@ -220,7 +200,7 @@ dxirc::dxirc(FXApp *app)
     new FXMenuCommand(m_servermenu, _("&Quit\tAlt-F4"), ICO_QUIT, this, ID_QUIT);
 #else
     new FXMenuCommand(m_servermenu, _("&Quit\tCtrl-Q"), ICO_QUIT, this, ID_QUIT);
-#endif
+#endif //WIN32
     new FXMenuTitle(m_menubar, _("&Server"), NULL, m_servermenu);
 
     m_editmenu = new FXMenuPane(this);
@@ -243,7 +223,7 @@ dxirc::dxirc(FXApp *app)
         m_spellCombo->disable();
     }
     m_spellCombo->setCheck(m_showSpellCombo);
-#endif
+#endif //HAVE_ENCHANT
     m_status = new FXMenuCheck(m_editmenu, _("Status bar"), this, ID_STATUS);
     m_status->setCheck(m_statusShown);
     new FXMenuCommand(m_editmenu, _("&Aliases"), NULL, this, ID_ALIAS);
@@ -259,12 +239,12 @@ dxirc::dxirc(FXApp *app)
 
     m_tabbook = new dxTabBook(m_mainframe, this, ID_TABS, PACK_UNIFORM_WIDTH|PACK_UNIFORM_HEIGHT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
 
-    IrcSocket *server = new IrcSocket(app, this, "", "");
+    IrcEngine *server = new IrcEngine(app, this, "", "");
     server->setUsersList(m_usersList);
     server->setReconnect(m_reconnect);
     server->setNumberAttempt(m_numberAttempt);
     server->setDelayAttempt(m_delayAttempt);
-    m_servers.append(server);
+    m_ircengines.append(server);
 
     m_statusbar = new FXHorizontalFrame(m_mainframe, LAYOUT_LEFT|JUSTIFY_LEFT|LAYOUT_FILL_X|FRAME_NONE, 0,0,0,0, 1,1,1,1);
     FXHorizontalFrame *hframe=new FXHorizontalFrame(m_statusbar, LAYOUT_LEFT|JUSTIFY_LEFT|LAYOUT_FILL_X|FRAME_SUNKEN, 0,0,0,0, 0,0,0,0);
@@ -283,7 +263,7 @@ dxirc::dxirc(FXApp *app)
         new FXMenuCommand(m_traymenu, _("&Quit"), ICO_QUIT, this, ID_QUIT);
         m_trayIcon->setMenu(m_traymenu);
     }
-#endif
+#endif //HAVE_TRAY
 
     new FXToolTip(app,0);
 
@@ -381,7 +361,7 @@ dxirc::~dxirc()
     {
         delete m_traymenu;
     }
-#endif
+#endif //HAVE_TRAY
     delete m_ircFont;
     _pThis = NULL;
 }
@@ -389,7 +369,7 @@ dxirc::~dxirc()
 void dxirc::create()
 {
     FXMainWindow::create();
-    createIrcTab("(server)", ICO_SERVER, SERVER, m_servers[0]);
+    createIrcTab("(server)", ICO_SERVER, SERVER, m_ircengines[0]);
     FXbool maximized = utils::instance().getBoolIniEntry("SETTINGS", "maximized", FALSE);
     if(maximized) maximize(TRUE);
     //Checking for screen resolution and correction size, position
@@ -412,6 +392,7 @@ void dxirc::create()
     readServersConfig();
     _pThis = this;
     autoloadScripts();
+    m_app->addTimeout(this, ID_AWAYTIMEOUT,180000);
 }
 
 // Flash the window to get user's attention
@@ -435,15 +416,15 @@ void dxirc::flash(FXbool yes)
         se.xclient.data.l[3]=0;
         se.xclient.data.l[4]=0;
         XSendEvent(DISPLAY(m_app),XDefaultRootWindow(DISPLAY(m_app)),False,SubstructureRedirectMask|SubstructureNotifyMask,&se);
-#endif
+#endif //WIN32
     }
 }
 
 int CompareTabs(const void **a,const void **b)
 {
-    IrcTabItem *fa = (IrcTabItem*)*a;
-    IrcTabItem *fb = (IrcTabItem*)*b;
-    return comparecase((fa->getType() == SERVER ? fa->getServerName() : fa->getServerName()+fa->getText()), (fb->getType() == SERVER ? fb->getServerName() : fb->getServerName()+fb->getText()));
+    dxTabItem *fa = (dxTabItem*)*a;
+    dxTabItem *fb = (dxTabItem*)*b;
+    return comparecase((fa->getType() == SERVER ? fa->getRealServerName() : fa->getRealServerName()+fa->getText()), (fb->getType() == SERVER ? fb->getRealServerName() : fb->getRealServerName()+fb->getText()));
 }
 
 void dxirc::readConfig()
@@ -508,7 +489,7 @@ void dxirc::readConfig()
     m_useTray = set.readBoolEntry("SETTINGS", "tray", TRUE);
 #else
     m_useTray = FALSE;
-#endif
+#endif //HAVE_TRAY
     if(m_useTray)
         m_closeToTray = set.readBoolEntry("SETTINGS", "closeToTray", TRUE);
     else
@@ -556,7 +537,7 @@ void dxirc::readConfig()
     m_autoload = set.readBoolEntry("SETTINGS", "autoload", FALSE);
 #else
     m_autoload = FALSE;
-#endif
+#endif //HAVE_LUA
     m_autoloadPath = set.readStringEntry("SETTINGS", "autoloadPath");
     if(m_autoload && !FXStat::exists(utils::instance().isUtf8(m_autoloadPath.text(), m_autoloadPath.length()) ? m_autoloadPath : utils::instance().localeToUtf8(m_autoloadPath))) m_autoload = FALSE;
     m_dccIP = set.readStringEntry("SETTINGS", "dccIP");
@@ -596,7 +577,7 @@ void dxirc::readConfig()
         m_useSpell = FALSE;
 #else
     m_useSpell = FALSE;
-#endif
+#endif //HAVE_ENCHANT
     setX(xx);
     setY(yy);
     setWidth(ww);
@@ -789,10 +770,10 @@ void dxirc::saveLangs()
 long dxirc::onCmdQuit(FXObject*, FXSelector, void*)
 {
     saveLangs();
-    while(m_servers.no())
+    while(m_ircengines.no())
     {
-        if(m_servers[0]->getConnected()) m_servers[0]->disconnect();
-        m_servers.erase(0);
+        if(m_ircengines[0]->getConnected()) m_ircengines[0]->disconnect();
+        m_ircengines.erase(0);
     }
 #ifdef HAVE_LUA
     for(FXint i=0; i<m_scriptEvents.no(); i++)
@@ -827,7 +808,7 @@ long dxirc::onCmdQuit(FXObject*, FXSelector, void*)
     {
         m_scriptEvents.erase(0);
     }
-#endif
+#endif //HAVE_LUA
     saveConfig();
     m_app->exit(0);
     return 1;
@@ -842,7 +823,7 @@ long dxirc::onCmdClose(FXObject*, FXSelector, void*)
         onCmdQuit(NULL, 0, NULL);
 #else
     onCmdQuit(NULL, 0, NULL);
-#endif
+#endif //HAVE_TRAY
     return 1;
 }
 
@@ -883,9 +864,9 @@ long dxirc::onCmdSpell(FXObject*, FXSelector, void*)
     m_showSpellCombo = !m_showSpellCombo;
     for(FXint i = 0; i<m_tabbook->numChildren(); i+=2)
     {
-        if(m_tabbook->childAtIndex(i)->getMetaClass()==&IrcTabItem::metaClass)
+        if(m_tabbook->childAtIndex(i)->getMetaClass()!=&TetrisTabItem::metaClass)
         {
-            IrcTabItem *tab = static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i));
+            dxTabItem *tab = static_cast<dxTabItem*>(m_tabbook->childAtIndex(i));
             tab->setShowSpellCombo(m_showSpellCombo);
         }
     }
@@ -897,8 +878,20 @@ long dxirc::onCmdForceFocus(FXObject*, FXSelector, void*)
     if(m_tabbook->numChildren())
     {
         FXint index = m_tabbook->getCurrent()*2;
-        if(m_tabbook->childAtIndex(index)->getMetaClass()==&IrcTabItem::metaClass)
-            static_cast<IrcTabItem*>(m_tabbook->childAtIndex(index))->setCommandFocus();
+        if(m_tabbook->childAtIndex(index)->getMetaClass()!=&TetrisTabItem::metaClass)
+            static_cast<dxTabItem*>(m_tabbook->childAtIndex(index))->setCommandFocus();
+    }
+    return 1;
+}
+
+//check away on channels
+long dxirc::onAwayTimeout(FXObject*, FXSelector, void*)
+{
+    m_app->addTimeout(this, ID_AWAYTIMEOUT,180000);
+    for(FXint i = 0; i<m_tabbook->numChildren(); i+=2)
+    {
+        if(m_tabbook->childAtIndex(i)->getMetaClass()==&IrcTabItem::metaClass)
+            static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))->checkAway();
     }
     return 1;
 }
@@ -938,12 +931,12 @@ long dxirc::onCmdOptions(FXObject*, FXSelector, void*)
         updateTabs(recreateSmileys);
         updateTabPosition();
         updateTrayColor();
-        for(FXint i = 0; i<m_servers.no(); i++)
+        for(FXint i = 0; i<m_ircengines.no(); i++)
         {
-            m_servers[i]->setUsersList(m_usersList);
-            m_servers[i]->setReconnect(m_reconnect);
-            m_servers[i]->setNumberAttempt(m_numberAttempt);
-            m_servers[i]->setDelayAttempt(m_delayAttempt);
+            m_ircengines[i]->setUsersList(m_usersList);
+            m_ircengines[i]->setReconnect(m_reconnect);
+            m_ircengines[i]->setNumberAttempt(m_numberAttempt);
+            m_ircengines[i]->setDelayAttempt(m_delayAttempt);
         }
         recalc();
     }
@@ -1311,8 +1304,8 @@ void dxirc::updateTrayColor()
 #ifdef HAVE_TRAY
     if(m_useTray && m_trayIcon)
         m_trayIcon->setColor(m_trayColor);
-#endif
-#endif
+#endif //HAVE_TRAY
+#endif //WIN32
 }
 
 void dxirc::updateFont()
@@ -1348,9 +1341,9 @@ void dxirc::updateTabs(FXbool recreateSmileys)
     {
         for(FXint i = 0; i<m_tabbook->numChildren(); i+=2)
         {
-            if(m_tabbook->childAtIndex(i)->getMetaClass()==&IrcTabItem::metaClass)
+            if(m_tabbook->childAtIndex(i)->getMetaClass()!=&TetrisTabItem::metaClass)
             {
-                static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))->removeSmileys();
+                static_cast<dxTabItem*>(m_tabbook->childAtIndex(i))->removeSmileys();
             }
         }
         createSmileys();
@@ -1375,7 +1368,22 @@ void dxirc::updateTabs(FXbool recreateSmileys)
             irctab->setUseSpell(m_useSpell);
             irctab->setUnreadTabColor(m_unreadColor);
             irctab->setHighlightTabColor(m_highlightColor);
-        }        
+        }
+        if(m_tabbook->childAtIndex(i)->getMetaClass()==&DccTabItem::metaClass)
+        {
+            DccTabItem *irctab = static_cast<DccTabItem*>(m_tabbook->childAtIndex(i));
+            irctab->setColor(m_colors);
+            irctab->setLogging(m_logging);
+            irctab->setLogPath(m_logPath);
+            irctab->setSameCmd(m_sameCmd);
+            irctab->setIrcFont(m_ircFont);
+            irctab->setColoredNick(m_coloredNick);
+            irctab->setStripColors(m_stripColors);
+            irctab->setSmileys(m_useSmileys, m_smileys);
+            irctab->setUseSpell(m_useSpell);
+            irctab->setUnreadTabColor(m_unreadColor);
+            irctab->setHighlightTabColor(m_highlightColor);
+        }
         if(m_tabbook->childAtIndex(i)->getMetaClass()==&TetrisTabItem::metaClass)
         {
             TetrisTabItem *tetristab = static_cast<TetrisTabItem*>(m_tabbook->childAtIndex(i));
@@ -1481,11 +1489,11 @@ long dxirc::onCmdDccCancel(FXObject*, FXSelector, void *ptr)
     FXint index = (FXint)(FXival)ptr;
     if(index >= m_dccfilesList.no())
         return 1;
-    for(FXint i=0; i<m_servers.no(); i++)
+    for(FXint i=0; i<m_dccengines.no(); i++)
     {
-        if(m_servers[i]->hasDccFile(m_dccfilesList[index]))
+        if(m_dccengines[i]->hasDccFile(m_dccfilesList[index]))
         {
-            m_servers[i]->closeDccfileConnection(m_dccfilesList[index]);
+            m_dccengines[i]->disconnect();
             return 1;
         }
     }
@@ -1546,7 +1554,7 @@ long dxirc::onCmdConnect(FXObject*, FXSelector, void*)
 #ifdef HAVE_OPENSSL
     new FXLabel(matrix, _("Use SSL:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     FXCheckButton *ussl = new FXCheckButton(matrix, "", NULL, 0);
-#endif
+#endif //HAVE_OPENSSL
 
     new FXLabel(matrix, _("Commands on connection:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     FXHorizontalFrame *commandsbox=new FXHorizontalFrame(matrix, LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW|FRAME_SUNKEN|FRAME_THICK,0,0,0,0, 0,0,0,0);
@@ -1563,7 +1571,7 @@ long dxirc::onCmdConnect(FXObject*, FXSelector, void*)
         connectServer(hostname->getText(), port->getValue(), passwd->getText(), nick->getText(), realname->getText(), channel->getText(), command->getText(), ussl->getCheck());
 #else
         connectServer(hostname->getText(), port->getValue(), passwd->getText(), nick->getText(), realname->getText(), channel->getText(), command->getText(), FALSE);
-#endif
+#endif //HAVE_OPENSSL
     }
     return 1;
 }
@@ -1575,104 +1583,71 @@ long dxirc::onTabConnect(FXObject*, FXSelector, void *data)
     return 1;
 }
 
-void dxirc::connectServer(FXString hostname, FXint port, FXString pass, FXString nick, FXString rname, FXString channels, FXString commands, FXbool ssl, DCCTYPE dccType, FXString dccNick, IrcSocket *dccParent, DccFile dccFile)
+void dxirc::connectServer(FXString hostname, FXint port, FXString pass, FXString nick, FXString rname, FXString channels, FXString commands, FXbool ssl)
 {
     utils::instance().debugLine("ConnectServer");
-    FXbool dcc = (dccType == DCC_CHATIN || dccType == DCC_CHATOUT);
-    if(m_servers.no() == 1 && !m_servers[0]->getConnected() && !m_servers[0]->getConnecting())
+    if(m_ircengines.no() == 1 && !m_ircengines[0]->getConnected() && !m_ircengines[0]->getConnecting())
     {
-        m_servers[0]->setServerName(hostname);
-        m_servers[0]->setServerPort(port);
-        m_servers[0]->setServerPassword(pass);
-        nick.length() ? m_servers[0]->setNickName(nick) : m_servers[0]->setNickName("_xxx_");
-        nick.length() ? m_servers[0]->setUserName(nick) : m_servers[0]->setUserName("_xxx_");
-        rname.length() ? m_servers[0]->setRealName(rname) : m_servers[0]->setRealName(nick.length() ? nick : "_xxx_");
-        if(channels.length()>1) m_servers[0]->setStartChannels(channels);
-        if(commands.length()) m_servers[0]->setStartCommands(commands);
+        m_ircengines[0]->setServerName(hostname);
+        m_ircengines[0]->setServerPort(port);
+        m_ircengines[0]->setServerPassword(pass);
+        nick.length() ? m_ircengines[0]->setNickName(nick) : m_ircengines[0]->setNickName("_xxx_");
+        nick.length() ? m_ircengines[0]->setUserName(nick) : m_ircengines[0]->setUserName("_xxx_");
+        rname.length() ? m_ircengines[0]->setRealName(rname) : m_ircengines[0]->setRealName(nick.length() ? nick : "_xxx_");
+        if(channels.length()>1) m_ircengines[0]->setStartChannels(channels);
+        if(commands.length()) m_ircengines[0]->setStartCommands(commands);
 #ifndef HAVE_OPENSSL
         ssl = FALSE;
-#endif
-        m_servers[0]->setUseSsl(ssl);
-        m_servers[0]->setReconnect(m_reconnect);
-        m_servers[0]->setNumberAttempt(m_numberAttempt);
-        m_servers[0]->setDelayAttempt(m_delayAttempt);
-        m_servers[0]->setDccType(dccType);
-        m_servers[0]->setDccFile(dccFile);
-        if(dccType != DCC_IN && dccType != DCC_OUT && dccType != DCC_PIN && dccType != DCC_POUT)
+#endif //HAVE_OPENSSL
+        m_ircengines[0]->setUseSsl(ssl);
+        m_ircengines[0]->setReconnect(m_reconnect);
+        m_ircengines[0]->setNumberAttempt(m_numberAttempt);
+        m_ircengines[0]->setDelayAttempt(m_delayAttempt);
+        if(!m_tabbook->numChildren())
         {
-            if(!m_tabbook->numChildren())
-            {
-                createIrcTab(dcc ? dccNick : hostname, dcc ? ICO_DCC : ICO_SERVER, dcc ? DCCCHAT : SERVER, m_servers[0]);
-                m_tabbook->recalc();
-            }
-            else
-            {
-                FXbool needNewTab = TRUE;
-                for(FXint i = 0; i<m_tabbook->numChildren(); i+=2)
-                {
-                    if(m_tabbook->childAtIndex(i)->getMetaClass()==&IrcTabItem::metaClass
-                            && static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))->getType()==SERVER)
-                    {
-                        static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))->setText(hostname);
-                        sortTabs();
-                        needNewTab = FALSE;
-                        break;
-                    }
-                }
-                if(needNewTab) createIrcTab(dcc ? dccNick : hostname, dcc ? ICO_DCC : ICO_SERVER, dcc ? DCCCHAT : SERVER, m_servers[0]);
-            }
-            if(dcc)
-            {
-                for(FXint i = 0; i < m_tabbook->numChildren(); i+=2)
-                {
-                    if(m_servers[0]->findTarget(static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))) && comparecase(static_cast<FXTabItem*>(m_tabbook->childAtIndex(i))->getText(), dccNick) == 0) m_tabbook->setCurrent(i/2, TRUE);
-                }
-            }
+            createIrcTab(hostname, ICO_SERVER, SERVER, m_ircengines[0]);
+            m_tabbook->recalc();
         }
-        m_servers[0]->clearAttempts();
-        if(dccType == DCC_IN && dccFile.currentPosition)
-            m_servers[0]->setCurrentPostion(dccFile.currentPosition);
-        if(dccType == DCC_CHATOUT
-                || dccType == DCC_OUT
-                || dccType == DCC_PIN) m_servers[0]->startListening(dccNick, dccParent);
-        else m_servers[0]->startConnection();
+        else
+        {
+            FXbool needNewTab = TRUE;
+            for(FXint i = 0; i<m_tabbook->numChildren(); i+=2)
+            {
+                if(m_tabbook->childAtIndex(i)->getMetaClass()==&IrcTabItem::metaClass
+                        && static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))->getType()==SERVER)
+                {
+                    static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))->setText(hostname);
+                    sortTabs();
+                    needNewTab = FALSE;
+                    break;
+                }
+            }
+            if(needNewTab) createIrcTab(hostname, ICO_SERVER, SERVER, m_ircengines[0]);
+        }
+        m_ircengines[0]->clearAttempts();
+        m_ircengines[0]->startConnection();
     }
     else if(!serverExist(hostname, port, nick))
     {
-        IrcSocket *server = new IrcSocket(m_app, this, channels.length()>1 ? channels : "", commands.length() ? commands : "");
+        IrcEngine *server = new IrcEngine(m_app, this, channels.length()>1 ? channels : "", commands.length() ? commands : "");
         server->setUsersList(m_usersList);
-        m_servers.prepend(server);
-        m_servers[0]->setServerName(hostname);
-        m_servers[0]->setServerPort(port);
-        m_servers[0]->setServerPassword(pass);
-        nick.length() ? m_servers[0]->setNickName(nick) : m_servers[0]->setNickName("_xxx_");
-        nick.length() ? m_servers[0]->setUserName(nick) : m_servers[0]->setUserName("_xxx_");
-        rname.length() ? m_servers[0]->setRealName(rname) : m_servers[0]->setRealName(nick.length() ? nick : "_xxx_");
+        m_ircengines.prepend(server);
+        m_ircengines[0]->setServerName(hostname);
+        m_ircengines[0]->setServerPort(port);
+        m_ircengines[0]->setServerPassword(pass);
+        nick.length() ? m_ircengines[0]->setNickName(nick) : m_ircengines[0]->setNickName("_xxx_");
+        nick.length() ? m_ircengines[0]->setUserName(nick) : m_ircengines[0]->setUserName("_xxx_");
+        rname.length() ? m_ircengines[0]->setRealName(rname) : m_ircengines[0]->setRealName(nick.length() ? nick : "_xxx_");
 #ifndef HAVE_OPENSSL
         ssl = FALSE;
-#endif
-        m_servers[0]->setUseSsl(ssl);
-        m_servers[0]->setReconnect(m_reconnect);
-        m_servers[0]->setNumberAttempt(m_numberAttempt);
-        m_servers[0]->setDelayAttempt(m_delayAttempt);
-        m_servers[0]->setDccType(dccType);
-        m_servers[0]->setDccFile(dccFile);
-        if(dccType != DCC_IN && dccType != DCC_OUT && dccType != DCC_PIN && dccType != DCC_POUT)
-        {
-            createIrcTab(dcc ? dccNick : hostname, dcc ? ICO_DCC : ICO_SERVER, dcc ? DCCCHAT : SERVER, m_servers[0]);
-            if(dcc)
-            {
-                for(FXint i = 0; i < m_tabbook->numChildren(); i+=2)
-                {
-                    if(m_servers[0]->findTarget(static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))) && comparecase(static_cast<FXTabItem*>(m_tabbook->childAtIndex(i))->getText(), dccNick) == 0) m_tabbook->setCurrent(i/2, TRUE);
-                }
-            }
-        }
-        m_servers[0]->clearAttempts();
-        if(dccType == DCC_CHATOUT
-                || dccType == DCC_OUT
-                || dccType == DCC_PIN) m_servers[0]->startListening(dccNick, dccParent);
-        else m_servers[0]->startConnection();
+#endif //HAVE_OPENSSL
+        m_ircengines[0]->setUseSsl(ssl);
+        m_ircengines[0]->setReconnect(m_reconnect);
+        m_ircengines[0]->setNumberAttempt(m_numberAttempt);
+        m_ircengines[0]->setDelayAttempt(m_delayAttempt);
+        createIrcTab(hostname, ICO_SERVER, SERVER, m_ircengines[0]);
+        m_ircengines[0]->clearAttempts();
+        m_ircengines[0]->startConnection();
     }
     updateMenus();
 }
@@ -1682,27 +1657,49 @@ long dxirc::onCmdDisconnect(FXObject*, FXSelector, void*)
     if(m_tabbook->numChildren())
     {
         FXint index = m_tabbook->getCurrent()*2;
-        if(m_tabbook->childAtIndex(index)->getMetaClass()!=&IrcTabItem::metaClass) return 0;
-        IrcTabItem *currenttab = static_cast<IrcTabItem*>(m_tabbook->childAtIndex(index));
-        IrcSocket *currentserver = NULL;
-        for(FXint i=0; i < m_servers.no(); i++)
+        if(m_tabbook->childAtIndex(index)->getMetaClass()==&TetrisTabItem::metaClass) return 0;
+        if(m_tabbook->childAtIndex(index)->getMetaClass()==&IrcTabItem::metaClass)
         {
-            if(m_servers[i]->findTarget(currenttab))
+            IrcTabItem *currenttab = static_cast<IrcTabItem*>(m_tabbook->childAtIndex(index));
+            IrcEngine *currentserver = NULL;
+            for(FXint i=0; i < m_ircengines.no(); i++)
             {
-                currentserver = m_servers[i];
-                break;
+                if(m_ircengines[i]->findTarget(currenttab))
+                {
+                    currentserver = m_ircengines[i];
+                    break;
+                }
             }
-        }
-        if(currentserver == NULL) return 0;
-        if(currentserver->getConnected())
-        {
-            FXDialogBox confirmDialog(this, _("Confirm disconnect"), DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0);
-            FXVerticalFrame *contents = new FXVerticalFrame(&confirmDialog, LAYOUT_SIDE_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 10,10,10,10, 0,0);
-            new FXLabel(contents, FXStringFormat(_("Disconnect server: %s\nPort: %d\nNick: %s"), currentserver->getServerName().text(), currentserver->getServerPort(), currentserver->getNickName().text()), NULL, JUSTIFY_LEFT|ICON_BEFORE_TEXT);
-            FXHorizontalFrame* buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
-            new FXButton(buttonframe, _("&No"), NULL, &confirmDialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
-            new FXButton(buttonframe, _("&Yes"), NULL, &confirmDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
-            if (confirmDialog.execute(PLACEMENT_OWNER))
+            if(currentserver == NULL) return 0;
+            if(currentserver->getConnected())
+            {
+                FXDialogBox confirmDialog(this, _("Confirm disconnect"), DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0);
+                FXVerticalFrame *contents = new FXVerticalFrame(&confirmDialog, LAYOUT_SIDE_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 10,10,10,10, 0,0);
+                new FXLabel(contents, FXStringFormat(_("Disconnect server: %s\nPort: %d\nNick: %s"), currentserver->getRealServerName().text(), currentserver->getServerPort(), currentserver->getNickName().text()), NULL, JUSTIFY_LEFT|ICON_BEFORE_TEXT);
+                FXHorizontalFrame* buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
+                new FXButton(buttonframe, _("&No"), NULL, &confirmDialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+                new FXButton(buttonframe, _("&Yes"), NULL, &confirmDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+                if (confirmDialog.execute(PLACEMENT_OWNER))
+                {
+                    currentserver->disconnect();
+                    for(FXint i = m_tabbook->numChildren()-2; i > -1; i-=2)
+                    {
+                        if(currentserver->findTarget(static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))))
+                        {
+                            currentserver->removeTarget(static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i)));
+                            delete m_tabbook->childAtIndex(i);
+                            delete m_tabbook->childAtIndex(i);
+                        }
+                    }
+                    m_tabbook->recalc();
+                    if(m_tabbook->numChildren())
+                    {
+                        sortTabs();
+                        m_tabbook->setCurrent(m_tabbook->numChildren()/2-1, TRUE);
+                    }
+                }
+            }
+            else
             {
                 currentserver->disconnect();
                 for(FXint i = m_tabbook->numChildren()-2; i > -1; i-=2)
@@ -1721,25 +1718,44 @@ long dxirc::onCmdDisconnect(FXObject*, FXSelector, void*)
                     m_tabbook->setCurrent(m_tabbook->numChildren()/2-1, TRUE);
                 }
             }
+            return 1;
         }
-        else
+        if(m_tabbook->childAtIndex(index)->getMetaClass()==&DccTabItem::metaClass)
         {
-            currentserver->disconnect();
-            for(FXint i = m_tabbook->numChildren()-2; i > -1; i-=2)
+            DccTabItem *currenttab = static_cast<DccTabItem*>(m_tabbook->childAtIndex(index));
+            if(currenttab->getConnected())
             {
-                if(currentserver->findTarget(static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))))
+                FXDialogBox confirmDialog(this, _("Confirm disconnect"), DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0);
+                FXVerticalFrame *contents = new FXVerticalFrame(&confirmDialog, LAYOUT_SIDE_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 10,10,10,10, 0,0);
+                new FXLabel(contents, FXStringFormat(_("Disconnect dcc connection: %s\nPort: %d\nWith: %s"), currenttab->getServerName().text(), currenttab->getServerPort(), currenttab->getText().text()), NULL, JUSTIFY_LEFT|ICON_BEFORE_TEXT);
+                FXHorizontalFrame* buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
+                new FXButton(buttonframe, _("&No"), NULL, &confirmDialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+                new FXButton(buttonframe, _("&Yes"), NULL, &confirmDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+                if (confirmDialog.execute(PLACEMENT_OWNER))
                 {
-                    currentserver->removeTarget(static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i)));
-                    delete m_tabbook->childAtIndex(i);
-                    delete m_tabbook->childAtIndex(i);
+                    currenttab->disconnect();
+                    delete m_tabbook->childAtIndex(index);
+                    delete m_tabbook->childAtIndex(index);
+                    m_tabbook->recalc();
+                    if(m_tabbook->numChildren())
+                    {
+                        sortTabs();
+                        m_tabbook->setCurrent(m_tabbook->numChildren()/2-1, TRUE);
+                    }
                 }
             }
-            m_tabbook->recalc();
-            if(m_tabbook->numChildren())
+            else
             {
-                sortTabs();
-                m_tabbook->setCurrent(m_tabbook->numChildren()/2-1, TRUE);
+                delete m_tabbook->childAtIndex(index);
+                delete m_tabbook->childAtIndex(index);
+                m_tabbook->recalc();
+                if(m_tabbook->numChildren())
+                {
+                    sortTabs();
+                    m_tabbook->setCurrent(m_tabbook->numChildren()/2-1, TRUE);
+                }
             }
+            return 1;
         }
     }
     updateMenus();
@@ -1749,7 +1765,7 @@ long dxirc::onCmdDisconnect(FXObject*, FXSelector, void*)
 long dxirc::onIrcEvent(FXObject *obj, FXSelector, void *data)
 {
     IrcEvent *ev = (IrcEvent *)data;
-    IrcSocket *server = (IrcSocket *)obj;
+    IrcEngine *server = (IrcEngine *)obj;
     if(ev->eventType == IRC_NEWCHANNEL)
     {
         onIrcNewchannel(server, ev);
@@ -1835,9 +1851,9 @@ long dxirc::onIrcEvent(FXObject *obj, FXSelector, void *data)
         onIrcDccToken(server, ev);
         return 1;
     }
+    //IrcEngine couldn't send IRC_DCCPOSITION :)
     if(ev->eventType == IRC_DCCPOSITION)
     {
-        onIrcDccPosition(server, ev);
         return 1;
     }
     if(ev->eventType == IRC_DCCRESUME)
@@ -1863,8 +1879,30 @@ long dxirc::onIrcEvent(FXObject *obj, FXSelector, void *data)
     return 1;
 }
 
+long dxirc::onDccEvent(FXObject *obj, FXSelector, void *data)
+{
+    IrcEvent *ev = (IrcEvent *)data;
+    DccEngine *dcc = (DccEngine *)obj;
+    if(ev->eventType == IRC_DISCONNECT)
+    {
+        appendIrcStyledText(FXStringFormat("\"%s\": %s", FXPath::name(ev->dccFile.path).text(), ev->param1.text()), 4, FALSE);
+        return 1;
+    }
+    if(ev->eventType == IRC_ERROR)
+    {
+        appendIrcStyledText(FXStringFormat("\"%s\": %s", FXPath::name(ev->dccFile.path).text(), ev->param1.text()), 4, FALSE);
+        return 1;
+    }
+    if(ev->eventType == IRC_DCCPOSITION)
+    {
+        onIrcDccPosition(dcc, ev);
+        return 1;
+    }
+    return 1;
+}
+
 //handle IrcEvent IRC_NEWCHANNEL
-void dxirc::onIrcNewchannel(IrcSocket *server, IrcEvent *ev)
+void dxirc::onIrcNewchannel(IrcEngine *server, IrcEvent *ev)
 {
     FXint serverTabIndex = getServerTab(server);
     if(tabExist(server, ev->param1))
@@ -1885,7 +1923,7 @@ void dxirc::onIrcNewchannel(IrcSocket *server, IrcEvent *ev)
 }
 
 //handle IrcEvent IRC_QUERY
-void dxirc::onIrcQuery(IrcSocket *server, IrcEvent *ev)
+void dxirc::onIrcQuery(IrcEngine *server, IrcEvent *ev)
 {
     if(tabExist(server, ev->param1))
         return;
@@ -1911,7 +1949,7 @@ void dxirc::onIrcQuery(IrcSocket *server, IrcEvent *ev)
 }
 
 //handle IrcEvent IRC_PART
-void dxirc::onIrcPart(IrcSocket *server, IrcEvent *ev)
+void dxirc::onIrcPart(IrcEngine *server, IrcEvent *ev)
 {
     if(isFriend(ev->param1, ev->param2, server->getServerName()) && m_sounds && m_soundDisconnect)
         utils::instance().playFile(m_pathDisconnect);
@@ -1925,7 +1963,7 @@ void dxirc::onIrcPart(IrcSocket *server, IrcEvent *ev)
                 {
                     if(server->findTarget(static_cast<IrcTabItem*>(m_tabbook->childAtIndex(j))))
                     {
-                        static_cast<IrcTabItem*>(m_tabbook->childAtIndex(j))->setType(SERVER, server->getServerName());
+                        static_cast<IrcTabItem*>(m_tabbook->childAtIndex(j))->setType(SERVER, server->getRealServerName());
                         m_tabbook->setCurrent(j/2-1, TRUE);
                         break;
                     }
@@ -1955,7 +1993,7 @@ void dxirc::onIrcPart(IrcSocket *server, IrcEvent *ev)
 }
 
 //handle IrcEvent IRC_KICK
-void dxirc::onIrcKick(IrcSocket *server, IrcEvent *ev)
+void dxirc::onIrcKick(IrcEngine *server, IrcEvent *ev)
 {
     if(ev->param2 == server->getNickName())
     {
@@ -1965,7 +2003,7 @@ void dxirc::onIrcKick(IrcSocket *server, IrcEvent *ev)
             {
                 if(server->findTarget(static_cast<IrcTabItem*>(m_tabbook->childAtIndex(j))))
                 {
-                    static_cast<IrcTabItem*>(m_tabbook->childAtIndex(j))->setType(SERVER, server->getServerName());
+                    static_cast<IrcTabItem*>(m_tabbook->childAtIndex(j))->setType(SERVER, server->getRealServerName());
                     m_tabbook->setCurrent(j/2-1, TRUE);
                     break;
                 }
@@ -1994,17 +2032,12 @@ void dxirc::onIrcKick(IrcSocket *server, IrcEvent *ev)
 }
 
 //handle IrcEvent IRC_DISCONNECT
-void dxirc::onIrcDisconnect(IrcSocket *server, IrcEvent *ev)
+void dxirc::onIrcDisconnect(IrcEngine *server, IrcEvent *ev)
 {
     for(FXint i = m_tabbook->numChildren()-2; i > -1; i-=2)
     {
         if(server->findTarget(static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))))
         {
-            if(static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))->getType() == DCCCHAT && server->getDccType() == DCC_CHATOUT)
-            {
-                m_tabbook->setCurrent(i/2, TRUE);
-                return;
-            }
             server->removeTarget(static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i)));
             delete m_tabbook->childAtIndex(i);
             delete m_tabbook->childAtIndex(i);
@@ -2013,9 +2046,9 @@ void dxirc::onIrcDisconnect(IrcSocket *server, IrcEvent *ev)
     m_tabbook->recalc();
     if(m_tabbook->numChildren())
     {
+        sortTabs();
         m_tabbook->setCurrent(0, TRUE);
     }
-    sortTabs();
     updateMenus();
     updateStatus(ev->param1);
 }
@@ -2033,7 +2066,7 @@ void dxirc::onIrcEndmotd()
 }
 
 //handle IrcEvent IRC_PRIVMSG and IRC_ACTION
-void dxirc::onIrcPrivmsgAndAction(IrcSocket *server, IrcEvent *ev)
+void dxirc::onIrcPrivmsgAndAction(IrcEngine *server, IrcEvent *ev)
 {
 #ifdef HAVE_LUA
     if(!m_scripts.no() || !m_scriptEvents.no()) return;
@@ -2063,11 +2096,11 @@ void dxirc::onIrcPrivmsgAndAction(IrcSocket *server, IrcEvent *ev)
             }
         }
     }
-#endif
+#endif //HAVE_LUA
 }
 
 //handle IrcEvent IRC_JOIN
-void dxirc::onIrcJoin(IrcSocket *server, IrcEvent *ev)
+void dxirc::onIrcJoin(IrcEngine *server, IrcEvent *ev)
 {
     if(isFriend(ev->param1, ev->param2, server->getServerName()) && m_sounds && m_soundConnect)
         utils::instance().playFile(m_pathConnect);
@@ -2100,41 +2133,39 @@ void dxirc::onIrcJoin(IrcSocket *server, IrcEvent *ev)
             }
         }
     }
-#endif    
+#endif //HAVE_LUA
 }
 
 //handle IrcEvent IRC_QUIT
-void dxirc::onIrcQuit(IrcSocket *server, IrcEvent *ev)
+void dxirc::onIrcQuit(IrcEngine *server, IrcEvent *ev)
 {
     if(isFriend(ev->param1, "all", server->getServerName()) && m_sounds && m_soundDisconnect)
         utils::instance().playFile(m_pathDisconnect);
 }
 
 //handle IrcEvent IRC_DCCCHAT
-void dxirc::onIrcDccChat(IrcSocket *server, IrcEvent *ev)
+void dxirc::onIrcDccChat(IrcEngine *server, IrcEvent *ev)
 {
     if(m_autoDccChat)
-        connectServer(ev->param2, FXIntVal(ev->param3), "", server->getNickName(), "", "", "", FALSE, DCC_CHATIN, ev->param1);
-    if(!m_autoDccChat && FXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("%s offers DCC Chat on %s port %s.\n Do you want connect?"), ev->param1.text(), ev->param2.text(), ev->param3.text()) == 1)
-    {
-        connectServer(ev->param2, FXIntVal(ev->param3), "", server->getNickName(), "", "", "", FALSE, DCC_CHATIN, ev->param1);
-    }
+        createDccTab(server->getNickName(), ev->param1, ev->param2, FXIntVal(ev->param3));
+    if(!m_autoDccChat && FXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("%s offers DCC Chat on %s(%s) port %s.\n Do you want connect?"), ev->param1.text(), ev->param2.text(), server->getHostname(ev->param2).text(), ev->param3.text()) == 1)
+        createDccTab(server->getNickName(), ev->param1, ev->param2, FXIntVal(ev->param3));
 }
 
 //handle IrcEvent IRC_DCCSERVER
-void dxirc::onIrcDccServer(IrcSocket *server, IrcEvent *ev)
+void dxirc::onIrcDccServer(IrcEngine *server, IrcEvent *ev)
 {
-    connectServer(server->getLocalIP(), 0, "", server->getNickName(), "", "", "", FALSE, DCC_CHATOUT, ev->param1, server);
+    createDccTab(server->getNickName(), ev->param1, server->getLocalIP(), m_dccPortD, m_dccPortH, TRUE, server);
 }
 
 //handle IrcEvent IRC_DCCIN
-void dxirc::onIrcDccIn(IrcSocket *server, IrcEvent *ev)
+void dxirc::onIrcDccIn(IrcEngine *server, IrcEvent *ev)
 {
     if(m_autoDccFile)
     {
         DccFile dcc;
         dcc.path = getUniqueName(m_dccPath, FXPath::stripExtension(ev->param3), FXPath::extension(ev->param3));
-        dcc.previousPostion = 0;
+        dcc.speed = 0;
         dcc.currentPosition = 0;
         dcc.size = FXLongVal(ev->param4);
         dcc.type = DCC_IN;
@@ -2159,7 +2190,9 @@ void dxirc::onIrcDccIn(IrcSocket *server, IrcEvent *ev)
         }
         else
         {
-            connectServer(ev->param2.before('@'), FXIntVal(ev->param2.after('@')), "", server->getNickName(), "", "", "", FALSE, DCC_IN, ev->param1, NULL, dcc);
+            DccEngine *engine = new DccEngine(m_app, this, dcc, server);
+            m_dccengines.append(engine);
+            engine->startConnection();
             appendIrcStyledText(FXStringFormat(_("Receiving \"%s\" from %s"), ev->param3.text(), ev->param1.text()),8,FALSE);
         }
     }
@@ -2170,7 +2203,7 @@ void dxirc::onIrcDccIn(IrcSocket *server, IrcEvent *ev)
         {
             DccFile dcc;
             dcc.path = m_dccPath+PATHSEPSTRING+ev->param3;
-            dcc.previousPostion = 0;
+            dcc.speed = 0;
             dcc.currentPosition = 0;
             dcc.size = FXLongVal(ev->param4);
             dcc.type = DCC_IN;
@@ -2200,7 +2233,7 @@ void dxirc::onIrcDccIn(IrcSocket *server, IrcEvent *ev)
             {
                 DccFile dcc;
                 dcc.path = getUniqueName(FXPath::directory(dialog.getFilename()), FXPath::title(dialog.getFilename()), FXPath::extension(dialog.getFilename())); // dirty (owerwrite user opinion) but absolutely needed :)
-                dcc.previousPostion = 0;
+                dcc.speed = 0;
                 dcc.currentPosition = 0;
                 dcc.size = FXLongVal(ev->param4);
                 dcc.type = DCC_IN;
@@ -2221,9 +2254,11 @@ void dxirc::onIrcDccIn(IrcSocket *server, IrcEvent *ev)
                 //old .part file have to be deleted
                 if(FXStat::exists(dcc.path+".part"))
                     FXFile::remove(dcc.path+".part");
-                connectServer(ev->param2.before('@'), FXIntVal(ev->param2.after('@')), "", server->getNickName(), "", "", "", FALSE, DCC_IN, ev->param1, NULL, dcc);
-                appendIrcStyledText(FXStringFormat(_("Receiving \"%s\" from %s"), ev->param3.text(), ev->param1.text()),8,FALSE);
                 m_dccfilesList.append(dcc);
+                DccEngine *engine = new DccEngine(m_app, this, dcc, server);
+                m_dccengines.append(engine);
+                engine->startConnection();
+                appendIrcStyledText(FXStringFormat(_("Receiving \"%s\" from %s"), ev->param3.text(), ev->param1.text()),8,FALSE);
                 onCmdTransfers(NULL, 0, NULL);
             }
         }
@@ -2231,16 +2266,18 @@ void dxirc::onIrcDccIn(IrcSocket *server, IrcEvent *ev)
 }
 
 //handle IrcEvent IRC_DCCOUT
-void dxirc::onIrcDccOut(IrcSocket *server, IrcEvent *ev)
+void dxirc::onIrcDccOut(IrcEngine *server, IrcEvent *ev)
 {
     DccFile dcc;
     dcc.path = ev->param2;
-    dcc.previousPostion = 0;
+    dcc.speed = 0;
     dcc.currentPosition = 0;
     dcc.size = FXStat::size(ev->param2);
     dcc.type = DCC_OUT;
     dcc.canceled = FALSE;
     dcc.finishedPosition = 0;
+    dcc.ip = server->getLocalIP();
+    dcc.port = 0;
     dcc.token = -1;
     dcc.nick = ev->param1;
     for(FXint i=0; i<m_dccfilesList.no(); i++)
@@ -2251,17 +2288,19 @@ void dxirc::onIrcDccOut(IrcSocket *server, IrcEvent *ev)
             break;
         }
     }
-    connectServer(server->getLocalIP(), 0, "", server->getNickName(), "", "", "", FALSE, DCC_OUT, ev->param1, server, dcc);
     m_dccfilesList.append(dcc);
+    DccEngine *engine = new DccEngine(m_app, this, dcc, server);
+    m_dccengines.append(engine);
+    engine->startConnection();
     onCmdTransfers(NULL, 0, NULL);
 }
 
 //handle IrcEvent IRC_DCCPOUT
-void dxirc::onIrcDccPout(IrcSocket *server, IrcEvent *ev)
+void dxirc::onIrcDccPout(IrcEngine *server, IrcEvent *ev)
 {
     DccFile dcc;
     dcc.path = ev->param2;
-    dcc.previousPostion = 0;
+    dcc.speed = 0;
     dcc.currentPosition = 0;
     dcc.size = FXStat::size(ev->param2);
     dcc.type = DCC_POUT;
@@ -2279,11 +2318,11 @@ void dxirc::onIrcDccPout(IrcSocket *server, IrcEvent *ev)
         }
     }
     m_dccfilesList.append(dcc);
-    server->sendCtcp(ev->param1, "DCC SEND "+utils::instance().removeSpaces(dcc.path.rafter(PATHSEP))+" "+FXStringVal(server->getLocalIPBinary())+" 0 "+FXStringVal(dcc.size)+" "+FXStringVal(dcc.token));
+    server->sendCtcp(ev->param1, "DCC SEND "+utils::instance().removeSpaces(dcc.path.rafter(PATHSEP))+" "+server->getLocalIPBinary()+" 0 "+FXStringVal(dcc.size)+" "+FXStringVal(dcc.token));
 }
 
 //handle IrcEvent IRC_DCCMYTOKEN
-void dxirc::onIrcDccMyToken(IrcSocket *server, IrcEvent *ev)
+void dxirc::onIrcDccMyToken(IrcEngine *server, IrcEvent *ev)
 {
     FXint token = FXIntVal(ev->param3);
     FXint index = -1;
@@ -2299,18 +2338,20 @@ void dxirc::onIrcDccMyToken(IrcSocket *server, IrcEvent *ev)
         return;
     m_dccfilesList[index].ip = ev->param1;
     m_dccfilesList[index].port = FXIntVal(ev->param2);
-    connectServer(ev->param1, FXIntVal(ev->param2), "", server->getNickName(), "", "", "", FALSE, m_dccfilesList[index].type, m_dccfilesList[index].nick, server, m_dccfilesList[index]);
+    DccEngine *engine = new DccEngine(m_app, this, m_dccfilesList[index], server);
+    m_dccengines.append(engine);
+    engine->startConnection();
     onCmdTransfers(NULL, 0, NULL);
 }
 
 //handle IrcEvent IRC_DCCTOKEN
-void dxirc::onIrcDccToken(IrcSocket *server, IrcEvent *ev)
+void dxirc::onIrcDccToken(IrcEngine *server, IrcEvent *ev)
 {
     if(m_autoDccFile)
     {
         DccFile dcc;
         dcc.path = getUniqueName(m_dccPath, FXPath::stripExtension(ev->param2), FXPath::extension(ev->param2));
-        dcc.previousPostion = 0;
+        dcc.speed = 0;
         dcc.currentPosition = 0;
         dcc.size = FXLongVal(ev->param3);
         dcc.type = DCC_PIN;
@@ -2318,6 +2359,8 @@ void dxirc::onIrcDccToken(IrcSocket *server, IrcEvent *ev)
         dcc.finishedPosition = 0;
         dcc.token = FXIntVal(ev->param4);
         dcc.nick = ev->param1;
+        dcc.ip = server->getLocalIP();
+        dcc.port = 0;
         for(FXint i=0; i<m_dccfilesList.no(); i++)
         {
             if(dcc.path == m_dccfilesList[i].path && (m_dccfilesList[i].type==DCC_IN || m_dccfilesList[i].type==DCC_PIN))
@@ -2333,7 +2376,9 @@ void dxirc::onIrcDccToken(IrcSocket *server, IrcEvent *ev)
         }
         else
         {
-            connectServer(server->getLocalIP(), 0, "", server->getNickName(), "", "", "", FALSE, DCC_PIN, ev->param1, server, dcc);
+            DccEngine *engine = new DccEngine(m_app, this, dcc, server);
+            m_dccengines.append(engine);
+            engine->startConnection();
             appendIrcStyledText(FXStringFormat(_("Receiving \"%s\" from %s"), ev->param2.text(), ev->param1.text()),8,FALSE);
         }
     }
@@ -2344,7 +2389,7 @@ void dxirc::onIrcDccToken(IrcSocket *server, IrcEvent *ev)
         {
             DccFile dcc;
             dcc.path = m_dccPath+PATHSEPSTRING+ev->param2;
-            dcc.previousPostion = 0;
+            dcc.speed = 0;
             dcc.currentPosition = 0;
             dcc.size = FXLongVal(ev->param3);
             dcc.type = DCC_PIN;
@@ -2372,7 +2417,7 @@ void dxirc::onIrcDccToken(IrcSocket *server, IrcEvent *ev)
             {
                 DccFile dcc;
                 dcc.path = getUniqueName(FXPath::directory(dialog.getFilename()), FXPath::title(dialog.getFilename()), FXPath::extension(dialog.getFilename())); // dirty (owerwrite user opinion) but absolutely needed :)
-                dcc.previousPostion = 0;
+                dcc.speed = 0;
                 dcc.currentPosition = 0;
                 dcc.size = FXLongVal(ev->param3);
                 dcc.type = DCC_PIN;
@@ -2380,6 +2425,8 @@ void dxirc::onIrcDccToken(IrcSocket *server, IrcEvent *ev)
                 dcc.finishedPosition = 0;
                 dcc.token = FXIntVal(ev->param4);
                 dcc.nick = ev->param1;
+                dcc.ip = server->getLocalIP();
+                dcc.port = 0;
                 for(FXint i=0; i<m_dccfilesList.no(); i++)
                 {
                     if(dcc.path == m_dccfilesList[i].path && (m_dccfilesList[i].type==DCC_IN || m_dccfilesList[i].type==DCC_PIN))
@@ -2391,9 +2438,11 @@ void dxirc::onIrcDccToken(IrcSocket *server, IrcEvent *ev)
                 //old .part file have to be deleted
                 if(FXStat::exists(dcc.path+".part"))
                     FXFile::remove(dcc.path+".part");
-                connectServer(server->getLocalIP(), 0, "", server->getNickName(), "", "", "", FALSE, DCC_PIN, ev->param1, server, dcc);
-                appendIrcStyledText(FXStringFormat(_("Receiving \"%s\" from %s"), ev->param2.text(), ev->param1.text()),8,FALSE);
                 m_dccfilesList.append(dcc);
+                DccEngine *engine = new DccEngine(m_app, this, dcc, server);
+                m_dccengines.append(engine);
+                engine->startConnection();
+                appendIrcStyledText(FXStringFormat(_("Receiving \"%s\" from %s"), ev->param2.text(), ev->param1.text()),8,FALSE);
                 onCmdTransfers(NULL, 0, NULL);
             }
         }
@@ -2401,7 +2450,7 @@ void dxirc::onIrcDccToken(IrcSocket *server, IrcEvent *ev)
 }
 
 //handle IrcEvent IRC_DCCPOSITION
-void dxirc::onIrcDccPosition(IrcSocket *server, IrcEvent *ev)
+void dxirc::onIrcDccPosition(DccEngine*, IrcEvent *ev)
 {
     FXint index = -1;
     for(FXint i=0; i<m_dccfilesList.no(); i++)
@@ -2413,7 +2462,7 @@ void dxirc::onIrcDccPosition(IrcSocket *server, IrcEvent *ev)
         }
     }
     if(index == -1) return;
-    m_dccfilesList[index].previousPostion = m_dccfilesList[index].currentPosition;
+    m_dccfilesList[index].speed = ev->dccFile.speed;
     m_dccfilesList[index].currentPosition = ev->dccFile.currentPosition;
     m_dccfilesList[index].finishedPosition = ev->dccFile.finishedPosition;
     m_dccfilesList[index].canceled = ev->dccFile.canceled;
@@ -2433,7 +2482,7 @@ void dxirc::onIrcDccPosition(IrcSocket *server, IrcEvent *ev)
 #ifdef HAVE_TRAY
                 if(m_trayIcon && m_trayIcon->getIcon() != ICO_NEWFILE && !shown())
                     m_trayIcon->setIcon(ICO_NEWFILE);
-#endif
+#endif //HAVE_TRAY
             }
         }
         else
@@ -2458,7 +2507,7 @@ void dxirc::onIrcDccPosition(IrcSocket *server, IrcEvent *ev)
 #ifdef HAVE_TRAY
                 if(m_trayIcon && m_trayIcon->getIcon() != ICO_NEWFILE && !shown())
                     m_trayIcon->setIcon(ICO_NEWFILE);
-#endif
+#endif //HAVE_TRAY
             }
         }
         else
@@ -2472,24 +2521,24 @@ void dxirc::onIrcDccPosition(IrcSocket *server, IrcEvent *ev)
 }
 
 //handle IrcEvent IRC_DCCRESUME
-void dxirc::onIrcDccResume(IrcSocket *server, IrcEvent *ev)
+void dxirc::onIrcDccResume(IrcEngine *server, IrcEvent *ev)
 {
-    FXint dccIndex = -1;
-    FXint serverIndex = -1;
-    for(FXint i=0; i<m_servers.no(); i++)
+    FXint engineIndex = -1;
+    for(FXint i=0; i<m_dccengines.no(); i++)
     {
-        if(m_servers[i]->isForResume(ev->param1, ev->param2, FXIntVal(ev->param3)))
+        if(m_dccengines[i]->isForResume(ev->param1, ev->param2, FXIntVal(ev->param3)))
         {
-            serverIndex = i;
+            engineIndex = i;
             break;
         }
     }
-    if(serverIndex == -1) return;
+    if(engineIndex == -1) return;
+    FXint dccIndex = -1;
     for(FXint i=0; i<m_dccfilesList.no(); i++)
     {
-        if(m_dccfilesList[i].path == m_servers[serverIndex]->getDccFile().path
-                && m_dccfilesList[i].size == m_servers[serverIndex]->getDccFile().size
-                && m_dccfilesList[i].nick == m_servers[serverIndex]->getDccFile().nick)
+        if(m_dccfilesList[i].path == m_dccengines[engineIndex]->getDccFile().path
+                && m_dccfilesList[i].size == m_dccengines[engineIndex]->getDccFile().size
+                && m_dccfilesList[i].nick == m_dccengines[engineIndex]->getDccFile().nick)
         {
             dccIndex = i;
             break;
@@ -2498,18 +2547,18 @@ void dxirc::onIrcDccResume(IrcSocket *server, IrcEvent *ev)
     if(dccIndex == -1) return;
     FXulong position = FXULongVal(ev->param4);
     if(position >= m_dccfilesList[dccIndex].size) return;
-    m_servers[serverIndex]->setCurrentPostion(position);
-    m_dccfilesList[dccIndex].ip = m_servers[serverIndex]->getServerName();
-    m_dccfilesList[dccIndex].port = m_servers[serverIndex]->getServerPort();
+    m_dccengines[engineIndex]->setDccPosition(position);
+    m_dccfilesList[dccIndex].ip = m_dccengines[engineIndex]->getDccFile().ip;
+    m_dccfilesList[dccIndex].port = m_dccengines[engineIndex]->getDccFile().port;
     m_dccfilesList[dccIndex].currentPosition = position;
-    m_dccfilesList[dccIndex].previousPostion = position;
+    m_dccfilesList[dccIndex].speed = 0;
     m_dccfilesList[dccIndex].finishedPosition = position;
     m_dccfilesList[dccIndex].canceled = FALSE;
-    server->sendCtcp(ev->param1, "DCC ACCEPT "+utils::instance().removeSpaces(m_dccfilesList[dccIndex].path.rafter(PATHSEP))+" "+FXStringVal(m_dccfilesList[dccIndex].port)+" "+FXStringVal(position));
+    server->sendCtcp(ev->param1, "DCC ACCEPT "+utils::instance().removeSpaces(m_dccengines[engineIndex]->getDccFile().path.rafter(PATHSEP))+" "+FXStringVal(m_dccengines[engineIndex]->getDccFile().port)+" "+ev->param4);
 }
 
 //handle IrcEvent IRC_DCCPRESUME
-void dxirc::onIrcDccPresume(IrcSocket *server, IrcEvent *ev)
+void dxirc::onIrcDccPresume(IrcEngine *server, IrcEvent *ev)
 {
     FXint dccIndex = -1;
     FXint token = FXIntVal(ev->param1);
@@ -2525,14 +2574,14 @@ void dxirc::onIrcDccPresume(IrcSocket *server, IrcEvent *ev)
     FXulong position = FXULongVal(ev->param2);
     if(position >= m_dccfilesList[dccIndex].size) return;
     m_dccfilesList[dccIndex].currentPosition = position;
-    m_dccfilesList[dccIndex].previousPostion = position;
+    m_dccfilesList[dccIndex].speed = 0;
     m_dccfilesList[dccIndex].finishedPosition = position;
     m_dccfilesList[dccIndex].canceled = FALSE;
-    server->sendCtcp(m_dccfilesList[dccIndex].nick, "DCC ACCEPT "+utils::instance().removeSpaces(m_dccfilesList[dccIndex].path.rafter(PATHSEP))+" 0 "+FXStringVal(position)+" "+FXStringVal(token));
+    server->sendCtcp(m_dccfilesList[dccIndex].nick, "DCC ACCEPT "+utils::instance().removeSpaces(m_dccfilesList[dccIndex].path.rafter(PATHSEP))+" 0 "+ev->param2+" "+FXStringVal(token));
 }
 
 //handle IrcEvent IRC_DCCACCEPT
-void dxirc::onIrcDccAccept(IrcSocket *server, IrcEvent *ev)
+void dxirc::onIrcDccAccept(IrcEngine *server, IrcEvent *ev)
 {
     FXint dccIndex = -1;
     for(FXint i=0; i<m_dccfilesList.no(); i++)
@@ -2548,16 +2597,18 @@ void dxirc::onIrcDccAccept(IrcSocket *server, IrcEvent *ev)
     FXulong position = FXULongVal(ev->param4);
     if(position >= m_dccfilesList[dccIndex].size) return;
     m_dccfilesList[dccIndex].currentPosition = position;
-    m_dccfilesList[dccIndex].previousPostion = position;
+    m_dccfilesList[dccIndex].speed = 0;
     m_dccfilesList[dccIndex].finishedPosition = position;
     m_dccfilesList[dccIndex].canceled = FALSE;
-    connectServer(m_dccfilesList[dccIndex].ip, m_dccfilesList[dccIndex].port, "", server->getNickName(), "", "", "", FALSE, DCC_IN, m_dccfilesList[dccIndex].nick, NULL, m_dccfilesList[dccIndex]);
-    appendIrcStyledText(FXStringFormat(_("Receiving \"%s\" from %s"), FXPath::name(m_dccfilesList[dccIndex].path).text(), m_dccfilesList[dccIndex].nick.text()),8,FALSE);
+    DccEngine *engine = new DccEngine(m_app, this, m_dccfilesList[dccIndex], server);
+    m_dccengines.append(engine);
+    engine->startConnection();
+    appendIrcStyledText(FXStringFormat(_("Receiving \"%s\" from %s"), FXPath::name(m_dccfilesList[dccIndex].path).text(), m_dccfilesList[dccIndex].nick.text()),8);
     if(!m_autoDccFile) onCmdTransfers(NULL, 0, NULL);
 }
 
 //handle IrcEvent IRC_DCCPACCEPT
-void dxirc::onIrcDccPaccept(IrcSocket *server, IrcEvent *ev)
+void dxirc::onIrcDccPaccept(IrcEngine *server, IrcEvent *ev)
 {
     FXint dccIndex = -1;
     FXint token = FXIntVal(ev->param1);
@@ -2573,10 +2624,14 @@ void dxirc::onIrcDccPaccept(IrcSocket *server, IrcEvent *ev)
     FXulong position = FXULongVal(ev->param2);
     if(position >= m_dccfilesList[dccIndex].size) return;
     m_dccfilesList[dccIndex].currentPosition = position;
-    m_dccfilesList[dccIndex].previousPostion = position;
+    m_dccfilesList[dccIndex].speed = 0;
     m_dccfilesList[dccIndex].finishedPosition = position;
     m_dccfilesList[dccIndex].canceled = FALSE;
-    connectServer(server->getLocalIP(), 0, "", server->getNickName(), "", "", "", FALSE, DCC_PIN, m_dccfilesList[dccIndex].nick, server, m_dccfilesList[dccIndex]);
+    m_dccfilesList[dccIndex].ip = server->getLocalIP();
+    m_dccfilesList[dccIndex].port = 0;
+    DccEngine *engine = new DccEngine(m_app, this, m_dccfilesList[dccIndex], server);
+    m_dccengines.append(engine);
+    engine->startConnection();
     appendIrcStyledText(FXStringFormat(_("Receiving \"%s\" from %s"), FXPath::name(m_dccfilesList[dccIndex].path).text(), m_dccfilesList[dccIndex].nick.text()),8,FALSE);
     if(!m_autoDccFile) onCmdTransfers(NULL, 0, NULL);
 }
@@ -2584,18 +2639,18 @@ void dxirc::onIrcDccPaccept(IrcSocket *server, IrcEvent *ev)
 long dxirc::onTabBook(FXObject *, FXSelector, void *ptr)
 {
     FXint index = (FXint)(FXival)ptr*2;
-    utils::instance().debugLine(FXStringFormat("OnTabBook(%d), Class: %s", index, m_tabbook->childAtIndex(index)->getClassName()));
     if(m_tabbook->childAtIndex(index)->getMetaClass()==&IrcTabItem::metaClass)
     {
         IrcTabItem *currenttab = static_cast<IrcTabItem*>(m_tabbook->childAtIndex(index));
-        if (m_appTheme.fore != currenttab->getTextColor()) currenttab->setTextColor(m_appTheme.fore);
+        utils::instance().debugLine(FXStringFormat("OnTabBook(%d), Class: %s, id: %d", index, currenttab->getClassName(), currenttab->getID()));
+        if(m_appTheme.fore != currenttab->getTextColor()) currenttab->setTextColor(m_appTheme.fore);
         if(currenttab->getType() == CHANNEL && currenttab->getIcon() == ICO_CHANNELNEWMSG)
         {
             currenttab->setIcon(ICO_CHANNEL);
 #ifdef HAVE_TRAY
             if(m_trayIcon && m_trayIcon->getIcon() == ICO_NEWMSG)
                 m_trayIcon->setIcon(ICO_TRAY);
-#endif
+#endif //HAVE_TRAY
         }
         if(currenttab->getType() == QUERY && currenttab->getIcon() == ICO_QUERYNEWMSG)
         {
@@ -2603,15 +2658,7 @@ long dxirc::onTabBook(FXObject *, FXSelector, void *ptr)
 #ifdef HAVE_TRAY
             if(m_trayIcon && m_trayIcon->getIcon() == ICO_NEWMSG)
                 m_trayIcon->setIcon(ICO_TRAY);
-#endif
-        }
-        if(currenttab->getType() == DCCCHAT && currenttab->getIcon() == ICO_DCCNEWMSG)
-        {
-            currenttab->setIcon(ICO_DCC);
-#ifdef HAVE_TRAY
-            if(m_trayIcon && m_trayIcon->getIcon() == ICO_NEWMSG)
-                m_trayIcon->setIcon(ICO_TRAY);
-#endif
+#endif //HAVE_TRAY
         }
         currenttab->setFocus();
         currenttab->setCommandFocus();
@@ -2622,15 +2669,37 @@ long dxirc::onTabBook(FXObject *, FXSelector, void *ptr)
             if(tetristab->isPauseEnable() && !tetristab->isPaused()) tetristab->pauseResumeGame();
         }
         if(currenttab->getType() == SERVER)
-            updateStatus(currenttab->getServerName()+"-"+currenttab->getNickName());
+            updateStatus(currenttab->getRealServerName()+"-"+currenttab->getNickName());
         else if(currenttab->getType() == OTHER)
             updateStatus(currenttab->getText());
         else
-            updateStatus((currenttab->getText()[0]=='&' ? "&"+currenttab->getText(): currenttab->getText())+"-"+currenttab->getServerName()+"-"+currenttab->getNickName());
-    }    
+            updateStatus((currenttab->getText()[0]=='&' ? "&"+currenttab->getText(): currenttab->getText())+"-"+currenttab->getRealServerName()+"-"+currenttab->getNickName());
+    }
+    if(m_tabbook->childAtIndex(index)->getMetaClass()==&DccTabItem::metaClass)
+    {
+        DccTabItem *currenttab = static_cast<DccTabItem*>(m_tabbook->childAtIndex(index));
+        utils::instance().debugLine(FXStringFormat("OnTabBook(%d), Class: %s, id: %d", index, currenttab->getClassName(), currenttab->getID()));
+        if(m_appTheme.fore != currenttab->getTextColor()) currenttab->setTextColor(m_appTheme.fore);
+        if(currenttab->getIcon() == ICO_DCCNEWMSG)
+            currenttab->setIcon(ICO_DCC);
+#ifdef HAVE_TRAY
+        if(m_trayIcon && m_trayIcon->getIcon() == ICO_NEWMSG)
+            m_trayIcon->setIcon(ICO_TRAY);
+#endif //HAVE_TRAY
+        currenttab->setFocus();
+        currenttab->setCommandFocus();
+        currenttab->makeLastRowVisible();
+        if(hasTetrisTab())
+        {
+            TetrisTabItem *tetristab = static_cast<TetrisTabItem*>(m_tabbook->childAtIndex(getTabId("tetris")*2));
+            if(tetristab->isPauseEnable() && !tetristab->isPaused()) tetristab->pauseResumeGame();
+        }
+        updateStatus((currenttab->getText()[0]=='&' ? "&"+currenttab->getText(): currenttab->getText())+"-"+currenttab->getServerName()+"-"+currenttab->getNickName());
+    }
     if(m_tabbook->childAtIndex(index)->getMetaClass()==&TetrisTabItem::metaClass)
     {
         TetrisTabItem *tetristab = static_cast<TetrisTabItem*>(m_tabbook->childAtIndex(index));
+        utils::instance().debugLine(FXStringFormat("OnTabBook(%d), Class: %s", index, tetristab->getClassName()));
         tetristab->setFocus();
         tetristab->setGameFocus();
     }
@@ -2701,9 +2770,9 @@ long dxirc::onCmdClear(FXObject *, FXSelector, void *)
     if(m_tabbook->numChildren())
     {
         FXint index = m_tabbook->getCurrent()*2;
-        if(m_tabbook->childAtIndex(index)->getMetaClass()==&IrcTabItem::metaClass)
+        if(m_tabbook->childAtIndex(index)->getMetaClass()!=&TetrisTabItem::metaClass)
         {
-            IrcTabItem *currenttab = static_cast<IrcTabItem*>(m_tabbook->childAtIndex(index));
+            dxTabItem *currenttab = static_cast<dxTabItem*>(m_tabbook->childAtIndex(index));
             currenttab->clearChat();
         }
     }
@@ -2714,18 +2783,19 @@ long dxirc::onCmdClearAll(FXObject *, FXSelector, void *)
 {
     for(FXint i = 0; i<m_tabbook->numChildren(); i+=2)
     {
-        if(m_tabbook->childAtIndex(i)->getMetaClass()==&IrcTabItem::metaClass)
+        if(m_tabbook->childAtIndex(i)->getMetaClass()!=&TetrisTabItem::metaClass)
         {
-            static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))->clearChat();
-            if (m_appTheme.fore != static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))->getTextColor()) static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))->setTextColor(m_appTheme.fore);
+            static_cast<dxTabItem*>(m_tabbook->childAtIndex(i))->clearChat();
+            if (m_appTheme.fore != static_cast<dxTabItem*>(m_tabbook->childAtIndex(i))->getTextColor()) static_cast<dxTabItem*>(m_tabbook->childAtIndex(i))->setTextColor(m_appTheme.fore);
             if(static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))->getType() == CHANNEL) static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))->setIcon(ICO_CHANNEL);
             if(static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))->getType() == QUERY) static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))->setIcon(ICO_QUERY);
+            if(m_tabbook->childAtIndex(i)->getMetaClass()==&DccTabItem::metaClass) static_cast<DccTabItem*>(m_tabbook->childAtIndex(i))->setIcon(ICO_DCC);
         }
     }
 #ifdef HAVE_TRAY
     if(m_trayIcon && m_trayIcon->getIcon() == ICO_NEWMSG)
         m_trayIcon->setIcon(ICO_TRAY);
-#endif
+#endif //HAVE_TRAY
     return 1;
 }
 
@@ -2750,12 +2820,12 @@ long dxirc::onCmdCloseTab(FXObject *, FXSelector, void *)
                 updateMenus();
                 return 1;
             }
-            IrcSocket *currentserver = NULL;
-            for(FXint i=0; i < m_servers.no(); i++)
+            IrcEngine *currentserver = NULL;
+            for(FXint i=0; i < m_ircengines.no(); i++)
             {
-                if(m_servers[i]->findTarget(currenttab))
+                if(m_ircengines[i]->findTarget(currenttab))
                 {
-                    currentserver = m_servers[i];
+                    currentserver = m_ircengines[i];
                     break;
                 }
             }
@@ -2768,7 +2838,7 @@ long dxirc::onCmdCloseTab(FXObject *, FXSelector, void *)
                     {
                         if(currentserver->findTarget(static_cast<IrcTabItem*>(m_tabbook->childAtIndex(j))))
                         {
-                            static_cast<IrcTabItem*>(m_tabbook->childAtIndex(j))->setType(SERVER, currentserver->getServerName());
+                            static_cast<IrcTabItem*>(m_tabbook->childAtIndex(j))->setType(SERVER, currentserver->getRealServerName());
                             m_tabbook->setCurrent(j/2-1, TRUE);
                             break;
                         }
@@ -2799,7 +2869,7 @@ long dxirc::onCmdCloseTab(FXObject *, FXSelector, void *)
                     {
                         if(currentserver->findTarget(static_cast<IrcTabItem*>(m_tabbook->childAtIndex(j))))
                         {
-                            static_cast<IrcTabItem*>(m_tabbook->childAtIndex(j))->setType(SERVER, currentserver->getServerName());
+                            static_cast<IrcTabItem*>(m_tabbook->childAtIndex(j))->setType(SERVER, currentserver->getRealServerName());
                             m_tabbook->setCurrent(j/2-1, TRUE);
                             break;
                         }
@@ -2817,26 +2887,6 @@ long dxirc::onCmdCloseTab(FXObject *, FXSelector, void *)
                     {
                         m_tabbook->setCurrent(FXMAX(0,index/2-1), TRUE);
                     }
-                }
-                sortTabs();
-                updateMenus();
-                return 1;
-            }
-            if(currenttab->getType() == DCCCHAT)
-            {
-                currentserver->disconnect();
-                if(currentserver->findTarget(currenttab))
-                {
-                    currentserver->removeTarget(currenttab);
-                }
-                else
-                    return 1;
-                delete m_tabbook->childAtIndex(index);
-                delete m_tabbook->childAtIndex(index);
-                m_tabbook->recalc();
-                if(m_tabbook->numChildren())
-                {
-                    m_tabbook->setCurrent(FXMAX(0,index/2-1), TRUE);
                 }
                 sortTabs();
                 updateMenus();
@@ -2863,6 +2913,21 @@ long dxirc::onCmdCloseTab(FXObject *, FXSelector, void *)
                 updateMenus();
                 return 1;
             }
+        }
+        else if(m_tabbook->childAtIndex(index)->getMetaClass()==&DccTabItem::metaClass)
+        {
+            DccTabItem *dcctab = static_cast<DccTabItem*>(m_tabbook->childAtIndex(index));
+            dcctab->disconnect();
+            delete m_tabbook->childAtIndex(index);
+            delete m_tabbook->childAtIndex(index);
+            m_tabbook->recalc();
+            if(m_tabbook->numChildren())
+            {
+                m_tabbook->setCurrent(FXMAX(0,index/2-1), TRUE);
+            }
+            sortTabs();
+            updateMenus();
+            return 1;
         }
         else
         {
@@ -2950,21 +3015,21 @@ long dxirc::onTrayClicked(FXObject*, FXSelector, void*)
     }
     if(m_trayIcon && m_trayIcon->getIcon() != ICO_TRAY)
         m_trayIcon->setIcon(ICO_TRAY);
-#endif
+#endif //HAVE_TRAY
     return 1;
 }
 
-//handle highlighted msg from IrcTabITem::ID_NEWMSG
+//handle highlighted msg from IrcTabITem::ID_NEWMSG or DccTabItem::ID_NEWMSG
 long dxirc::onNewMsg(FXObject *obj, FXSelector, void*)
 {
 #ifdef HAVE_TRAY
-    if(m_trayIcon && m_trayIcon->getIcon() == ICO_TRAY && (!shown() || static_cast<IrcTabItem*>(m_tabbook->childAtIndex(m_tabbook->getCurrent()*2)) != static_cast<IrcTabItem*>(obj)))
+    if(m_trayIcon && m_trayIcon->getIcon() == ICO_TRAY && (!shown() || static_cast<dxTabItem*>(m_tabbook->childAtIndex(m_tabbook->getCurrent()*2)) != static_cast<dxTabItem*>(obj)))
         m_trayIcon->setIcon(ICO_NEWMSG);
-#endif
-    if(m_sounds && m_soundMessage && (!shown() || isMinimized() || static_cast<IrcTabItem*>(m_tabbook->childAtIndex(m_tabbook->getCurrent()*2)) != static_cast<IrcTabItem*>(obj)))
+#endif //HAVE_TRAY
+    if(m_sounds && m_soundMessage && (!shown() || isMinimized() || static_cast<dxTabItem*>(m_tabbook->childAtIndex(m_tabbook->getCurrent()*2)) != static_cast<dxTabItem*>(obj)))
         utils::instance().playFile(m_pathMessage);
     if(static_cast<IrcTabItem*>(obj)->getType() == CHANNEL) updateStatus(FXStringFormat(_("New highlighted message on %s"), static_cast<IrcTabItem*>(obj)->getText().text()));
-    else updateStatus(FXStringFormat(_("New message on %s"), static_cast<IrcTabItem*>(obj)->getText().text()));
+    else updateStatus(FXStringFormat(_("New message on %s"), static_cast<dxTabItem*>(obj)->getText().text()));
     flash(TRUE);
     return 1;
 }
@@ -3090,9 +3155,9 @@ long dxirc::onAddIgnoreUser(FXObject *sender, FXSelector, void *data)
         tab->appendStyledText(FXStringFormat(_("'%s' was added to ignored users"), user.text()), 3, FALSE, FALSE, FALSE);
     }
     saveConfig();
-    for(FXint i = 0; i<m_servers.no(); i++)
+    for(FXint i = 0; i<m_ircengines.no(); i++)
     {
-        m_servers[i]->setUsersList(m_usersList);
+        m_ircengines[i]->setUsersList(m_usersList);
     }
     return 1;
 }
@@ -3122,9 +3187,9 @@ long dxirc::onRemoveIgnoreUser(FXObject *sender, FXSelector, void *data)
         }
     }
     saveConfig();
-    for(FXint i = 0; i<m_servers.no(); i++)
+    for(FXint i = 0; i<m_ircengines.no(); i++)
     {
-        m_servers[i]->setUsersList(m_usersList);
+        m_ircengines[i]->setUsersList(m_usersList);
     }
     return 1;
 }
@@ -3133,7 +3198,7 @@ long dxirc::onNewTetris(FXObject*, FXSelector, void*)
 {
     if(hasTetrisTab()) return 1;
     TetrisTabItem *tab = new TetrisTabItem(m_tabbook, "tetris", 0, TAB_TOP, m_lastID);
-    sendNewTab(NULL, "tetris", m_lastID, TRUE, OTHER);
+    sendNewTab(NULL, "tetris", m_lastID, TRUE, FALSE, OTHER);
     m_lastID++;
     tab->create();
     tab->createGeom();
@@ -3228,7 +3293,7 @@ void dxirc::autoloadScripts()
                 if (!FXStat::statFile(pathname, info)) continue;
                 // Hidden file or directory normally not shown
                 if (info.isHidden()) continue;
-#endif
+#endif //WIN32
                 // If it is a directory
                 if(info.isDirectory()) continue;
                 // If it is not matching pattern skip it
@@ -3239,7 +3304,7 @@ void dxirc::autoloadScripts()
             dir.close();
         }
     }
-#endif
+#endif //HAVE_LUA
 }
 
 long dxirc::onCmdScripts(FXObject*, FXSelector, void*)
@@ -3247,7 +3312,7 @@ long dxirc::onCmdScripts(FXObject*, FXSelector, void*)
 #ifdef HAVE_LUA
     ScriptDialog *dialog = new ScriptDialog(this);
     dialog->execute(PLACEMENT_OWNER);
-#endif
+#endif //HAVE_LUA
     return 1;
 }
 
@@ -3288,7 +3353,7 @@ long dxirc::onLua(FXObject *obj, FXSelector, void *data)
     }
     if(lua->type == LUA_COMMAND)
     {
-        IrcTabItem *tab = static_cast<IrcTabItem*>(obj);
+        dxTabItem *tab = static_cast<dxTabItem*>(obj);
         FXString command = lua->text.before(' ');
         FXString text = lua->text.after(' ');
         for(FXint i=0; i<m_scripts.no(); i++)
@@ -3310,7 +3375,7 @@ long dxirc::onLua(FXObject *obj, FXSelector, void *data)
     }
 #else
     appendIrcStyledText(_("dxirc is compiled without support for Lua scripting"), 4, FALSE);
-#endif
+#endif //HAVE_LUA
     return 1;
 }
 
@@ -3318,8 +3383,8 @@ long dxirc::onLua(FXObject *obj, FXSelector, void *data)
 long dxirc::onIrcMyMsg(FXObject *sender, FXSelector, void *data)
 {
 #ifdef HAVE_LUA
-    if(sender->getMetaClass()!=&IrcTabItem::metaClass) return 0;
-    IrcTabItem *tab = static_cast<IrcTabItem*>(sender);
+    if(sender->getMetaClass()==&TetrisTabItem::metaClass) return 0;
+    dxTabItem *tab = static_cast<dxTabItem*>(sender);
     FXString *text = static_cast<FXString*>(data);
     if(!m_scripts.no() || !m_scriptEvents.no())
     {
@@ -3352,12 +3417,12 @@ long dxirc::onIrcMyMsg(FXObject *sender, FXSelector, void *data)
             }
         }
     }
-#endif
+#endif //HAVE_LUA
     return 1;
 }
 
 //send event to script for new created tab
-void dxirc::sendNewTab(IrcSocket *server, const FXString &name, FXint id, FXbool isTetris, TYPE type)
+void dxirc::sendNewTab(IrcEngine *server, const FXString &name, FXint id, FXbool isTetris, FXbool isDccTab, TYPE type)
 {
 #ifdef HAVE_LUA
     if(!m_scripts.no() || !m_scriptEvents.no())
@@ -3388,6 +3453,12 @@ void dxirc::sendNewTab(IrcSocket *server, const FXString &name, FXint id, FXbool
                             lua_pushstring(m_scripts[j].L, "tetris");
                             lua_settable(m_scripts[j].L, -3);
                         }
+                        else if(isDccTab)
+                        {
+                            lua_pushstring(m_scripts[j].L, "type");
+                            lua_pushstring(m_scripts[j].L, "dccchat");
+                            lua_settable(m_scripts[j].L, -3);
+                        }
                         else
                         {
                             switch(type) {
@@ -3407,12 +3478,6 @@ void dxirc::sendNewTab(IrcSocket *server, const FXString &name, FXint id, FXbool
                                 {
                                     lua_pushstring(m_scripts[j].L, "type");
                                     lua_pushstring(m_scripts[j].L, "query");
-                                    lua_settable(m_scripts[j].L, -3);
-                                }break;
-                                case DCCCHAT:
-                                {
-                                    lua_pushstring(m_scripts[j].L, "type");
-                                    lua_pushstring(m_scripts[j].L, "dccchat");
                                     lua_settable(m_scripts[j].L, -3);
                                 }break;
                                 case OTHER:
@@ -3442,15 +3507,15 @@ void dxirc::sendNewTab(IrcSocket *server, const FXString &name, FXint id, FXbool
             }
         }
     }
-#endif
+#endif //HAVE_LUA
 }
 
 //Handle for entered command in IrcTab for all in lua scripting
 long dxirc::onIrcCommand(FXObject *sender, FXSelector, void *data)
 {
 #ifdef HAVE_LUA    
-    if(sender->getMetaClass()!=&IrcTabItem::metaClass) return 0;
-    IrcTabItem *tab = static_cast<IrcTabItem*>(sender);
+    if(sender->getMetaClass()==&TetrisTabItem::metaClass) return 0;
+    dxTabItem *tab = static_cast<dxTabItem*>(sender);
     FXString *commandtext = static_cast<FXString*>(data);
     if(!m_scripts.no() || !m_scriptEvents.no())
     {
@@ -3492,11 +3557,11 @@ long dxirc::onIrcCommand(FXObject *sender, FXSelector, void *data)
             }
         }
     }
-#endif
+#endif //HAVE_LUA
     return 1;
 }
 
-FXbool dxirc::tabExist(IrcSocket *server, FXString name)
+FXbool dxirc::tabExist(IrcEngine *server, FXString name)
 {
     for(FXint i = 0; i < m_tabbook->numChildren(); i+=2)
     {
@@ -3507,14 +3572,14 @@ FXbool dxirc::tabExist(IrcSocket *server, FXString name)
 
 FXbool dxirc::serverExist(const FXString &server, const FXint &port, const FXString &nick)
 {
-    for(FXint i = 0; i < m_servers.no(); i++)
+    for(FXint i = 0; i < m_ircengines.no(); i++)
     {
-        if(m_servers[i]->getServerName() == server && m_servers[i]->getServerPort() == port && m_servers[i]->getNickName() == nick && m_servers[i]->getConnected()) return TRUE;
+        if(m_ircengines[i]->getServerName() == server && m_ircengines[i]->getServerPort() == port && m_ircengines[i]->getNickName() == nick && m_ircengines[i]->getConnected()) return TRUE;
     }
     return FALSE;
 }
 
-FXint dxirc::getServerTab(IrcSocket *server)
+FXint dxirc::getServerTab(IrcEngine *server)
 {
     for(FXint i = 0; i < m_tabbook->numChildren(); i+=2)
     {        
@@ -3527,7 +3592,7 @@ FXint dxirc::getServerTab(IrcSocket *server)
     return -1;
 }
 
-FXint dxirc::getTabId(IrcSocket *server, FXString name)
+FXint dxirc::getTabId(IrcEngine *server, FXString name)
 {
     for(FXint i = 0; i < m_tabbook->numChildren(); i+=2)
     {
@@ -3547,7 +3612,7 @@ FXint dxirc::getTabId(FXString name)
             if(m_tabbook->childAtIndex(i)->getMetaClass()==&TetrisTabItem::metaClass)
                 return static_cast<TetrisTabItem*>(m_tabbook->childAtIndex(i))->getID();
             else
-                return static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))->getID();
+                return static_cast<dxTabItem*>(m_tabbook->childAtIndex(i))->getID();
         }
     }
     return -1;
@@ -3559,7 +3624,7 @@ FXint dxirc::getCurrentTabId()
     if(m_tabbook->childAtIndex(index)->getMetaClass()==&TetrisTabItem::metaClass)
         return static_cast<TetrisTabItem*>(m_tabbook->childAtIndex(index))->getID();
     else
-        return static_cast<IrcTabItem*>(m_tabbook->childAtIndex(index))->getID();
+        return static_cast<dxTabItem*>(m_tabbook->childAtIndex(index))->getID();
     return -1;
 }
 
@@ -3574,20 +3639,20 @@ FXbool dxirc::isValidTabId(FXint id)
         }
         else
         {
-            if(static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))->getID()==id) return TRUE;
+            if(static_cast<dxTabItem*>(m_tabbook->childAtIndex(i))->getID()==id) return TRUE;
         }
     }
     return FALSE;
 }
 
-FXbool dxirc::isIdIrcTabItem(FXint id)
+FXbool dxirc::isIddxTabItem(FXint id)
 {
     if(id<0) return FALSE;
     for(FXint i = 0; i < m_tabbook->numChildren(); i+=2)
     {
-        if(m_tabbook->childAtIndex(i)->getMetaClass()==&IrcTabItem::metaClass)
+        if(m_tabbook->childAtIndex(i)->getMetaClass()!=&TetrisTabItem::metaClass)
         {
-            if(static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i))->getID()==id) return TRUE;
+            if(static_cast<dxTabItem*>(m_tabbook->childAtIndex(i))->getID()==id) return TRUE;
         }
     }
     return FALSE;
@@ -3625,7 +3690,7 @@ FXbool dxirc::isFriend(const FXString &nick, const FXString &on, const FXString 
     return bnick && bchannel && bserver;
 }
 
-FXint dxirc::createIrcTab(const FXString& tabtext, FXIcon* icon, TYPE typ, IrcSocket* socket)
+FXint dxirc::createIrcTab(const FXString& tabtext, FXIcon* icon, TYPE typ, IrcEngine* engine)
 {
     FXuint style;
     switch(m_tabPosition) {
@@ -3650,20 +3715,58 @@ FXint dxirc::createIrcTab(const FXString& tabtext, FXIcon* icon, TYPE typ, IrcSo
                 style = TAB_BOTTOM;
             }
     }
-    IrcTabItem *tabitem = new IrcTabItem(m_tabbook, tabtext, icon, style, m_lastID, typ, socket, m_ownServerWindow, m_usersShown, typ == OTHER ? FALSE : m_logging, m_commandsList, m_logPath, m_maxAway, m_colors, m_nickCompletionChar, m_ircFont, m_sameCmd, m_sameList, m_coloredNick, m_stripColors, m_useSpell, m_showSpellCombo);
-    sendNewTab(socket, tabtext, m_lastID, FALSE, typ);
+    IrcTabItem *tabitem = new IrcTabItem(m_tabbook, tabtext, icon, style, m_lastID, typ, engine, m_ownServerWindow, m_usersShown, typ == OTHER ? FALSE : m_logging, m_commandsList, m_logPath, m_maxAway, m_colors, m_nickCompletionChar, m_ircFont, m_sameCmd, m_sameList, m_coloredNick, m_stripColors, m_useSpell, m_showSpellCombo);
+    sendNewTab(engine, tabtext, m_lastID, FALSE, FALSE, typ);
     m_lastID++;
     tabitem->create();
     tabitem->createGeom();
     tabitem->setSmileys(m_useSmileys, m_smileys);
     tabitem->setUnreadTabColor(m_unreadColor);
     tabitem->setHighlightTabColor(m_highlightColor);
-    if(socket) socket->appendTarget(tabitem);
+    if(engine) engine->appendTarget(tabitem);
     sortTabs();
     return m_lastID-1;
 }
 
-FXbool dxirc::isLastTab(IrcSocket *server)
+void dxirc::createDccTab(const FXString &mynick, const FXString &nick, const FXString &address, FXint portD, FXint portH, FXbool listen, IrcEngine *engine)
+{
+FXuint style;
+    switch(m_tabPosition) {
+        case 0: //bottom
+            {
+                style = TAB_BOTTOM;
+            }break;
+        case 1: //left
+            {
+                style = TAB_LEFT;
+            }break;
+        case 2: //top
+            {
+                style = TAB_TOP;
+            }break;
+        case 3: //right
+            {
+                style = TAB_RIGHT;
+            }break;
+        default:
+            {
+                style = TAB_BOTTOM;
+            }
+    }
+    DccTabItem *tabitem = new DccTabItem(m_tabbook, mynick, nick, address, portD, portH, listen, ICO_DCC, style, m_lastID, m_logging, m_logPath, m_colors, m_ircFont, m_sameCmd, m_coloredNick, m_stripColors, m_useSpell, m_showSpellCombo, engine);
+    sendNewTab(NULL, nick, m_lastID, FALSE, TRUE, OTHER);
+    m_lastID++;
+    tabitem->create();
+    tabitem->createGeom();
+    tabitem->setSmileys(m_useSmileys, m_smileys);
+    tabitem->setUnreadTabColor(m_unreadColor);
+    tabitem->setHighlightTabColor(m_highlightColor);
+    if(engine)
+        engine->appendTarget(tabitem);
+    sortTabs();
+}
+
+FXbool dxirc::isLastTab(IrcEngine *server)
 {
     FXint numTabs = 0;
     for(FXint i = 0; i < m_tabbook->numChildren(); i+=2)
@@ -3694,12 +3797,12 @@ void dxirc::sortTabs()
         {
             FXint index = 0;
             TetrisTabItem *tetristab = NULL;
-            IrcTabItem* *tabpole = new IrcTabItem*[m_tabbook->numChildren()/2-1];
+            dxTabItem* *tabpole = new dxTabItem*[m_tabbook->numChildren()/2-1];
             for(FXint i = 0; i < m_tabbook->numChildren()/2; i++)
             {
-                if(m_tabbook->childAtIndex(i*2)->getMetaClass()==&IrcTabItem::metaClass)
+                if(m_tabbook->childAtIndex(i*2)->getMetaClass()!=&TetrisTabItem::metaClass)
                 {
-                    tabpole[index] = static_cast<IrcTabItem*>(m_tabbook->childAtIndex(i*2));
+                    tabpole[index] = static_cast<dxTabItem*>(m_tabbook->childAtIndex(i*2));
                     index++;
                 }
                 else tetristab = static_cast<TetrisTabItem*>(m_tabbook->childAtIndex(i*2));
@@ -3715,10 +3818,10 @@ void dxirc::sortTabs()
         }
         else
         {
-            IrcTabItem* *tabpole = new IrcTabItem*[m_tabbook->numChildren()/2];
+            dxTabItem* *tabpole = new dxTabItem*[m_tabbook->numChildren()/2];
             for(FXint i = 0; i < m_tabbook->numChildren()/2; i++)
             {
-                tabpole[i] = (IrcTabItem*)m_tabbook->childAtIndex(i*2);
+                tabpole[i] = (dxTabItem*)m_tabbook->childAtIndex(i*2);
             }
             qsort(tabpole, m_tabbook->numChildren()/2, sizeof(tabpole[0]), (int(*)(const void*, const void*))&CompareTabs);
             for(int i=0; i < m_tabbook->numChildren()/2; i++)
@@ -3729,8 +3832,8 @@ void dxirc::sortTabs()
             delete []tabpole;
         }
         FXint index = m_tabbook->getCurrent()*2;
-        if(m_tabbook->childAtIndex(index)->getMetaClass()==&IrcTabItem::metaClass)
-            static_cast<IrcTabItem*>(m_tabbook->childAtIndex(index))->setCommandFocus();
+        if(m_tabbook->childAtIndex(index)->getMetaClass()!=&TetrisTabItem::metaClass)
+            static_cast<dxTabItem*>(m_tabbook->childAtIndex(index))->setCommandFocus();
     }
 }
 
@@ -3749,9 +3852,9 @@ void dxirc::updateMenus()
         m_clearTabs->disable();
     }
     FXbool someConnected = FALSE;
-    for(FXint i = 0; i < m_servers.no(); i++)
+    for(FXint i = 0; i < m_ircengines.no(); i++)
     {
-        if(m_servers[i]->getConnected()) someConnected = TRUE;
+        if(m_ircengines[i]->getConnected()) someConnected = TRUE;
     }
     if(someConnected) m_disconnect->enable();
     else m_disconnect->disable();
@@ -3765,7 +3868,7 @@ void dxirc::updateStatus(FXString text)
     {
         m_trayIcon->setText("dxirc\n"+text);
     }
-#endif
+#endif //HAVE_TRAY
     m_app->addTimeout(this, ID_STIMEOUT, 5000);
 }
 
@@ -3777,7 +3880,7 @@ long dxirc::onStatusTimeout(FXObject*, FXSelector, void*)
     {
         m_trayIcon->setText("dxirc");
     }
-#endif
+#endif //HAVE_TRAY
     return 1;
 }
 
@@ -3786,18 +3889,18 @@ void dxirc::appendIrcText(FXString text, FXbool logLine)
     if(m_tabbook->numChildren())
     {
         FXint index = m_tabbook->getCurrent()*2;
-        if(m_tabbook->childAtIndex(index)->getMetaClass()!=&IrcTabItem::metaClass)
+        if(m_tabbook->childAtIndex(index)->getMetaClass()==&TetrisTabItem::metaClass)
         {
             for(FXint i=0; i<m_tabbook->numChildren(); i+=2)
             {
-                if(m_tabbook->childAtIndex(i)->getMetaClass()==&IrcTabItem::metaClass)
+                if(m_tabbook->childAtIndex(i)->getMetaClass()!=&TetrisTabItem::metaClass)
                 {
                     index = i;
                     break;
                 }
             }
         }
-        IrcTabItem *currenttab = static_cast<IrcTabItem*>(m_tabbook->childAtIndex(index));
+        dxTabItem *currenttab = static_cast<dxTabItem*>(m_tabbook->childAtIndex(index));
         FXASSERT(currenttab != 0);
         currenttab->appendText(text, TRUE, logLine);
         currenttab->makeLastRowVisible();
@@ -3809,18 +3912,18 @@ void dxirc::appendIrcStyledText(FXString text, FXint style, FXbool logLine)
     if(m_tabbook->numChildren())
     {
         FXint index = m_tabbook->getCurrent()*2;
-        if(m_tabbook->childAtIndex(index)->getMetaClass()!=&IrcTabItem::metaClass)
+        if(m_tabbook->childAtIndex(index)->getMetaClass()==&TetrisTabItem::metaClass)
         {
             for(FXint i=0; i<m_tabbook->numChildren(); i+=2)
             {
-                if(m_tabbook->childAtIndex(i)->getMetaClass()==&IrcTabItem::metaClass)
+                if(m_tabbook->childAtIndex(i)->getMetaClass()!=&TetrisTabItem::metaClass)
                 {
                     index = i;
                     break;
                 }
             }
         }
-        IrcTabItem *currenttab = static_cast<IrcTabItem*>(m_tabbook->childAtIndex(index));
+        dxTabItem *currenttab = static_cast<dxTabItem*>(m_tabbook->childAtIndex(index));
         FXASSERT(currenttab != 0);
         currenttab->appendStyledText(text, style, TRUE, FALSE, logLine);
         currenttab->makeLastRowVisible();
@@ -3911,7 +4014,7 @@ FXint dxirc::loadLuaScript(FXString path, FXbool showMessage)
     return 1;
 #else
     return 0;
-#endif
+#endif //HAVE_LUA
 }
 
 FXint dxirc::unloadLuaScript(FXString name)
@@ -3949,7 +4052,7 @@ FXint dxirc::unloadLuaScript(FXString name)
     return 1;
 #else
     return 0;
-#endif
+#endif //HAVE_LUA
 }
 
 FXbool dxirc::hasLuaAll(const FXString &file)
@@ -4050,7 +4153,7 @@ int dxirc::onLuaAddCommand(lua_State *lua)
     return  1;
 #else
     return 0;
-#endif    
+#endif //HAVE_LUA
 }
 
 int dxirc::onLuaAddEvent(lua_State *lua)
@@ -4087,7 +4190,7 @@ int dxirc::onLuaAddEvent(lua_State *lua)
     return  1;
 #else
     return 0;
-#endif    
+#endif //HAVE_LUA
 }
 
 int dxirc::onLuaAddMyMsg(lua_State *lua)
@@ -4112,7 +4215,7 @@ int dxirc::onLuaAddMyMsg(lua_State *lua)
     return  1;
 #else
     return 0;
-#endif
+#endif //HAVE_LUA
 }
 
 int dxirc::onLuaAddNewTab(lua_State *lua)
@@ -4137,7 +4240,7 @@ int dxirc::onLuaAddNewTab(lua_State *lua)
     return  1;
 #else
     return 0;
-#endif
+#endif //HAVE_LUA
 }
 
 int dxirc::onLuaAddDxircQuit(lua_State *lua)
@@ -4162,7 +4265,7 @@ int dxirc::onLuaAddDxircQuit(lua_State *lua)
     return  1;
 #else
     return 0;
-#endif
+#endif //HAVE_LUA
 }
 
 int dxirc::onLuaAddAll(lua_State *lua)
@@ -4187,7 +4290,7 @@ int dxirc::onLuaAddAll(lua_State *lua)
     return  1;
 #else
     return 0;
-#endif
+#endif //HAVE_LUA
 }
 
 int dxirc::onLuaRemoveName(lua_State *lua)
@@ -4219,7 +4322,7 @@ int dxirc::onLuaRemoveName(lua_State *lua)
     return  1;
 #else
     return 0;
-#endif    
+#endif //HAVE_LUA
 }
 
 int dxirc::onLuaCommand(lua_State *lua)
@@ -4235,9 +4338,9 @@ int dxirc::onLuaCommand(lua_State *lua)
     {
         for(FXint i = 0; i<_pThis->m_tabbook->numChildren(); i+=2)
         {
-            if(_pThis->m_tabbook->childAtIndex(i)->getMetaClass()==&IrcTabItem::metaClass)
+            if(_pThis->m_tabbook->childAtIndex(i)->getMetaClass()!=&TetrisTabItem::metaClass)
             {
-                IrcTabItem *tab = static_cast<IrcTabItem*>(_pThis->m_tabbook->childAtIndex(i));
+                dxTabItem *tab = static_cast<dxTabItem*>(_pThis->m_tabbook->childAtIndex(i));
                 if(id==tab->getID())
                 {
                     tab->processLine(command);
@@ -4249,7 +4352,7 @@ int dxirc::onLuaCommand(lua_State *lua)
     return  1;
 #else
     return 0;
-#endif    
+#endif //HAVE_LUA
 }
 
 int dxirc::onLuaPrint(lua_State *lua)
@@ -4259,7 +4362,7 @@ int dxirc::onLuaPrint(lua_State *lua)
     if(lua_isstring(lua, 1)) text = lua_tostring(lua, 1);
     if(text.empty()) return 0;
     FXint id, style;
-    if(lua_isnumber(lua, 2) && _pThis->isIdIrcTabItem(lua_tointeger(lua, 2))) id = lua_tointeger(lua, 2);
+    if(lua_isnumber(lua, 2) && _pThis->isIddxTabItem(lua_tointeger(lua, 2))) id = lua_tointeger(lua, 2);
     else id = _pThis->getCurrentTabId();
     if(lua_isnumber(lua, 3))
     {
@@ -4271,9 +4374,9 @@ int dxirc::onLuaPrint(lua_State *lua)
     {
         for(FXint i = 0; i<_pThis->m_tabbook->numChildren(); i+=2)
         {
-            if(_pThis->m_tabbook->childAtIndex(i)->getMetaClass()==&IrcTabItem::metaClass)
+            if(_pThis->m_tabbook->childAtIndex(i)->getMetaClass()!=&TetrisTabItem::metaClass)
             {
-                IrcTabItem *tab = static_cast<IrcTabItem*>(_pThis->m_tabbook->childAtIndex(i));
+                dxTabItem *tab = static_cast<dxTabItem*>(_pThis->m_tabbook->childAtIndex(i));
                 if(id==tab->getID())
                 {
                     tab->appendStyledText(text, style, TRUE, TRUE, TRUE);
@@ -4286,27 +4389,27 @@ int dxirc::onLuaPrint(lua_State *lua)
     return  1;
 #else
     return 0;
-#endif    
+#endif //HAVE_LUA
 }
 
 int dxirc::onLuaGetServers(lua_State *lua)
 {
 #ifdef HAVE_LUA
-    if(_pThis->m_servers.no())
+    if(_pThis->m_ircengines.no())
     {
         lua_newtable(lua);
-        for(FXint i=0; i<_pThis->m_servers.no(); i++)
+        for(FXint i=0; i<_pThis->m_ircengines.no(); i++)
         {
             lua_pushnumber(lua, i+1);
             lua_newtable(lua);
             lua_pushstring(lua, "server");
-            lua_pushstring(lua, _pThis->m_servers[i]->getServerName().text());
+            lua_pushstring(lua, _pThis->m_ircengines[i]->getServerName().text());
             lua_settable(lua, -3);
             lua_pushstring(lua, "port");
-            lua_pushnumber(lua, _pThis->m_servers[i]->getServerPort());
+            lua_pushnumber(lua, _pThis->m_ircengines[i]->getServerPort());
             lua_settable(lua, -3);
             lua_pushstring(lua, "nick");
-            lua_pushstring(lua, _pThis->m_servers[i]->getNickName().text());
+            lua_pushstring(lua, _pThis->m_ircengines[i]->getNickName().text());
             lua_settable(lua, -3);
             lua_settable(lua, -3);
         }
@@ -4329,7 +4432,7 @@ int dxirc::onLuaGetServers(lua_State *lua)
     return  1;
 #else
     return 0;
-#endif
+#endif //HAVE_LUA
 }
 
 int dxirc::onLuaGetTab(lua_State *lua)
@@ -4342,11 +4445,11 @@ int dxirc::onLuaGetTab(lua_State *lua)
     {
         for(FXint i = 0; i<_pThis->m_tabbook->numChildren(); i+=2)
         {
-            if(_pThis->m_tabbook->childAtIndex(i)->getMetaClass()==&IrcTabItem::metaClass)
+            if(_pThis->m_tabbook->childAtIndex(i)->getMetaClass()!=&TetrisTabItem::metaClass)
             {
-                if(comparecase(tab, static_cast<FXTabItem*>(_pThis->m_tabbook->childAtIndex(i))->getText()) == 0 && comparecase(server, static_cast<IrcTabItem*>(_pThis->m_tabbook->childAtIndex(i))->getServerName()) == 0)
+                if(comparecase(tab, static_cast<FXTabItem*>(_pThis->m_tabbook->childAtIndex(i))->getText()) == 0 && comparecase(server, static_cast<dxTabItem*>(_pThis->m_tabbook->childAtIndex(i))->getServerName()) == 0)
                 {
-                    lua_pushnumber(lua, static_cast<IrcTabItem*>(_pThis->m_tabbook->childAtIndex(i))->getID());
+                    lua_pushnumber(lua, static_cast<dxTabItem*>(_pThis->m_tabbook->childAtIndex(i))->getID());
                     return 1;
                 }
             }
@@ -4358,7 +4461,7 @@ int dxirc::onLuaGetTab(lua_State *lua)
     return  1;
 #else
     return 0;
-#endif    
+#endif //HAVE_LUA
 }
 
 int dxirc::onLuaGetCurrentTab(lua_State *lua)
@@ -4368,7 +4471,7 @@ int dxirc::onLuaGetCurrentTab(lua_State *lua)
     return 1;
 #else
     return 0;
-#endif
+#endif //HAVE_LUA
 }
 
 int dxirc::onLuaGetVersion(lua_State *lua)
@@ -4378,7 +4481,7 @@ int dxirc::onLuaGetVersion(lua_State *lua)
     return 1;
 #else
     return 0;
-#endif
+#endif //HAVE_LUA
 }
 
 int dxirc::onLuaGetTabInfo(lua_State *lua)
@@ -4387,14 +4490,14 @@ int dxirc::onLuaGetTabInfo(lua_State *lua)
     FXint id;
     if(lua_isnumber(lua, 1))  id = lua_tointeger(lua, 1);
     else id = -1;
-    if(_pThis->m_tabbook->numChildren() && _pThis->isIdIrcTabItem(id))
+    if(_pThis->m_tabbook->numChildren() && _pThis->isIddxTabItem(id))
     {
-        IrcTabItem *tab = NULL;
+        dxTabItem *tab = NULL;
         for(FXint i = 0; i<_pThis->m_tabbook->numChildren(); i+=2)
         {
-            if(_pThis->m_tabbook->childAtIndex(i)->getMetaClass()==&IrcTabItem::metaClass)
+            if(_pThis->m_tabbook->childAtIndex(i)->getMetaClass()!=&TetrisTabItem::metaClass)
             {
-                tab = static_cast<IrcTabItem*>(_pThis->m_tabbook->childAtIndex(i));
+                tab = static_cast<dxTabItem*>(_pThis->m_tabbook->childAtIndex(i));
                 if(id==tab->getID())
                 {
                     break;
@@ -4424,18 +4527,18 @@ int dxirc::onLuaGetTabInfo(lua_State *lua)
                 lua_pushstring(lua, "query");
                 lua_settable(lua, -3);
             }break;
-            case DCCCHAT:
-            {
-                lua_pushstring(lua, "type");
-                lua_pushstring(lua, "dccchat");
-                lua_settable(lua, -3);
-            }break;
             case OTHER:
             {
                 lua_pushstring(lua, "type");
                 lua_pushstring(lua, "other");
                 lua_settable(lua, -3);
             }break;
+        }
+        if(tab->getMetaClass()==&DccTabItem::metaClass)
+        {
+            lua_pushstring(lua, "type");
+            lua_pushstring(lua, "dccchat");
+            lua_settable(lua, -3);
         }
         lua_pushstring(lua, "servername");
         lua_pushstring(lua, tab->getServerName().text());
@@ -4469,21 +4572,21 @@ int dxirc::onLuaGetTabInfo(lua_State *lua)
     return  1;
 #else
     return 0;
-#endif
+#endif //HAVE_LUA
 }
 
 int dxirc::onLuaSetTab(lua_State *lua)
 {
 #ifdef HAVE_LUA
     FXint id = 0;
-    if(lua_isnumber(lua, 1) && _pThis->isIdIrcTabItem(lua_tointeger(lua, 1)))  id = lua_tointeger(lua, 1);
+    if(lua_isnumber(lua, 1) && _pThis->isIddxTabItem(lua_tointeger(lua, 1)))  id = lua_tointeger(lua, 1);
     else return 0;
     if(_pThis->m_tabbook->numChildren())
     {
         for(FXint i = 0; i < _pThis->m_tabbook->numChildren(); i+=2)
         {
-            if(_pThis->m_tabbook->childAtIndex(i)->getMetaClass()==&IrcTabItem::metaClass
-                    && static_cast<IrcTabItem*>(_pThis->m_tabbook->childAtIndex(i))->getID() == id)
+            if(_pThis->m_tabbook->childAtIndex(i)->getMetaClass()!=&TetrisTabItem::metaClass
+                    && static_cast<dxTabItem*>(_pThis->m_tabbook->childAtIndex(i))->getID() == id)
             {
                 _pThis->m_tabbook->setCurrent(i/2, TRUE);
                 return 1;
@@ -4493,7 +4596,7 @@ int dxirc::onLuaSetTab(lua_State *lua)
     return  1;
 #else
     return 0;
-#endif    
+#endif //HAVE_LUA
 }
 
 int dxirc::onLuaCreateTab(lua_State *lua)
@@ -4523,7 +4626,7 @@ int dxirc::onLuaCreateTab(lua_State *lua)
     return 1;
 #else
     return 0;
-#endif
+#endif //HAVE_LUA
 }
 
 int dxirc::onLuaGetTabCount(lua_State *lua)
@@ -4533,24 +4636,24 @@ int dxirc::onLuaGetTabCount(lua_State *lua)
     return 1;
 #else
     return 0;
-#endif
+#endif //HAVE_LUA
 }
 
 int dxirc::onLuaClear(lua_State *lua)
 {
 #ifdef HAVE_LUA
     FXint id = -1;
-    if(lua_isnumber(lua, 1) && _pThis->isIdIrcTabItem(lua_tointeger(lua, 1)))  id = lua_tointeger(lua, 1);
+    if(lua_isnumber(lua, 1) && _pThis->isIddxTabItem(lua_tointeger(lua, 1)))  id = lua_tointeger(lua, 1);
     else return 0;
     utils::instance().debugLine(FXStringFormat("onLuaClear id:%d",id));
     if(_pThis->m_tabbook->numChildren())
     {
         for(FXint i = 0; i < _pThis->m_tabbook->numChildren(); i+=2)
         {
-            if(_pThis->m_tabbook->childAtIndex(i)->getMetaClass()==&IrcTabItem::metaClass
-                    && static_cast<IrcTabItem*>(_pThis->m_tabbook->childAtIndex(i))->getID() == id)
+            if(_pThis->m_tabbook->childAtIndex(i)->getMetaClass()!=&TetrisTabItem::metaClass
+                    && static_cast<dxTabItem*>(_pThis->m_tabbook->childAtIndex(i))->getID() == id)
             {
-                static_cast<IrcTabItem*>(_pThis->m_tabbook->childAtIndex(i))->clearChat();
+                static_cast<dxTabItem*>(_pThis->m_tabbook->childAtIndex(i))->clearChat();
                 return 1;
             }
         }
@@ -4558,7 +4661,7 @@ int dxirc::onLuaClear(lua_State *lua)
     return  1;
 #else
     return 0;
-#endif
+#endif //HAVE_LUA
 }
 
 
@@ -4577,7 +4680,7 @@ int main(int argc,char *argv[])
 {
 #ifndef WIN32
     signal(SIGPIPE, SIG_IGN);
-#endif
+#endif //WIN32
     FXbool loadIcon;
     FXString datadir = DXIRC_DATADIR;
 
@@ -4608,16 +4711,12 @@ int main(int argc,char *argv[])
     FXTrayApp app(PACKAGE, FXString::null);
 #else
     FXApp app(PACKAGE, FXString::null);
-#endif
+#endif //HAVE_TRAY
     app.reg().setAsciiMode(TRUE);
     app.init(argc,argv);
 #ifdef ENABLE_NLS
-#if FOXVERSION < FXVERSION(1,7,16)
     app.setTranslator(new dxTranslator(&app));
-#else
-    app.setTranslator(new dxTranslator());
-#endif
-#endif
+#endif //ENABLE_NLS
     loadIcon = makeAllIcons(&app, utils::instance().getIniFile(), datadir);
     new dxirc(&app);
     app.create();

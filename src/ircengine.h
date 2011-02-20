@@ -1,7 +1,7 @@
 /*
- *      ircsocket.h
+ *      ircengine.h
  *
- *      Copyright 2008 David Vachulka <david@konstrukce-cad.com>
+ *      Copyright 2010 David Vachulka <david@konstrukce-cad.com>
  *
  *      This program is free software; you can redistribute it and/or modify
  *      it under the terms of the GNU General Public License as published by
@@ -20,62 +20,34 @@
  */
 
 
-#ifndef IRCSOCKET_H
-#define IRCSOCKET_H
+#ifndef IRCENGINE_H
+#define IRCENGINE_H
 
-#ifdef WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <winsock2.h>
-#include <windows.h>
-#define socklen_t int
-#else
-#include <sys/time.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/poll.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-#endif
-
-#include <fstream>
 #include "defs.h"
 #include "config.h"
 #include "utils.h"
-
-#ifdef HAVE_OPENSSL
-#include <openssl/ssl.h>
+#ifndef DXSOCKET_H
+#include "dxsocket.h"
 #endif
 
-class ConnectThread;
-
-class IrcSocket: public FXObject
+class IrcEngine: public FXObject
 {
-    FXDECLARE(IrcSocket)
+    FXDECLARE(IrcEngine)
     public:
-        IrcSocket(FXApp*, FXObject*, FXString, FXString);
-        virtual ~IrcSocket();
+        IrcEngine(FXApp*, FXObject*, FXString, FXString);
+        virtual ~IrcEngine();
         enum {
-            ID_SOCKET = FXMainWindow::ID_LAST+100,
+            ID_DXSOCKET = FXMainWindow::ID_LAST+100,
             ID_SERVER,
-            ID_SSLTIME, //ssl on windows
             ID_RTIME, //reconnect
-            ID_PTIME, //dccfile position
-            ID_CTIME, //timeout for check and disconnect offered connection
-            ID_ETIME, //event timeout
+            ID_TATIME, //try again timeout
             ID_LAST
         };
 
         void startConnection();
-        void startListening(const FXString &nick, IrcSocket *server);
-        FXint connectIRC();
-        FXint connectSSL();
-        FXint listenIRC();
         void disconnect();
         void disconnect(const FXString &reason);
         void closeConnection(FXbool disableReconnect=FALSE);
-        void closeDccfileConnection(DccFile file);
         void appendTarget(FXObject*);
         void removeTarget(FXObject*);
         FXbool findTarget(FXObject*);
@@ -99,11 +71,6 @@ class IrcSocket: public FXObject
         void setReconnect(const FXbool &reconnect) { m_reconnect = reconnect; }
         void setNumberAttempt(const FXint &numberattempt) { m_numberAttempt = numberattempt; }
         void setDelayAttempt(const FXint &delayattemtp) { m_delayAttempt = delayattemtp; }
-        void setDccType(const DCCTYPE &dcctype) { m_dccType = dcctype; }
-        DCCTYPE getDccType() const { return m_dccType; }
-        void setDccFile(DccFile file) { m_dccFile = file; }
-        DccFile getDccFile() const { return m_dccFile; }
-        FXbool hasDccFile(DccFile file) { return m_dccFile == file; }
         FXbool getConnected() const { return m_connected; }
         FXbool getConnecting() const { return m_connecting; }
         FXbool getUseSsl() const { return m_useSsl; }
@@ -117,23 +84,21 @@ class IrcSocket: public FXObject
         FXchar getVoicePrefix() const { return m_voicePrefix; }
         FXchar getHalfopPrefix() const { return m_halfopPrefix; }
         FXString getChanTypes() const { return m_chanTypes; }
-        void addIgnoreCommands(const FXString &command);
-        void removeIgnoreCommands(const FXString &command);
+        FXString getLocalIP() { return m_socket->getLocalIP(); }
+        FXString getLocalIPBinary();
+        FXString getHostname(const FXString &address);
+        FXString getRemoteIP() { return m_socket->getRemoteIP(); }
+        void addIgnoreWho(const FXString &who);
         void addNick(const FXString &nick, const FXString &user, const FXString &real, const FXString &host, const FXbool &away);
         void addNick(const FXString &nick, const FXString &user, const FXString &real, const FXString &host);
         void removeNick(const FXString &nick);
         NickInfo getNickInfo(const FXString &nick) const;
         FXString getBannedNick(const FXString &banmask) const;
-        const char* getLocalIP();
-        FXuint getLocalIPBinary();
-        const char* getRemoteIP();
-        FXString getDccIP() const  { return m_dccIP; } //IP address possible usable as routable in DCC
         FXbool sendAdmin(const FXString &params);
         FXbool sendAway(const FXString &params);
         FXbool sendBanlist(const FXString &channel);
         FXbool sendCtcp(const FXString &to, const FXString &params);
         FXbool sendCtcpNotice(const FXString &to, const FXString &params);
-        FXbool sendDccChatText(const FXString &message);
         FXbool sendMode(const FXString &params);
         FXbool sendInvite(const FXString &to, const FXString &params);
         FXbool sendJoin(const FXString &chan);
@@ -161,66 +126,50 @@ class IrcSocket: public FXObject
         FXbool isUserIgnored(const FXString &nick, const FXString &user, const FXString &host, const FXString &on);
         FXbool isUserIgnored(const FXString &nick, const FXString &on);
         FXbool isAway(const FXString &nick);
-        void setCurrentPostion(FXulong position);
-        FXbool isForResume(const FXString &nick, const FXString &name, FXint port);
-        FXbool isForResume(FXint token);
+        FXString getMyUserHost() const { return m_myUserHost; }
 
-        long onIORead(FXObject*, FXSelector, void*);
-        long onIOWrite(FXObject*, FXSelector, void*);
+        long onSocketCanRead(FXObject*, FXSelector, void*);
+        long onSocketConnected(FXObject*, FXSelector, void*);
+        long onSocketDisconnected(FXObject*, FXSelector, void*);
+        long onSocketError(FXObject*, FXSelector, void*);
         long onReconnectTimeout(FXObject*, FXSelector, void*);
-        long onPositionTimeout(FXObject*, FXSelector, void*);
-        long onCloseTimeout(FXObject*, FXSelector, void*);
-        long onEventTimeout(FXObject*, FXSelector, void*);
+        long onTryAgainTimeout(FXObject*, FXSelector, void*);
 
     private:
-        IrcSocket(){}
+        IrcEngine(){}
 
         FXApp *m_application;
         FXbool m_connected, m_useSsl, m_connecting, m_reconnect, m_endmotd;
         FXbool m_ignoreUserHost;
         FXint m_serverPort, m_numberAttempt, m_delayAttempt, m_attempts;
-        FXint m_nickLen, m_topicLen, m_kickLen, m_awayLen, m_dccPortD, m_dccPortH, m_dccTimeout;
-        FXString m_serverName, m_realServerName, m_serverPassword, m_nickName, m_realName, m_userName, m_startChannels, m_startCommands;
+        FXint m_nickLen, m_topicLen, m_kickLen, m_awayLen;
+        FXString m_serverName, m_realServerName, m_serverPassword, m_nickName;
+        FXString m_realName, m_userName, m_startChannels, m_startCommands;
         FXString m_receiveRest;
-        FXString m_dccNick; //nick invited on dccchat
-        FXString m_dccIP; //for DCC from USERHOST or INI
         FXString m_chanTypes; //channel prefixes
-        DccFile m_dccFile; //file received or sended
+        FXString m_myUserHost; //usefull for dcc
+        FXString m_ignoreWho;
         FXchar m_adminPrefix, m_ownerPrefix, m_opPrefix, m_voicePrefix, m_halfopPrefix; //prefix for nick modes
         dxTargetsArray m_targets;
-        dxStringArray m_ignoreCommands;
+        dxStringArray m_ignoreWhoQueue;
         dxIgnoreUserArray m_usersList;
         dxNicksArray m_nicks;
         dxIrcEventArray m_events;
-        #ifdef WIN32            
-            WSAEVENT m_event;
-        #endif
-        int m_serverid, m_clientid;
-        sockaddr_in m_serverSock, m_clientSock;
-        ConnectThread *m_thread;
-        DCCTYPE m_dccType;
-        IrcSocket *m_dccParent; //DCC chat sending server
-        std::ofstream m_receivedFile;
-        std::ifstream m_sentFile;
+        dxSocket *m_socket;
 
         void readData();
-        void readFileData();
         FXbool sendLine(const FXString &line);
-        void sendFile();
         void sendCommands();
         FXbool sendCommand(const FXString &commandtext);
-        void sendEvents();
         void parseLine(const FXString &line);
         void sendEvent(IrcEventType);
         void sendEvent(IrcEventType, const FXString&);
         void sendEvent(IrcEventType, const FXString&, const FXString&);
         void sendEvent(IrcEventType, const FXString&, const FXString&, const FXString&);
         void sendEvent(IrcEventType, const FXString&, const FXString&, const FXString&, const FXString&);
-        void sendEvent(IrcEventType, DccFile);
         void numeric(const FXint&, const FXString&);
         void privmsg(const FXString&, const FXString&);
         void ctcp(const FXString&, const FXString&);
-        void dccMsg(const FXString&);
         void join(const FXString&, const FXString&);
         void quitirc(const FXString&, const FXString&);
         void part(const FXString&, const FXString&);
@@ -237,28 +186,7 @@ class IrcSocket: public FXObject
         void parseRplsupport(FXString);
         void makeStartChannels();
         void clearChannelsCommands(FXbool);
-        FXuint stringIPToBinary(const FXString &address);
-        FXString binaryIPToString(const FXString &address);
-        FXbool isRoutableIP(FXuint ipaddr);
         void resetReconnect();
-
-#ifdef HAVE_OPENSSL
-        SSL_CTX *m_ctx;
-        SSL *m_ssl;
-        FXint m_err;
-#endif
-
 };
 
-class ConnectThread : public FXThread
-{
-    public:
-        ConnectThread(IrcSocket*);
-        virtual ~ConnectThread();
-    protected:
-        FXint run();
-    private:
-        IrcSocket *m_socket;
-};
-
-#endif // IRCSOCKET_H
+#endif // IRCENGINE_H

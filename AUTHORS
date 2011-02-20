@@ -1,1 +1,10 @@
 Author of dxirc : David Vachulka <david@konstrukce-cad.com>
+
+dxirc uses code and inspiration from other projects:
+FOX toolkit (http://www.fox-toolkit.org/)
+gogglesmm - Goggles Music Manager (http://code.google.com/p/gogglesmm/)
+XFE - X File Explorer (http://roland65.free.fr/xfe/)
+cURL (http://curl.haxx.se/)
+C++ Sockets Library (http://www.alhem.net/Sockets/)
+
+

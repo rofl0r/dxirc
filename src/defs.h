@@ -32,17 +32,16 @@
 #include "dxtext.h"
 #endif
 
-#define FOXVERSION ((FOX_LEVEL) + (FOX_MINOR*1000) + (FOX_MAJOR*100000))
-#define FXVERSION(major,minor,release) ((release)+(minor*1000)+(major*100000))
+#define LUA_HELP_PATH "http://www.dxirc.org/dxirc-lua.html"
 
-class IrcSocket;
+class IrcEngine;
+class DccEngine;
 struct lua_State;
 
 enum TYPE {
     SERVER,
     CHANNEL,
     QUERY,
-    DCCCHAT,
     OTHER
 };
 
@@ -115,6 +114,15 @@ enum LuaCommands {
     LUA_UNLOAD,
     LUA_COMMAND,
     LUA_LIST
+};
+
+enum UserMode {
+    ADMIN,
+    OWNER,
+    OP,
+    HALFOP,
+    VOICE,
+    NONE
 };
 
 struct NickInfo {
@@ -201,12 +209,12 @@ struct DccFile {
     FXString path;
     DCCTYPE type;
     FXulong currentPosition;
-    FXulong previousPostion;
+    FXulong speed;
     FXulong size;
     FXbool canceled;
     FXulong finishedPosition; //used in sending for handle user position
     FXint token; //token passive send
-    FXString ip; //ip adrress
+    FXString ip; //ip address
     FXint port;
     FXString nick; //usefull for resume
     bool operator==(const DccFile& file) const
@@ -222,7 +230,8 @@ struct IrcEvent {
     FXTime time; //for stored events
 };
 
-typedef FXArray<IrcSocket*> dxServersArray;
+typedef FXArray<IrcEngine*> dxIrcEnginesArray;
+typedef FXArray<DccEngine*> dxDccEnginesArray;
 typedef FXArray<FXObject*> dxTargetsArray;
 typedef FXArray<FXString> dxStringArray;
 typedef FXArray<NickInfo> dxNicksArray;

@@ -30,7 +30,8 @@
 #include "config.h"
 #include "dccdialog.h"
 #include "dxtabbook.h"
-#include "ircsocket.h"
+#include "ircengine.h"
+#include "dccengine.h"
 
 #ifdef HAVE_LUA
 extern "C" {
@@ -72,11 +73,12 @@ class dxirc: public FXMainWindow
             ID_TRAY,
             ID_LOG,
             ID_SCRIPTS,
-            ID_STIMEOUT,
+            ID_STIMEOUT, //timeout for status change
             ID_TETRIS,
             ID_TRANSFERS,
             ID_SPELL,
             ID_FORCEFOCUS,
+            ID_AWAYTIMEOUT, //timeout for checking away on channels
             ID_LAST
         };
 
@@ -90,6 +92,7 @@ class dxirc: public FXMainWindow
         long onCmdConnect(FXObject*, FXSelector, void*);
         long onCmdDisconnect(FXObject*, FXSelector, void*);
         long onIrcEvent(FXObject*, FXSelector, void*);
+        long onDccEvent(FXObject*, FXSelector, void*);
         long onTabBook(FXObject*, FXSelector, void*);
         long onCmdClear(FXObject*, FXSelector, void*);
         long onCmdClearAll(FXObject*, FXSelector, void*);
@@ -122,6 +125,7 @@ class dxirc: public FXMainWindow
         long onRemoveIgnoreUser(FXObject*, FXSelector, void*);
         long onCmdSpell(FXObject*, FXSelector, void*);
         long onCmdForceFocus(FXObject*, FXSelector, void*);
+        long onAwayTimeout(FXObject*, FXSelector, void*);
         static int onLuaAddCommand(lua_State*);
         static int onLuaAddEvent(lua_State*);
         static int onLuaAddMyMsg(lua_State*);
@@ -178,43 +182,44 @@ class dxirc: public FXMainWindow
         dxTabBook *m_tabbook;
         LogViewer *m_viewer;
         DccDialog *m_transfers;
-        dxServersArray m_servers;
+        dxIrcEnginesArray m_ircengines;
+        dxDccEnginesArray m_dccengines;
         dxScriptEventsArray m_scriptEvents;
         FXbool m_useSpell, m_showSpellCombo;
 
-        void onIrcNewchannel(IrcSocket*, IrcEvent*);
-        void onIrcQuery(IrcSocket*, IrcEvent*);
-        void onIrcPart(IrcSocket*, IrcEvent*);
-        void onIrcKick(IrcSocket*, IrcEvent*);
-        void onIrcDisconnect(IrcSocket*, IrcEvent*);
+        void onIrcNewchannel(IrcEngine*, IrcEvent*);
+        void onIrcQuery(IrcEngine*, IrcEvent*);
+        void onIrcPart(IrcEngine*, IrcEvent*);
+        void onIrcKick(IrcEngine*, IrcEvent*);
+        void onIrcDisconnect(IrcEngine*, IrcEvent*);
         void onIrcConnectAndReconnect(IrcEvent*);
         void onIrcEndmotd();
-        void onIrcPrivmsgAndAction(IrcSocket*, IrcEvent*);
-        void onIrcJoin(IrcSocket*, IrcEvent*);
-        void onIrcQuit(IrcSocket*, IrcEvent*);
-        void onIrcDccChat(IrcSocket*, IrcEvent*);
-        void onIrcDccServer(IrcSocket*, IrcEvent*);
-        void onIrcDccIn(IrcSocket*, IrcEvent*);
-        void onIrcDccOut(IrcSocket*, IrcEvent*);
-        void onIrcDccPout(IrcSocket*, IrcEvent*);
-        void onIrcDccMyToken(IrcSocket*, IrcEvent*);
-        void onIrcDccToken(IrcSocket*, IrcEvent*);
-        void onIrcDccPosition(IrcSocket*, IrcEvent*);
-        void onIrcDccResume(IrcSocket*, IrcEvent*);
-        void onIrcDccPresume(IrcSocket*, IrcEvent*);
-        void onIrcDccAccept(IrcSocket*, IrcEvent*);
-        void onIrcDccPaccept(IrcSocket*, IrcEvent*);
-        FXbool tabExist(IrcSocket*, FXString);
+        void onIrcPrivmsgAndAction(IrcEngine*, IrcEvent*);
+        void onIrcJoin(IrcEngine*, IrcEvent*);
+        void onIrcQuit(IrcEngine*, IrcEvent*);
+        void onIrcDccChat(IrcEngine*, IrcEvent*);
+        void onIrcDccServer(IrcEngine*, IrcEvent*);
+        void onIrcDccIn(IrcEngine*, IrcEvent*);
+        void onIrcDccOut(IrcEngine*, IrcEvent*);
+        void onIrcDccPout(IrcEngine*, IrcEvent*);
+        void onIrcDccMyToken(IrcEngine*, IrcEvent*);
+        void onIrcDccToken(IrcEngine*, IrcEvent*);
+        void onIrcDccPosition(DccEngine*, IrcEvent*);
+        void onIrcDccResume(IrcEngine*, IrcEvent*);
+        void onIrcDccPresume(IrcEngine*, IrcEvent*);
+        void onIrcDccAccept(IrcEngine*, IrcEvent*);
+        void onIrcDccPaccept(IrcEngine*, IrcEvent*);
+        FXbool tabExist(IrcEngine*, FXString);
         FXbool serverExist(const FXString&, const FXint&, const FXString&);
-        FXint getServerTab(IrcSocket*);
-        FXint getTabId(IrcSocket*, FXString);
+        FXint getServerTab(IrcEngine*);
+        FXint getTabId(IrcEngine*, FXString);
         FXint getTabId(FXString);
         FXint getCurrentTabId();
         FXbool isValidTabId(FXint id);
-        FXbool isIdIrcTabItem(FXint id);
-        FXbool isLastTab(IrcSocket*);
+        FXbool isIddxTabItem(FXint id);
+        FXbool isLastTab(IrcEngine*);
         FXbool isFriend(const FXString &nick, const FXString &on, const FXString &server);
-        void connectServer(FXString hostname, FXint port, FXString pass, FXString nick, FXString rname, FXString channels, FXString commands, FXbool ssl, DCCTYPE dccType=DCC_NONE, FXString dccNick="", IrcSocket *dccParent=0, DccFile dccFile=DccFile());
+        void connectServer(FXString hostname, FXint port, FXString pass, FXString nick, FXString rname, FXString channels, FXString commands, FXbool ssl);
         void readServersConfig();
         void readConfig();
         void saveConfig();
@@ -235,11 +240,12 @@ class dxirc: public FXMainWindow
         FXbool hasAllCommand();
         FXbool hasMyMsg();
         void autoloadScripts();
-        void sendNewTab(IrcSocket*, const FXString&, FXint, FXbool, TYPE);
+        void sendNewTab(IrcEngine *server, const FXString &name, FXint id, FXbool isTetris, FXbool isDccTab, TYPE type);
         void createSmileys();
         FXString getUniqueName(const FXString &path, const FXString &name, const FXString &extension);
         FXbool isForResume(const FXString &name);
-        FXint createIrcTab(const FXString &tabtext, FXIcon *icon, TYPE typ, IrcSocket *socket);
+        FXint createIrcTab(const FXString &tabtext, FXIcon *icon, TYPE typ, IrcEngine *engine);
+        void createDccTab(const FXString &mynick, const FXString &nick, const FXString &address="0", FXint portD=0, FXint portH=0, FXbool listen=FALSE, IrcEngine *engine=NULL);
 
     protected:
         dxScriptsArray m_scripts;

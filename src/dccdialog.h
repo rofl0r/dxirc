@@ -53,6 +53,7 @@ class DccDialog: public FXTopWindow
         long onCanceled(FXObject*,FXSelector,void*);
         long onRightClick(FXObject*,FXSelector,void*);
         long onPopupCancel(FXObject*,FXSelector,void*);
+        long onTableChanged(FXObject*,FXSelector,void*);
 
     private:
         DccDialog() {}
@@ -64,7 +65,7 @@ class DccDialog: public FXTopWindow
         FXHorizontalFrame *m_buttonframe;
         FXButton *m_buttonClose, *m_buttonClear, *m_buttonCanceled;
         FXTable *m_table;
-        FXLabel *m_path, *m_ip, *m_port;
+        FXLabel *m_path, *m_ip, *m_port, *m_nick;
         FXGroupBox *m_group;
         FXint m_indexOnRight;
 
