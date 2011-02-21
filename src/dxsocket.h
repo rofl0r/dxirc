@@ -139,8 +139,8 @@ class dxSocket: public FXObject
         void listenOn();
         void connectTo();
         FXint read(char *buffer, FXint len);
-        FXint write(const char *buffer, size_t len);
-        FXint write(const FXString &line);
+        FXint write(const char *buffer, size_t len, FXbool directly=FALSE);
+        FXint write(const FXString &line, FXbool directly=FALSE);
         void startConnection();
         void setHost(const FXString &address, FXint portD, FXint portH=0);
         void disconnect();       
@@ -194,6 +194,7 @@ class dxSocket: public FXObject
         void closeConnection();
         FXbool setSSL();
         FXint writeData();
+        FXint writeToSocket(const char *buffer, size_t len);
         FXint readData();
         void addWriteInput();
         void setListenPort(sockaddr *ad);

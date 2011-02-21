@@ -1182,9 +1182,10 @@ int inet_aton(const char *address, in_addr *sock)
 }
 #endif /* WIN32 */
 
-FXint dxSocket::write(const char *buffer, size_t len)
+FXint dxSocket::write(const char *buffer, size_t len, FXbool directly)
 {
     if(!m_connected) return 0;
+    if(directly) return writeToSocket(buffer, len);
     FXint toWrite;
     size_t avail;
     avail = BUFFER_SIZE - m_written;
@@ -1196,15 +1197,26 @@ FXint dxSocket::write(const char *buffer, size_t len)
     return toWrite;
 }
 
-FXint dxSocket::write(const FXString &line)
+FXint dxSocket::write(const FXString &line, FXbool directly)
 {
-    return write(line.text(), line.length());
+    return write(line.text(), line.length(), directly);
 }
 
 FXint dxSocket::writeData()
 {
     if(!m_writeBuffer) return 0;
     if(!m_written) return 0;
+    FXint size = writeToSocket(m_writeBuffer, m_written);
+    if(size > 0)
+    {
+        m_written -= size;
+        if(m_written) memmove(m_writeBuffer, m_writeBuffer+size, m_written);
+    }
+    return size;
+}
+
+FXint dxSocket::writeToSocket(const char *buffer, size_t len)
+{
     FXint size=0;
     if (m_connected)
     {
@@ -1212,7 +1224,7 @@ FXint dxSocket::writeData()
         {
 #ifdef HAVE_OPENSSL
             FXint err = 0;
-            size = SSL_write(m_ssl, m_writeBuffer, m_written);
+            size = SSL_write(m_ssl, buffer, len);
             if(size == -1)
             {
                 err = SSL_get_error(m_ssl, size);
@@ -1242,8 +1254,6 @@ FXint dxSocket::writeData()
             }
             else
             {
-                m_written -= size;
-                if(m_written) memmove(m_writeBuffer, m_writeBuffer+size, m_written);
                 if(m_target) m_target->tryHandle(this, FXSEL(SOCKET_WRITTEN, m_message), (void*)(FXival)size);
             }
 #endif
@@ -1251,9 +1261,9 @@ FXint dxSocket::writeData()
         else
         {
 #ifdef WIN32
-            size = send(m_sockfd, m_writeBuffer, m_written, 0);
+            size = send(m_sockfd, buffer, len, 0);
 #else
-            size = send(m_sockfd, m_writeBuffer, m_written, MSG_NOSIGNAL|MSG_DONTWAIT);
+            size = send(m_sockfd, buffer, len, MSG_NOSIGNAL|MSG_DONTWAIT);
 #endif
             if(size == -1)
             {
@@ -1276,8 +1286,6 @@ FXint dxSocket::writeData()
             }
             else if(size > 0)
             {
-                m_written -= size;
-                if(m_written) memmove(m_writeBuffer, m_writeBuffer+size, m_written);
                 if(m_target) m_target->tryHandle(this, FXSEL(SOCKET_WRITTEN, m_message), (void*)(FXival)size);
             }
         }

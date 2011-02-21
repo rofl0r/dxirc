@@ -1382,7 +1382,7 @@ FXbool IrcEngine::sendLine(const FXString& line)
     FXint size=0;
     if(m_connected)
     {
-        size = m_socket->write(line);
+        size = m_socket->write(line, TRUE);
         if(size != -1) return TRUE;
         else return FALSE;
     }
