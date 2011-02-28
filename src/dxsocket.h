@@ -128,7 +128,7 @@ class dxSocket: public FXObject
     FXDECLARE(dxSocket)
     friend class dxConnectThread;
     public:
-        dxSocket(FXApp *app, FXObject *tgt=NULL, FXSelector sel=0, FXbool isSSL=FALSE, FXbool listen=FALSE);
+        dxSocket(FXApp *app, FXObject *tgt=NULL, FXSelector sel=0, FXbool isSSL=FALSE);
         virtual ~dxSocket();
         enum {
             ID_SOCKET = FXMainWindow::ID_LAST+200,

@@ -542,7 +542,7 @@ FXDEFMAP(dxSocket) dxSocketMap[] = {
 
 FXIMPLEMENT(dxSocket, FXObject, dxSocketMap, ARRAYNUMBER(dxSocketMap))
 
-dxSocket::dxSocket(FXApp *app, FXObject *tgt, FXSelector sel, FXbool isSSL, FXbool listen)
+dxSocket::dxSocket(FXApp *app, FXObject *tgt, FXSelector sel, FXbool isSSL)
     : m_application(app), m_target(tgt), m_message(sel), m_isSsl(isSSL)
 #ifdef HAVE_OPENSSL
         ,m_ctx(NULL), m_ssl(NULL), m_bio(NULL)

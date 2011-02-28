@@ -363,12 +363,14 @@ void dxText::appendStyledText(FXString text, FXint style)
     }
     last = contents.no()-1;
     len = contents[last].length()-1;
+    //force scroll for multiline text
+    FXbool scroll = vertical->getPosition()*1.0 > (font->getFontHeight()*(nlines-1)-viewport_h)*0.95;
     if(contents[last][len] == '\n')
     {
         lines.append(lineCount(last));
         nlines+=lines[last];
         FXScrollArea::layout();
-        makeLastRowVisible();
+        makeLastRowVisible(scroll);
         updateRange(last, last);
     }
 }
