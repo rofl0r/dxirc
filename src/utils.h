@@ -72,6 +72,9 @@ namespace enchant
 typedef std::map<FXString, enchant::Dict*> Checkers;
 #endif
 
+void fillHorizontalGradient(FXDCWindow &dc, FXint x, FXint y, FXint w, FXint h, FXColor left, FXColor right);
+void fillVerticalGradient(FXDCWindow &dc, FXint x, FXint y, FXint w, FXint h, FXColor top, FXColor bottom);
+
 class utils
 {
 private:

@@ -40,6 +40,8 @@ class dxTabItem: public FXTabItem
         dxTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *icon=0, FXuint opts=TAB_TOP_NORMAL, FXint id=0);
         virtual ~dxTabItem();
 
+        long onPaint(FXObject*, FXSelector, void*);
+
         virtual void createGeom() {}
         virtual void clearChat() {}
         virtual void hideUsers() {}

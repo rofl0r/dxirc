@@ -96,6 +96,17 @@ FXint dxTabBook::numTabs() const
     return numChildren()/2;
 }
 
+void dxTabBook::setCurrent(FXint panel,FXbool notify)
+{
+    if(panel != current)
+    {
+        FXint old = current;
+        FXTabBook::setCurrent(panel,notify);
+        FXWindow * window = childAtIndex(old<<1);
+        if(window) window->update();
+    }
+}
+
 // Recalculate layout
 void dxTabBook::layout() {
     register FXint i, xx, yy, x, y, w, h, px, py, pw, ph, maxtabw, maxtabh;

@@ -37,6 +37,7 @@ public:
         ID_TAB
     };
 
+    virtual void setCurrent(FXint panel,FXbool notify=false);
     void layout();
     FXint numTabs() const;
 
