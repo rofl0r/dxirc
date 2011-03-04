@@ -2148,30 +2148,14 @@ void ConfigDialog::fillThemes()
                 (m_themeCurrent.tipfore == ColorThemes[i].tipfore))
         {
             scheme = i;
-            break;
         }
+        m_themes->appendItem(ColorThemes[i].name,NULL,(void*)&ColorThemes[i]);
     }
 
     if(scheme == -1)
-    {
-        m_themeUser.back = m_themeCurrent.back;
-        m_themeUser.base = m_themeCurrent.base;
-        m_themeUser.border = m_themeCurrent.border;
-        m_themeUser.fore = m_themeCurrent.fore;
-        m_themeUser.menuback = m_themeCurrent.menuback;
-        m_themeUser.menufore = m_themeCurrent.menufore;
-        m_themeUser.selback = m_themeCurrent.selback;
-        m_themeUser.selfore = m_themeCurrent.selfore;
-        m_themeUser.tipback = m_themeCurrent.tipback;
-        m_themeUser.tipfore = m_themeCurrent.tipfore;
-        m_themes->appendItem(_("Current"), NULL, &m_themeUser);
-    }
+        scheme = numThemes;
 
-    for(i=0; i<numThemes; i++)
-    {
-        m_themes->appendItem(ColorThemes[i].name,NULL,(void*)&ColorThemes[i]);
-    }
-    m_themes->appendItem(_("User Defined"));
+    m_themes->appendItem(_("User Defined"), NULL, &m_themeCurrent);
     m_themes->setCurrentItem(scheme);
 }
 

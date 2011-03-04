@@ -63,11 +63,14 @@ long dxTabItem::onPaint(FXObject*,FXSelector,void*)
     dc.fillRectangle(0,0,width,height);
     switch(options&TAB_ORIENT_MASK){
         case TAB_TOP:
-            if(tab==ctab) dc.setForeground(hiliteColor);
-            else dc.setForeground(borderColor);
+            dc.setForeground(shadowColor);
             dc.drawLine(0,0,width,0);
             dc.drawLine(width-1,0,width-1,height-2);
-            if(tab==ctab || tab==0) dc.drawLine(0,0,0,height-2);
+            if(tab==ctab || tab==0)
+            {
+                if(tab==ctab) dc.setForeground(hiliteColor);
+                dc.drawLine(0,1,0,tab==0?height-1:height-2);
+            }
             else
             {
                 dc.setForeground(makeHiliteColor(shadowColor));
@@ -75,11 +78,14 @@ long dxTabItem::onPaint(FXObject*,FXSelector,void*)
             }
             break;
         case TAB_BOTTOM:
-            if(tab==ctab) dc.setForeground(hiliteColor);
-            else dc.setForeground(borderColor);
+            dc.setForeground(shadowColor);
             dc.drawLine(0,height-1,width,height-1);
-            dc.drawLine(width-1,0,width-1,height-2);
-            if(tab==ctab || tab==0) dc.drawLine(0,0,0,height-2);
+            dc.drawLine(width-1,1,width-1,height-2);
+            if(tab==ctab || tab==0)
+            {
+                if(tab==ctab) dc.setForeground(hiliteColor);
+                dc.drawLine(0,tab==0?0:1,0,height-2);
+            }
             else
             {
                 dc.setForeground(makeHiliteColor(shadowColor));
@@ -87,11 +93,14 @@ long dxTabItem::onPaint(FXObject*,FXSelector,void*)
             }
             break;
         case TAB_LEFT:
-            if(tab==ctab) dc.setForeground(hiliteColor);
-            else dc.setForeground(borderColor);
+            dc.setForeground(shadowColor);
             dc.drawLine(0,0,0,height);
             dc.drawLine(0,height-1,width-2,height-1);
-            if(tab==ctab || tab==0) dc.drawLine(0,0,width-2,0);
+            if(tab==ctab || tab==0)
+            {
+                if(tab==ctab) dc.setForeground(hiliteColor);
+                dc.drawLine(1,0,tab==0?width-1:width-2,0);
+            }
             else
             {
                 dc.setForeground(makeHiliteColor(shadowColor));
@@ -99,11 +108,14 @@ long dxTabItem::onPaint(FXObject*,FXSelector,void*)
             }
             break;
         case TAB_RIGHT:
-            if(tab==ctab) dc.setForeground(hiliteColor);
-            else dc.setForeground(borderColor);
+            dc.setForeground(shadowColor);
             dc.drawLine(width-1,0,width-1,height);
-            dc.drawLine(0,height-1,width-2,height-1);
-            if(tab==ctab || tab==0) dc.drawLine(0,0,width-2,0);
+            dc.drawLine(1,height-1,width-2,height-1);
+            if(tab==ctab || tab==0)
+            {
+                if(tab==ctab) dc.setForeground(hiliteColor);
+                dc.drawLine(tab==0?0:1,0,width-2,0);
+            }
             else
             {
                 dc.setForeground(makeHiliteColor(shadowColor));

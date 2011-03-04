@@ -227,6 +227,8 @@ long LogViewer::onSearch(FXObject*, FXSelector, void*)
     }
     else //search over all files
     {
+        if(m_searchfield->getText().empty())
+            return 1;
         //we need load full tree
         if(!m_treeLoaded)
         {

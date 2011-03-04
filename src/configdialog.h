@@ -225,7 +225,7 @@ class ConfigDialog: public FXDialogBox
         FXDataTarget m_trayTarget, m_logTarget, m_serverTarget, m_autoloadTarget;
         FXHiliteStyle m_textStyle[6];
         FXText *m_text;
-        ColorTheme m_themeCurrent, m_themeUser;
+        ColorTheme m_themeCurrent;
         FXListBox *m_themes;
         FXDataTarget m_targetBack, m_targetBase, m_targetBorder, m_targetFore, m_targetMenuback, m_targetMenufore, m_targetSelback, m_targetSelfore, m_targetTipback, m_targetTipfore;
         FXDataTarget m_targetSameCmd, m_targetSameList, m_targetColoredNick, m_targetCloseToTray;
