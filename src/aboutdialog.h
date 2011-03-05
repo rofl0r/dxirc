@@ -22,6 +22,8 @@
 #ifndef ABOUTDIALOG_H
 #define ABOUTDIALOG_H
 
+#include "fxext.h"
+
 class AboutDialog: public FXDialogBox
 {
     FXDECLARE(AboutDialog)
@@ -39,7 +41,7 @@ private:
 
     FXVerticalFrame *m_contents;
     FXHorizontalFrame *m_buttonframe;
-    FXButton *m_buttonClose;
+    dxEXButton *m_buttonClose;
     FXFont *m_boldfont, *m_smallfont;
 };
 

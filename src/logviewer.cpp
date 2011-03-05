@@ -69,7 +69,7 @@ LogViewer::LogViewer(FXApp *app, const FXString &lpath, FXFont *fnt)
     m_targetIcase.connect(m_icase);
 
     m_buttonframe = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X);
-    m_buttonClose = new FXButton(m_buttonframe, _("C&lose"), NULL, this, ID_CLOSE, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
+    m_buttonClose = new dxEXButton(m_buttonframe, _("C&lose"), NULL, this, ID_CLOSE, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
 
     m_content = new FXHorizontalFrame(this,  LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
 
@@ -83,9 +83,9 @@ LogViewer::LogViewer(FXApp *app, const FXString &lpath, FXFont *fnt)
     m_searchfield = new FXTextField(m_searchframe, 15, this, ID_SEARCH, TEXTFIELD_ENTER_ONLY|FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     m_searchfield->setTipText(_("F3 for next"));
     m_searchfield->disable();
-    m_buttonSearch = new FXButton(m_searchframe, _("&Search"), NULL, this, ID_SEARCH, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
+    m_buttonSearch = new dxEXButton(m_searchframe, _("&Search"), NULL, this, ID_SEARCH, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
     m_buttonSearch->disable();
-    m_buttonReset = new FXButton(m_searchframe, _("&Reset"), NULL, this, ID_RESET, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
+    m_buttonReset = new dxEXButton(m_searchframe, _("&Reset"), NULL, this, ID_RESET, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
     m_buttonReset->disable();
     m_group = new FXGroupBox(m_listframe, _("Search options"), LAYOUT_SIDE_TOP|FRAME_GROOVE|LAYOUT_FILL_X, 0,0,0,0);
     m_buttonIcase = new FXCheckButton(m_group, _("&Ignore case"), &m_targetIcase, FXDataTarget::ID_VALUE);
@@ -167,7 +167,7 @@ long LogViewer::onSearch(FXObject*, FXSelector, void*)
                 else
                 {
                     getApp()->beep();                    
-                    FXMessageBox::information(this, MBOX_OK, _("Information"), _("'%s' wasn't found"), m_searchstring.text());
+                    dxEXMessageBox::information(this, MBOX_OK, _("Information"), _("'%s' wasn't found"), m_searchstring.text());
                 }
                 return 1;
             }
@@ -213,7 +213,7 @@ long LogViewer::onSearch(FXObject*, FXSelector, void*)
                 getApp()->endWaitCursor();
                 if(count == 0)
                 {
-                    FXMessageBox::information(this, MBOX_OK, _("Information"), _("'%s' wasn't found"), m_searchstring.text());
+                    dxEXMessageBox::information(this, MBOX_OK, _("Information"), _("'%s' wasn't found"), m_searchstring.text());
                     item = (LogItem*)chitem->first;
                     while(item)
                     {
@@ -303,7 +303,7 @@ long LogViewer::onSearch(FXObject*, FXSelector, void*)
                 getApp()->endWaitCursor();
                 if(count == 0)
                 {
-                    FXMessageBox::information(this, MBOX_OK, _("Information"), _("'%s' wasn't found"), m_searchstring.text());
+                    dxEXMessageBox::information(this, MBOX_OK, _("Information"), _("'%s' wasn't found"), m_searchstring.text());
                     enableAllItems();
                 }
             }
@@ -475,7 +475,7 @@ long LogViewer::onDelete(FXObject*, FXSelector, void*)
             message = FXStringFormat(_("Delete file %s?\nThis cann't be UNDONE!"), m_itemOnRight->getText().text());
         else
             return 1;
-        if(FXMessageBox::question(this, MBOX_YES_NO, _("Question"), message.text()) == 1)
+        if(dxEXMessageBox::question(this, MBOX_YES_NO, _("Question"), message.text()) == 1)
         {
             FXFile::removeFiles(getItemPathname(m_itemOnRight), TRUE);
             scan();
@@ -535,7 +535,7 @@ FXbool LogViewer::loadFile(const FXString& file)
     // Opened file?
     if(!textfile.isOpen())
     {
-        FXMessageBox::error(this,MBOX_OK,_("Error Loading File"),_("Unable to open file: %s"),file.text());
+        dxEXMessageBox::error(this,MBOX_OK,_("Error Loading File"),_("Unable to open file: %s"),file.text());
         return FALSE;
     }
 
@@ -545,7 +545,7 @@ FXbool LogViewer::loadFile(const FXString& file)
     // Make buffer to load file
     if(!FXMALLOC(&txt,FXchar,size))
     {
-        FXMessageBox::error(this,MBOX_OK,_("Error Loading File"),_("File is too big: %s (%d bytes)"),file.text(),size);
+        dxEXMessageBox::error(this,MBOX_OK,_("Error Loading File"),_("File is too big: %s (%d bytes)"),file.text(),size);
         return FALSE;
     }
 
@@ -557,7 +557,7 @@ FXbool LogViewer::loadFile(const FXString& file)
     if(n<0)
     {
         FXFREE(&txt);
-        FXMessageBox::error(this,MBOX_OK,_("Error Loading File"),_("Unable to read file: %s"),file.text());
+        dxEXMessageBox::error(this,MBOX_OK,_("Error Loading File"),_("Unable to read file: %s"),file.text());
         getApp()->endWaitCursor();
         return FALSE;
     }

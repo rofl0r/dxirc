@@ -31,6 +31,7 @@
 #ifndef DXTEXT_H
 #include "dxtext.h"
 #endif
+#include "fxext.h"
 
 class dxirc;
 
@@ -62,7 +63,7 @@ private:
     FXVerticalFrame *m_mainFrame;
     FXHorizontalFrame *m_fileFrame, *m_passiveFrame, *m_buttonFrame;
     FXTextField *m_fileText;
-    FXButton *m_buttonFile, *m_buttonSend, *m_buttonCancel;
+    dxEXButton *m_buttonFile, *m_buttonSend, *m_buttonCancel;
     FXCheckButton *m_checkPassive;
 };
 

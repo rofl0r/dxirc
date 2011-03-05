@@ -71,8 +71,8 @@ am__dxirc_SOURCES_DIST = configdialog.cpp dxirc.cpp icons.cpp \
 	irctabitem.cpp dcctabitem.cpp serverdialog.cpp utils.cpp \
 	aliasdialog.cpp dxpipe.cpp logviewer.cpp tetristabitem.cpp \
 	scriptdialog.cpp dccdialog.cpp aboutdialog.cpp dxtabbook.cpp \
-	dxtextfield.cpp dxtext.cpp dxmessagechannel.cpp FXTrayApp.cpp \
-	FXTrayIcon.cpp
+	dxtextfield.cpp dxtext.cpp dxmessagechannel.cpp fxext.cpp \
+	FXTrayApp.cpp FXTrayIcon.cpp
 @HAVE_TRAY_TRUE@am__objects_1 = FXTrayApp.$(OBJEXT) \
 @HAVE_TRAY_TRUE@	FXTrayIcon.$(OBJEXT)
 am_dxirc_OBJECTS = configdialog.$(OBJEXT) dxirc.$(OBJEXT) \
@@ -83,7 +83,7 @@ am_dxirc_OBJECTS = configdialog.$(OBJEXT) dxirc.$(OBJEXT) \
 	tetristabitem.$(OBJEXT) scriptdialog.$(OBJEXT) \
 	dccdialog.$(OBJEXT) aboutdialog.$(OBJEXT) dxtabbook.$(OBJEXT) \
 	dxtextfield.$(OBJEXT) dxtext.$(OBJEXT) \
-	dxmessagechannel.$(OBJEXT) $(am__objects_1)
+	dxmessagechannel.$(OBJEXT) fxext.$(OBJEXT) $(am__objects_1)
 dxirc_OBJECTS = $(am_dxirc_OBJECTS)
 dxirc_DEPENDENCIES =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
@@ -259,7 +259,7 @@ dxirc_SOURCES = configdialog.cpp dxirc.cpp icons.cpp dxsocket.cpp \
 	dcctabitem.cpp serverdialog.cpp utils.cpp aliasdialog.cpp \
 	dxpipe.cpp logviewer.cpp tetristabitem.cpp scriptdialog.cpp \
 	dccdialog.cpp aboutdialog.cpp dxtabbook.cpp dxtextfield.cpp \
-	dxtext.cpp dxmessagechannel.cpp $(am__append_1)
+	dxtext.cpp dxmessagechannel.cpp fxext.cpp $(am__append_1)
 dxirc_LDADD = @LIBINTL@
 INCLUDES = -I. -I$(top_srcdir) -I$(top_srcdir)/intl
 EXTRA_DIST = configdialog.h \
@@ -287,6 +287,7 @@ EXTRA_DIST = configdialog.h \
               dxtextfield.h \
               dxtext.h \
 	      dxmessagechannel.h \
+	      fxext.h \
               FXTrayApp.h \
               FXTrayIcon.h
 
@@ -387,6 +388,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dxtabitem.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dxtext.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dxtextfield.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fxext.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/icons.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ircengine.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/irctabitem.Po@am__quote@

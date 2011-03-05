@@ -151,10 +151,10 @@ FXDEFMAP(TetrisTabItem) TetrisTabItemMap[] = {
     FXMAPFUNC(SEL_TIMEOUT,    TetrisTabItem::ID_TETRISTIMEOUT,      TetrisTabItem::onTimeout)
 };
 
-FXIMPLEMENT(TetrisTabItem, FXTabItem, TetrisTabItemMap, ARRAYNUMBER(TetrisTabItemMap))
+FXIMPLEMENT(TetrisTabItem, dxEXTabItem, TetrisTabItemMap, ARRAYNUMBER(TetrisTabItemMap))
 
 TetrisTabItem::TetrisTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *ic=0, FXuint opts=TAB_TOP_NORMAL, FXint id=0)
-:       FXTabItem(tab, tabtext, ic, opts),
+:       dxEXTabItem(tab, tabtext, ic, opts),
         m_parent(tab),
         m_removedLines(0),
         m_level(1),
@@ -183,8 +183,8 @@ TetrisTabItem::TetrisTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *ic
     m_levelLabel = new FXLabel(m_otherframe, FXStringFormat(_("Level: %d"), m_level));
     m_scoreLabel = new FXLabel(m_otherframe, FXStringFormat(_("Score: %d"), m_score));
     m_linesLabel = new FXLabel(m_otherframe, FXStringFormat(_("Lines: %d"), m_removedLines));
-    m_newButton = new FXButton(m_otherframe, _("&New game"), NULL, this, ID_NEW);
-    m_pauseButton = new FXButton(m_otherframe, _("&Pause game"), NULL, this, ID_PAUSE);
+    m_newButton = new dxEXButton(m_otherframe, _("&New game"), NULL, this, ID_NEW);
+    m_pauseButton = new dxEXButton(m_otherframe, _("&Pause game"), NULL, this, ID_PAUSE);
     m_pauseButton->disable();
 
     m_messageFont = new FXFont(getApp(), "helvetica", 25, FXFont::Bold, FXFont::Straight, FONTENCODING_DEFAULT, FXFont::NonExpanded, FXFont::Scalable|FXFont::Rotatable);

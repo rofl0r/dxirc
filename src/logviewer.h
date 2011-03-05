@@ -23,6 +23,7 @@
 #define LOGVIEWER_H
 
 #include "defs.h"
+#include "fxext.h"
 
 class LogViewer;
 
@@ -198,7 +199,7 @@ private:
     FXSplitter *m_splitter;
     FXTreeList *m_treeHistory;
     FXTextField *m_searchfield;
-    FXButton *m_buttonClose, *m_buttonSearch, *m_buttonReset;
+    dxEXButton *m_buttonClose, *m_buttonSearch, *m_buttonReset;
     FXGroupBox *m_group;
     FXRadioButton *m_buttonAll, *m_buttonChannel, *m_buttonFile;
     FXCheckButton *m_buttonIcase;

@@ -71,7 +71,7 @@ AboutDialog::AboutDialog(FXMainWindow *owner)
     label = new FXLabel(m_contents, _("Uses http://www.famfamfam.com/lab/icons/"), 0, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     label->setFont(m_smallfont);
     m_buttonframe = new FXHorizontalFrame(m_contents, LAYOUT_FILL_X);
-    m_buttonClose  = new FXButton(m_contents, _("C&lose"), 0, this, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
+    m_buttonClose  = new dxEXButton(m_contents, _("C&lose"), 0, this, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
 }
 
 AboutDialog::~AboutDialog()

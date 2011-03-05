@@ -122,8 +122,8 @@ SmileyDialog::SmileyDialog(FXWindow* owner, FXString title, FXString smiley, FXS
         : FXDialogBox(owner, title, DECOR_RESIZE|DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0)
 {
     FXHorizontalFrame *closeframe = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X|PACK_UNIFORM_WIDTH);
-    new FXButton(closeframe, _("&Cancel"), NULL, this, ID_CANCEL, LAYOUT_RIGHT|FRAME_RAISED|FRAME_THICK, 0,0,0,0, 10,10,2,5);
-    FXButton *ok = new FXButton(closeframe, _("&OK"), NULL, this, ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|LAYOUT_RIGHT|FRAME_RAISED|FRAME_THICK, 0,0,0,0, 10,10,2,5);
+    new dxEXButton(closeframe, _("&Cancel"), NULL, this, ID_CANCEL, LAYOUT_RIGHT|FRAME_RAISED|FRAME_THICK, 0,0,0,0, 10,10,2,5);
+    dxEXButton *ok = new dxEXButton(closeframe, _("&OK"), NULL, this, ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|LAYOUT_RIGHT|FRAME_RAISED|FRAME_THICK, 0,0,0,0, 10,10,2,5);
     ok->addHotKey(KEY_Return);
 
     FXMatrix *matrix = new FXMatrix(this,2,MATRIX_BY_COLUMNS|LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
@@ -135,7 +135,7 @@ SmileyDialog::SmileyDialog(FXWindow* owner, FXString title, FXString smiley, FXS
     m_pathText = new FXTextField(pathframe, 25, NULL, 0, TEXTFIELD_READONLY|FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_X);
     m_pathText->setBackColor(getApp()->getBaseColor());
     if(!path.empty()) m_pathText->setText(path);
-    m_pathButton = new FXButton(pathframe, "...", NULL, this, ID_PATH, FRAME_RAISED|FRAME_THICK);
+    m_pathButton = new dxEXButton(pathframe, "...", NULL, this, ID_PATH, FRAME_RAISED|FRAME_THICK);
     new FXLabel(matrix, _("Preview:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     m_previewLabel = new FXLabel(matrix, "", path.empty() ? NULL : createIconFromName(getApp(), path), JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
 }
@@ -390,9 +390,9 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     m_font->create();
 
     FXHorizontalFrame *closeframe = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X|PACK_UNIFORM_WIDTH);
-    FXButton *ok = new FXButton(closeframe, _("&Save&&Close"), NULL, this, ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|LAYOUT_RIGHT|FRAME_RAISED|FRAME_THICK, 0,0,0,0, 10,10,2,5);
+    dxEXButton *ok = new dxEXButton(closeframe, _("&Save&&Close"), NULL, this, ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|LAYOUT_RIGHT|FRAME_RAISED|FRAME_THICK, 0,0,0,0, 10,10,2,5);
     ok->addHotKey(KEY_Return);
-    new FXButton(closeframe, _("&Cancel"), NULL, this, ID_CANCEL, LAYOUT_RIGHT|FRAME_RAISED|FRAME_THICK, 0,0,0,0, 10,10,2,5);
+    new dxEXButton(closeframe, _("&Cancel"), NULL, this, ID_CANCEL, LAYOUT_RIGHT|FRAME_RAISED|FRAME_THICK, 0,0,0,0, 10,10,2,5);
 
     FXHorizontalFrame *contents = new FXHorizontalFrame(this, LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     FXVerticalFrame *buttonframe = new FXVerticalFrame(contents, LAYOUT_FILL_Y|LAYOUT_LEFT|PACK_UNIFORM_WIDTH);
@@ -421,7 +421,7 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     new FXColorWell(colormatrix, FXRGB(0,0,255), &m_linkTarget, FXDataTarget::ID_VALUE, COLORWELL_OPAQUEONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_LEFT|LAYOUT_CENTER_Y|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW, 0,0,40,24);
     new FXLabel(colormatrix, _("Link color"), NULL, JUSTIFY_LEFT|LAYOUT_CENTER_Y|LAYOUT_FILL_X|LAYOUT_FILL_ROW);
     new FXLabel(colormatrix, _("Font"));
-    m_ircfontButton = new FXButton(colormatrix, " ", NULL, this, ID_IRCFONT, LAYOUT_CENTER_Y|FRAME_RAISED|JUSTIFY_CENTER_X|JUSTIFY_CENTER_Y|LAYOUT_FILL_X, 0,0,0,0, 10,10,2,5);
+    m_ircfontButton = new dxEXButton(colormatrix, " ", NULL, this, ID_IRCFONT, LAYOUT_CENTER_Y|FRAME_RAISED|JUSTIFY_CENTER_X|JUSTIFY_CENTER_Y|LAYOUT_FILL_X, 0,0,0,0, 10,10,2,5);
     new FXCheckButton(cframe, _("Use same font for commandline"), &m_targetSameCmd, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
     new FXCheckButton(cframe, _("Use same font for user list"), &m_targetSameList, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
     new FXCheckButton(cframe, _("Use colored nick"), &m_targetColoredNick, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
@@ -435,15 +435,15 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     new FXHorizontalSeparator(ignorepane, SEPARATOR_LINE|LAYOUT_FILL_X);
     FXGroupBox *commandsgroup = new FXGroupBox(ignorepane, _("Commands"), FRAME_GROOVE|LAYOUT_FILL_X|LAYOUT_FILL_Y|LAYOUT_SIDE_TOP);
     FXVerticalFrame *commandsbuttons = new FXVerticalFrame(commandsgroup, LAYOUT_SIDE_RIGHT|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
-    m_addCommand = new FXButton(commandsbuttons, _("Add"), NULL, this, ID_ADDCOMMAND, FRAME_RAISED|FRAME_THICK);
-    m_deleteCommand = new FXButton(commandsbuttons, _("Delete"), NULL, this, ID_DELETECOMMAND, FRAME_RAISED|FRAME_THICK);
+    m_addCommand = new dxEXButton(commandsbuttons, _("Add"), NULL, this, ID_ADDCOMMAND, FRAME_RAISED|FRAME_THICK);
+    m_deleteCommand = new dxEXButton(commandsbuttons, _("Delete"), NULL, this, ID_DELETECOMMAND, FRAME_RAISED|FRAME_THICK);
     FXVerticalFrame *commandslist = new FXVerticalFrame(commandsgroup, LAYOUT_FILL_X|LAYOUT_FILL_Y|FRAME_SUNKEN|FRAME_THICK);
     m_commands = new FXList(commandslist, this, ID_COMMAND, LIST_BROWSESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     FXGroupBox *usersgroup = new FXGroupBox(ignorepane, _("Users"), FRAME_GROOVE|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     FXVerticalFrame *usersbuttons = new FXVerticalFrame(usersgroup, LAYOUT_SIDE_RIGHT|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
-    m_addUser = new FXButton(usersbuttons, _("Add"), NULL, this, ID_ADDUSER, FRAME_RAISED|FRAME_THICK);
-    m_modifyUser = new FXButton(usersbuttons, _("Modify"), NULL, this, ID_MODIFYUSER, FRAME_RAISED|FRAME_THICK);
-    m_deleteUser = new FXButton(usersbuttons, _("Delete"), NULL, this, ID_DELETEUSER, FRAME_RAISED|FRAME_THICK);
+    m_addUser = new dxEXButton(usersbuttons, _("Add"), NULL, this, ID_ADDUSER, FRAME_RAISED|FRAME_THICK);
+    m_modifyUser = new dxEXButton(usersbuttons, _("Modify"), NULL, this, ID_MODIFYUSER, FRAME_RAISED|FRAME_THICK);
+    m_deleteUser = new dxEXButton(usersbuttons, _("Delete"), NULL, this, ID_DELETEUSER, FRAME_RAISED|FRAME_THICK);
     FXVerticalFrame *userspane = new FXVerticalFrame(usersgroup, LAYOUT_FILL_X|LAYOUT_FILL_Y|FRAME_SUNKEN|FRAME_THICK);
     FXHorizontalFrame *usersframe = new FXHorizontalFrame(userspane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     m_users = new FXIconList(usersframe, this, ID_USER, ICONLIST_AUTOSIZE|ICONLIST_DETAILED|ICONLIST_BROWSESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
@@ -469,8 +469,8 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     new FXHorizontalSeparator(otherpane, SEPARATOR_LINE|LAYOUT_FILL_X);
     FXGroupBox *themesgroup = new FXGroupBox(otherpane, _("Nick icons themes"), FRAME_GROOVE|LAYOUT_FILL_X|LAYOUT_FILL_Y|LAYOUT_SIDE_TOP);
     FXVerticalFrame *themesbuttons = new FXVerticalFrame(themesgroup, LAYOUT_SIDE_RIGHT|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
-    m_addTheme = new FXButton(themesbuttons, _("Add"), NULL, this, ID_ADDICONS, FRAME_RAISED|FRAME_THICK);
-    m_deleteTheme = new FXButton(themesbuttons, _("Delete"), NULL, this, ID_DELETEICONS, FRAME_RAISED|FRAME_THICK);
+    m_addTheme = new dxEXButton(themesbuttons, _("Add"), NULL, this, ID_ADDICONS, FRAME_RAISED|FRAME_THICK);
+    m_deleteTheme = new dxEXButton(themesbuttons, _("Delete"), NULL, this, ID_DELETEICONS, FRAME_RAISED|FRAME_THICK);
     FXVerticalFrame *themeslist = new FXVerticalFrame(themesgroup, LAYOUT_FILL_X|LAYOUT_FILL_Y|FRAME_SUNKEN|FRAME_THICK);
     m_icons = new FXList(themeslist, this, ID_ICONS, LIST_BROWSESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     fillIcons();
@@ -484,13 +484,13 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     }
     m_icons->getNumItems()>1 ? m_deleteTheme->enable() : m_deleteTheme->disable();
     m_iconsBar = new FXToolBar(themeslist, LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    m_icon1 = new FXButton(m_iconsBar, _("\tAdmin"), makeIcon(getApp(), m_themePath, "irc_admin.png", TRUE), NULL, 0, BUTTON_TOOLBAR);
-    m_icon2 = new FXButton(m_iconsBar, _("\tOwner"), makeIcon(getApp(), m_themePath, "irc_owner.png", TRUE), NULL, 0, BUTTON_TOOLBAR);
-    m_icon3 = new FXButton(m_iconsBar, _("\tOp"), makeIcon(getApp(), m_themePath, "irc_op.png", TRUE), NULL, 0, BUTTON_TOOLBAR);
-    m_icon4 = new FXButton(m_iconsBar, _("\tHalfop"), makeIcon(getApp(), m_themePath, "irc_halfop.png", TRUE), NULL, 0, BUTTON_TOOLBAR);
-    m_icon5 = new FXButton(m_iconsBar, _("\tVoice"), makeIcon(getApp(), m_themePath, "irc_voice.png", TRUE), NULL, 0, BUTTON_TOOLBAR);
-    m_icon6 = new FXButton(m_iconsBar, _("\tNormal"), makeIcon(getApp(), m_themePath, "irc_normal.png", TRUE), NULL, 0, BUTTON_TOOLBAR);
-    m_icon7 = new FXButton(m_iconsBar, _("\tAway"), makeAwayIcon(getApp(), m_themePath, "irc_normal.png"), NULL, 0, BUTTON_TOOLBAR);
+    m_icon1 = new dxEXButton(m_iconsBar, _("\tAdmin"), makeIcon(getApp(), m_themePath, "irc_admin.png", TRUE), NULL, 0, BUTTON_TOOLBAR);
+    m_icon2 = new dxEXButton(m_iconsBar, _("\tOwner"), makeIcon(getApp(), m_themePath, "irc_owner.png", TRUE), NULL, 0, BUTTON_TOOLBAR);
+    m_icon3 = new dxEXButton(m_iconsBar, _("\tOp"), makeIcon(getApp(), m_themePath, "irc_op.png", TRUE), NULL, 0, BUTTON_TOOLBAR);
+    m_icon4 = new dxEXButton(m_iconsBar, _("\tHalfop"), makeIcon(getApp(), m_themePath, "irc_halfop.png", TRUE), NULL, 0, BUTTON_TOOLBAR);
+    m_icon5 = new dxEXButton(m_iconsBar, _("\tVoice"), makeIcon(getApp(), m_themePath, "irc_voice.png", TRUE), NULL, 0, BUTTON_TOOLBAR);
+    m_icon6 = new dxEXButton(m_iconsBar, _("\tNormal"), makeIcon(getApp(), m_themePath, "irc_normal.png", TRUE), NULL, 0, BUTTON_TOOLBAR);
+    m_icon7 = new dxEXButton(m_iconsBar, _("\tAway"), makeAwayIcon(getApp(), m_themePath, "irc_normal.png"), NULL, 0, BUTTON_TOOLBAR);
     new FXCheckButton(otherpane, _("Reconnect after disconnection"), &m_targetReconnect, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
     FXHorizontalFrame *napane = new FXHorizontalFrame(otherpane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     m_numberAttemptLabel = new FXLabel(napane, _("Number of attempts"), NULL, LAYOUT_LEFT);
@@ -525,7 +525,7 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     new FXLabel(logpane, _("Log path"), NULL, LAYOUT_LEFT);
     (new FXTextField(logpane, 25, &m_targetLogPath, FXDataTarget::ID_VALUE, TEXTFIELD_READONLY|FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_X))->disable();
     if(!FXStat::exists(m_logPath)) m_logPath = FXSystem::getHomeDirectory();
-    m_selectPath = new FXButton(logpane, "...", NULL, this, ID_LOGPATH, FRAME_RAISED|FRAME_THICK);
+    m_selectPath = new dxEXButton(logpane, "...", NULL, this, ID_LOGPATH, FRAME_RAISED|FRAME_THICK);
     if(m_logging) m_selectPath->enable();
     else m_selectPath->disable();
 #ifdef HAVE_LUA
@@ -541,7 +541,7 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
         m_autoloadPath = FXSystem::getHomeDirectory()+PATHSEPSTRING+".dxirc"+PATHSEPSTRING+"scripts";
 #endif
     }
-    m_selectAutoloadPath = new FXButton(aloadpane, "...", NULL, this, ID_AUTOLOADPATH, FRAME_RAISED|FRAME_THICK);
+    m_selectAutoloadPath = new dxEXButton(aloadpane, "...", NULL, this, ID_AUTOLOADPATH, FRAME_RAISED|FRAME_THICK);
     if(m_autoload) m_selectAutoloadPath->enable();
     else m_selectAutoloadPath->disable();
 #endif
@@ -623,7 +623,7 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     m_menuLabels[2]=new FXLabel(m_menuFrame, _("&Quit"), NULL, LABEL_NORMAL, 0,0,0,0,16,4);
     FXHorizontalFrame *fontframe = new FXHorizontalFrame(lookpane, LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, DEFAULT_SPACING,DEFAULT_SPACING,DEFAULT_SPACING,DEFAULT_SPACING);
     new FXLabel(fontframe, _("Font"));
-    m_fontButton = new FXButton(fontframe, " ", NULL, this, ID_FONT, LAYOUT_CENTER_Y|FRAME_RAISED|JUSTIFY_CENTER_X|JUSTIFY_CENTER_Y|LAYOUT_FILL_X);
+    m_fontButton = new dxEXButton(fontframe, " ", NULL, this, ID_FONT, LAYOUT_CENTER_Y|FRAME_RAISED|JUSTIFY_CENTER_X|JUSTIFY_CENTER_Y|LAYOUT_FILL_X);
 
     FXVerticalFrame *dccpane = new FXVerticalFrame(switcher, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     new FXLabel(dccpane, _("DCC settings"), NULL, LAYOUT_LEFT);
@@ -631,7 +631,7 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     new FXLabel(dccpane, _("Directory for saving files:"), NULL, LAYOUT_LEFT);
     FXHorizontalFrame *pathframe = new FXHorizontalFrame(dccpane, LAYOUT_FILL_X);
     (new FXTextField(pathframe, 30, &m_targetDccPath, FXDataTarget::ID_VALUE, TEXTFIELD_READONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X))->disable();
-    new FXButton(pathframe, "...", NULL, this, ID_DCCPATH, FRAME_RAISED|FRAME_THICK);
+    new dxEXButton(pathframe, "...", NULL, this, ID_DCCPATH, FRAME_RAISED|FRAME_THICK);
     FXHorizontalFrame *ipframe = new FXHorizontalFrame(dccpane, LAYOUT_FILL_X);
     new FXLabel(ipframe, _("DCC IP address:"), NULL, LAYOUT_LEFT);
     new FXTextField(ipframe, 3, &m_targetDccIP1, FXDataTarget::ID_VALUE, TEXTFIELD_INTEGER|TEXTFIELD_LIMITED|FRAME_SUNKEN|FRAME_THICK);
@@ -668,8 +668,8 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
         m_checkConnect->disable();
     FXHorizontalFrame *connectframe = new FXHorizontalFrame(eventsframe, LAYOUT_FILL_X|PACK_UNIFORM_HEIGHT);
     (new FXTextField(connectframe, 30, &m_targetPathConnect, FXDataTarget::ID_VALUE, TEXTFIELD_READONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X))->disable();
-    m_selectConnect = new FXButton(connectframe, "...", NULL, this, ID_SELECTCONNECT, FRAME_RAISED|FRAME_THICK);
-    m_playConnect = new FXButton(connectframe, _("\tPlay"), ICO_PLAY, this, ID_PLAYCONNECT, FRAME_RAISED|FRAME_THICK);
+    m_selectConnect = new dxEXButton(connectframe, "...", NULL, this, ID_SELECTCONNECT, FRAME_RAISED|FRAME_THICK);
+    m_playConnect = new dxEXButton(connectframe, _("\tPlay"), ICO_PLAY, this, ID_PLAYCONNECT, FRAME_RAISED|FRAME_THICK);
     if(!m_soundConnect || !m_sounds)
     {
         m_selectConnect->disable();
@@ -682,8 +682,8 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
         m_checkDisconnect->disable();
     FXHorizontalFrame *disconnectframe = new FXHorizontalFrame(eventsframe, LAYOUT_FILL_X|PACK_UNIFORM_HEIGHT);
     (new FXTextField(disconnectframe, 30, &m_targetPathDisconnect, FXDataTarget::ID_VALUE, TEXTFIELD_READONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X))->disable();
-    m_selectDisconnect = new FXButton(disconnectframe, "...", NULL, this, ID_SELECTDISCONNECT, FRAME_RAISED|FRAME_THICK);
-    m_playDisconnect = new FXButton(disconnectframe, _("\tPlay"), ICO_PLAY, this, ID_PLAYDISCONNECT, FRAME_RAISED|FRAME_THICK);
+    m_selectDisconnect = new dxEXButton(disconnectframe, "...", NULL, this, ID_SELECTDISCONNECT, FRAME_RAISED|FRAME_THICK);
+    m_playDisconnect = new dxEXButton(disconnectframe, _("\tPlay"), ICO_PLAY, this, ID_PLAYDISCONNECT, FRAME_RAISED|FRAME_THICK);
     if(!m_soundDisconnect || !m_sounds)
     {
         m_selectDisconnect->disable();
@@ -693,9 +693,9 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
         m_playDisconnect->disable();
     FXGroupBox *friendsgroup = new FXGroupBox(eventsframe, _("Friends"), FRAME_GROOVE|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     FXVerticalFrame *friendsbuttons = new FXVerticalFrame(friendsgroup, LAYOUT_SIDE_RIGHT|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
-    m_addFriend = new FXButton(friendsbuttons, _("Add"), NULL, this, ID_ADDFRIEND, FRAME_RAISED|FRAME_THICK);
-    m_modifyFriend = new FXButton(friendsbuttons, _("Modify"), NULL, this, ID_MODIFYFRIEND, FRAME_RAISED|FRAME_THICK);
-    m_deleteFriend = new FXButton(friendsbuttons, _("Delete"), NULL, this, ID_DELETEFRIEND, FRAME_RAISED|FRAME_THICK);
+    m_addFriend = new dxEXButton(friendsbuttons, _("Add"), NULL, this, ID_ADDFRIEND, FRAME_RAISED|FRAME_THICK);
+    m_modifyFriend = new dxEXButton(friendsbuttons, _("Modify"), NULL, this, ID_MODIFYFRIEND, FRAME_RAISED|FRAME_THICK);
+    m_deleteFriend = new dxEXButton(friendsbuttons, _("Delete"), NULL, this, ID_DELETEFRIEND, FRAME_RAISED|FRAME_THICK);
     FXVerticalFrame *friendspane = new FXVerticalFrame(friendsgroup, LAYOUT_FILL_X|LAYOUT_FILL_Y|FRAME_SUNKEN|FRAME_THICK);
     FXHorizontalFrame *friendsframe = new FXHorizontalFrame(friendspane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     m_friends = new FXIconList(friendsframe, this, ID_FRIEND, ICONLIST_AUTOSIZE|ICONLIST_DETAILED|ICONLIST_BROWSESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
@@ -724,8 +724,8 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
         m_checkMessage->disable();
     FXHorizontalFrame *messageframe = new FXHorizontalFrame(eventsframe, LAYOUT_FILL_X|PACK_UNIFORM_HEIGHT);
     (new FXTextField(messageframe, 30, &m_targetPathMessage, FXDataTarget::ID_VALUE, TEXTFIELD_READONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X))->disable();
-    m_selectMessage = new FXButton(messageframe, "...", NULL, this, ID_SELECTMESSAGE, FRAME_RAISED|FRAME_THICK);
-    m_playMessage = new FXButton(messageframe, _("\tPlay"), ICO_PLAY, this, ID_PLAYMESSAGE, FRAME_RAISED|FRAME_THICK);
+    m_selectMessage = new dxEXButton(messageframe, "...", NULL, this, ID_SELECTMESSAGE, FRAME_RAISED|FRAME_THICK);
+    m_playMessage = new dxEXButton(messageframe, _("\tPlay"), ICO_PLAY, this, ID_PLAYMESSAGE, FRAME_RAISED|FRAME_THICK);
     if(!m_soundMessage || !m_sounds)
     {
         m_selectMessage->disable();
@@ -740,11 +740,11 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     new FXCheckButton(smileypane, _("Use smileys"), &m_targetUseSmileys, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
     FXGroupBox *smileysgroup = new FXGroupBox(smileypane, _("Smileys"), FRAME_GROOVE|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     FXVerticalFrame *smileysbuttons = new FXVerticalFrame(smileysgroup, LAYOUT_SIDE_RIGHT|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
-    m_addSmiley = new FXButton(smileysbuttons, _("Add"), NULL, this, ID_ADDSMILEY, FRAME_RAISED|FRAME_THICK);
-    m_modifySmiley = new FXButton(smileysbuttons, _("Modify"), NULL, this, ID_MODIFYSMILEY, FRAME_RAISED|FRAME_THICK);
-    m_deleteSmiley = new FXButton(smileysbuttons, _("Delete"), NULL, this, ID_DELETESMILEY, FRAME_RAISED|FRAME_THICK);
-    m_importSmiley = new FXButton(smileysbuttons, _("Import"), NULL, this, ID_IMPORTSMILEY, FRAME_RAISED|FRAME_THICK);
-    m_exportSmiley = new FXButton(smileysbuttons, _("Export"), NULL, this, ID_EXPORTSMILEY, FRAME_RAISED|FRAME_THICK);
+    m_addSmiley = new dxEXButton(smileysbuttons, _("Add"), NULL, this, ID_ADDSMILEY, FRAME_RAISED|FRAME_THICK);
+    m_modifySmiley = new dxEXButton(smileysbuttons, _("Modify"), NULL, this, ID_MODIFYSMILEY, FRAME_RAISED|FRAME_THICK);
+    m_deleteSmiley = new dxEXButton(smileysbuttons, _("Delete"), NULL, this, ID_DELETESMILEY, FRAME_RAISED|FRAME_THICK);
+    m_importSmiley = new dxEXButton(smileysbuttons, _("Import"), NULL, this, ID_IMPORTSMILEY, FRAME_RAISED|FRAME_THICK);
+    m_exportSmiley = new dxEXButton(smileysbuttons, _("Export"), NULL, this, ID_EXPORTSMILEY, FRAME_RAISED|FRAME_THICK);
     if(m_useSmileys)
     {
         m_addSmiley->enable();
@@ -775,13 +775,13 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     m_smileys = new FXList(smileysframe, this, ID_SMILEY, LIST_BROWSESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     fillSmileys();
     
-    new FXButton(buttonframe, _("&General"), NULL, switcher, FXSwitcher::ID_OPEN_THIRD, FRAME_RAISED);
-    new FXButton(buttonframe, _("&Look"), NULL, switcher, FXSwitcher::ID_OPEN_FOURTH, FRAME_RAISED);
-    new FXButton(buttonframe, _("&Irc Text"), NULL, switcher, FXSwitcher::ID_OPEN_FIRST, FRAME_RAISED);
-    new FXButton(buttonframe, _("I&gnore"), NULL, switcher, FXSwitcher::ID_OPEN_SECOND, FRAME_RAISED);
-    new FXButton(buttonframe, _("&DCC"), NULL, switcher, FXSwitcher::ID_OPEN_FIFTH, FRAME_RAISED);
-    new FXButton(buttonframe, _("S&ounds"), NULL, switcher, FXSwitcher::ID_OPEN_SIXTH, FRAME_RAISED);
-    new FXButton(buttonframe, _("S&mileys"), NULL, switcher, FXSwitcher::ID_OPEN_SEVENTH, FRAME_RAISED);
+    new dxEXButton(buttonframe, _("&General"), NULL, switcher, FXSwitcher::ID_OPEN_THIRD, FRAME_RAISED);
+    new dxEXButton(buttonframe, _("&Look"), NULL, switcher, FXSwitcher::ID_OPEN_FOURTH, FRAME_RAISED);
+    new dxEXButton(buttonframe, _("&Irc Text"), NULL, switcher, FXSwitcher::ID_OPEN_FIRST, FRAME_RAISED);
+    new dxEXButton(buttonframe, _("I&gnore"), NULL, switcher, FXSwitcher::ID_OPEN_SECOND, FRAME_RAISED);
+    new dxEXButton(buttonframe, _("&DCC"), NULL, switcher, FXSwitcher::ID_OPEN_FIFTH, FRAME_RAISED);
+    new dxEXButton(buttonframe, _("S&ounds"), NULL, switcher, FXSwitcher::ID_OPEN_SIXTH, FRAME_RAISED);
+    new dxEXButton(buttonframe, _("S&mileys"), NULL, switcher, FXSwitcher::ID_OPEN_SEVENTH, FRAME_RAISED);
     switcher->setCurrent(2);
 
     for(int i=0; i<6; i++)
@@ -956,8 +956,8 @@ long ConfigDialog::onAddCommand(FXObject*, FXSelector, void*)
     command->fillItems(fillCommandsCombo());
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
-    new FXButton(buttonframe, _("&Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
-    new FXButton(buttonframe, _("&OK"), NULL, &dialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    new dxEXButton(buttonframe, _("&Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    new dxEXButton(buttonframe, _("&OK"), NULL, &dialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
 
     if(dialog.execute(PLACEMENT_CURSOR))
     {
@@ -994,8 +994,8 @@ long ConfigDialog::onAddUser(FXObject*, FXSelector, void*)
     server->setText("all");
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
-    new FXButton(buttonframe, _("&Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
-    new FXButton(buttonframe, _("&OK"), NULL, &dialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    new dxEXButton(buttonframe, _("&Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    new dxEXButton(buttonframe, _("&OK"), NULL, &dialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
 
     if(dialog.execute(PLACEMENT_CURSOR))
     {
@@ -1034,8 +1034,8 @@ long ConfigDialog::onModifyUser(FXObject*, FXSelector, void*)
     server->setText(m_usersList[i].server);
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
-    new FXButton(buttonframe, _("&Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
-    new FXButton(buttonframe, _("&OK"), NULL, &dialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    new dxEXButton(buttonframe, _("&Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    new dxEXButton(buttonframe, _("&OK"), NULL, &dialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
 
     if(dialog.execute(PLACEMENT_CURSOR))
     {
@@ -1071,7 +1071,7 @@ long ConfigDialog::onDeleteUser(FXObject*, FXSelector, void*)
 long ConfigDialog::onImportSmiley(FXObject*, FXSelector, void*)
 {
     if(m_showImportwarning && m_smileysMap.size())
-        if(FXMessageBox::warning(this, MBOX_OK_CANCEL, _("Warning"), _("File import overwrites current settings"))==4) {m_showImportwarning=FALSE; return 1;}
+        if(dxEXMessageBox::warning(this, MBOX_OK_CANCEL, _("Warning"), _("File import overwrites current settings"))==4) {m_showImportwarning=FALSE; return 1;}
     FXFileDialog dialog(this, _("Select file"));
     if(m_showImportwarning) dialog.setFilename((FXString)DXIRC_DATADIR+PATHSEPSTRING+"icons"+PATHSEPSTRING+"smileys"+PATHSEPSTRING+"dxirc.smiley");
     if(dialog.execute())
@@ -1340,8 +1340,8 @@ long ConfigDialog::onAddFriend(FXObject*, FXSelector, void*)
     server->setText("all");
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
-    new FXButton(buttonframe, _("&Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
-    new FXButton(buttonframe, _("&OK"), NULL, &dialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    new dxEXButton(buttonframe, _("&Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    new dxEXButton(buttonframe, _("&OK"), NULL, &dialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
 
     if(dialog.execute(PLACEMENT_CURSOR))
     {
@@ -1380,8 +1380,8 @@ long ConfigDialog::onModifyFriend(FXObject*, FXSelector, void*)
     server->setText(m_friendsList[i].server);
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
-    new FXButton(buttonframe, _("&Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
-    new FXButton(buttonframe, _("&OK"), NULL, &dialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    new dxEXButton(buttonframe, _("&Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    new dxEXButton(buttonframe, _("&OK"), NULL, &dialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
 
     if(dialog.execute(PLACEMENT_CURSOR))
     {
@@ -2034,7 +2034,7 @@ long ConfigDialog::onAddSmiley(FXObject*, FXSelector, void*)
 {
     if((FXint)m_smileysMap.size()>=256)
     {
-        FXMessageBox::information(this, MBOX_OK, _("Information"), _("Maximum number of 256 smileys is reached"));
+        dxEXMessageBox::information(this, MBOX_OK, _("Information"), _("Maximum number of 256 smileys is reached"));
         return 1;
     }
     SmileyDialog dialog(this, _("Add smiley"), "", "");
@@ -2042,17 +2042,17 @@ long ConfigDialog::onAddSmiley(FXObject*, FXSelector, void*)
     {
         if(!dialog.iconExist())
         {
-            FXMessageBox::information(this, MBOX_OK, _("Information"), _("Icon file '%s' doesn't exist or isn't image file"), dialog.getPath().text());
+            dxEXMessageBox::information(this, MBOX_OK, _("Information"), _("Icon file '%s' doesn't exist or isn't image file"), dialog.getPath().text());
             return 1;
         }
         if(dialog.getSmiley().empty())
         {
-            FXMessageBox::information(this, MBOX_OK, _("Information"), _("Smiley text is empty"));
+            dxEXMessageBox::information(this, MBOX_OK, _("Information"), _("Smiley text is empty"));
             return 1;
         }
         if(smileyExist(dialog.getSmiley()))
         {
-            FXMessageBox::information(this, MBOX_OK, _("Information"), _("Smiley '%s' already exist"), dialog.getSmiley().text());
+            dxEXMessageBox::information(this, MBOX_OK, _("Information"), _("Smiley '%s' already exist"), dialog.getSmiley().text());
             return 1;
         }
         m_smileysMap.insert(StringPair(dialog.getSmiley(), dialog.getPath()));
@@ -2073,17 +2073,17 @@ long ConfigDialog::onModifySmiley(FXObject*, FXSelector, void*)
     {
         if(!dialog.iconExist())
         {
-            FXMessageBox::information(this, MBOX_OK, _("Information"), _("Icon file '%s' doesn't exist or isn't image file"), dialog.getPath().text());
+            dxEXMessageBox::information(this, MBOX_OK, _("Information"), _("Icon file '%s' doesn't exist or isn't image file"), dialog.getPath().text());
             return 1;
         }
         if(dialog.getSmiley().empty())
         {
-            FXMessageBox::information(this, MBOX_OK, _("Information"), _("Smiley text is empty"));
+            dxEXMessageBox::information(this, MBOX_OK, _("Information"), _("Smiley text is empty"));
             return 1;
         }
         if(smileyExist(dialog.getSmiley()) && dialog.getSmiley()!=oldkey)
         {
-            FXMessageBox::information(this, MBOX_OK, _("Information"), _("Smiley '%s' already exist"), dialog.getSmiley().text());
+            dxEXMessageBox::information(this, MBOX_OK, _("Information"), _("Smiley '%s' already exist"), dialog.getSmiley().text());
             return 1;
         }
         m_smileysMap.erase(oldkey);
@@ -2235,7 +2235,7 @@ void ConfigDialog::showMessage()
 {
     if(m_showWarning)
     {
-        FXMessageBox::information(this, FX::MBOX_OK, _("Information"), _("Some changes need restart application"));
+        dxEXMessageBox::information(this, FX::MBOX_OK, _("Information"), _("Some changes need restart application"));
         m_showWarning = FALSE;
     }
 }

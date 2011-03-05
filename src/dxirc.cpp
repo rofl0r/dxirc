@@ -838,7 +838,7 @@ long dxirc::onCmdHelp(FXObject*, FXSelector, void*)
     text->setVisibleColumns(90);
     text->setText(HELP_TEXT);
 
-    new FXButton(contents, _("C&lose"), NULL, &helpDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
+    new dxEXButton(contents, _("C&lose"), NULL, &helpDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
 
     helpDialog.execute(PLACEMENT_CURSOR);
     return 1;
@@ -981,7 +981,7 @@ void dxirc::updateTheme()
     FXTreeList * treelist;
     FXComboBox * combobox;
     FXArrowButton * arrowbuton;
-    FXButton * button;
+    dxEXButton * button;
     FXFrame * frame;
     FXLabel * label;
     FXPopup * popup;
@@ -1086,7 +1086,7 @@ void dxirc::updateTheme()
             if ((label = dynamic_cast<FXLabel*> (w)))
             {
                 if(label->getTextColor() == oldForeColor) label->setTextColor(m_appTheme.fore);
-                if ((button = dynamic_cast<FXButton*> (w)))
+                if ((button = dynamic_cast<dxEXButton*> (w)))
                 {
                     if (dynamic_cast<FXListBox*> (button->getParent()))
                     {
@@ -1563,8 +1563,8 @@ long dxirc::onCmdConnect(FXObject*, FXSelector, void*)
     command->setVisibleColumns(25);
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
-    new FXButton(buttonframe, _("&Cancel"), NULL, &serverEdit, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
-    new FXButton(buttonframe, _("&OK"), NULL, &serverEdit, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    new dxEXButton(buttonframe, _("&Cancel"), NULL, &serverEdit, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    new dxEXButton(buttonframe, _("&OK"), NULL, &serverEdit, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
     if (serverEdit.execute(PLACEMENT_OWNER))
     {
 #ifdef HAVE_OPENSSL
@@ -1677,8 +1677,8 @@ long dxirc::onCmdDisconnect(FXObject*, FXSelector, void*)
                 FXVerticalFrame *contents = new FXVerticalFrame(&confirmDialog, LAYOUT_SIDE_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 10,10,10,10, 0,0);
                 new FXLabel(contents, FXStringFormat(_("Disconnect server: %s\nPort: %d\nNick: %s"), currentserver->getRealServerName().text(), currentserver->getServerPort(), currentserver->getNickName().text()), NULL, JUSTIFY_LEFT|ICON_BEFORE_TEXT);
                 FXHorizontalFrame* buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
-                new FXButton(buttonframe, _("&No"), NULL, &confirmDialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
-                new FXButton(buttonframe, _("&Yes"), NULL, &confirmDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+                new dxEXButton(buttonframe, _("&No"), NULL, &confirmDialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+                new dxEXButton(buttonframe, _("&Yes"), NULL, &confirmDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
                 if (confirmDialog.execute(PLACEMENT_OWNER))
                 {
                     currentserver->disconnect();
@@ -1729,8 +1729,8 @@ long dxirc::onCmdDisconnect(FXObject*, FXSelector, void*)
                 FXVerticalFrame *contents = new FXVerticalFrame(&confirmDialog, LAYOUT_SIDE_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 10,10,10,10, 0,0);
                 new FXLabel(contents, FXStringFormat(_("Disconnect dcc connection: %s\nPort: %d\nWith: %s"), currenttab->getServerName().text(), currenttab->getServerPort(), currenttab->getText().text()), NULL, JUSTIFY_LEFT|ICON_BEFORE_TEXT);
                 FXHorizontalFrame* buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
-                new FXButton(buttonframe, _("&No"), NULL, &confirmDialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
-                new FXButton(buttonframe, _("&Yes"), NULL, &confirmDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+                new dxEXButton(buttonframe, _("&No"), NULL, &confirmDialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+                new dxEXButton(buttonframe, _("&Yes"), NULL, &confirmDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
                 if (confirmDialog.execute(PLACEMENT_OWNER))
                 {
                     currenttab->disconnect();
@@ -2148,7 +2148,7 @@ void dxirc::onIrcDccChat(IrcEngine *server, IrcEvent *ev)
 {
     if(m_autoDccChat)
         createDccTab(server->getNickName(), ev->param1, ev->param2, FXIntVal(ev->param3));
-    if(!m_autoDccChat && FXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("%s offers DCC Chat on %s(%s) port %s.\n Do you want connect?"), ev->param1.text(), ev->param2.text(), server->getHostname(ev->param2).text(), ev->param3.text()) == 1)
+    if(!m_autoDccChat && dxEXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("%s offers DCC Chat on %s(%s) port %s.\n Do you want connect?"), ev->param1.text(), ev->param2.text(), server->getHostname(ev->param2).text(), ev->param3.text()) == 1)
         createDccTab(server->getNickName(), ev->param1, ev->param2, FXIntVal(ev->param3));
 }
 
@@ -2199,7 +2199,7 @@ void dxirc::onIrcDccIn(IrcEngine *server, IrcEvent *ev)
     else
     {
         if(isForResume(ev->param3)
-            &&FXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("%s offers file %s with size %s over DCC .\nFile is already partially downloaded.\nDo you want continue in download?"), ev->param1.text(), ev->param3.text(), utils::instance().getFileSize(ev->param4).text()) == 1)
+            &&dxEXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("%s offers file %s with size %s over DCC .\nFile is already partially downloaded.\nDo you want continue in download?"), ev->param1.text(), ev->param3.text(), utils::instance().getFileSize(ev->param4).text()) == 1)
         {
             DccFile dcc;
             dcc.path = m_dccPath+PATHSEPSTRING+ev->param3;
@@ -2225,7 +2225,7 @@ void dxirc::onIrcDccIn(IrcEngine *server, IrcEvent *ev)
             server->sendCtcp(ev->param1, "DCC RESUME "+FXPath::name(dcc.path)+" "+FXStringVal(dcc.port)+" "+FXStringVal(FXStat::size(dcc.path+".part")));
             return;
         }
-        if(FXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("%s offers file %s with size %s over DCC .\nDo you want connect?"), ev->param1.text(), ev->param3.text(), utils::instance().getFileSize(ev->param4).text()) == 1)
+        if(dxEXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("%s offers file %s with size %s over DCC .\nDo you want connect?"), ev->param1.text(), ev->param3.text(), utils::instance().getFileSize(ev->param4).text()) == 1)
         {
             FXFileDialog dialog(this, _("Save file"));
             dialog.setFilename(m_dccPath+PATHSEPSTRING+ev->param3);
@@ -2385,7 +2385,7 @@ void dxirc::onIrcDccToken(IrcEngine *server, IrcEvent *ev)
     else
     {
         if(isForResume(ev->param2)
-                && FXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("%s offers file %s with size %s over DCC passive.\nFile is already partially downloaded.\nDo you want continue in download?"), ev->param1.text(), ev->param2.text(), utils::instance().getFileSize(ev->param3).text()) == 1)
+                && dxEXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("%s offers file %s with size %s over DCC passive.\nFile is already partially downloaded.\nDo you want continue in download?"), ev->param1.text(), ev->param2.text(), utils::instance().getFileSize(ev->param3).text()) == 1)
         {
             DccFile dcc;
             dcc.path = m_dccPath+PATHSEPSTRING+ev->param2;
@@ -2409,7 +2409,7 @@ void dxirc::onIrcDccToken(IrcEngine *server, IrcEvent *ev)
             server->sendCtcp(ev->param1, "DCC RESUME "+FXPath::name(dcc.path)+" 0 "+FXStringVal(FXStat::size(dcc.path+".part"))+" "+FXStringVal(dcc.token));
             return;
         }
-        if(FXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("%s offers file %s with size %s over DCC passive.\n Do you want accept?"), ev->param1.text(), ev->param2.text(), utils::instance().getFileSize(ev->param3).text()) == 1)
+        if(dxEXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("%s offers file %s with size %s over DCC passive.\n Do you want accept?"), ev->param1.text(), ev->param2.text(), utils::instance().getFileSize(ev->param3).text()) == 1)
         {
             FXFileDialog dialog(this, _("Save file"));
             dialog.setFilename(m_dccPath+PATHSEPSTRING+ev->param2);
@@ -3948,7 +3948,7 @@ FXint dxirc::loadLuaScript(FXString path, FXbool showMessage)
     {
         if(showMessage)
         {
-            if(FXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("Script %s contains dxirc.AddAll\nThis can BREAK dxirc funcionality.\nLoad it anyway?"), path.text()) == 2) return 0;
+            if(dxEXMessageBox::question(this, MBOX_YES_NO, _("Question"), _("Script %s contains dxirc.AddAll\nThis can BREAK dxirc funcionality.\nLoad it anyway?"), path.text()) == 2) return 0;
         }
         else appendIrcStyledText(FXStringFormat(_("Script %s contains dxirc.AddAll. This can BREAK dxirc funcionality."), path.text()), 4, FALSE);
     }

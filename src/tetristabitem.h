@@ -25,6 +25,7 @@
 
 #include "defs.h"
 #include "dxtabbook.h"
+#include "fxext.h"
 
 static const FXint columns = 12;
 static const FXint rows = 20;
@@ -72,7 +73,7 @@ private:
     FXbool updatePosition(const Cell* ucells);
 };
 
-class TetrisTabItem : public FXTabItem
+class TetrisTabItem : public dxEXTabItem
 {
     FXDECLARE(TetrisTabItem)
 public:
@@ -120,7 +121,7 @@ private:
     FXSplitter *m_splitter;
     FXCanvas *m_gamecanvas, *m_nextcanvas;
     FXLabel *m_levelLabel, *m_scoreLabel, *m_linesLabel;
-    FXButton *m_newButton, *m_pauseButton;
+    dxEXButton *m_newButton, *m_pauseButton;
     FXFont *m_messageFont;
     FXint m_cells[columns][rows];
     FXint m_fullLines[4];

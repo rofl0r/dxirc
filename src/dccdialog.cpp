@@ -76,9 +76,9 @@ DccDialog::DccDialog(FXApp *app, dxirc *win)
     m_nick = new FXLabel(m_matrix, "", NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN);
 
     m_buttonframe = new FXHorizontalFrame(m_contents, LAYOUT_FILL_X);
-    m_buttonClose = new FXButton(m_buttonframe, _("C&lose"), NULL, this, ID_CLOSE, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
-    m_buttonClear = new FXButton(m_buttonframe, _("Clear &finished"), NULL, this, ID_CLEAR, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
-    m_buttonCanceled = new FXButton(m_buttonframe, _("Clear &canceled"), NULL, this, ID_CANCELED, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    m_buttonClose = new dxEXButton(m_buttonframe, _("C&lose"), NULL, this, ID_CLOSE, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    m_buttonClear = new dxEXButton(m_buttonframe, _("Clear &finished"), NULL, this, ID_CLEAR, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    m_buttonCanceled = new dxEXButton(m_buttonframe, _("Clear &canceled"), NULL, this, ID_CANCELED, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
 }
 
 DccDialog::~DccDialog()

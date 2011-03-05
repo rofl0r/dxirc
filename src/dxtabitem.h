@@ -26,21 +26,20 @@
 #include "defs.h"
 #include "dxtabbook.h"
 #include "dxtextfield.h"
+#include "fxext.h"
 #ifndef DXTEXT_H
 #include "dxtext.h"
 #endif
 
 class dxirc;
 
-class dxTabItem: public FXTabItem
+class dxTabItem: public dxEXTabItem
 {
     FXDECLARE(dxTabItem)
     friend class dxirc;
     public:
         dxTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *icon=0, FXuint opts=TAB_TOP_NORMAL, FXint id=0);
         virtual ~dxTabItem();
-
-        long onPaint(FXObject*, FXSelector, void*);
 
         virtual void createGeom() {}
         virtual void clearChat() {}

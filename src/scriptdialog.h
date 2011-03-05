@@ -24,6 +24,7 @@
 #define SCRIPTDIALOG_H
 
 #include "defs.h"
+#include "fxext.h"
 
 class dxirc;
 
@@ -63,7 +64,7 @@ class ScriptDialog: public FXDialogBox
         FXList *m_names;
         FXTextField *m_name, *m_version;
         FXText *m_description, *m_path;
-        FXButton *m_buttonLoad, *m_buttonView, *m_buttonUnload, *m_buttonClose, *m_buttonViewNew;
+        dxEXButton *m_buttonLoad, *m_buttonView, *m_buttonUnload, *m_buttonClose, *m_buttonViewNew;
         
         void updateList();
         void updateDetails();

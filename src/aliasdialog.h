@@ -23,6 +23,7 @@
 #define	ALIASDIALOG_H
 
 #include "defs.h"
+#include "fxext.h"
 
 class AliasDialog: public FXDialogBox
 {
@@ -57,7 +58,7 @@ private:
     FXVerticalFrame *m_contents, *m_tableframe;
     FXHorizontalFrame *m_buttonframe;
     FXIconList *m_table;
-    FXButton *m_buttonAdd, *m_buttonModify, *m_buttonDelete, *m_buttonCancel, *m_buttonSaveClose;
+    dxEXButton *m_buttonAdd, *m_buttonModify, *m_buttonDelete, *m_buttonCancel, *m_buttonSaveClose;
     dxStringMap m_aliases;
 
     void updateTable();

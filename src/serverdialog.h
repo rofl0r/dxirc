@@ -24,6 +24,7 @@
 #define SERVERDIALOG_H
 
 #include "defs.h"
+#include "fxext.h"
 
 class ServerDialog: public FXDialogBox
 {
@@ -68,7 +69,7 @@ class ServerDialog: public FXDialogBox
         FXList *m_names;
         FXTextField *m_hostname, *m_port, *m_passwd, *m_nick, *m_realname, *m_autoconnect, *m_usessl;
         FXText *m_channels, *m_commands;
-        FXButton *m_buttonJoin, *m_buttonAdd, *m_buttonModify, *m_buttonDelete, *m_buttonCancel, *m_buttonSaveClose;
+        dxEXButton *m_buttonJoin, *m_buttonAdd, *m_buttonModify, *m_buttonDelete, *m_buttonCancel, *m_buttonSaveClose;
 
         FXbool hostnameExist(const FXString&, const FXint&, const FXString&);
         void updateList();

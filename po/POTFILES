@@ -15,6 +15,7 @@
      ../src/aboutdialog.cpp \
      ../src/utils.cpp \
      ../src/dxsocket.cpp \
+     ../src/fxext.cpp \
      ../../../fox-1.6/src/FXMessageBox.cpp \
      ../../../fox-1.6/src/FXColorSelector.cpp \
      ../../../fox-1.6/src/FXFontSelector.cpp \

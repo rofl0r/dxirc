@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: david@konstrukce-cad.com\n"
-"POT-Creation-Date: 2011-02-20 20:13+0100\n"
+"POT-Creation-Date: 2011-03-05 21:24+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,7 +23,9 @@ msgstr ""
 #: src/irctabitem.cpp:4319 src/irctabitem.cpp:4349 src/irctabitem.cpp:4372
 #: src/serverdialog.cpp:101 src/serverdialog.cpp:181 src/serverdialog.cpp:268
 #: src/aliasdialog.cpp:53 src/aliasdialog.cpp:84 src/aliasdialog.cpp:127
-#: src/dccdialog.cpp:175 ../../fox-1.6/src/FXMessageBox.cpp:107
+#: src/dccdialog.cpp:175 src/fxext.cpp:741 src/fxext.cpp:754 src/fxext.cpp:760
+#: src/fxext.cpp:767 src/fxext.cpp:774 src/fxext.cpp:782
+#: ../../fox-1.6/src/FXMessageBox.cpp:107
 #: ../../fox-1.6/src/FXMessageBox.cpp:118
 #: ../../fox-1.6/src/FXMessageBox.cpp:123
 #: ../../fox-1.6/src/FXMessageBox.cpp:129
@@ -42,8 +44,8 @@ msgstr ""
 #: src/configdialog.cpp:1384 src/dxirc.cpp:1567 src/irctabitem.cpp:4274
 #: src/irctabitem.cpp:4295 src/irctabitem.cpp:4320 src/irctabitem.cpp:4350
 #: src/irctabitem.cpp:4373 src/serverdialog.cpp:182 src/serverdialog.cpp:269
-#: src/aliasdialog.cpp:85 src/aliasdialog.cpp:128
-#: ../../fox-1.6/src/FXMessageBox.cpp:102
+#: src/aliasdialog.cpp:85 src/aliasdialog.cpp:128 src/fxext.cpp:735
+#: src/fxext.cpp:740 ../../fox-1.6/src/FXMessageBox.cpp:102
 #: ../../fox-1.6/src/FXMessageBox.cpp:106
 #: ../../fox-1.6/src/FXDirSelector.cpp:134
 #: ../../fox-1.6/src/FXFileSelector.cpp:198
@@ -145,7 +147,7 @@ msgid "Add"
 msgstr ""
 
 #: src/configdialog.cpp:439 src/configdialog.cpp:446 src/configdialog.cpp:473
-#: src/configdialog.cpp:698 src/configdialog.cpp:745 src/logviewer.cpp:431
+#: src/configdialog.cpp:698 src/configdialog.cpp:745 src/logviewer.cpp:433
 msgid "Delete"
 msgstr ""
 
@@ -379,8 +381,8 @@ msgstr ""
 msgid "Highlighted tab"
 msgstr ""
 
-#: src/configdialog.cpp:623 src/dxirc.cpp:263
-#: ../../fox-1.6/src/FXMessageBox.cpp:122
+#: src/configdialog.cpp:623 src/dxirc.cpp:263 src/fxext.cpp:759
+#: src/fxext.cpp:765 ../../fox-1.6/src/FXMessageBox.cpp:122
 #: ../../fox-1.6/src/FXMessageBox.cpp:127
 msgid "&Quit"
 msgstr ""
@@ -590,10 +592,10 @@ msgstr ""
 #: src/configdialog.cpp:2037 src/configdialog.cpp:2045
 #: src/configdialog.cpp:2050 src/configdialog.cpp:2055
 #: src/configdialog.cpp:2076 src/configdialog.cpp:2081
-#: src/configdialog.cpp:2086 src/configdialog.cpp:2254 src/aliasdialog.cpp:93
+#: src/configdialog.cpp:2086 src/configdialog.cpp:2238 src/aliasdialog.cpp:93
 #: src/aliasdialog.cpp:98 src/aliasdialog.cpp:103 src/aliasdialog.cpp:136
 #: src/aliasdialog.cpp:141 src/aliasdialog.cpp:146 src/logviewer.cpp:170
-#: src/logviewer.cpp:216 src/logviewer.cpp:304
+#: src/logviewer.cpp:216 src/logviewer.cpp:306
 msgid "Information"
 msgstr ""
 
@@ -623,15 +625,11 @@ msgstr ""
 msgid "Modify smiley"
 msgstr ""
 
-#: src/configdialog.cpp:2167
-msgid "Current"
-msgstr ""
-
-#: src/configdialog.cpp:2174
+#: src/configdialog.cpp:2158
 msgid "User Defined"
 msgstr ""
 
-#: src/configdialog.cpp:2254
+#: src/configdialog.cpp:2238
 msgid "Some changes need restart application"
 msgstr ""
 
@@ -785,13 +783,13 @@ msgid ""
 "Nick: %s"
 msgstr ""
 
-#: src/dxirc.cpp:1680 src/dxirc.cpp:1732
+#: src/dxirc.cpp:1680 src/dxirc.cpp:1732 src/fxext.cpp:747 src/fxext.cpp:753
 #: ../../fox-1.6/src/FXMessageBox.cpp:112
 #: ../../fox-1.6/src/FXMessageBox.cpp:117
 msgid "&No"
 msgstr ""
 
-#: src/dxirc.cpp:1681 src/dxirc.cpp:1733
+#: src/dxirc.cpp:1681 src/dxirc.cpp:1733 src/fxext.cpp:746 src/fxext.cpp:752
 #: ../../fox-1.6/src/FXMessageBox.cpp:111
 #: ../../fox-1.6/src/FXMessageBox.cpp:116
 msgid "&Yes"
@@ -806,7 +804,7 @@ msgid ""
 msgstr ""
 
 #: src/dxirc.cpp:2151 src/dxirc.cpp:2202 src/dxirc.cpp:2228 src/dxirc.cpp:2388
-#: src/dxirc.cpp:2412 src/dxirc.cpp:3951 src/logviewer.cpp:476
+#: src/dxirc.cpp:2412 src/dxirc.cpp:3951 src/logviewer.cpp:478
 msgid "Question"
 msgstr ""
 
@@ -2678,61 +2676,61 @@ msgstr ""
 msgid "Search all"
 msgstr ""
 
-#: src/logviewer.cpp:170 src/logviewer.cpp:216 src/logviewer.cpp:304
+#: src/logviewer.cpp:170 src/logviewer.cpp:216 src/logviewer.cpp:306
 #, c-format
 msgid "'%s' wasn't found"
 msgstr ""
 
-#: src/logviewer.cpp:428
+#: src/logviewer.cpp:430
 msgid "Collapse"
 msgstr ""
 
-#: src/logviewer.cpp:430
+#: src/logviewer.cpp:432
 msgid "Expand"
 msgstr ""
 
-#: src/logviewer.cpp:468
+#: src/logviewer.cpp:470
 #, c-format
 msgid ""
 "Delete %s with all child items?\n"
 "This cann't be UNDONE!"
 msgstr ""
 
-#: src/logviewer.cpp:470
+#: src/logviewer.cpp:472
 #, c-format
 msgid ""
 "Delete %s?\n"
 "This cann't be UNDONE!"
 msgstr ""
 
-#: src/logviewer.cpp:473
+#: src/logviewer.cpp:475
 #, c-format
 msgid ""
 "Delete file %s?\n"
 "This cann't be UNDONE!"
 msgstr ""
 
-#: src/logviewer.cpp:536 src/logviewer.cpp:546 src/logviewer.cpp:558
+#: src/logviewer.cpp:538 src/logviewer.cpp:548 src/logviewer.cpp:560
 #: src/scriptdialog.cpp:225 src/scriptdialog.cpp:235 src/scriptdialog.cpp:247
 msgid "Error Loading File"
 msgstr ""
 
-#: src/logviewer.cpp:536 src/scriptdialog.cpp:225
+#: src/logviewer.cpp:538 src/scriptdialog.cpp:225
 #, c-format
 msgid "Unable to open file: %s"
 msgstr ""
 
-#: src/logviewer.cpp:546 src/scriptdialog.cpp:235
+#: src/logviewer.cpp:548 src/scriptdialog.cpp:235
 #, c-format
 msgid "File is too big: %s (%d bytes)"
 msgstr ""
 
-#: src/logviewer.cpp:558 src/scriptdialog.cpp:247
+#: src/logviewer.cpp:560 src/scriptdialog.cpp:247
 #, c-format
 msgid "Unable to read file: %s"
 msgstr ""
 
-#: src/logviewer.cpp:649
+#: src/logviewer.cpp:651
 msgid "Logs"
 msgstr ""
 
@@ -3145,24 +3143,24 @@ msgstr ""
 msgid "Unable set socket flag"
 msgstr ""
 
-#: src/dxsocket.cpp:1292
+#: src/dxsocket.cpp:1300
 msgid "Can't write data - socket is not connected"
 msgstr ""
 
-#: ../../fox-1.6/src/FXMessageBox.cpp:128
+#: src/fxext.cpp:766 src/fxext.cpp:783 ../../fox-1.6/src/FXMessageBox.cpp:128
 #: ../../fox-1.6/src/FXMessageBox.cpp:143
 msgid "&Save"
 msgstr ""
 
-#: ../../fox-1.6/src/FXMessageBox.cpp:133
+#: src/fxext.cpp:772 ../../fox-1.6/src/FXMessageBox.cpp:133
 msgid "&Skip"
 msgstr ""
 
-#: ../../fox-1.6/src/FXMessageBox.cpp:134
+#: src/fxext.cpp:773 ../../fox-1.6/src/FXMessageBox.cpp:134
 msgid "Skip &All"
 msgstr ""
 
-#: ../../fox-1.6/src/FXMessageBox.cpp:140
+#: src/fxext.cpp:780 ../../fox-1.6/src/FXMessageBox.cpp:140
 msgid "&Don't Save"
 msgstr ""
 

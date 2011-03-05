@@ -24,6 +24,7 @@
 #define DCCDIALOG_H
 
 #include "defs.h"
+#include "fxext.h"
 
 class dxirc;
 
@@ -63,7 +64,7 @@ class DccDialog: public FXTopWindow
         FXVerticalFrame *m_contents, *m_tableframe;
         FXMatrix *m_matrix;
         FXHorizontalFrame *m_buttonframe;
-        FXButton *m_buttonClose, *m_buttonClear, *m_buttonCanceled;
+        dxEXButton *m_buttonClose, *m_buttonClear, *m_buttonCanceled;
         FXTable *m_table;
         FXLabel *m_path, *m_ip, *m_port, *m_nick;
         FXGroupBox *m_group;
