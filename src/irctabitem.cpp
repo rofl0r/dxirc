@@ -48,14 +48,14 @@ DccSendDialog::DccSendDialog(FXMainWindow* owner, FXString nick)
     m_fileFrame = new FXHorizontalFrame(m_mainFrame, LAYOUT_FILL_X);
     new FXLabel(m_fileFrame, _("File:"));
     m_fileText = new FXTextField(m_fileFrame, 25, NULL, 0, TEXTFIELD_READONLY|FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_X);
-    m_buttonFile = new dxEXButton(m_fileFrame, "...", NULL, this, ID_FILE, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
+    m_buttonFile = new dxEXButton(m_fileFrame, "...", NULL, this, ID_FILE, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,2);
 
     m_passiveFrame = new FXHorizontalFrame(m_mainFrame, LAYOUT_FILL_X);
     m_checkPassive = new FXCheckButton(m_passiveFrame, _("Send passive"), NULL, 0);
 
     m_buttonFrame = new FXHorizontalFrame(m_mainFrame, LAYOUT_FILL_X|PACK_UNIFORM_WIDTH);
-    m_buttonCancel = new dxEXButton(m_buttonFrame, _("&Cancel"), NULL, this, ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
-    m_buttonSend = new dxEXButton(m_buttonFrame, _("&Send file"), NULL, this, ID_SEND, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    m_buttonCancel = new dxEXButton(m_buttonFrame, _("&Cancel"), NULL, this, ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
+    m_buttonSend = new dxEXButton(m_buttonFrame, _("&Send file"), NULL, this, ID_SEND, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
 }
 
 DccSendDialog::~DccSendDialog()
@@ -67,7 +67,7 @@ FXuint DccSendDialog::execute(FXuint placement)
     create();
     show(placement);
     getApp()->refresh();
-    FXFileDialog dialog(this, _("Select file"));
+    dxEXFileDialog dialog(this, _("Select file"));
     if(dialog.execute())
     {
         m_fileText->setText(dialog.getFilename());
@@ -77,7 +77,7 @@ FXuint DccSendDialog::execute(FXuint placement)
 
 long DccSendDialog::onFile(FXObject*, FXSelector, void*)
 {
-    FXFileDialog dialog(this, _("Select file"));
+    dxEXFileDialog dialog(this, _("Select file"));
     if(dialog.execute())
     {
         m_fileText->setText(dialog.getFilename());
@@ -4270,8 +4270,8 @@ long IrcTabItem::onKick(FXObject *, FXSelector, void *)
     FXTextField *reasonEdit = new FXTextField(kickframe, 25, NULL, 0, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents, LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
-    new dxEXButton(buttonframe, _("&Cancel"), NULL, &kickDialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 5);
-    new dxEXButton(buttonframe, _("&OK"), NULL, &kickDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 5);
+    new dxEXButton(buttonframe, _("&Cancel"), NULL, &kickDialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 2);
+    new dxEXButton(buttonframe, _("&OK"), NULL, &kickDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 2);
 
     if(kickDialog.execute(PLACEMENT_CURSOR))
     {
@@ -4291,8 +4291,8 @@ long IrcTabItem::onBan(FXObject *, FXSelector, void *)
     banEdit->setText(m_nickOnRight.nick+"!"+m_nickOnRight.user+"@"+m_nickOnRight.host);
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents, LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
-    new dxEXButton(buttonframe, _("&Cancel"), NULL, &banDialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 5);
-    new dxEXButton(buttonframe, _("&OK"), NULL, &banDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 5);
+    new dxEXButton(buttonframe, _("&Cancel"), NULL, &banDialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 2);
+    new dxEXButton(buttonframe, _("&OK"), NULL, &banDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 2);
 
     if(banDialog.execute(PLACEMENT_CURSOR))
     {
@@ -4316,8 +4316,8 @@ long IrcTabItem::onKickban(FXObject *, FXSelector, void *)
     banEdit->setText(m_nickOnRight.nick+"!"+m_nickOnRight.user+"@"+m_nickOnRight.host);
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents, LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
-    new dxEXButton(buttonframe, _("&Cancel"), NULL, &banDialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 5);
-    new dxEXButton(buttonframe, _("&OK"), NULL, &banDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 5);
+    new dxEXButton(buttonframe, _("&Cancel"), NULL, &banDialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 2);
+    new dxEXButton(buttonframe, _("&OK"), NULL, &banDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 2);
 
     if(banDialog.execute(PLACEMENT_CURSOR))
     {
@@ -4346,8 +4346,8 @@ long IrcTabItem::onIgnore(FXObject*, FXSelector, void*)
     server->setText(getServerName());
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
-    new dxEXButton(buttonframe, _("&Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
-    new dxEXButton(buttonframe, _("&OK"), NULL, &dialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    new dxEXButton(buttonframe, _("&Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
+    new dxEXButton(buttonframe, _("&OK"), NULL, &dialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
 
     if(dialog.execute(PLACEMENT_CURSOR))
     {
@@ -4369,8 +4369,8 @@ long IrcTabItem::onSetAway(FXObject*, FXSelector, void*)
     msgEdit->setText(_("away"));
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents, LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
-    new dxEXButton(buttonframe, _("&Cancel"), NULL, &awayDialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 5);
-    new dxEXButton(buttonframe, _("&OK"), NULL, &awayDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 5);
+    new dxEXButton(buttonframe, _("&Cancel"), NULL, &awayDialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 2);
+    new dxEXButton(buttonframe, _("&OK"), NULL, &awayDialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 2);
 
     if(awayDialog.execute(PLACEMENT_CURSOR))
     {

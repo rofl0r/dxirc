@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.01\n"
 "Report-Msgid-Bugs-To: david@konstrukce-cad.com\n"
-"POT-Creation-Date: 2011-03-05 21:24+0100\n"
+"POT-Creation-Date: 2011-03-06 17:20+0100\n"
 "PO-Revision-Date: 2011-02-20 17:41+0100\n"
 "Last-Translator: David Vachulka <david@konstrukce-cad.com>\n"
 "Language-Team: dvx-alone <david@konstrukce-cad.com>\n"
@@ -22,8 +22,9 @@ msgstr ""
 #: src/irctabitem.cpp:4319 src/irctabitem.cpp:4349 src/irctabitem.cpp:4372
 #: src/serverdialog.cpp:101 src/serverdialog.cpp:181 src/serverdialog.cpp:268
 #: src/aliasdialog.cpp:53 src/aliasdialog.cpp:84 src/aliasdialog.cpp:127
-#: src/dccdialog.cpp:175 src/fxext.cpp:741 src/fxext.cpp:754 src/fxext.cpp:760
-#: src/fxext.cpp:767 src/fxext.cpp:774 src/fxext.cpp:782
+#: src/dccdialog.cpp:175 src/fxext.cpp:722 src/fxext.cpp:735 src/fxext.cpp:741
+#: src/fxext.cpp:748 src/fxext.cpp:755 src/fxext.cpp:763 src/fxext.cpp:904
+#: src/fxext.cpp:1048 src/fxext.cpp:1297
 #: ../../fox-1.6/src/FXMessageBox.cpp:107
 #: ../../fox-1.6/src/FXMessageBox.cpp:118
 #: ../../fox-1.6/src/FXMessageBox.cpp:123
@@ -43,8 +44,9 @@ msgstr "&Zrušit"
 #: src/configdialog.cpp:1384 src/dxirc.cpp:1567 src/irctabitem.cpp:4274
 #: src/irctabitem.cpp:4295 src/irctabitem.cpp:4320 src/irctabitem.cpp:4350
 #: src/irctabitem.cpp:4373 src/serverdialog.cpp:182 src/serverdialog.cpp:269
-#: src/aliasdialog.cpp:85 src/aliasdialog.cpp:128 src/fxext.cpp:735
-#: src/fxext.cpp:740 ../../fox-1.6/src/FXMessageBox.cpp:102
+#: src/aliasdialog.cpp:85 src/aliasdialog.cpp:128 src/fxext.cpp:716
+#: src/fxext.cpp:721 src/fxext.cpp:903 src/fxext.cpp:1040 src/fxext.cpp:1296
+#: ../../fox-1.6/src/FXMessageBox.cpp:102
 #: ../../fox-1.6/src/FXMessageBox.cpp:106
 #: ../../fox-1.6/src/FXDirSelector.cpp:134
 #: ../../fox-1.6/src/FXFileSelector.cpp:198
@@ -382,8 +384,8 @@ msgstr "Nepřečtená záložka"
 msgid "Highlighted tab"
 msgstr "Zvýrazněná záložka"
 
-#: src/configdialog.cpp:623 src/dxirc.cpp:263 src/fxext.cpp:759
-#: src/fxext.cpp:765 ../../fox-1.6/src/FXMessageBox.cpp:122
+#: src/configdialog.cpp:623 src/dxirc.cpp:263 src/fxext.cpp:740
+#: src/fxext.cpp:746 ../../fox-1.6/src/FXMessageBox.cpp:122
 #: ../../fox-1.6/src/FXMessageBox.cpp:127
 msgid "&Quit"
 msgstr "&Ukončit"
@@ -789,13 +791,13 @@ msgstr ""
 "Port: %d\n"
 "Přezdívka: %s"
 
-#: src/dxirc.cpp:1680 src/dxirc.cpp:1732 src/fxext.cpp:747 src/fxext.cpp:753
+#: src/dxirc.cpp:1680 src/dxirc.cpp:1732 src/fxext.cpp:728 src/fxext.cpp:734
 #: ../../fox-1.6/src/FXMessageBox.cpp:112
 #: ../../fox-1.6/src/FXMessageBox.cpp:117
 msgid "&No"
 msgstr "&Ne"
 
-#: src/dxirc.cpp:1681 src/dxirc.cpp:1733 src/fxext.cpp:746 src/fxext.cpp:752
+#: src/dxirc.cpp:1681 src/dxirc.cpp:1733 src/fxext.cpp:727 src/fxext.cpp:733
 #: ../../fox-1.6/src/FXMessageBox.cpp:111
 #: ../../fox-1.6/src/FXMessageBox.cpp:116
 msgid "&Yes"
@@ -3303,22 +3305,288 @@ msgstr "Nemohu nastavit socket"
 msgid "Can't write data - socket is not connected"
 msgstr "Nemohu zapsat data - soket není připojený"
 
-#: src/fxext.cpp:766 src/fxext.cpp:783 ../../fox-1.6/src/FXMessageBox.cpp:128
+#: src/fxext.cpp:747 src/fxext.cpp:764 ../../fox-1.6/src/FXMessageBox.cpp:128
 #: ../../fox-1.6/src/FXMessageBox.cpp:143
 msgid "&Save"
 msgstr "&Uložit"
 
-#: src/fxext.cpp:772 ../../fox-1.6/src/FXMessageBox.cpp:133
+#: src/fxext.cpp:753 ../../fox-1.6/src/FXMessageBox.cpp:133
 msgid "&Skip"
 msgstr "&Přeskočit"
 
-#: src/fxext.cpp:773 ../../fox-1.6/src/FXMessageBox.cpp:134
+#: src/fxext.cpp:754 ../../fox-1.6/src/FXMessageBox.cpp:134
 msgid "Skip &All"
 msgstr "Přeskočit &vše"
 
-#: src/fxext.cpp:780 ../../fox-1.6/src/FXMessageBox.cpp:140
+#: src/fxext.cpp:761 ../../fox-1.6/src/FXMessageBox.cpp:140
 msgid "&Don't Save"
 msgstr "&Neukládat"
+
+#: src/fxext.cpp:1038 ../../fox-1.6/src/FXFileSelector.cpp:196
+msgid "&File Name:"
+msgstr "&Jméno:"
+
+#: src/fxext.cpp:1042 ../../fox-1.6/src/FXFileSelector.cpp:200
+msgid "File F&ilter:"
+msgstr "F&iltr:"
+
+#: src/fxext.cpp:1047 ../../fox-1.6/src/FXFileSelector.cpp:204
+msgid "Read Only"
+msgstr "Jen pro čtení"
+
+#: src/fxext.cpp:1052 ../../fox-1.6/src/FXFileSelector.cpp:208
+msgid "Directory:"
+msgstr "Adresář:"
+
+#: src/fxext.cpp:1058 ../../fox-1.6/src/FXFileSelector.cpp:228
+msgid "&Set bookmark\t\tBookmark current directory."
+msgstr "&Nastavit záložky\t\tZazáložkuje aktuální adresář."
+
+#: src/fxext.cpp:1059 ../../fox-1.6/src/FXFileSelector.cpp:229
+msgid "&Clear bookmarks\t\tClear bookmarks."
+msgstr "&Vyčistit záložky\t\tVyčistí záložky."
+
+#: src/fxext.cpp:1074 ../../fox-1.6/src/FXFileSelector.cpp:244
+msgid "\tGo up one directory\tMove up to higher directory."
+msgstr "\tJít o adresář výše\tPřesune do adresáře výše."
+
+#: src/fxext.cpp:1075 ../../fox-1.6/src/FXFileSelector.cpp:245
+msgid "\tGo to home directory\tBack to home directory."
+msgstr "\tJít do domovského adresáře\tZpátky do domovského adresáře."
+
+#: src/fxext.cpp:1076 ../../fox-1.6/src/FXFileSelector.cpp:246
+msgid "\tGo to work directory\tBack to working directory."
+msgstr "\tJít do pracovního adresáře\tZpátky do pracovního adresáře."
+
+#: src/fxext.cpp:1077 ../../fox-1.6/src/FXFileSelector.cpp:247
+msgid "\tBookmarks\tVisit bookmarked directories."
+msgstr "\tZáložky\tNavštíví zazáložkované adresáře."
+
+#: src/fxext.cpp:1080 ../../fox-1.6/src/FXFileSelector.cpp:250
+msgid "\tCreate new directory\tCreate new directory."
+msgstr "\tVytvořit nový adresář\tVytvoří nový adresář."
+
+#: src/fxext.cpp:1081 ../../fox-1.6/src/FXFileSelector.cpp:251
+msgid "\tShow list\tDisplay directory with small icons."
+msgstr "\tZobrazit seznam\tZobrazí adresář s malými ikonami."
+
+#: src/fxext.cpp:1082 ../../fox-1.6/src/FXFileSelector.cpp:252
+msgid "\tShow icons\tDisplay directory with big icons."
+msgstr "\tZobrazit ikony\tZobrazí adresář s velkými ikonami."
+
+#: src/fxext.cpp:1083 ../../fox-1.6/src/FXFileSelector.cpp:253
+msgid "\tShow details\tDisplay detailed directory listing."
+msgstr "\tZobrazit detaily\tZobrazí detailní seznam adresářů."
+
+#: src/fxext.cpp:1084 ../../fox-1.6/src/FXFileSelector.cpp:254
+msgid "\tShow hidden files\tShow hidden files and directories."
+msgstr "\tZobrazit skryté soubory\tZobrazí skryté soubory a adresáře."
+
+#: src/fxext.cpp:1084 ../../fox-1.6/src/FXFileSelector.cpp:254
+msgid "\tHide Hidden Files\tHide hidden files and directories."
+msgstr "\tSkrýt skryté soubory\tSkryje skryté soubory a adresáře."
+
+#: src/fxext.cpp:1113 src/fxext.cpp:1321
+#: ../../fox-1.6/src/FXDirSelector.cpp:281
+#: ../../fox-1.6/src/FXFileSelector.cpp:521
+msgid "Create New Directory"
+msgstr "Vytvořit nový adresář"
+
+#: src/fxext.cpp:1113 ../../fox-1.6/src/FXFileSelector.cpp:521
+msgid "Create new directory with name: "
+msgstr "Vytvořit nový adresář:"
+
+#: src/fxext.cpp:1118 src/fxext.cpp:1326
+#: ../../fox-1.6/src/FXDirSelector.cpp:284
+#: ../../fox-1.6/src/FXFileSelector.cpp:524
+msgid "Already Exists"
+msgstr "Již existuje"
+
+#: src/fxext.cpp:1118 ../../fox-1.6/src/FXFileSelector.cpp:524
+#, c-format
+msgid "File or directory %s already exists.\n"
+msgstr "Soubor nebo adresář %s již existuje.\n"
+
+#: src/fxext.cpp:1123 src/fxext.cpp:1331
+#: ../../fox-1.6/src/FXDirSelector.cpp:288
+#: ../../fox-1.6/src/FXFileSelector.cpp:528
+msgid "Cannot Create"
+msgstr "Nemohu vytvořit"
+
+#: src/fxext.cpp:1123 ../../fox-1.6/src/FXFileSelector.cpp:528
+#, c-format
+msgid "Cannot create directory %s.\n"
+msgstr "Nemohu vytvořit adresář %s.\n"
+
+#: src/fxext.cpp:1140 ../../fox-1.6/src/FXFileSelector.cpp:594
+#, c-format
+msgid ""
+"Copy file from location:\n"
+"\n"
+"%s\n"
+"\n"
+"to location: "
+msgstr ""
+"Kopírovat soubor z:\n"
+"\n"
+"%s\n"
+"\n"
+"do: "
+
+#: src/fxext.cpp:1141 src/fxext.cpp:1344
+#: ../../fox-1.6/src/FXDirSelector.cpp:309
+#: ../../fox-1.6/src/FXFileSelector.cpp:595
+msgid "Copy File"
+msgstr "Kopírovat soubor"
+
+#: src/fxext.cpp:1149 src/fxext.cpp:1352
+#: ../../fox-1.6/src/FXDirSelector.cpp:315
+#: ../../fox-1.6/src/FXFileSelector.cpp:601
+msgid "Error Copying File"
+msgstr "Chyba kopírování souboru"
+
+#: src/fxext.cpp:1149 ../../fox-1.6/src/FXFileSelector.cpp:601
+#, c-format
+msgid ""
+"Unable to copy file:\n"
+"\n"
+"%s  to:  %s\n"
+"\n"
+"Continue with operation?"
+msgstr ""
+"Nemohu kopírovat soubor:\n"
+"\n"
+"%s  do:  %s\n"
+"\n"
+"Pokračovat?"
+
+#: src/fxext.cpp:1167 ../../fox-1.6/src/FXFileSelector.cpp:617
+#, c-format
+msgid ""
+"Move file from location:\n"
+"\n"
+"%s\n"
+"\n"
+"to location: "
+msgstr ""
+"Přesunout soubor z:\n"
+"\n"
+"%s\n"
+"\n"
+"do: "
+
+#: src/fxext.cpp:1168 src/fxext.cpp:1364
+#: ../../fox-1.6/src/FXDirSelector.cpp:326
+#: ../../fox-1.6/src/FXFileSelector.cpp:618
+msgid "Move File"
+msgstr "Přesunutí souboru"
+
+#: src/fxext.cpp:1176 src/fxext.cpp:1372
+#: ../../fox-1.6/src/FXDirSelector.cpp:332
+#: ../../fox-1.6/src/FXFileSelector.cpp:624
+msgid "Error Moving File"
+msgstr "Chyba přesunu souboru"
+
+#: src/fxext.cpp:1176 ../../fox-1.6/src/FXFileSelector.cpp:624
+#, c-format
+msgid ""
+"Unable to move file:\n"
+"\n"
+"%s  to:  %s\n"
+"\n"
+"Continue with operation?"
+msgstr ""
+"Nemohu přesunout soubor:\n"
+"\n"
+"%s  do:  %s\n"
+"\n"
+"Pokračovat?"
+
+#: src/fxext.cpp:1194 ../../fox-1.6/src/FXFileSelector.cpp:640
+#, c-format
+msgid ""
+"Link file from location:\n"
+"\n"
+"%s\n"
+"\n"
+"to location: "
+msgstr ""
+"Linkovat soubor z:\n"
+"\n"
+"%s\n"
+"\n"
+"do: "
+
+#: src/fxext.cpp:1195 src/fxext.cpp:1384
+#: ../../fox-1.6/src/FXDirSelector.cpp:343
+#: ../../fox-1.6/src/FXFileSelector.cpp:641
+msgid "Link File"
+msgstr "Odkázat soubor"
+
+#: src/fxext.cpp:1203 src/fxext.cpp:1392
+#: ../../fox-1.6/src/FXDirSelector.cpp:349
+#: ../../fox-1.6/src/FXFileSelector.cpp:647
+msgid "Error Linking File"
+msgstr "Chyba odkazu soubor"
+
+#: src/fxext.cpp:1203 ../../fox-1.6/src/FXFileSelector.cpp:647
+#, c-format
+msgid ""
+"Unable to link file:\n"
+"\n"
+"%s  to:  %s\n"
+"\n"
+"Continue with operation?"
+msgstr ""
+"Nemohu linkovat soubor:\n"
+"\n"
+"%s  do:  %s\n"
+"\n"
+"Pokračovat?"
+
+#: src/fxext.cpp:1221 ../../fox-1.6/src/FXFileSelector.cpp:663
+msgid "Deleting files"
+msgstr "Mazání souborů"
+
+#: src/fxext.cpp:1221 ../../fox-1.6/src/FXFileSelector.cpp:663
+#, c-format
+msgid ""
+"Are you sure you want to delete the file:\n"
+"\n"
+"%s"
+msgstr ""
+"Jste si jistý smazáním souboru:\n"
+"\n"
+"%s"
+
+#: src/fxext.cpp:1226 src/fxext.cpp:1407
+#: ../../fox-1.6/src/FXDirSelector.cpp:361
+#: ../../fox-1.6/src/FXFileSelector.cpp:667
+msgid "Error Deleting File"
+msgstr "Chyba mazání souboru"
+
+#: src/fxext.cpp:1226 ../../fox-1.6/src/FXFileSelector.cpp:667
+#, c-format
+msgid ""
+"Unable to delete file:\n"
+"\n"
+"%s\n"
+"\n"
+"Continue with operation?"
+msgstr ""
+"Nemohu smazat soubor:\n"
+"\n"
+"%s\n"
+"\n"
+"Pokračovat?"
+
+#: src/fxext.cpp:1299 ../../fox-1.6/src/FXDirSelector.cpp:137
+msgid "&Directory:"
+msgstr "&Adresář:"
+
+#: src/fxext.cpp:1403 ../../fox-1.6/src/FXDirSelector.cpp:359
+msgid "Deleting file"
+msgstr "Mazání souboru"
 
 #: ../../fox-1.6/src/FXColorSelector.cpp:168
 #: ../../fox-1.6/src/FXFontSelector.cpp:113
@@ -3577,64 +3845,6 @@ msgstr "S měřítkem:"
 msgid "All Fonts:"
 msgstr "Všechny fonty:"
 
-#: ../../fox-1.6/src/FXDirSelector.cpp:137
-msgid "&Directory:"
-msgstr "&Adresář:"
-
-#: ../../fox-1.6/src/FXDirSelector.cpp:281
-#: ../../fox-1.6/src/FXFileSelector.cpp:521
-msgid "Create New Directory"
-msgstr "Vytvořit nový adresář"
-
-#: ../../fox-1.6/src/FXDirSelector.cpp:284
-#: ../../fox-1.6/src/FXFileSelector.cpp:524
-msgid "Already Exists"
-msgstr "Již existuje"
-
-#: ../../fox-1.6/src/FXDirSelector.cpp:288
-#: ../../fox-1.6/src/FXFileSelector.cpp:528
-msgid "Cannot Create"
-msgstr "Nemohu vytvořit"
-
-#: ../../fox-1.6/src/FXDirSelector.cpp:309
-#: ../../fox-1.6/src/FXFileSelector.cpp:595
-msgid "Copy File"
-msgstr "Kopírovat soubor"
-
-#: ../../fox-1.6/src/FXDirSelector.cpp:315
-#: ../../fox-1.6/src/FXFileSelector.cpp:601
-msgid "Error Copying File"
-msgstr "Chyba kopírování souboru"
-
-#: ../../fox-1.6/src/FXDirSelector.cpp:326
-#: ../../fox-1.6/src/FXFileSelector.cpp:618
-msgid "Move File"
-msgstr "Přesunutí souboru"
-
-#: ../../fox-1.6/src/FXDirSelector.cpp:332
-#: ../../fox-1.6/src/FXFileSelector.cpp:624
-msgid "Error Moving File"
-msgstr "Chyba přesunu souboru"
-
-#: ../../fox-1.6/src/FXDirSelector.cpp:343
-#: ../../fox-1.6/src/FXFileSelector.cpp:641
-msgid "Link File"
-msgstr "Odkázat soubor"
-
-#: ../../fox-1.6/src/FXDirSelector.cpp:349
-#: ../../fox-1.6/src/FXFileSelector.cpp:647
-msgid "Error Linking File"
-msgstr "Chyba odkazu soubor"
-
-#: ../../fox-1.6/src/FXDirSelector.cpp:359
-msgid "Deleting file"
-msgstr "Mazání souboru"
-
-#: ../../fox-1.6/src/FXDirSelector.cpp:361
-#: ../../fox-1.6/src/FXFileSelector.cpp:667
-msgid "Error Deleting File"
-msgstr "Chyba mazání souboru"
-
 #: ../../fox-1.6/src/FXDirSelector.cpp:381
 #: ../../fox-1.6/src/FXFileSelector.cpp:719
 msgid "Up one level"
@@ -3735,204 +3945,6 @@ msgstr "Atributy"
 #: ../../fox-1.6/src/FXFileList.cpp:200
 msgid "Link"
 msgstr "Odkaz"
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:196
-msgid "&File Name:"
-msgstr "&Jméno:"
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:200
-msgid "File F&ilter:"
-msgstr "F&iltr:"
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:204
-msgid "Read Only"
-msgstr "Jen pro čtení"
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:208
-msgid "Directory:"
-msgstr "Adresář:"
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:228
-msgid "&Set bookmark\t\tBookmark current directory."
-msgstr "&Nastavit záložky\t\tZazáložkuje aktuální adresář."
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:229
-msgid "&Clear bookmarks\t\tClear bookmarks."
-msgstr "&Vyčistit záložky\t\tVyčistí záložky."
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:244
-msgid "\tGo up one directory\tMove up to higher directory."
-msgstr "\tJít o adresář výše\tPřesune do adresáře výše."
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:245
-msgid "\tGo to home directory\tBack to home directory."
-msgstr "\tJít do domovského adresáře\tZpátky do domovského adresáře."
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:246
-msgid "\tGo to work directory\tBack to working directory."
-msgstr "\tJít do pracovního adresáře\tZpátky do pracovního adresáře."
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:247
-msgid "\tBookmarks\tVisit bookmarked directories."
-msgstr "\tZáložky\tNavštíví zazáložkované adresáře."
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:250
-msgid "\tCreate new directory\tCreate new directory."
-msgstr "\tVytvořit nový adresář\tVytvoří nový adresář."
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:251
-msgid "\tShow list\tDisplay directory with small icons."
-msgstr "\tZobrazit seznam\tZobrazí adresář s malými ikonami."
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:252
-msgid "\tShow icons\tDisplay directory with big icons."
-msgstr "\tZobrazit ikony\tZobrazí adresář s velkými ikonami."
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:253
-msgid "\tShow details\tDisplay detailed directory listing."
-msgstr "\tZobrazit detaily\tZobrazí detailní seznam adresářů."
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:254
-msgid "\tShow hidden files\tShow hidden files and directories."
-msgstr "\tZobrazit skryté soubory\tZobrazí skryté soubory a adresáře."
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:254
-msgid "\tHide Hidden Files\tHide hidden files and directories."
-msgstr "\tSkrýt skryté soubory\tSkryje skryté soubory a adresáře."
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:521
-msgid "Create new directory with name: "
-msgstr "Vytvořit nový adresář:"
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:524
-#, c-format
-msgid "File or directory %s already exists.\n"
-msgstr "Soubor nebo adresář %s již existuje.\n"
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:528
-#, c-format
-msgid "Cannot create directory %s.\n"
-msgstr "Nemohu vytvořit adresář %s.\n"
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:594
-#, c-format
-msgid ""
-"Copy file from location:\n"
-"\n"
-"%s\n"
-"\n"
-"to location: "
-msgstr ""
-"Kopírovat soubor z:\n"
-"\n"
-"%s\n"
-"\n"
-"do: "
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:601
-#, c-format
-msgid ""
-"Unable to copy file:\n"
-"\n"
-"%s  to:  %s\n"
-"\n"
-"Continue with operation?"
-msgstr ""
-"Nemohu kopírovat soubor:\n"
-"\n"
-"%s  do:  %s\n"
-"\n"
-"Pokračovat?"
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:617
-#, c-format
-msgid ""
-"Move file from location:\n"
-"\n"
-"%s\n"
-"\n"
-"to location: "
-msgstr ""
-"Přesunout soubor z:\n"
-"\n"
-"%s\n"
-"\n"
-"do: "
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:624
-#, c-format
-msgid ""
-"Unable to move file:\n"
-"\n"
-"%s  to:  %s\n"
-"\n"
-"Continue with operation?"
-msgstr ""
-"Nemohu přesunout soubor:\n"
-"\n"
-"%s  do:  %s\n"
-"\n"
-"Pokračovat?"
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:640
-#, c-format
-msgid ""
-"Link file from location:\n"
-"\n"
-"%s\n"
-"\n"
-"to location: "
-msgstr ""
-"Linkovat soubor z:\n"
-"\n"
-"%s\n"
-"\n"
-"do: "
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:647
-#, c-format
-msgid ""
-"Unable to link file:\n"
-"\n"
-"%s  to:  %s\n"
-"\n"
-"Continue with operation?"
-msgstr ""
-"Nemohu linkovat soubor:\n"
-"\n"
-"%s  do:  %s\n"
-"\n"
-"Pokračovat?"
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:663
-msgid "Deleting files"
-msgstr "Mazání souborů"
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:663
-#, c-format
-msgid ""
-"Are you sure you want to delete the file:\n"
-"\n"
-"%s"
-msgstr ""
-"Jste si jistý smazáním souboru:\n"
-"\n"
-"%s"
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:667
-#, c-format
-msgid ""
-"Unable to delete file:\n"
-"\n"
-"%s\n"
-"\n"
-"Continue with operation?"
-msgstr ""
-"Nemohu smazat soubor:\n"
-"\n"
-"%s\n"
-"\n"
-"Pokračovat?"
 
 #: ../../fox-1.6/src/FXFileSelector.cpp:722
 msgid "Select all"

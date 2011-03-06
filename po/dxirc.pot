@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: david@konstrukce-cad.com\n"
-"POT-Creation-Date: 2011-03-05 21:24+0100\n"
+"POT-Creation-Date: 2011-03-06 17:20+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,8 +23,9 @@ msgstr ""
 #: src/irctabitem.cpp:4319 src/irctabitem.cpp:4349 src/irctabitem.cpp:4372
 #: src/serverdialog.cpp:101 src/serverdialog.cpp:181 src/serverdialog.cpp:268
 #: src/aliasdialog.cpp:53 src/aliasdialog.cpp:84 src/aliasdialog.cpp:127
-#: src/dccdialog.cpp:175 src/fxext.cpp:741 src/fxext.cpp:754 src/fxext.cpp:760
-#: src/fxext.cpp:767 src/fxext.cpp:774 src/fxext.cpp:782
+#: src/dccdialog.cpp:175 src/fxext.cpp:722 src/fxext.cpp:735 src/fxext.cpp:741
+#: src/fxext.cpp:748 src/fxext.cpp:755 src/fxext.cpp:763 src/fxext.cpp:904
+#: src/fxext.cpp:1048 src/fxext.cpp:1297
 #: ../../fox-1.6/src/FXMessageBox.cpp:107
 #: ../../fox-1.6/src/FXMessageBox.cpp:118
 #: ../../fox-1.6/src/FXMessageBox.cpp:123
@@ -44,8 +45,9 @@ msgstr ""
 #: src/configdialog.cpp:1384 src/dxirc.cpp:1567 src/irctabitem.cpp:4274
 #: src/irctabitem.cpp:4295 src/irctabitem.cpp:4320 src/irctabitem.cpp:4350
 #: src/irctabitem.cpp:4373 src/serverdialog.cpp:182 src/serverdialog.cpp:269
-#: src/aliasdialog.cpp:85 src/aliasdialog.cpp:128 src/fxext.cpp:735
-#: src/fxext.cpp:740 ../../fox-1.6/src/FXMessageBox.cpp:102
+#: src/aliasdialog.cpp:85 src/aliasdialog.cpp:128 src/fxext.cpp:716
+#: src/fxext.cpp:721 src/fxext.cpp:903 src/fxext.cpp:1040 src/fxext.cpp:1296
+#: ../../fox-1.6/src/FXMessageBox.cpp:102
 #: ../../fox-1.6/src/FXMessageBox.cpp:106
 #: ../../fox-1.6/src/FXDirSelector.cpp:134
 #: ../../fox-1.6/src/FXFileSelector.cpp:198
@@ -381,8 +383,8 @@ msgstr ""
 msgid "Highlighted tab"
 msgstr ""
 
-#: src/configdialog.cpp:623 src/dxirc.cpp:263 src/fxext.cpp:759
-#: src/fxext.cpp:765 ../../fox-1.6/src/FXMessageBox.cpp:122
+#: src/configdialog.cpp:623 src/dxirc.cpp:263 src/fxext.cpp:740
+#: src/fxext.cpp:746 ../../fox-1.6/src/FXMessageBox.cpp:122
 #: ../../fox-1.6/src/FXMessageBox.cpp:127
 msgid "&Quit"
 msgstr ""
@@ -783,13 +785,13 @@ msgid ""
 "Nick: %s"
 msgstr ""
 
-#: src/dxirc.cpp:1680 src/dxirc.cpp:1732 src/fxext.cpp:747 src/fxext.cpp:753
+#: src/dxirc.cpp:1680 src/dxirc.cpp:1732 src/fxext.cpp:728 src/fxext.cpp:734
 #: ../../fox-1.6/src/FXMessageBox.cpp:112
 #: ../../fox-1.6/src/FXMessageBox.cpp:117
 msgid "&No"
 msgstr ""
 
-#: src/dxirc.cpp:1681 src/dxirc.cpp:1733 src/fxext.cpp:746 src/fxext.cpp:752
+#: src/dxirc.cpp:1681 src/dxirc.cpp:1733 src/fxext.cpp:727 src/fxext.cpp:733
 #: ../../fox-1.6/src/FXMessageBox.cpp:111
 #: ../../fox-1.6/src/FXMessageBox.cpp:116
 msgid "&Yes"
@@ -3147,21 +3149,249 @@ msgstr ""
 msgid "Can't write data - socket is not connected"
 msgstr ""
 
-#: src/fxext.cpp:766 src/fxext.cpp:783 ../../fox-1.6/src/FXMessageBox.cpp:128
+#: src/fxext.cpp:747 src/fxext.cpp:764 ../../fox-1.6/src/FXMessageBox.cpp:128
 #: ../../fox-1.6/src/FXMessageBox.cpp:143
 msgid "&Save"
 msgstr ""
 
-#: src/fxext.cpp:772 ../../fox-1.6/src/FXMessageBox.cpp:133
+#: src/fxext.cpp:753 ../../fox-1.6/src/FXMessageBox.cpp:133
 msgid "&Skip"
 msgstr ""
 
-#: src/fxext.cpp:773 ../../fox-1.6/src/FXMessageBox.cpp:134
+#: src/fxext.cpp:754 ../../fox-1.6/src/FXMessageBox.cpp:134
 msgid "Skip &All"
 msgstr ""
 
-#: src/fxext.cpp:780 ../../fox-1.6/src/FXMessageBox.cpp:140
+#: src/fxext.cpp:761 ../../fox-1.6/src/FXMessageBox.cpp:140
 msgid "&Don't Save"
+msgstr ""
+
+#: src/fxext.cpp:1038 ../../fox-1.6/src/FXFileSelector.cpp:196
+msgid "&File Name:"
+msgstr ""
+
+#: src/fxext.cpp:1042 ../../fox-1.6/src/FXFileSelector.cpp:200
+msgid "File F&ilter:"
+msgstr ""
+
+#: src/fxext.cpp:1047 ../../fox-1.6/src/FXFileSelector.cpp:204
+msgid "Read Only"
+msgstr ""
+
+#: src/fxext.cpp:1052 ../../fox-1.6/src/FXFileSelector.cpp:208
+msgid "Directory:"
+msgstr ""
+
+#: src/fxext.cpp:1058 ../../fox-1.6/src/FXFileSelector.cpp:228
+msgid "&Set bookmark\t\tBookmark current directory."
+msgstr ""
+
+#: src/fxext.cpp:1059 ../../fox-1.6/src/FXFileSelector.cpp:229
+msgid "&Clear bookmarks\t\tClear bookmarks."
+msgstr ""
+
+#: src/fxext.cpp:1074 ../../fox-1.6/src/FXFileSelector.cpp:244
+msgid "\tGo up one directory\tMove up to higher directory."
+msgstr ""
+
+#: src/fxext.cpp:1075 ../../fox-1.6/src/FXFileSelector.cpp:245
+msgid "\tGo to home directory\tBack to home directory."
+msgstr ""
+
+#: src/fxext.cpp:1076 ../../fox-1.6/src/FXFileSelector.cpp:246
+msgid "\tGo to work directory\tBack to working directory."
+msgstr ""
+
+#: src/fxext.cpp:1077 ../../fox-1.6/src/FXFileSelector.cpp:247
+msgid "\tBookmarks\tVisit bookmarked directories."
+msgstr ""
+
+#: src/fxext.cpp:1080 ../../fox-1.6/src/FXFileSelector.cpp:250
+msgid "\tCreate new directory\tCreate new directory."
+msgstr ""
+
+#: src/fxext.cpp:1081 ../../fox-1.6/src/FXFileSelector.cpp:251
+msgid "\tShow list\tDisplay directory with small icons."
+msgstr ""
+
+#: src/fxext.cpp:1082 ../../fox-1.6/src/FXFileSelector.cpp:252
+msgid "\tShow icons\tDisplay directory with big icons."
+msgstr ""
+
+#: src/fxext.cpp:1083 ../../fox-1.6/src/FXFileSelector.cpp:253
+msgid "\tShow details\tDisplay detailed directory listing."
+msgstr ""
+
+#: src/fxext.cpp:1084 ../../fox-1.6/src/FXFileSelector.cpp:254
+msgid "\tShow hidden files\tShow hidden files and directories."
+msgstr ""
+
+#: src/fxext.cpp:1084 ../../fox-1.6/src/FXFileSelector.cpp:254
+msgid "\tHide Hidden Files\tHide hidden files and directories."
+msgstr ""
+
+#: src/fxext.cpp:1113 src/fxext.cpp:1321
+#: ../../fox-1.6/src/FXDirSelector.cpp:281
+#: ../../fox-1.6/src/FXFileSelector.cpp:521
+msgid "Create New Directory"
+msgstr ""
+
+#: src/fxext.cpp:1113 ../../fox-1.6/src/FXFileSelector.cpp:521
+msgid "Create new directory with name: "
+msgstr ""
+
+#: src/fxext.cpp:1118 src/fxext.cpp:1326
+#: ../../fox-1.6/src/FXDirSelector.cpp:284
+#: ../../fox-1.6/src/FXFileSelector.cpp:524
+msgid "Already Exists"
+msgstr ""
+
+#: src/fxext.cpp:1118 ../../fox-1.6/src/FXFileSelector.cpp:524
+#, c-format
+msgid "File or directory %s already exists.\n"
+msgstr ""
+
+#: src/fxext.cpp:1123 src/fxext.cpp:1331
+#: ../../fox-1.6/src/FXDirSelector.cpp:288
+#: ../../fox-1.6/src/FXFileSelector.cpp:528
+msgid "Cannot Create"
+msgstr ""
+
+#: src/fxext.cpp:1123 ../../fox-1.6/src/FXFileSelector.cpp:528
+#, c-format
+msgid "Cannot create directory %s.\n"
+msgstr ""
+
+#: src/fxext.cpp:1140 ../../fox-1.6/src/FXFileSelector.cpp:594
+#, c-format
+msgid ""
+"Copy file from location:\n"
+"\n"
+"%s\n"
+"\n"
+"to location: "
+msgstr ""
+
+#: src/fxext.cpp:1141 src/fxext.cpp:1344
+#: ../../fox-1.6/src/FXDirSelector.cpp:309
+#: ../../fox-1.6/src/FXFileSelector.cpp:595
+msgid "Copy File"
+msgstr ""
+
+#: src/fxext.cpp:1149 src/fxext.cpp:1352
+#: ../../fox-1.6/src/FXDirSelector.cpp:315
+#: ../../fox-1.6/src/FXFileSelector.cpp:601
+msgid "Error Copying File"
+msgstr ""
+
+#: src/fxext.cpp:1149 ../../fox-1.6/src/FXFileSelector.cpp:601
+#, c-format
+msgid ""
+"Unable to copy file:\n"
+"\n"
+"%s  to:  %s\n"
+"\n"
+"Continue with operation?"
+msgstr ""
+
+#: src/fxext.cpp:1167 ../../fox-1.6/src/FXFileSelector.cpp:617
+#, c-format
+msgid ""
+"Move file from location:\n"
+"\n"
+"%s\n"
+"\n"
+"to location: "
+msgstr ""
+
+#: src/fxext.cpp:1168 src/fxext.cpp:1364
+#: ../../fox-1.6/src/FXDirSelector.cpp:326
+#: ../../fox-1.6/src/FXFileSelector.cpp:618
+msgid "Move File"
+msgstr ""
+
+#: src/fxext.cpp:1176 src/fxext.cpp:1372
+#: ../../fox-1.6/src/FXDirSelector.cpp:332
+#: ../../fox-1.6/src/FXFileSelector.cpp:624
+msgid "Error Moving File"
+msgstr ""
+
+#: src/fxext.cpp:1176 ../../fox-1.6/src/FXFileSelector.cpp:624
+#, c-format
+msgid ""
+"Unable to move file:\n"
+"\n"
+"%s  to:  %s\n"
+"\n"
+"Continue with operation?"
+msgstr ""
+
+#: src/fxext.cpp:1194 ../../fox-1.6/src/FXFileSelector.cpp:640
+#, c-format
+msgid ""
+"Link file from location:\n"
+"\n"
+"%s\n"
+"\n"
+"to location: "
+msgstr ""
+
+#: src/fxext.cpp:1195 src/fxext.cpp:1384
+#: ../../fox-1.6/src/FXDirSelector.cpp:343
+#: ../../fox-1.6/src/FXFileSelector.cpp:641
+msgid "Link File"
+msgstr ""
+
+#: src/fxext.cpp:1203 src/fxext.cpp:1392
+#: ../../fox-1.6/src/FXDirSelector.cpp:349
+#: ../../fox-1.6/src/FXFileSelector.cpp:647
+msgid "Error Linking File"
+msgstr ""
+
+#: src/fxext.cpp:1203 ../../fox-1.6/src/FXFileSelector.cpp:647
+#, c-format
+msgid ""
+"Unable to link file:\n"
+"\n"
+"%s  to:  %s\n"
+"\n"
+"Continue with operation?"
+msgstr ""
+
+#: src/fxext.cpp:1221 ../../fox-1.6/src/FXFileSelector.cpp:663
+msgid "Deleting files"
+msgstr ""
+
+#: src/fxext.cpp:1221 ../../fox-1.6/src/FXFileSelector.cpp:663
+#, c-format
+msgid ""
+"Are you sure you want to delete the file:\n"
+"\n"
+"%s"
+msgstr ""
+
+#: src/fxext.cpp:1226 src/fxext.cpp:1407
+#: ../../fox-1.6/src/FXDirSelector.cpp:361
+#: ../../fox-1.6/src/FXFileSelector.cpp:667
+msgid "Error Deleting File"
+msgstr ""
+
+#: src/fxext.cpp:1226 ../../fox-1.6/src/FXFileSelector.cpp:667
+#, c-format
+msgid ""
+"Unable to delete file:\n"
+"\n"
+"%s\n"
+"\n"
+"Continue with operation?"
+msgstr ""
+
+#: src/fxext.cpp:1299 ../../fox-1.6/src/FXDirSelector.cpp:137
+msgid "&Directory:"
+msgstr ""
+
+#: src/fxext.cpp:1403 ../../fox-1.6/src/FXDirSelector.cpp:359
+msgid "Deleting file"
 msgstr ""
 
 #: ../../fox-1.6/src/FXColorSelector.cpp:168
@@ -3421,64 +3651,6 @@ msgstr ""
 msgid "All Fonts:"
 msgstr ""
 
-#: ../../fox-1.6/src/FXDirSelector.cpp:137
-msgid "&Directory:"
-msgstr ""
-
-#: ../../fox-1.6/src/FXDirSelector.cpp:281
-#: ../../fox-1.6/src/FXFileSelector.cpp:521
-msgid "Create New Directory"
-msgstr ""
-
-#: ../../fox-1.6/src/FXDirSelector.cpp:284
-#: ../../fox-1.6/src/FXFileSelector.cpp:524
-msgid "Already Exists"
-msgstr ""
-
-#: ../../fox-1.6/src/FXDirSelector.cpp:288
-#: ../../fox-1.6/src/FXFileSelector.cpp:528
-msgid "Cannot Create"
-msgstr ""
-
-#: ../../fox-1.6/src/FXDirSelector.cpp:309
-#: ../../fox-1.6/src/FXFileSelector.cpp:595
-msgid "Copy File"
-msgstr ""
-
-#: ../../fox-1.6/src/FXDirSelector.cpp:315
-#: ../../fox-1.6/src/FXFileSelector.cpp:601
-msgid "Error Copying File"
-msgstr ""
-
-#: ../../fox-1.6/src/FXDirSelector.cpp:326
-#: ../../fox-1.6/src/FXFileSelector.cpp:618
-msgid "Move File"
-msgstr ""
-
-#: ../../fox-1.6/src/FXDirSelector.cpp:332
-#: ../../fox-1.6/src/FXFileSelector.cpp:624
-msgid "Error Moving File"
-msgstr ""
-
-#: ../../fox-1.6/src/FXDirSelector.cpp:343
-#: ../../fox-1.6/src/FXFileSelector.cpp:641
-msgid "Link File"
-msgstr ""
-
-#: ../../fox-1.6/src/FXDirSelector.cpp:349
-#: ../../fox-1.6/src/FXFileSelector.cpp:647
-msgid "Error Linking File"
-msgstr ""
-
-#: ../../fox-1.6/src/FXDirSelector.cpp:359
-msgid "Deleting file"
-msgstr ""
-
-#: ../../fox-1.6/src/FXDirSelector.cpp:361
-#: ../../fox-1.6/src/FXFileSelector.cpp:667
-msgid "Error Deleting File"
-msgstr ""
-
 #: ../../fox-1.6/src/FXDirSelector.cpp:381
 #: ../../fox-1.6/src/FXFileSelector.cpp:719
 msgid "Up one level"
@@ -3578,166 +3750,6 @@ msgstr ""
 
 #: ../../fox-1.6/src/FXFileList.cpp:200
 msgid "Link"
-msgstr ""
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:196
-msgid "&File Name:"
-msgstr ""
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:200
-msgid "File F&ilter:"
-msgstr ""
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:204
-msgid "Read Only"
-msgstr ""
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:208
-msgid "Directory:"
-msgstr ""
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:228
-msgid "&Set bookmark\t\tBookmark current directory."
-msgstr ""
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:229
-msgid "&Clear bookmarks\t\tClear bookmarks."
-msgstr ""
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:244
-msgid "\tGo up one directory\tMove up to higher directory."
-msgstr ""
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:245
-msgid "\tGo to home directory\tBack to home directory."
-msgstr ""
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:246
-msgid "\tGo to work directory\tBack to working directory."
-msgstr ""
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:247
-msgid "\tBookmarks\tVisit bookmarked directories."
-msgstr ""
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:250
-msgid "\tCreate new directory\tCreate new directory."
-msgstr ""
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:251
-msgid "\tShow list\tDisplay directory with small icons."
-msgstr ""
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:252
-msgid "\tShow icons\tDisplay directory with big icons."
-msgstr ""
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:253
-msgid "\tShow details\tDisplay detailed directory listing."
-msgstr ""
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:254
-msgid "\tShow hidden files\tShow hidden files and directories."
-msgstr ""
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:254
-msgid "\tHide Hidden Files\tHide hidden files and directories."
-msgstr ""
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:521
-msgid "Create new directory with name: "
-msgstr ""
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:524
-#, c-format
-msgid "File or directory %s already exists.\n"
-msgstr ""
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:528
-#, c-format
-msgid "Cannot create directory %s.\n"
-msgstr ""
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:594
-#, c-format
-msgid ""
-"Copy file from location:\n"
-"\n"
-"%s\n"
-"\n"
-"to location: "
-msgstr ""
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:601
-#, c-format
-msgid ""
-"Unable to copy file:\n"
-"\n"
-"%s  to:  %s\n"
-"\n"
-"Continue with operation?"
-msgstr ""
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:617
-#, c-format
-msgid ""
-"Move file from location:\n"
-"\n"
-"%s\n"
-"\n"
-"to location: "
-msgstr ""
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:624
-#, c-format
-msgid ""
-"Unable to move file:\n"
-"\n"
-"%s  to:  %s\n"
-"\n"
-"Continue with operation?"
-msgstr ""
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:640
-#, c-format
-msgid ""
-"Link file from location:\n"
-"\n"
-"%s\n"
-"\n"
-"to location: "
-msgstr ""
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:647
-#, c-format
-msgid ""
-"Unable to link file:\n"
-"\n"
-"%s  to:  %s\n"
-"\n"
-"Continue with operation?"
-msgstr ""
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:663
-msgid "Deleting files"
-msgstr ""
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:663
-#, c-format
-msgid ""
-"Are you sure you want to delete the file:\n"
-"\n"
-"%s"
-msgstr ""
-
-#: ../../fox-1.6/src/FXFileSelector.cpp:667
-#, c-format
-msgid ""
-"Unable to delete file:\n"
-"\n"
-"%s\n"
-"\n"
-"Continue with operation?"
 msgstr ""
 
 #: ../../fox-1.6/src/FXFileSelector.cpp:722

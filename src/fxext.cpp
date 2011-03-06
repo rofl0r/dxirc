@@ -24,7 +24,7 @@
 #include "fxext.h"
 
 #define TAB_ORIENT_MASK (TAB_TOP|TAB_LEFT|TAB_RIGHT|TAB_BOTTOM)
-#define HORZ_PAD 30
+#define HORZ_PAD 20
 #define VERT_PAD 2
 #define MBOX_BUTTON_MASK (MBOX_OK|MBOX_OK_CANCEL|MBOX_YES_NO|MBOX_YES_NO_CANCEL|MBOX_QUIT_CANCEL|MBOX_QUIT_SAVE_CANCEL|MBOX_SAVE_CANCEL_DONTSAVE)
 
@@ -94,93 +94,76 @@ const unsigned char infoicon[]={
   0x00,0x7f,0xa0,0xa1,0x7b,0xa4,0xa5,0xa7,0xa1,0xaa,0xab,0x19,0x09,0x00,0x3b
 };
 
-/*from Goggles Music Manager
-thanks Sander Jansen
-Fill horizontal gradient rectangle */
-void fillHorizontalGradient(FXDCWindow &dc, FXint x, FXint y, FXint w, FXint h, FXColor left, FXColor right)
+// This's from Xfe, thanks
+// Draw rectangle with gradient effect
+// Default is vertical gradient
+static void drawGradientRectangle(FXDC& dc,FXColor upper,FXColor lower,FXint x,FXint y,FXint w,FXint h, FXbool vert=TRUE)
 {
-    register FXint rr,gg,bb,dr,dg,db,r1,g1,b1,r2,g2,b2,xl,xh,xx,dx,n,t;
-    if(0<w && 0<h)
+    register FXint rr,gg,bb,dr,dg,db,r1,g1,b1,r2,g2,b2,yl,yh,yy,dy,n,t,ww;
+    const FXint MAXSTEPS=128;
+    if (0<w && 0<h)
     {
-        r1=FXREDVAL(left);
-        r2=FXREDVAL(right);
-        g1=FXGREENVAL(left);
-        g2=FXGREENVAL(right);
-        b1=FXBLUEVAL(left);
-        b2=FXBLUEVAL(right);
-        dr=r2-r1;
-        dg=g2-g1;
-        db=b2-b1;
-        n=FXABS(dr);
-        if((t=FXABS(dg))>n) n=t;
-        if((t=FXABS(db))>n) n=t;
-        n++;
-        if(n>w) n=w;
-        if(n>128) n=128;
-        rr=(r1<<16)+32767;
-        gg=(g1<<16)+32767;
-        bb=(b1<<16)+32767;
-        xx=32767;
-        dr=(dr<<16)/n;
-        dg=(dg<<16)/n;
-        db=(db<<16)/n;
-        dx=(w<<16)/n;
-        do
+        // Horizontal gradient : exchange w and h
+        if (!vert)
         {
-            xl=xx>>16;
-            xx+=dx;
-            xh=xx>>16;
-            dc.setForeground(FXRGB(rr>>16,gg>>16,bb>>16));
-            dc.fillRectangle(x+xl,y,xh-xl,h);
-            rr+=dr;
-            gg+=dg;
-            bb+=db;
-        } while(xh<w);
-    }
-}
+            ww=w;
+            w=h;
+            h=ww;
+        }
 
-/*from Goggles Music Manager
-thanks Sander Jansen
-Fill vertical gradient rectangle */
-void fillVerticalGradient(FXDCWindow &dc, FXint x, FXint y, FXint w, FXint h, FXColor top, FXColor bottom)
-{
-    register FXint rr,gg,bb,dr,dg,db,r1,g1,b1,r2,g2,b2,yl,yh,yy,dy,n,t;
-    if(0<w && 0<h)
-    {
-        r1=FXREDVAL(top);
-        r2=FXREDVAL(bottom);
-        g1=FXGREENVAL(top);
-        g2=FXGREENVAL(bottom);
-        b1=FXBLUEVAL(top);
-        b2=FXBLUEVAL(bottom);
+        dc.setStipple(STIPPLE_NONE);
+        dc.setFillStyle(FILL_SOLID);
+
+        r1=FXREDVAL(upper);
+        r2=FXREDVAL(lower);
         dr=r2-r1;
+        g1=FXGREENVAL(upper);
+        g2=FXGREENVAL(lower);
         dg=g2-g1;
+        b1=FXBLUEVAL(upper);
+        b2=FXBLUEVAL(lower);
         db=b2-b1;
+
         n=FXABS(dr);
-        if((t=FXABS(dg))>n) n=t;
-        if((t=FXABS(db))>n) n=t;
+        if ((t=FXABS(dg))>n)
+            n=t;
+        if ((t=FXABS(db))>n)
+            n=t;
         n++;
-        if(n>h) n=h;
-        if(n>128) n=128;
+        if (n>h)
+            n=h;
+        if (n>MAXSTEPS)
+            n=MAXSTEPS;
         rr=(r1<<16)+32767;
         gg=(g1<<16)+32767;
         bb=(b1<<16)+32767;
         yy=32767;
+
         dr=(dr<<16)/n;
         dg=(dg<<16)/n;
         db=(db<<16)/n;
         dy=(h<<16)/n;
+
         do
         {
             yl=yy>>16;
             yy+=dy;
             yh=yy>>16;
             dc.setForeground(FXRGB(rr>>16,gg>>16,bb>>16));
-            dc.fillRectangle(x,y+yl,w,yh-yl);
+
+            // Vertical gradient
+            if (vert)
+                dc.fillRectangle(x,y+yl,w,yh-yl);
+
+            // Horizontal gradient
+            else
+                dc.fillRectangle(x+yl,y,yh-yl,w);
+
             rr+=dr;
             gg+=dg;
             bb+=db;
-        } while(yh<h);
+        }
+        while (yh<h);
     }
 }
 
@@ -212,7 +195,6 @@ long dxEXButton::onPaint(FXObject*, FXSelector, void* ptr)
     FXColor bordercolor = shadowColor;
 
     FXPoint basebackground[4] = {FXPoint(0, 0), FXPoint(width - 1, 0), FXPoint(0, height - 1), FXPoint(width - 1, height - 1)};
-
     FXPoint bordershade[16] = {FXPoint(0, 1), FXPoint(1, 0), FXPoint(1, 2), FXPoint(2, 1),
     FXPoint(width - 2, 0), FXPoint(width - 1, 1), FXPoint(width - 3, 1), FXPoint(width - 2, 2),
     FXPoint(0, height - 2), FXPoint(1, height - 1), FXPoint(1, height - 3), FXPoint(2, height - 2),
@@ -241,7 +223,7 @@ long dxEXButton::onPaint(FXObject*, FXSelector, void* ptr)
         dc.setForeground(shade);
         dc.drawPoints(bordershade, 16);
 
-        fillVerticalGradient(dc, 2, 1, width - 4, height - 2, top, bottom);
+        drawGradientRectangle(dc, top, bottom, 2, 1, width-4, height-2);
         dc.setForeground(top);
         dc.drawRectangle(1, 3, 0, height - 7);
         dc.setForeground(bottom);
@@ -249,6 +231,9 @@ long dxEXButton::onPaint(FXObject*, FXSelector, void* ptr)
     }
     else
     {
+        dc.setForeground(FXRGB(0.9*FXREDVAL(backColor),0.9*FXGREENVAL(backColor),0.9*FXBLUEVAL(backColor)));
+        dc.fillRectangle(0,0,width,height);
+
         /// Outside Background
         dc.setForeground(baseColor);
         dc.drawPoints(basebackground, 4);
@@ -265,10 +250,6 @@ long dxEXButton::onPaint(FXObject*, FXSelector, void* ptr)
 
         dc.setForeground(baseColor);
         dc.fillRectangle(2, 1, width - 4, height - 2);
-
-
-        //dc.setForeground(FXRGB(0xdc,0xd4,0xc9));
-        //dc.fillRectangle(2,1,width-4,height-2);
     }
 
     // Place text & icon
@@ -410,7 +391,7 @@ long dxEXToggleButton::onPaint(FXObject*, FXSelector, void* ptr)
                 dc.setForeground(shade);
                 dc.drawPoints(bordershade, 16);
 
-                fillVerticalGradient(dc, 2, 1, width - 4, height - 2, top, bottom);
+                drawGradientRectangle(dc, top, bottom, 2, 1, width-4, height-2);
                 dc.setForeground(top);
                 dc.drawRectangle(1, 3, 0, height - 7);
                 dc.setForeground(bottom);
@@ -632,28 +613,28 @@ long dxEXTabItem::onPaint(FXObject*,FXSelector,void*)
     if((tab == (ntabs-1)) || tab==ctab)
     {
         if(tab!=ctab)
-            fillVerticalGradient(dc,1,1,width-2,height-2,makeHiliteColor(shadowColor),makeHiliteColor(shadowColor));
+            drawGradientRectangle(dc,makeHiliteColor(shadowColor),makeHiliteColor(shadowColor),1,1,width-2,height-2);
         else
         {
             switch(options&TAB_ORIENT_MASK){
                 case TAB_LEFT:
-                    fillHorizontalGradient(dc,1,1,width-2,height-2,makeHiliteColor(backColor),backColor);
+                    drawGradientRectangle(dc,makeHiliteColor(backColor),backColor,1,1,width-2,height-2,FALSE);
                     break;
                 case TAB_RIGHT:
-                    fillHorizontalGradient(dc,1,1,width-2,height-2,backColor,makeHiliteColor(backColor));
+                    drawGradientRectangle(dc,backColor,makeHiliteColor(backColor),1,1,width-2,height-2,FALSE);
                     break;
                 case TAB_TOP:
-                    fillVerticalGradient(dc,1,1,width-2,height-2,makeHiliteColor(backColor),backColor);
+                    drawGradientRectangle(dc,makeHiliteColor(backColor),backColor,1,1,width-2,height-2);
                     break;
                 case TAB_BOTTOM:
-                    fillVerticalGradient(dc,1,1,width-2,height-2,backColor,makeHiliteColor(backColor));
+                    drawGradientRectangle(dc,backColor,makeHiliteColor(backColor),1,1,width-2,height-2);
                     break;
             }
         }
     }
     else
     {
-        fillVerticalGradient(dc,1,1,width-2,height-2,makeHiliteColor(shadowColor),makeHiliteColor(shadowColor));
+        drawGradientRectangle(dc,makeHiliteColor(shadowColor),makeHiliteColor(shadowColor),1,1,width-2,height-2);
     }
 
     if(!label.empty())
@@ -892,4 +873,565 @@ FXuint dxEXMessageBox::information(FXApp* app,FXuint opts,const char* caption,co
     dxEXMessageBox box(app,caption,FXStringVFormat(message,arguments),&icon,opts|DECOR_TITLE|DECOR_BORDER);
     va_end(arguments);
     return box.execute(PLACEMENT_SCREEN);
+}
+
+// Object implementation
+FXIMPLEMENT(dxEXInputDialog,FXInputDialog,NULL,0)
+
+// Create input dialog box
+dxEXInputDialog::dxEXInputDialog(FXWindow* owner,const FXString& caption,const FXString& label,FXIcon* icon,FXuint opts,FXint x,FXint y,FXint w,FXint h):
+  FXInputDialog(owner,caption,label,icon,opts,x,y,w,h)
+{
+    initialize(label,icon);
+}
+
+// Create free floating input dialog box
+dxEXInputDialog::dxEXInputDialog(FXApp* app,const FXString& caption,const FXString& label,FXIcon* icon,FXuint opts,FXint x,FXint y,FXint w,FXint h):
+  FXInputDialog(app,caption,label,icon,opts,x,y,w,h)
+{
+    initialize(label,icon);
+}
+
+// Build contents
+void dxEXInputDialog::initialize(const FXString& label,FXIcon* icon)
+{
+    FXWindow * window=NULL;
+    while((window=getFirst())!=NULL) delete window;
+    
+    FXuint textopts=TEXTFIELD_ENTER_ONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X;
+    FXHorizontalFrame* buttons=new FXHorizontalFrame(this,LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X|PACK_UNIFORM_WIDTH,0,0,0,0,0,0,0,0);
+    new dxEXButton(buttons,tr("&OK"),NULL,this,ID_ACCEPT,BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_Y|LAYOUT_RIGHT,0,0,0,0,HORZ_PAD,HORZ_PAD,VERT_PAD,VERT_PAD);
+    new dxEXButton(buttons,tr("&Cancel"),NULL,this,ID_CANCEL,BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_Y|LAYOUT_RIGHT,0,0,0,0,HORZ_PAD,HORZ_PAD,VERT_PAD,VERT_PAD);
+    new FXHorizontalSeparator(this,SEPARATOR_GROOVE|LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X);
+    FXHorizontalFrame* toppart=new FXHorizontalFrame(this,LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_CENTER_Y,0,0,0,0, 0,0,0,0, 10,10);
+    new FXLabel(toppart,FXString::null,icon,ICON_BEFORE_TEXT|JUSTIFY_CENTER_X|JUSTIFY_CENTER_Y|LAYOUT_FILL_Y|LAYOUT_FILL_X);
+    FXVerticalFrame* entry=new FXVerticalFrame(toppart,LAYOUT_FILL_X|LAYOUT_CENTER_Y,0,0,0,0, 0,0,0,0);
+    new FXLabel(entry,label,NULL,JUSTIFY_LEFT|ICON_BEFORE_TEXT|LAYOUT_TOP|LAYOUT_LEFT|LAYOUT_FILL_X);
+    if(options&INPUTDIALOG_PASSWORD) textopts|=TEXTFIELD_PASSWD;
+    if(options&INPUTDIALOG_INTEGER) textopts|=TEXTFIELD_INTEGER|JUSTIFY_RIGHT;
+    if(options&INPUTDIALOG_REAL) textopts|=TEXTFIELD_REAL|JUSTIFY_RIGHT;
+    input=new FXTextField(entry,20,this,ID_ACCEPT,textopts,0,0,0,0, 8,8,4,4);
+    limlo=1.0;
+    limhi=0.0;
+}
+
+// Obtain a string
+FXbool dxEXInputDialog::getString(FXString& result,FXWindow* owner,const FXString& caption,const FXString& label,FXIcon* icon)
+{
+    dxEXInputDialog inputdialog(owner,caption,label,icon,INPUTDIALOG_STRING,0,0,0,0);
+    inputdialog.setText(result);
+    if(inputdialog.execute())
+    {
+        result=inputdialog.getText();
+        return TRUE;
+    }
+    return FALSE;
+}
+
+// Obtain a string, in free floating window
+FXbool dxEXInputDialog::getString(FXString& result,FXApp* app,const FXString& caption,const FXString& label,FXIcon* icon)
+{
+    dxEXInputDialog inputdialog(app,caption,label,icon,INPUTDIALOG_STRING,0,0,0,0);
+    inputdialog.setText(result);
+    if(inputdialog.execute())
+    {
+        result=inputdialog.getText();
+        return TRUE;
+    }
+    return FALSE;
+}
+
+// Obtain an integer
+FXbool dxEXInputDialog::getInteger(FXint& result,FXWindow* owner,const FXString& caption,const FXString& label,FXIcon* icon,FXint lo,FXint hi)
+{
+    dxEXInputDialog inputdialog(owner,caption,label,icon,INPUTDIALOG_INTEGER,0,0,0,0);
+    inputdialog.setLimits(lo,hi);
+    inputdialog.setText(FXStringVal(FXCLAMP(lo,result,hi)));
+    if(inputdialog.execute())
+    {
+        result=FXIntVal(inputdialog.getText());
+        return TRUE;
+    }
+    return FALSE;
+}
+
+// Obtain an integer, in free floating window
+FXbool dxEXInputDialog::getInteger(FXint& result,FXApp* app,const FXString& caption,const FXString& label,FXIcon* icon,FXint lo,FXint hi)
+{
+    dxEXInputDialog inputdialog(app,caption,label,icon,INPUTDIALOG_INTEGER,0,0,0,0);
+    inputdialog.setLimits(lo,hi);
+    inputdialog.setText(FXStringVal(FXCLAMP(lo,result,hi)));
+    if(inputdialog.execute())
+    {
+        result=FXIntVal(inputdialog.getText());
+        return TRUE;
+    }
+    return FALSE;
+}
+
+// Obtain a real
+FXbool dxEXInputDialog::getReal(FXdouble& result,FXWindow* owner,const FXString& caption,const FXString& label,FXIcon* icon,FXdouble lo,FXdouble hi)
+{
+    dxEXInputDialog inputdialog(owner,caption,label,icon,INPUTDIALOG_REAL,0,0,0,0);
+    inputdialog.setLimits(lo,hi);
+    inputdialog.setText(FXStringVal(FXCLAMP(lo,result,hi),10));
+    if(inputdialog.execute())
+    {
+        result=FXDoubleVal(inputdialog.getText());
+        return TRUE;
+    }
+    return FALSE;
+}
+
+// Obtain a real, in free floating window
+FXbool dxEXInputDialog::getReal(FXdouble& result,FXApp* app,const FXString& caption,const FXString& label,FXIcon* icon,FXdouble lo,FXdouble hi)
+{
+    dxEXInputDialog inputdialog(app,caption,label,icon,INPUTDIALOG_REAL,0,0,0,0);
+    inputdialog.setLimits(lo,hi);
+    inputdialog.setText(FXStringVal(FXCLAMP(lo,result,hi),10));
+    if(inputdialog.execute())
+    {
+        result=FXDoubleVal(inputdialog.getText());
+        return TRUE;
+    }
+    return FALSE;
+}
+
+class dxEXFileSelector : public FXFileSelector
+{
+    FXDECLARE(dxEXFileSelector)
+protected:
+    dxEXFileSelector(){}
+private:
+    dxEXFileSelector(const dxEXFileSelector&);
+    dxEXFileSelector &operator=(const dxEXFileSelector&);
+public:
+    dxEXFileSelector(FXComposite *p,FXObject* tgt=NULL,FXSelector sel=0,FXuint opts=0,FXint x=0,FXint y=0,FXint w=0,FXint h=0);
+
+    long onCmdNew(FXObject*,FXSelector,void*);
+    long onCmdDelete(FXObject*,FXSelector,void*);
+    long onCmdMove(FXObject*,FXSelector,void*);
+    long onCmdCopy(FXObject*,FXSelector,void*);
+    long onCmdLink(FXObject*,FXSelector,void*);
+};
+
+FXDEFMAP(dxEXFileSelector) dxEXFileSelectorMap[]={
+    FXMAPFUNC(SEL_COMMAND,FXFileSelector::ID_NEW,dxEXFileSelector::onCmdNew),
+    FXMAPFUNC(SEL_COMMAND,FXFileSelector::ID_DELETE,dxEXFileSelector::onCmdDelete),
+    FXMAPFUNC(SEL_COMMAND,FXFileSelector::ID_MOVE,dxEXFileSelector::onCmdMove),
+    FXMAPFUNC(SEL_COMMAND,FXFileSelector::ID_COPY,dxEXFileSelector::onCmdCopy),
+    FXMAPFUNC(SEL_COMMAND,FXFileSelector::ID_LINK,dxEXFileSelector::onCmdLink)
+};
+
+FXIMPLEMENT(dxEXFileSelector,FXFileSelector,dxEXFileSelectorMap,ARRAYNUMBER(dxEXFileSelectorMap));
+
+dxEXFileSelector::dxEXFileSelector(FXComposite *p,FXObject* tgt,FXSelector sel,FXuint opts,FXint x,FXint y,FXint w,FXint h):FXFileSelector(p,tgt,sel,opts,x,y,w,h)
+{
+    FXWindow * window=NULL;
+    while((window=getFirst())!=NULL) delete window;
+    delete bookmarkmenu; bookmarkmenu=NULL;
+
+    FXAccelTable *table=getShell()->getAccelTable();
+
+    navbuttons=new FXHorizontalFrame(this,LAYOUT_SIDE_TOP|LAYOUT_FILL_X,0,0,0,0, 0,0,0,0, 0,0);
+    entryblock=new FXMatrix(this,3,MATRIX_BY_COLUMNS|LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X,0,0,0,0,0,0,0,0);
+    new FXLabel(entryblock,tr("&File Name:"),NULL,JUSTIFY_LEFT|LAYOUT_CENTER_Y);
+    filename=new FXTextField(entryblock,25,this,ID_ACCEPT,TEXTFIELD_ENTER_ONLY|LAYOUT_FILL_COLUMN|LAYOUT_FILL_X|FRAME_SUNKEN|FRAME_THICK|LAYOUT_CENTER_Y);
+    new dxEXButton(entryblock,tr("&OK"),NULL,this,ID_ACCEPT,BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_FILL_X,0,0,0,0,20,20);
+    accept=new FXButton(navbuttons,FXString::null,NULL,NULL,0,LAYOUT_FIX_X|LAYOUT_FIX_Y|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT,0,0,0,0, 0,0,0,0);
+    new FXLabel(entryblock,tr("File F&ilter:"),NULL,JUSTIFY_LEFT|LAYOUT_CENTER_Y);
+
+    FXHorizontalFrame *filterframe=new FXHorizontalFrame(entryblock,LAYOUT_FILL_COLUMN|LAYOUT_FILL_X|LAYOUT_FILL_Y,0,0,0,0, 0,0,0,0);
+    filefilter=new FXComboBox(filterframe,10,this,ID_FILEFILTER,COMBOBOX_STATIC|LAYOUT_FILL_X|FRAME_SUNKEN|FRAME_THICK|LAYOUT_CENTER_Y);
+    filefilter->setNumVisible(4);
+    readonly=new FXCheckButton(filterframe,tr("Read Only"),NULL,0,ICON_BEFORE_TEXT|JUSTIFY_LEFT|LAYOUT_CENTER_Y);
+    cancel=new dxEXButton(entryblock,tr("&Cancel"),NULL,NULL,0,BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_FILL_X,0,0,0,0,20,20);
+
+    fileboxframe=new FXHorizontalFrame(this,LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y|FRAME_SUNKEN|FRAME_THICK,0,0,0,0,0,0,0,0);
+    filebox=new FXFileList(fileboxframe,this,ID_FILELIST,ICONLIST_MINI_ICONS|ICONLIST_BROWSESELECT|ICONLIST_AUTOSIZE|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    new FXLabel(navbuttons,tr("Directory:"),NULL,LAYOUT_CENTER_Y);
+    dirbox=new FXDirBox(navbuttons,this,ID_DIRTREE,DIRBOX_NO_OWN_ASSOC|FRAME_LINE|LAYOUT_FILL_X|LAYOUT_CENTER_Y,0,0,0,0,1,1,1,1);
+    dirbox->setNumVisible(5);
+    dirbox->setAssociations(filebox->getAssociations());
+
+    bookmarkmenu=new FXMenuPane(this,POPUP_SHRINKWRAP);
+    new FXMenuCommand(bookmarkmenu,tr("&Set bookmark\t\tBookmark current directory."),markicon,this,ID_BOOKMARK);
+    new FXMenuCommand(bookmarkmenu,tr("&Clear bookmarks\t\tClear bookmarks."),clearicon,&bookmarks,FXRecentFiles::ID_CLEAR);
+    FXMenuSeparator* sep1=new FXMenuSeparator(bookmarkmenu);
+    sep1->setTarget(&bookmarks);
+    sep1->setSelector(FXRecentFiles::ID_ANYFILES);
+    new FXMenuCommand(bookmarkmenu,FXString::null,NULL,&bookmarks,FXRecentFiles::ID_FILE_1);
+    new FXMenuCommand(bookmarkmenu,FXString::null,NULL,&bookmarks,FXRecentFiles::ID_FILE_2);
+    new FXMenuCommand(bookmarkmenu,FXString::null,NULL,&bookmarks,FXRecentFiles::ID_FILE_3);
+    new FXMenuCommand(bookmarkmenu,FXString::null,NULL,&bookmarks,FXRecentFiles::ID_FILE_4);
+    new FXMenuCommand(bookmarkmenu,FXString::null,NULL,&bookmarks,FXRecentFiles::ID_FILE_5);
+    new FXMenuCommand(bookmarkmenu,FXString::null,NULL,&bookmarks,FXRecentFiles::ID_FILE_6);
+    new FXMenuCommand(bookmarkmenu,FXString::null,NULL,&bookmarks,FXRecentFiles::ID_FILE_7);
+    new FXMenuCommand(bookmarkmenu,FXString::null,NULL,&bookmarks,FXRecentFiles::ID_FILE_8);
+    new FXMenuCommand(bookmarkmenu,FXString::null,NULL,&bookmarks,FXRecentFiles::ID_FILE_9);
+    new FXMenuCommand(bookmarkmenu,FXString::null,NULL,&bookmarks,FXRecentFiles::ID_FILE_10);
+    new FXFrame(navbuttons,LAYOUT_FIX_WIDTH,0,0,4,1);
+    new dxEXButton(navbuttons,tr("\tGo up one directory\tMove up to higher directory."),updiricon,this,ID_DIRECTORY_UP,BUTTON_TOOLBAR|FRAME_RAISED,0,0,0,0, 3,3,3,3);
+    new dxEXButton(navbuttons,tr("\tGo to home directory\tBack to home directory."),homeicon,this,ID_HOME,BUTTON_TOOLBAR|FRAME_RAISED,0,0,0,0, 3,3,3,3);
+    new dxEXButton(navbuttons,tr("\tGo to work directory\tBack to working directory."),workicon,this,ID_WORK,BUTTON_TOOLBAR|FRAME_RAISED,0,0,0,0, 3,3,3,3);
+    FXMenuButton *bookmenu=new FXMenuButton(navbuttons,tr("\tBookmarks\tVisit bookmarked directories."),markicon,bookmarkmenu,MENUBUTTON_NOARROWS|MENUBUTTON_ATTACH_LEFT|MENUBUTTON_TOOLBAR|FRAME_RAISED,0,0,0,0, 3,3,3,3);
+    bookmenu->setTarget(this);
+    bookmenu->setSelector(ID_BOOKMENU);
+    new dxEXButton(navbuttons,tr("\tCreate new directory\tCreate new directory."),newicon,this,ID_NEW,BUTTON_TOOLBAR|FRAME_RAISED,0,0,0,0, 3,3,3,3);
+    new dxEXButton(navbuttons,tr("\tShow list\tDisplay directory with small icons."),listicon,filebox,FXFileList::ID_SHOW_MINI_ICONS,BUTTON_TOOLBAR|FRAME_RAISED,0,0,0,0, 3,3,3,3);
+    new dxEXButton(navbuttons,tr("\tShow icons\tDisplay directory with big icons."),iconsicon,filebox,FXFileList::ID_SHOW_BIG_ICONS,BUTTON_TOOLBAR|FRAME_RAISED,0,0,0,0, 3,3,3,3);
+    new dxEXButton(navbuttons,tr("\tShow details\tDisplay detailed directory listing."),detailicon,filebox,FXFileList::ID_SHOW_DETAILS,BUTTON_TOOLBAR|FRAME_RAISED,0,0,0,0, 3,3,3,3);
+    new dxEXToggleButton(navbuttons,tr("\tShow hidden files\tShow hidden files and directories."),tr("\tHide Hidden Files\tHide hidden files and directories."),hiddenicon,shownicon,filebox,FXFileList::ID_TOGGLE_HIDDEN,TOGGLEBUTTON_TOOLBAR|FRAME_RAISED,0,0,0,0, 3,3,3,3);
+    bookmarks.setTarget(this);
+    bookmarks.setSelector(ID_VISIT);
+    readonly->hide();
+    if(table)
+    {
+        table->addAccel(MKUINT(KEY_BackSpace,0),this,FXSEL(SEL_COMMAND,ID_DIRECTORY_UP));
+        table->addAccel(MKUINT(KEY_Delete,0),this,FXSEL(SEL_COMMAND,ID_DELETE));
+        table->addAccel(MKUINT(KEY_h,CONTROLMASK),this,FXSEL(SEL_COMMAND,ID_HOME));
+        table->addAccel(MKUINT(KEY_w,CONTROLMASK),this,FXSEL(SEL_COMMAND,ID_WORK));
+        table->addAccel(MKUINT(KEY_n,CONTROLMASK),this,FXSEL(SEL_COMMAND,ID_NEW));
+        table->addAccel(MKUINT(KEY_a,CONTROLMASK),filebox,FXSEL(SEL_COMMAND,FXFileList::ID_SELECT_ALL));
+        table->addAccel(MKUINT(KEY_b,CONTROLMASK),filebox,FXSEL(SEL_COMMAND,FXFileList::ID_SHOW_BIG_ICONS));
+        table->addAccel(MKUINT(KEY_s,CONTROLMASK),filebox,FXSEL(SEL_COMMAND,FXFileList::ID_SHOW_MINI_ICONS));
+        table->addAccel(MKUINT(KEY_l,CONTROLMASK),filebox,FXSEL(SEL_COMMAND,FXFileList::ID_SHOW_DETAILS));
+    }
+    setSelectMode(SELECTFILE_ANY);    // For backward compatibility, this HAS to be the default!
+    //setPatternList(allfiles);
+    setDirectory(FXSystem::getCurrentDirectory());
+    filebox->setFocus();
+    accept->hide();
+    navigable=TRUE;
+}
+
+// Create new directory
+long dxEXFileSelector::onCmdNew(FXObject*,FXSelector,void*)
+{
+    FXString dir=filebox->getDirectory();
+    FXString name="DirectoryName";
+    if(dxEXInputDialog::getString(name,this,tr("Create New Directory"),tr("Create new directory with name: ")))
+    {
+        FXString dirname=FXPath::absolute(dir,name);
+        if(FXStat::exists(dirname))
+        {
+            dxEXMessageBox::error(this,MBOX_OK,tr("Already Exists"),tr("File or directory %s already exists.\n"),dirname.text());
+            return 1;
+        }
+        if(!FXDir::create(dirname))
+        {
+            dxEXMessageBox::error(this,MBOX_OK,tr("Cannot Create"),tr("Cannot create directory %s.\n"),dirname.text());
+            return 1;
+        }
+        setDirectory(dirname);
+    }
+    return 1;
+}
+
+// Copy file or directory
+long dxEXFileSelector::onCmdCopy(FXObject*,FXSelector,void*)
+{
+    FXString *filenamelist=getSelectedFiles();
+    FXString copymessage;
+    if(filenamelist)
+    {
+        for(FXint i=0; !filenamelist[i].empty(); i++)
+        {
+            copymessage.format(tr("Copy file from location:\n\n%s\n\nto location: "),filenamelist[i].text());
+            dxEXInputDialog inputdialog(this,tr("Copy File"),copymessage,NULL,INPUTDIALOG_STRING,0,0,0,0);
+            inputdialog.setText(FXPath::absolute(FXPath::directory(filenamelist[i]),"CopyOf"+FXPath::name(filenamelist[i])));
+            inputdialog.setNumColumns(60);
+            if(inputdialog.execute())
+            {
+                FXString newname=inputdialog.getText();
+                if(!FXFile::copyFiles(filenamelist[i],newname,FALSE))
+                {
+                    if(dxEXMessageBox::error(this,MBOX_YES_NO,tr("Error Copying File"),tr("Unable to copy file:\n\n%s  to:  %s\n\nContinue with operation?"),filenamelist[i].text(),newname.text())==MBOX_CLICKED_NO) break;
+                }
+            }
+        }
+        delete [] filenamelist;
+    }
+    return 1;
+}
+
+// Move file or directory
+long dxEXFileSelector::onCmdMove(FXObject*,FXSelector,void*)
+{
+    FXString *filenamelist=getSelectedFiles();
+    FXString movemessage;
+    if(filenamelist)
+    {
+        for(FXint i=0; !filenamelist[i].empty(); i++)
+        {
+            movemessage.format(tr("Move file from location:\n\n%s\n\nto location: "),filenamelist[i].text());
+            dxEXInputDialog inputdialog(this,tr("Move File"),movemessage,NULL,INPUTDIALOG_STRING,0,0,0,0);
+            inputdialog.setText(filenamelist[i]);
+            inputdialog.setNumColumns(60);
+            if(inputdialog.execute())
+            {
+                FXString newname=inputdialog.getText();
+                if(!FXFile::moveFiles(filenamelist[i],newname,FALSE))
+                {
+                    if(dxEXMessageBox::error(this,MBOX_YES_NO,tr("Error Moving File"),tr("Unable to move file:\n\n%s  to:  %s\n\nContinue with operation?"),filenamelist[i].text(),newname.text())==MBOX_CLICKED_NO) break;
+                }
+            }
+        }
+        delete [] filenamelist;
+    }
+    return 1;
+}
+
+// Link file or directory
+long dxEXFileSelector::onCmdLink(FXObject*,FXSelector,void*)
+{
+    FXString *filenamelist=getSelectedFiles();
+    FXString linkmessage;
+    if(filenamelist)
+    {
+        for(FXint i=0; !filenamelist[i].empty(); i++)
+        {
+            linkmessage.format(tr("Link file from location:\n\n%s\n\nto location: "),filenamelist[i].text());
+            dxEXInputDialog inputdialog(this,tr("Link File"),linkmessage,NULL,INPUTDIALOG_STRING,0,0,0,0);
+            inputdialog.setText(FXPath::absolute(FXPath::directory(filenamelist[i]),"LinkTo"+FXPath::name(filenamelist[i])));
+            inputdialog.setNumColumns(60);
+            if(inputdialog.execute())
+            {
+                FXString newname=inputdialog.getText();
+                if(!FXFile::symlink(filenamelist[i],newname))
+                {
+                    if(dxEXMessageBox::error(this,MBOX_YES_NO,tr("Error Linking File"),tr("Unable to link file:\n\n%s  to:  %s\n\nContinue with operation?"),filenamelist[i].text(),newname.text())==MBOX_CLICKED_NO) break;
+                }
+            }
+        }
+        delete [] filenamelist;
+    }
+    return 1;
+}
+
+// Delete file or directory
+long dxEXFileSelector::onCmdDelete(FXObject*,FXSelector,void*)
+{
+    FXString *filenamelist=getSelectedFiles();
+    FXuint answer;
+    if(filenamelist)
+    {
+        for(FXint i=0; !filenamelist[i].empty(); i++)
+        {
+            answer=dxEXMessageBox::warning(this,MBOX_YES_NO_CANCEL,tr("Deleting files"),tr("Are you sure you want to delete the file:\n\n%s"),filenamelist[i].text());
+            if(answer==MBOX_CLICKED_CANCEL) break;
+            if(answer==MBOX_CLICKED_NO) continue;
+            if(!FXFile::removeFiles(filenamelist[i],TRUE))
+            {
+                if(dxEXMessageBox::error(this,MBOX_YES_NO,tr("Error Deleting File"),tr("Unable to delete file:\n\n%s\n\nContinue with operation?"),filenamelist[i].text())==MBOX_CLICKED_NO) break;
+            }
+        }
+        delete [] filenamelist;
+    }
+    return 1;
+}
+
+FXIMPLEMENT(dxEXFileDialog,FXFileDialog,NULL,0);
+
+// Construct file fialog box
+dxEXFileDialog::dxEXFileDialog(FXWindow* owner,const FXString& name,FXuint opts,FXint x,FXint y,FXint w,FXint h):
+  FXFileDialog(owner,name,opts,x,y,w,h)
+{
+    delete filebox;
+    filebox=new dxEXFileSelector(this,NULL,0,LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    filebox->acceptButton()->setTarget(this);
+    filebox->acceptButton()->setSelector(FXDialogBox::ID_ACCEPT);
+    filebox->cancelButton()->setTarget(this);
+    filebox->cancelButton()->setSelector(FXDialogBox::ID_CANCEL);
+}
+
+// Construct free-floating file dialog box
+dxEXFileDialog::dxEXFileDialog(FXApp* a,const FXString& name,FXuint opts,FXint x,FXint y,FXint w,FXint h):
+  FXFileDialog(a,name,opts,x,y,w,h)
+{
+    delete filebox;
+    filebox=new dxEXFileSelector(this,NULL,0,LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    filebox->acceptButton()->setTarget(this);
+    filebox->acceptButton()->setSelector(FXDialogBox::ID_ACCEPT);
+    filebox->cancelButton()->setTarget(this);
+    filebox->cancelButton()->setSelector(FXDialogBox::ID_CANCEL);
+}
+
+class dxEXDirSelector : public FXDirSelector
+{
+    FXDECLARE(dxEXDirSelector)
+protected:
+    dxEXDirSelector(){}
+private:
+    dxEXDirSelector(const dxEXDirSelector&);
+    dxEXDirSelector &operator=(const dxEXDirSelector&);
+public:
+    dxEXDirSelector(FXComposite *p,FXObject* tgt=NULL,FXSelector sel=0,FXuint opts=0,FXint x=0,FXint y=0,FXint w=0,FXint h=0);
+
+    long onCmdNew(FXObject*,FXSelector,void*);
+    long onCmdDelete(FXObject*,FXSelector,void*);
+    long onCmdMove(FXObject*,FXSelector,void*);
+    long onCmdCopy(FXObject*,FXSelector,void*);
+    long onCmdLink(FXObject*,FXSelector,void*);
+};
+
+FXDEFMAP(dxEXDirSelector) dxEXDirSelectorMap[]={
+    FXMAPFUNC(SEL_COMMAND,FXDirSelector::ID_NEW,dxEXDirSelector::onCmdNew),
+    FXMAPFUNC(SEL_COMMAND,FXDirSelector::ID_DELETE,dxEXDirSelector::onCmdDelete),
+    FXMAPFUNC(SEL_COMMAND,FXDirSelector::ID_MOVE,dxEXDirSelector::onCmdMove),
+    FXMAPFUNC(SEL_COMMAND,FXDirSelector::ID_COPY,dxEXDirSelector::onCmdCopy),
+    FXMAPFUNC(SEL_COMMAND,FXDirSelector::ID_LINK,dxEXDirSelector::onCmdLink)
+};
+
+FXIMPLEMENT(dxEXDirSelector,FXDirSelector,dxEXDirSelectorMap,ARRAYNUMBER(dxEXDirSelectorMap));
+
+dxEXDirSelector::dxEXDirSelector(FXComposite *p,FXObject* tgt,FXSelector sel,FXuint opts,FXint x,FXint y,FXint w,FXint h):FXDirSelector(p,tgt,sel,opts,x,y,w,h)
+{
+    FXWindow * window=NULL;
+    while((window=getFirst())!=NULL) delete window;
+
+    FXString currentdirectory=FXSystem::getCurrentDirectory();
+    FXAccelTable *table=getShell()->getAccelTable();
+    FXHorizontalFrame *buttons=new FXHorizontalFrame(this,LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X|PACK_UNIFORM_WIDTH);
+    accept=new dxEXButton(buttons,tr("&OK"),NULL,NULL,0,BUTTON_INITIAL|BUTTON_DEFAULT|LAYOUT_RIGHT|FRAME_RAISED|FRAME_THICK,0,0,0,0,20,20);
+    cancel=new dxEXButton(buttons,tr("&Cancel"),NULL,NULL,0,BUTTON_DEFAULT|LAYOUT_RIGHT|FRAME_RAISED|FRAME_THICK,0,0,0,0,20,20);
+    FXHorizontalFrame *field=new FXHorizontalFrame(this,LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X);
+    new FXLabel(field,tr("&Directory:"),NULL,JUSTIFY_LEFT|LAYOUT_CENTER_Y);
+    dirname=new FXTextField(field,25,this,ID_DIRNAME,LAYOUT_FILL_X|LAYOUT_CENTER_Y|FRAME_SUNKEN|FRAME_THICK);
+    FXHorizontalFrame *frame=new FXHorizontalFrame(this,LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y|FRAME_SUNKEN|FRAME_THICK,0,0,0,0,0,0,0,0);
+    dirbox=new FXDirList(frame,this,ID_DIRLIST,LAYOUT_FILL_X|LAYOUT_FILL_Y|LAYOUT_TOP|TREELIST_SHOWS_LINES|TREELIST_SHOWS_BOXES|TREELIST_BROWSESELECT);
+    mrufiles.setTarget(this);
+    mrufiles.setSelector(ID_VISIT);
+    if(table)
+    {
+        table->addAccel(MKUINT(KEY_BackSpace,0),this,FXSEL(SEL_COMMAND,ID_DIRECTORY_UP));
+        table->addAccel(MKUINT(KEY_h,CONTROLMASK),this,FXSEL(SEL_COMMAND,ID_HOME));
+        table->addAccel(MKUINT(KEY_w,CONTROLMASK),this,FXSEL(SEL_COMMAND,ID_WORK));
+    }
+    dirbox->setDirectory(currentdirectory);
+    dirname->setText(currentdirectory);
+    dirbox->setFocus();
+}
+
+// Create new directory
+long dxEXDirSelector::onCmdNew(FXObject*,FXSelector,void*)
+{
+    FXString dir=dirbox->getDirectory();
+    FXString name="DirectoryName";
+    if(dxEXInputDialog::getString(name,this,tr("Create New Directory"),"Create new directory in: "+dir,NULL))
+    {
+        FXString dirname=FXPath::absolute(dir,name);
+        if(FXStat::exists(dirname))
+        {
+            dxEXMessageBox::error(this,MBOX_OK,tr("Already Exists"),"File or directory %s already exists.\n",dirname.text());
+            return 1;
+        }
+        if(!FXDir::create(dirname))
+        {
+            dxEXMessageBox::error(this,MBOX_OK,tr("Cannot Create"),"Cannot create directory %s.\n",dirname.text());
+            return 1;
+        }
+        setDirectory(dirname);
+    }
+    return 1;
+}
+
+// Copy file or directory
+long dxEXDirSelector::onCmdCopy(FXObject*,FXSelector,void*)
+{
+    FXString oldname=dirbox->getCurrentFile();
+    FXString newname=FXPath::directory(oldname)+PATHSEPSTRING "CopyOf"+FXPath::name(oldname);
+    dxEXInputDialog inputdialog(this,tr("Copy File"),"Copy file from location:\n\n"+oldname+"\n\nto location:",NULL,INPUTDIALOG_STRING,0,0,0,0);
+    inputdialog.setText(newname);
+    inputdialog.setNumColumns(60);
+    if(inputdialog.execute())
+    {
+        newname=inputdialog.getText();
+        if(!FXFile::copyFiles(oldname,newname,FALSE))
+        {
+            dxEXMessageBox::error(this,MBOX_OK,tr("Error Copying File"),"Unable to copy file:\n\n%s  to:  %s.",oldname.text(),newname.text());
+        }
+    }
+    return 1;
+}
+
+
+// Move file or directory
+long dxEXDirSelector::onCmdMove(FXObject*,FXSelector,void*)
+{
+    FXString oldname=dirbox->getCurrentFile();
+    FXString newname=oldname;
+    dxEXInputDialog inputdialog(this,tr("Move File"),"Move file from location:\n\n"+oldname+"\n\nto location:",NULL,INPUTDIALOG_STRING,0,0,0,0);
+    inputdialog.setText(newname);
+    inputdialog.setNumColumns(60);
+    if(inputdialog.execute())
+    {
+        newname=inputdialog.getText();
+        if(!FXFile::moveFiles(oldname,newname,FALSE))
+        {
+            dxEXMessageBox::error(this,MBOX_OK,tr("Error Moving File"),"Unable to move file:\n\n%s  to:  %s.",oldname.text(),newname.text());
+        }
+    }
+    return 1;
+}
+
+
+// Link file or directory
+long dxEXDirSelector::onCmdLink(FXObject*,FXSelector,void*)
+{
+    FXString oldname=dirbox->getCurrentFile();
+    FXString newname=FXPath::directory(oldname)+PATHSEPSTRING "LinkTo"+FXPath::name(oldname);
+    dxEXInputDialog inputdialog(this,tr("Link File"),"Link file from location:\n\n"+oldname+"\n\nto location:",NULL,INPUTDIALOG_STRING,0,0,0,0);
+    inputdialog.setText(newname);
+    inputdialog.setNumColumns(60);
+    if(inputdialog.execute())
+    {
+        newname=inputdialog.getText();
+        if(!FXFile::symlink(oldname,newname))
+        {
+            dxEXMessageBox::error(this,MBOX_YES_NO,tr("Error Linking File"),"Unable to link file:\n\n%s  to:  %s.",oldname.text(),newname.text());
+        }
+    }
+    return 1;
+}
+
+
+// Delete file or directory
+long dxEXDirSelector::onCmdDelete(FXObject*,FXSelector,void*)
+{
+    FXString fullname=dirbox->getCurrentFile();
+    if(MBOX_CLICKED_YES==dxEXMessageBox::warning(this,MBOX_YES_NO,tr("Deleting file"),"Are you sure you want to delete the file:\n\n%s",fullname.text()))
+    {
+        if(!FXFile::removeFiles(fullname,TRUE))
+        {
+            dxEXMessageBox::error(this,MBOX_YES_NO,tr("Error Deleting File"),"Unable to delete file:\n\n%s.",fullname.text());
+        }
+    }
+    return 1;
+}
+
+FXIMPLEMENT(dxEXDirDialog,FXDirDialog,NULL,0);
+
+// Construct file fialog box
+dxEXDirDialog::dxEXDirDialog(FXWindow* owner,const FXString& name,FXuint opts,FXint x,FXint y,FXint w,FXint h):
+  FXDirDialog(owner,name,opts,x,y,w,h)
+{
+    delete dirbox;
+    dirbox=new dxEXDirSelector(this,NULL,0,LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    dirbox->acceptButton()->setTarget(this);
+    dirbox->acceptButton()->setSelector(FXDialogBox::ID_ACCEPT);
+    dirbox->cancelButton()->setTarget(this);
+    dirbox->cancelButton()->setSelector(FXDialogBox::ID_CANCEL);
+}
+
+// Construct free-floating directory dialog box
+dxEXDirDialog::dxEXDirDialog(FXApp* a,const FXString& name,FXuint opts,FXint x,FXint y,FXint w,FXint h):
+  FXDirDialog(a,name,opts,x,y,w,h)
+{
+    delete dirbox;
+    dirbox=new dxEXDirSelector(this,NULL,0,LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    dirbox->acceptButton()->setTarget(this);
+    dirbox->acceptButton()->setSelector(FXDialogBox::ID_ACCEPT);
+    dirbox->cancelButton()->setTarget(this);
+    dirbox->cancelButton()->setSelector(FXDialogBox::ID_CANCEL);
 }

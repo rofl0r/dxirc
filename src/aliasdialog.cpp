@@ -50,13 +50,13 @@ AliasDialog::AliasDialog(FXMainWindow *owner)
     m_table->appendHeader(_("Command"), NULL, 200);
 
     m_buttonframe = new FXHorizontalFrame(m_contents, LAYOUT_FILL_X);
-    m_buttonCancel = new dxEXButton(m_buttonframe, _("&Cancel"), NULL, this, ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
-    m_buttonSaveClose = new dxEXButton(m_buttonframe, _("&Save&&Close"), NULL, this, ID_SAVECLOSE, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
-    m_buttonDelete = new dxEXButton(m_buttonframe, _("&Delete"), NULL, this, ID_DELETE, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    m_buttonCancel = new dxEXButton(m_buttonframe, _("&Cancel"), NULL, this, ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
+    m_buttonSaveClose = new dxEXButton(m_buttonframe, _("&Save&&Close"), NULL, this, ID_SAVECLOSE, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
+    m_buttonDelete = new dxEXButton(m_buttonframe, _("&Delete"), NULL, this, ID_DELETE, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
     (FXint)m_aliases.size()? m_buttonDelete->enable() : m_buttonDelete->disable();
-    m_buttonModify = new dxEXButton(m_buttonframe, _("&Modify"), NULL, this, ID_MODIFY, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    m_buttonModify = new dxEXButton(m_buttonframe, _("&Modify"), NULL, this, ID_MODIFY, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
     (FXint)m_aliases.size()? m_buttonModify->enable() : m_buttonModify->disable();
-    m_buttonAdd = new dxEXButton(m_buttonframe, _("&Add"), NULL, this, ID_ADD, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    m_buttonAdd = new dxEXButton(m_buttonframe, _("&Add"), NULL, this, ID_ADD, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
 }
 
 AliasDialog::~AliasDialog()
@@ -81,8 +81,8 @@ long AliasDialog::onAdd(FXObject*, FXSelector, void*)
     FXTextField *command = new FXTextField(matrix, 25, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents, LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
-    new dxEXButton(buttonframe, _("&Cancel"), NULL, &aliasEdit, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 5);
-    new dxEXButton(buttonframe, _("&OK"), NULL, &aliasEdit, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 5);
+    new dxEXButton(buttonframe, _("&Cancel"), NULL, &aliasEdit, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 2);
+    new dxEXButton(buttonframe, _("&OK"), NULL, &aliasEdit, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 2);
 
     if(aliasEdit.execute(PLACEMENT_OWNER))
     {
@@ -124,8 +124,8 @@ long AliasDialog::onModify(FXObject*, FXSelector, void*)
     command->setText(m_table->getItemText(row).after('\t'));
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents, LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
-    new dxEXButton(buttonframe, _("&Cancel"), NULL, &aliasEdit, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 5);
-    new dxEXButton(buttonframe, _("&OK"), NULL, &aliasEdit, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 5);
+    new dxEXButton(buttonframe, _("&Cancel"), NULL, &aliasEdit, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 2);
+    new dxEXButton(buttonframe, _("&OK"), NULL, &aliasEdit, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 2);
 
     if(aliasEdit.execute(PLACEMENT_OWNER))
         {

@@ -74,11 +74,11 @@ ScriptDialog::ScriptDialog(dxirc *owner)
 
     m_buttonframe = new FXHorizontalFrame(m_contents, LAYOUT_FILL_X|LAYOUT_FILL_Y);
 
-    m_buttonClose = new dxEXButton(m_buttonframe, _("C&lose"), NULL, this, ID_CLOSE, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
-    m_buttonUnload = new dxEXButton(m_buttonframe, _("&Unload"), NULL, this, ID_UNLOAD, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
-    m_buttonViewNew = new dxEXButton(m_buttonframe, _("View &script"), NULL, this, ID_VIEWNEW, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
-    m_buttonView = new dxEXButton(m_buttonframe, _("&View current"), NULL, this, ID_VIEW, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
-    m_buttonLoad = new dxEXButton(m_buttonframe, _("L&oad"), NULL, this, ID_LOAD, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    m_buttonClose = new dxEXButton(m_buttonframe, _("C&lose"), NULL, this, ID_CLOSE, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
+    m_buttonUnload = new dxEXButton(m_buttonframe, _("&Unload"), NULL, this, ID_UNLOAD, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
+    m_buttonViewNew = new dxEXButton(m_buttonframe, _("View &script"), NULL, this, ID_VIEWNEW, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
+    m_buttonView = new dxEXButton(m_buttonframe, _("&View current"), NULL, this, ID_VIEW, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
+    m_buttonLoad = new dxEXButton(m_buttonframe, _("L&oad"), NULL, this, ID_LOAD, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
 
     updateList();
     updateDetails();
@@ -98,7 +98,7 @@ long ScriptDialog::onClose(FXObject*,FXSelector,void*)
 
 long ScriptDialog::onLoad(FXObject*,FXSelector,void*)
 {
-    FXFileDialog file(this, _("Load lua script"));
+    dxEXFileDialog file(this, _("Load lua script"));
     file.setPatternList(_("Lua scripts (*.lua)"));
     if(file.execute(PLACEMENT_CURSOR))
     {
@@ -120,7 +120,7 @@ long ScriptDialog::onView(FXObject*,FXSelector,void*)
 
 long ScriptDialog::onViewNew(FXObject*, FXSelector, void*)
 {
-    FXFileDialog file(this, _("Load lua script"));
+    dxEXFileDialog file(this, _("Load lua script"));
     file.setPatternList(_("Lua scripts (*.lua)"));
     if(file.execute(PLACEMENT_CURSOR))
     {
@@ -213,7 +213,7 @@ void ScriptDialog::viewFile(const FXString &file)
     text->setVisibleRows(35);
     text->setVisibleColumns(90);
 
-    new dxEXButton(contents, _("C&lose"), NULL, &dialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,5);
+    new dxEXButton(contents, _("C&lose"), NULL, &dialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,2);
 
     FXFile textfile(file,FXFile::Reading);
     FXint size, n, c, i, j;

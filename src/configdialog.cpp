@@ -122,8 +122,8 @@ SmileyDialog::SmileyDialog(FXWindow* owner, FXString title, FXString smiley, FXS
         : FXDialogBox(owner, title, DECOR_RESIZE|DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0)
 {
     FXHorizontalFrame *closeframe = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X|PACK_UNIFORM_WIDTH);
-    new dxEXButton(closeframe, _("&Cancel"), NULL, this, ID_CANCEL, LAYOUT_RIGHT|FRAME_RAISED|FRAME_THICK, 0,0,0,0, 10,10,2,5);
-    dxEXButton *ok = new dxEXButton(closeframe, _("&OK"), NULL, this, ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|LAYOUT_RIGHT|FRAME_RAISED|FRAME_THICK, 0,0,0,0, 10,10,2,5);
+    new dxEXButton(closeframe, _("&Cancel"), NULL, this, ID_CANCEL, LAYOUT_RIGHT|FRAME_RAISED|FRAME_THICK, 0,0,0,0, 10,10,2,2);
+    dxEXButton *ok = new dxEXButton(closeframe, _("&OK"), NULL, this, ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|LAYOUT_RIGHT|FRAME_RAISED|FRAME_THICK, 0,0,0,0, 10,10,2,2);
     ok->addHotKey(KEY_Return);
 
     FXMatrix *matrix = new FXMatrix(this,2,MATRIX_BY_COLUMNS|LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
@@ -161,7 +161,7 @@ long SmileyDialog::onCancel(FXObject*, FXSelector, void*)
 
 long SmileyDialog::onPath(FXObject*, FXSelector, void*)
 {
-    FXFileDialog dialog(this, _("Select file"));
+    dxEXFileDialog dialog(this, _("Select file"));
     if(!m_pathText->getText().empty()) dialog.setFilename(m_pathText->getText());
     else dialog.setFilename((FXString)DXIRC_DATADIR+PATHSEPSTRING+"icons"+PATHSEPSTRING+"smileys"+PATHSEPSTRING);
     if(dialog.execute())
@@ -390,9 +390,9 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     m_font->create();
 
     FXHorizontalFrame *closeframe = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X|PACK_UNIFORM_WIDTH);
-    dxEXButton *ok = new dxEXButton(closeframe, _("&Save&&Close"), NULL, this, ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|LAYOUT_RIGHT|FRAME_RAISED|FRAME_THICK, 0,0,0,0, 10,10,2,5);
+    dxEXButton *ok = new dxEXButton(closeframe, _("&Save&&Close"), NULL, this, ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|LAYOUT_RIGHT|FRAME_RAISED|FRAME_THICK, 0,0,0,0, 10,10,2,2);
     ok->addHotKey(KEY_Return);
-    new dxEXButton(closeframe, _("&Cancel"), NULL, this, ID_CANCEL, LAYOUT_RIGHT|FRAME_RAISED|FRAME_THICK, 0,0,0,0, 10,10,2,5);
+    new dxEXButton(closeframe, _("&Cancel"), NULL, this, ID_CANCEL, LAYOUT_RIGHT|FRAME_RAISED|FRAME_THICK, 0,0,0,0, 10,10,2,2);
 
     FXHorizontalFrame *contents = new FXHorizontalFrame(this, LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     FXVerticalFrame *buttonframe = new FXVerticalFrame(contents, LAYOUT_FILL_Y|LAYOUT_LEFT|PACK_UNIFORM_WIDTH);
@@ -421,7 +421,7 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     new FXColorWell(colormatrix, FXRGB(0,0,255), &m_linkTarget, FXDataTarget::ID_VALUE, COLORWELL_OPAQUEONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_LEFT|LAYOUT_CENTER_Y|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW, 0,0,40,24);
     new FXLabel(colormatrix, _("Link color"), NULL, JUSTIFY_LEFT|LAYOUT_CENTER_Y|LAYOUT_FILL_X|LAYOUT_FILL_ROW);
     new FXLabel(colormatrix, _("Font"));
-    m_ircfontButton = new dxEXButton(colormatrix, " ", NULL, this, ID_IRCFONT, LAYOUT_CENTER_Y|FRAME_RAISED|JUSTIFY_CENTER_X|JUSTIFY_CENTER_Y|LAYOUT_FILL_X, 0,0,0,0, 10,10,2,5);
+    m_ircfontButton = new dxEXButton(colormatrix, " ", NULL, this, ID_IRCFONT, LAYOUT_CENTER_Y|FRAME_RAISED|JUSTIFY_CENTER_X|JUSTIFY_CENTER_Y|LAYOUT_FILL_X, 0,0,0,0, 10,10,2,2);
     new FXCheckButton(cframe, _("Use same font for commandline"), &m_targetSameCmd, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
     new FXCheckButton(cframe, _("Use same font for user list"), &m_targetSameList, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
     new FXCheckButton(cframe, _("Use colored nick"), &m_targetColoredNick, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
@@ -956,8 +956,8 @@ long ConfigDialog::onAddCommand(FXObject*, FXSelector, void*)
     command->fillItems(fillCommandsCombo());
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
-    new dxEXButton(buttonframe, _("&Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
-    new dxEXButton(buttonframe, _("&OK"), NULL, &dialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    new dxEXButton(buttonframe, _("&Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
+    new dxEXButton(buttonframe, _("&OK"), NULL, &dialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
 
     if(dialog.execute(PLACEMENT_CURSOR))
     {
@@ -994,8 +994,8 @@ long ConfigDialog::onAddUser(FXObject*, FXSelector, void*)
     server->setText("all");
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
-    new dxEXButton(buttonframe, _("&Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
-    new dxEXButton(buttonframe, _("&OK"), NULL, &dialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    new dxEXButton(buttonframe, _("&Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
+    new dxEXButton(buttonframe, _("&OK"), NULL, &dialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
 
     if(dialog.execute(PLACEMENT_CURSOR))
     {
@@ -1034,8 +1034,8 @@ long ConfigDialog::onModifyUser(FXObject*, FXSelector, void*)
     server->setText(m_usersList[i].server);
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
-    new dxEXButton(buttonframe, _("&Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
-    new dxEXButton(buttonframe, _("&OK"), NULL, &dialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    new dxEXButton(buttonframe, _("&Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
+    new dxEXButton(buttonframe, _("&OK"), NULL, &dialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
 
     if(dialog.execute(PLACEMENT_CURSOR))
     {
@@ -1072,7 +1072,7 @@ long ConfigDialog::onImportSmiley(FXObject*, FXSelector, void*)
 {
     if(m_showImportwarning && m_smileysMap.size())
         if(dxEXMessageBox::warning(this, MBOX_OK_CANCEL, _("Warning"), _("File import overwrites current settings"))==4) {m_showImportwarning=FALSE; return 1;}
-    FXFileDialog dialog(this, _("Select file"));
+    dxEXFileDialog dialog(this, _("Select file"));
     if(m_showImportwarning) dialog.setFilename((FXString)DXIRC_DATADIR+PATHSEPSTRING+"icons"+PATHSEPSTRING+"smileys"+PATHSEPSTRING+"dxirc.smiley");
     if(dialog.execute())
     {
@@ -1134,7 +1134,7 @@ next:           bol=eol;
 
 long ConfigDialog::onExportSmiley(FXObject*, FXSelector, void*)
 {
-    FXFileDialog dialog(this, _("Save smiley settings as"));
+    dxEXFileDialog dialog(this, _("Save smiley settings as"));
     if(dialog.execute())
     {
         FXFile file(dialog.getFilename(), FXIO::Writing);
@@ -1340,8 +1340,8 @@ long ConfigDialog::onAddFriend(FXObject*, FXSelector, void*)
     server->setText("all");
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
-    new dxEXButton(buttonframe, _("&Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
-    new dxEXButton(buttonframe, _("&OK"), NULL, &dialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    new dxEXButton(buttonframe, _("&Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
+    new dxEXButton(buttonframe, _("&OK"), NULL, &dialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
 
     if(dialog.execute(PLACEMENT_CURSOR))
     {
@@ -1380,8 +1380,8 @@ long ConfigDialog::onModifyFriend(FXObject*, FXSelector, void*)
     server->setText(m_friendsList[i].server);
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
-    new dxEXButton(buttonframe, _("&Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
-    new dxEXButton(buttonframe, _("&OK"), NULL, &dialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    new dxEXButton(buttonframe, _("&Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
+    new dxEXButton(buttonframe, _("&OK"), NULL, &dialog, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
 
     if(dialog.execute(PLACEMENT_CURSOR))
     {
@@ -1416,7 +1416,7 @@ long ConfigDialog::onDeleteFriend(FXObject*, FXSelector, void*)
 
 long ConfigDialog::onAddIcons(FXObject*, FXSelector, void*)
 {
-    FXDirDialog dirdialog(this, _("Select theme directory"));
+    dxEXDirDialog dirdialog(this, _("Select theme directory"));
     if(dirdialog.execute(PLACEMENT_CURSOR))
     {
         if(!FXPath::search(dirdialog.getDirectory(), "irc_normal.png").empty() && !themeExist(dirdialog.getDirectory())) m_icons->appendItem(dirdialog.getDirectory());
@@ -1826,7 +1826,7 @@ long ConfigDialog::onReconnect(FXObject*, FXSelector, void*)
 
 long ConfigDialog::onPathSelect(FXObject*, FXSelector, void*)
 {
-    FXDirDialog dirdialog(this,_("Select log directory"));
+    dxEXDirDialog dirdialog(this,_("Select log directory"));
     dirdialog.setDirectory(m_logPath);
     if(dirdialog.execute(PLACEMENT_CURSOR))
     {
@@ -1837,7 +1837,7 @@ long ConfigDialog::onPathSelect(FXObject*, FXSelector, void*)
 
 long ConfigDialog::onAutoloadPathSelect(FXObject*, FXSelector, void*)
 {
-    FXDirDialog dirdialog(this,_("Select autoload directory"));
+    dxEXDirDialog dirdialog(this,_("Select autoload directory"));
     dirdialog.setDirectory(m_autoloadPath);
     if(dirdialog.execute(PLACEMENT_CURSOR))
     {
@@ -1848,7 +1848,7 @@ long ConfigDialog::onAutoloadPathSelect(FXObject*, FXSelector, void*)
 
 long ConfigDialog::onDccPathSelect(FXObject*, FXSelector, void*)
 {
-    FXDirDialog dirdialog(this,_("Select directory"));
+    dxEXDirDialog dirdialog(this,_("Select directory"));
     dirdialog.setDirectory(m_dccPath);
     if(dirdialog.execute(PLACEMENT_CURSOR))
     {
@@ -1972,7 +1972,7 @@ long ConfigDialog::onPlay(FXObject*, FXSelector sel, void*)
 
 long ConfigDialog::onSelectPath(FXObject*, FXSelector sel, void*)
 {
-    FXFileDialog file(this, _("Select file"));
+    dxEXFileDialog file(this, _("Select file"));
     file.setPatternList(_("Sound file (*.wav)"));
     switch(FXSELID(sel)) {
         case ID_SELECTCONNECT:

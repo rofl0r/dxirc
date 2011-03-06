@@ -51,7 +51,7 @@ public:
     dxEXToggleButton(FXComposite* p,const FXString& text1,const FXString& text2,FXIcon* icon1=NULL,FXIcon* icon2=NULL,FXObject* tgt=NULL,FXSelector sel=0,FXuint opts=TOGGLEBUTTON_NORMAL,FXint x=0,FXint y=0,FXint w=0,FXint h=0,FXint pl=DEFAULT_PAD,FXint pr=DEFAULT_PAD,FXint pt=DEFAULT_PAD,FXint pb=DEFAULT_PAD);
 };
 
-class FXAPI dxEXTabItem : public FXTabItem
+class dxEXTabItem : public FXTabItem
 {
     FXDECLARE(dxEXTabItem)
 protected:
@@ -66,7 +66,7 @@ public:
     dxEXTabItem(FXTabBar* p,const FXString& text,FXIcon* ic=0,FXuint opts=TAB_TOP_NORMAL,FXint x=0,FXint y=0,FXint w=0,FXint h=0,FXint pl=DEFAULT_PAD,FXint pr=DEFAULT_PAD,FXint pt=DEFAULT_PAD,FXint pb=DEFAULT_PAD);
 };
 
-class FXAPI dxEXMessageBox : public FXDialogBox
+class dxEXMessageBox : public FXDialogBox
 {
     FXDECLARE(dxEXMessageBox)
 protected:
@@ -131,6 +131,78 @@ public:
     * Show modal information message, in free floating window.
     */
     static FXuint information(FXApp* app,FXuint opts,const char* caption,const char* message,...) FX_PRINTF(4,5) ;
+};
+
+class dxEXInputDialog : public FXInputDialog
+{
+    FXDECLARE(dxEXInputDialog)
+protected:
+    dxEXInputDialog(){}
+private:
+    dxEXInputDialog(const dxEXInputDialog&);
+    dxEXInputDialog &operator=(const dxEXInputDialog&);
+    void initialize(const FXString& text,FXIcon* icon);
+public:
+    /// Construct input dialog box with given caption, icon, and prompt text
+    dxEXInputDialog(FXWindow* owner,const FXString& caption,const FXString& label,FXIcon* icon=NULL,FXuint opts=INPUTDIALOG_STRING,FXint x=0,FXint y=0,FXint w=0,FXint h=0);
+    /// Construct free floating input dialog box with given caption, icon, and prompt text
+    dxEXInputDialog(FXApp* app,const FXString& caption,const FXString& label,FXIcon* icon=NULL,FXuint opts=INPUTDIALOG_STRING,FXint x=0,FXint y=0,FXint w=0,FXint h=0);
+
+    /**
+    * Prompt for a string, start with the initial value.
+    * Return TRUE if the new value is accepted, and false otherwise.
+    */
+    static FXbool getString(FXString& result,FXWindow* owner,const FXString& caption,const FXString& label,FXIcon* icon=NULL);
+    /**
+    * Prompt for a string, in free floating window.
+    */
+    static FXbool getString(FXString& result,FXApp* app,const FXString& caption,const FXString& label,FXIcon* icon=NULL);
+    /**
+    * Prompt for an integer number, start with the given initial value.
+    * Return TRUE if the new value is accepted, and false otherwise.
+    * The input is constrained between lo and hi.
+    */
+    static FXbool getInteger(FXint& result,FXWindow* owner,const FXString& caption,const FXString& label,FXIcon* icon=NULL,FXint lo=-2147483647,FXint hi=2147483647);
+    /**
+    * Prompt for a integer number, in free floating window.
+    */
+    static FXbool getInteger(FXint& result,FXApp* app,const FXString& caption,const FXString& label,FXIcon* icon=NULL,FXint lo=-2147483647,FXint hi=2147483647);
+    /**
+    * Prompt for an real number, start with the given initial value.
+    * Return TRUE if the new value is accepted, and false otherwise.
+    * The input is constrained between lo and hi.
+    */
+    static FXbool getReal(FXdouble& result,FXWindow* owner,const FXString& caption,const FXString& label,FXIcon* icon=NULL,FXdouble lo=-1.797693134862315e+308,FXdouble hi=1.797693134862315e+308);
+    /**
+    * Prompt for a real number, in free floating window.
+    */
+    static FXbool getReal(FXdouble& result,FXApp* app,const FXString& caption,const FXString& label,FXIcon* icon=NULL,FXdouble lo=-1.797693134862315e+308,FXdouble hi=1.797693134862315e+308);
+};
+
+class dxEXFileDialog : public FXFileDialog
+{
+    FXDECLARE(dxEXFileDialog)
+protected:
+    dxEXFileDialog(){}
+private:
+    dxEXFileDialog(const dxEXFileDialog&);
+    dxEXFileDialog &operator=(const dxEXFileDialog&);
+public:
+    dxEXFileDialog(FXWindow* owner,const FXString& name,FXuint opts=0,FXint x=0,FXint y=0,FXint w=500,FXint h=300);
+    dxEXFileDialog(FXApp* a,const FXString& name,FXuint opts=0,FXint x=0,FXint y=0,FXint w=500,FXint h=300);
+};
+
+class dxEXDirDialog : public FXDirDialog
+{
+    FXDECLARE(dxEXDirDialog)
+protected:
+    dxEXDirDialog(){}
+private:
+    dxEXDirDialog(const dxEXDirDialog&);
+    dxEXDirDialog &operator=(const dxEXDirDialog&);
+public:
+    dxEXDirDialog(FXWindow* owner,const FXString& name,FXuint opts=0,FXint x=0,FXint y=0,FXint w=500,FXint h=300);
+    dxEXDirDialog(FXApp* a,const FXString& name,FXuint opts=0,FXint x=0,FXint y=0,FXint w=500,FXint h=300);
 };
 
 #endif	/* FXEXT_H */

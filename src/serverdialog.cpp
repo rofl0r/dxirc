@@ -98,14 +98,14 @@ ServerDialog::ServerDialog(FXMainWindow *owner, dxServerInfoArray servers)
 
     m_buttonframe = new FXHorizontalFrame(m_contents, LAYOUT_FILL_X|LAYOUT_FILL_Y);
 
-    m_buttonCancel = new dxEXButton(m_buttonframe, _("&Cancel"), NULL, this, ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
-    m_buttonSaveClose = new dxEXButton(m_buttonframe, _("&Save&&Close"), NULL, this, ID_SAVECLOSE, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
-    m_buttonDelete = new dxEXButton(m_buttonframe, _("&Delete"), NULL, this, ID_DELETE, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    m_buttonCancel = new dxEXButton(m_buttonframe, _("&Cancel"), NULL, this, ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
+    m_buttonSaveClose = new dxEXButton(m_buttonframe, _("&Save&&Close"), NULL, this, ID_SAVECLOSE, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
+    m_buttonDelete = new dxEXButton(m_buttonframe, _("&Delete"), NULL, this, ID_DELETE, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
     m_serverList.no()? m_buttonDelete->enable() : m_buttonDelete->disable();
-    m_buttonModify = new dxEXButton(m_buttonframe, _("&Modify"), NULL, this, ID_MODIFY, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    m_buttonModify = new dxEXButton(m_buttonframe, _("&Modify"), NULL, this, ID_MODIFY, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
     m_serverList.no()? m_buttonModify->enable() : m_buttonModify->disable();
-    m_buttonAdd = new dxEXButton(m_buttonframe, _("&Add"), NULL, this, ID_ADD, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
-    m_buttonJoin = new dxEXButton(m_buttonframe, _("&Join"), NULL, this, ID_JOIN, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,5);
+    m_buttonAdd = new dxEXButton(m_buttonframe, _("&Add"), NULL, this, ID_ADD, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
+    m_buttonJoin = new dxEXButton(m_buttonframe, _("&Join"), NULL, this, ID_JOIN, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
     m_serverList.no()? m_buttonJoin->enable() : m_buttonJoin->disable();
 
     updateDetails();
@@ -178,8 +178,8 @@ long ServerDialog::onAdd(FXObject*,FXSelector,void*)
     FXCheckButton *buttonAuto = new FXCheckButton(matrix, "", NULL, 0);
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents, LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
-    new dxEXButton(buttonframe, _("&Cancel"), NULL, &serverEdit, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 5);
-    new dxEXButton(buttonframe, _("&OK"), NULL, &serverEdit, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 5);
+    new dxEXButton(buttonframe, _("&Cancel"), NULL, &serverEdit, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 2);
+    new dxEXButton(buttonframe, _("&OK"), NULL, &serverEdit, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 2);
 
     if(serverEdit.execute(PLACEMENT_OWNER))
     {
@@ -265,8 +265,8 @@ long ServerDialog::onModify(FXObject*,FXSelector,void*)
     buttonAuto->setCheck(m_serverList[index].autoConnect);
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents, LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
-    new dxEXButton(buttonframe, _("&Cancel"), NULL, &serverEdit, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 5);
-    new dxEXButton(buttonframe, _("&OK"), NULL, &serverEdit, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 5);
+    new dxEXButton(buttonframe, _("&Cancel"), NULL, &serverEdit, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 2);
+    new dxEXButton(buttonframe, _("&OK"), NULL, &serverEdit, FXDialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 10, 10, 2, 2);
 
     if(serverEdit.execute(PLACEMENT_OWNER))
     {
