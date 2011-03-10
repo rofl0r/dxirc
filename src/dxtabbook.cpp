@@ -35,8 +35,8 @@ FXDEFMAP(dxTabBook) dxTabBookMap[] = {
 
 FXIMPLEMENT(dxTabBook, FXTabBook, dxTabBookMap, ARRAYNUMBER(dxTabBookMap))
 
-dxTabBook::dxTabBook(FXComposite* p, FXObject* tgt, FXSelector sel, FXuint opts)
-    : FXTabBook(p, tgt, sel, opts)
+dxTabBook::dxTabBook(FXComposite* p, FXObject* tgt, FXSelector sel, FXuint opts, FXint x, FXint y, FXint w, FXint h, FXint pl, FXint pr, FXint pt, FXint pb)
+    : FXTabBook(p, tgt, sel, opts, x, y, w, h, pl, pr, pt, pb)
 {
     m_buttonPrevious = new FXArrowButton(p, this, ID_BPREVIOUS, LAYOUT_FIX_X|LAYOUT_FIX_Y|ARROW_LEFT);
     m_buttonPrevious->setArrowColor(getApp()->getForeColor());

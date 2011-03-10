@@ -205,5 +205,17 @@ public:
     dxEXDirDialog(FXApp* a,const FXString& name,FXuint opts=0,FXint x=0,FXint y=0,FXint w=500,FXint h=300);
 };
 
+class dxEXFontDialog : public FXFontDialog
+{
+    FXDECLARE(dxEXFontDialog)
+protected:
+    dxEXFontDialog(){}
+private:
+    dxEXFontDialog(const dxEXFontDialog&);
+    dxEXFontDialog &operator=(const dxEXFontDialog&);
+public:
+    dxEXFontDialog(FXWindow* owner,const FXString& name,FXuint opts=0,FXint x=0,FXint y=0,FXint w=650,FXint h=380);
+};
+
 #endif	/* FXEXT_H */
 

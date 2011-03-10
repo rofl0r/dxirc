@@ -21,7 +21,7 @@
  */
 
 #ifndef _DXTABBOOK_H
-#define	_DXTABBOOK_H
+#define _DXTABBOOK_H
 
 #include <fx.h>
 
@@ -29,7 +29,7 @@ class dxTabBook : public FXTabBook
 {
     FXDECLARE(dxTabBook)
 public:
-    dxTabBook(FXComposite* p, FXObject* tgt=NULL, FXSelector sel=0, FXuint opts=TABBOOK_NORMAL);
+    dxTabBook(FXComposite* p, FXObject* tgt=NULL, FXSelector sel=0, FXuint opts=TABBOOK_NORMAL, FXint x=0, FXint y=0, FXint w=0, FXint h=0, FXint pl=DEFAULT_SPACING, FXint pr=DEFAULT_SPACING, FXint pt=DEFAULT_SPACING, FXint pb=DEFAULT_SPACING);
     enum {
         ID_BPREVIOUS = FXMainWindow::ID_LAST+200,
         ID_BNEXT,

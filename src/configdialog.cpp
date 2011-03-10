@@ -612,13 +612,20 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     m_menuFrame = new FXVerticalFrame(m_menuGroup, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X|LAYOUT_CENTER_Y, 0,0,0,0,0,0,0,0,0,0);
     m_menuLabels[0] = new FXLabel(m_menuFrame, _("&Server list"), NULL, LABEL_NORMAL, 0,0,0,0,16,4);
     m_menuLabels[1] = new FXLabel(m_menuFrame, _("Selected Menu Entry"), NULL, LABEL_NORMAL, 0,0,0,0,16,4);
-    m_tabs = new FXTabBook(m_vframe2, NULL, 0, LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    m_tab = new FXTabItem(m_tabs, _("Standard tab"));
+    m_tabFrame = new FXHorizontalFrame(m_vframe2, LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    m_tabs = new dxTabBook(m_tabFrame, NULL, 0, LAYOUT_FILL_X|LAYOUT_FILL_Y|TABBOOK_LEFTTABS);
+    m_tab = new dxEXTabItem(m_tabs, _("Standard tab"));
+    m_tab->setTabOrientation(TAB_LEFT);
     m_tabframe1 = new FXVerticalFrame(m_tabs, FRAME_RAISED|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    m_unread = new FXTabItem(m_tabs, _("Unreaded tab"));
+    m_unread = new dxEXTabItem(m_tabs, _("Unreaded tab"));
+    m_unread->setTabOrientation(TAB_LEFT);
     m_tabframe2 = new FXVerticalFrame(m_tabs, FRAME_RAISED|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    m_highlight = new FXTabItem(m_tabs, _("Highlighted tab"));
+    m_highlight = new dxEXTabItem(m_tabs, _("Highlighted tab"));
+    m_highlight->setTabOrientation(TAB_LEFT);
     m_tabframe3 = new FXVerticalFrame(m_tabs, FRAME_RAISED|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    FXuint packing = m_tabs->getPackingHints();
+    packing |= PACK_UNIFORM_WIDTH;
+    m_tabs->setPackingHints(packing);
     m_sep2 = new FXSeparator(m_menuFrame, LAYOUT_FILL_X|SEPARATOR_LINE);
     m_menuLabels[2]=new FXLabel(m_menuFrame, _("&Quit"), NULL, LABEL_NORMAL, 0,0,0,0,16,4);
     FXHorizontalFrame *fontframe = new FXHorizontalFrame(lookpane, LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, DEFAULT_SPACING,DEFAULT_SPACING,DEFAULT_SPACING,DEFAULT_SPACING);
@@ -1492,7 +1499,7 @@ long ConfigDialog::onTheme(FXObject*, FXSelector, void *ptr)
 
 long ConfigDialog::onFont(FXObject*, FXSelector, void*)
 {
-    FXFontDialog dialog(this, _("Select font"));
+    dxEXFontDialog dialog(this, _("Select font"));
     FXFontDesc fontdescription;
     m_font->getFontDesc(fontdescription);
     strncpy(fontdescription.face,m_font->getActualName().text(),sizeof(fontdescription.face));
@@ -1511,7 +1518,7 @@ long ConfigDialog::onFont(FXObject*, FXSelector, void*)
 
 long ConfigDialog::onIrcFont(FXObject*, FXSelector, void*)
 {
-    FXFontDialog dialog(this, _("Select font"));
+    dxEXFontDialog dialog(this, _("Select font"));
     FXFontDesc fontdescription;
     m_ircFont->getFontDesc(fontdescription);
     strncpy(fontdescription.face,m_ircFont->getActualName().text(),sizeof(fontdescription.face));
@@ -1637,6 +1644,11 @@ void ConfigDialog::updateColors()
     m_menuLabels[1]->setShadowColor(m_themeCurrent.shadow);
     m_menuLabels[1]->setHiliteColor(m_themeCurrent.hilite);
 
+    m_tabFrame->setBorderColor(m_themeCurrent.border);
+    m_tabFrame->setBaseColor(m_themeCurrent.base);
+    m_tabFrame->setBackColor(m_themeCurrent.base);
+    m_tabFrame->setShadowColor(m_themeCurrent.shadow);
+    m_tabFrame->setHiliteColor(m_themeCurrent.hilite);
     m_tabs->setBorderColor(m_themeCurrent.border);
     m_tabs->setBaseColor(m_themeCurrent.base);
     m_tabs->setBackColor(m_themeCurrent.base);
@@ -1747,6 +1759,9 @@ void ConfigDialog::updateFont()
     m_menuLabels[0]->setFont(m_font);
     m_menuLabels[1]->setFont(m_font);
     m_menuLabels[2]->setFont(m_font);
+    m_tab->setFont(m_font);
+    m_unread->setFont(m_font);
+    m_highlight->setFont(m_font);
 }
 
 void ConfigDialog::updateIrcFont()

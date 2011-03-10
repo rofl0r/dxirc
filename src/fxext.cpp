@@ -208,9 +208,11 @@ long dxEXButton::onPaint(FXObject*, FXSelector, void* ptr)
     }
     else if(state == STATE_UP && ((options & BUTTON_TOOLBAR) == 0 || (options & BUTTON_TOOLBAR && underCursor())))
     {
+        dc.setForeground(baseColor);
+        dc.fillRectangle(0, 0, width, height);
 
         /// Outside Background
-        dc.setForeground(baseColor);
+        dc.setForeground(backColor);
         dc.drawPoints(basebackground, 4);
 
         /// Border
@@ -554,7 +556,7 @@ long dxEXTabItem::onPaint(FXObject*,FXSelector,void*)
             if(tab==ctab || tab==0)
             {
                 if(tab==ctab) dc.setForeground(hiliteColor);
-                dc.drawLine(0,1,0,tab==0?height-1:height-2);
+                dc.drawLine(0,1,0,tab==0?height:height-2);
             }
             else
             {
@@ -565,7 +567,7 @@ long dxEXTabItem::onPaint(FXObject*,FXSelector,void*)
         case TAB_BOTTOM:
             dc.setForeground(shadowColor);
             dc.drawLine(0,height-1,width,height-1);
-            dc.drawLine(width-1,1,width-1,height-2);
+            dc.drawLine(width-1,1,width-1,height-1);
             if(tab==ctab || tab==0)
             {
                 if(tab==ctab) dc.setForeground(hiliteColor);
@@ -574,7 +576,7 @@ long dxEXTabItem::onPaint(FXObject*,FXSelector,void*)
             else
             {
                 dc.setForeground(makeHiliteColor(shadowColor));
-                dc.drawLine(0,1,0,height-2);
+                dc.drawLine(0,1,0,height-1);
             }
             break;
         case TAB_LEFT:
@@ -584,7 +586,7 @@ long dxEXTabItem::onPaint(FXObject*,FXSelector,void*)
             if(tab==ctab || tab==0)
             {
                 if(tab==ctab) dc.setForeground(hiliteColor);
-                dc.drawLine(1,0,tab==0?width-1:width-2,0);
+                dc.drawLine(1,0,tab==0?width:width-2,0);
             }
             else
             {
@@ -1434,4 +1436,162 @@ dxEXDirDialog::dxEXDirDialog(FXApp* a,const FXString& name,FXuint opts,FXint x,F
     dirbox->acceptButton()->setSelector(FXDialogBox::ID_ACCEPT);
     dirbox->cancelButton()->setTarget(this);
     dirbox->cancelButton()->setSelector(FXDialogBox::ID_CANCEL);
+}
+
+class dxEXFontSelector : public FXFontSelector
+{
+    FXDECLARE(dxEXFontSelector)
+protected:
+    dxEXFontSelector(){}
+private:
+    dxEXFontSelector(const dxEXFontSelector&);
+    dxEXFontSelector &operator=(const dxEXFontSelector&);
+public:
+    dxEXFontSelector(FXComposite *p,FXObject* tgt=NULL,FXSelector sel=0,FXuint opts=0,FXint x=0,FXint y=0,FXint w=0,FXint h=0);
+};
+
+FXIMPLEMENT(dxEXFontSelector,FXFontSelector,NULL,0);
+
+dxEXFontSelector::dxEXFontSelector(FXComposite *p,FXObject* tgt,FXSelector sel,FXuint opts,FXint x,FXint y,FXint w,FXint h):
+  FXFontSelector(p,tgt,sel,opts,x,y,w,h)
+{
+    FXWindow * window=NULL;
+    while((window=getFirst())!=NULL) delete window;
+
+    // Bottom side
+    FXHorizontalFrame *buttons=new FXHorizontalFrame(this,LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X);
+    accept=new dxEXButton(buttons,tr("&Accept"),NULL,NULL,0,BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT,0,0,0,0,20,20);
+    cancel=new dxEXButton(buttons,tr("&Cancel"),NULL,NULL,0,BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT,0,0,0,0,20,20);
+
+    // Left side
+    FXMatrix *controls=new FXMatrix(this,3,LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FIX_HEIGHT,0,0,0,160, DEFAULT_SPACING,DEFAULT_SPACING,DEFAULT_SPACING,DEFAULT_SPACING, DEFAULT_SPACING,0);
+
+    // Font families, to be filled later
+    new FXLabel(controls,tr("&Family:"),NULL,JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_COLUMN);
+    family=new FXTextField(controls,10,NULL,0,TEXTFIELD_READONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_COLUMN);
+    FXHorizontalFrame *familyframe=new FXHorizontalFrame(controls,FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_Y|LAYOUT_FILL_X|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW,0,0,0,0, 0,0,0,0);
+    familylist=new FXList(familyframe,this,ID_FAMILY,LIST_BROWSESELECT|LAYOUT_FILL_Y|LAYOUT_FILL_X|HSCROLLER_NEVER|VSCROLLER_ALWAYS);
+
+    // Initial focus on list
+    familylist->setFocus();
+
+    // Font weights
+    new FXLabel(controls,tr("&Weight:"),NULL,JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_COLUMN);
+    weight=new FXTextField(controls,4,NULL,0,TEXTFIELD_READONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_COLUMN);
+    FXHorizontalFrame *weightframe=new FXHorizontalFrame(controls,FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_Y|LAYOUT_FILL_X|LAYOUT_FILL_ROW|LAYOUT_FILL_COLUMN,0,0,0,0, 0,0,0,0);
+    weightlist=new FXList(weightframe,this,ID_WEIGHT,LIST_BROWSESELECT|LAYOUT_FILL_Y|LAYOUT_FILL_X|HSCROLLER_NEVER|VSCROLLER_ALWAYS);
+
+    // Font styles
+    new FXLabel(controls,tr("&Style:"),NULL,JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_COLUMN);
+    style=new FXTextField(controls,6,NULL,0,TEXTFIELD_READONLY|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_COLUMN);
+    FXHorizontalFrame *styleframe=new FXHorizontalFrame(controls,FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_Y|LAYOUT_FILL_X|LAYOUT_FILL_ROW|LAYOUT_FILL_COLUMN,0,0,0,0, 0,0,0,0);
+    stylelist=new FXList(styleframe,this,ID_STYLE,LIST_BROWSESELECT|LAYOUT_FILL_Y|LAYOUT_FILL_X|HSCROLLER_NEVER|VSCROLLER_ALWAYS);
+
+    // Font sizes, to be filled later
+    new FXLabel(controls,tr("Si&ze:"),NULL,JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_COLUMN);
+    size=new FXTextField(controls,2,this,ID_SIZE_TEXT,FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_COLUMN);
+    FXHorizontalFrame *sizeframe=new FXHorizontalFrame(controls,FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_Y|LAYOUT_FILL_X|LAYOUT_FILL_ROW|LAYOUT_FILL_COLUMN,0,0,0,0, 0,0,0,0);
+    sizelist=new FXList(sizeframe,this,ID_SIZE,LIST_BROWSESELECT|LAYOUT_FILL_Y|LAYOUT_FILL_X|HSCROLLER_NEVER|VSCROLLER_ALWAYS);
+
+    FXMatrix *attributes=new FXMatrix(this,2,LAYOUT_SIDE_TOP|LAYOUT_FILL_X,0,0,0,0, DEFAULT_SPACING,DEFAULT_SPACING,DEFAULT_SPACING,DEFAULT_SPACING, DEFAULT_SPACING,0);
+
+    // Character set choice
+    new FXLabel(attributes,tr("Character Set:"),NULL,LAYOUT_CENTER_Y|LAYOUT_FILL_COLUMN);
+    charset=new FXComboBox(attributes,8,this,ID_CHARSET,COMBOBOX_STATIC|FRAME_SUNKEN|FRAME_THICK|LAYOUT_CENTER_Y|LAYOUT_FILL_COLUMN);
+    charset->setNumVisible(10);
+    charset->appendItem(tr("Any"),(void*)0);
+    charset->appendItem(tr("West European"),(void*)FONTENCODING_WESTEUROPE);
+    charset->appendItem(tr("East European"),(void*)FONTENCODING_EASTEUROPE);
+    charset->appendItem(tr("South European"),(void*)FONTENCODING_SOUTHEUROPE);
+    charset->appendItem(tr("North European"),(void*)FONTENCODING_NORTHEUROPE);
+    charset->appendItem(tr("Cyrillic"),(void*)FONTENCODING_CYRILLIC);
+    charset->appendItem(tr("Arabic"),(void*)FONTENCODING_ARABIC);
+    charset->appendItem(tr("Greek"),(void*)FONTENCODING_GREEK);
+    charset->appendItem(tr("Hebrew"),(void*)FONTENCODING_HEBREW);
+    charset->appendItem(tr("Turkish"),(void*)FONTENCODING_TURKISH);
+    charset->appendItem(tr("Nordic"),(void*)FONTENCODING_NORDIC);
+    charset->appendItem(tr("Thai"),(void*)FONTENCODING_THAI);
+    charset->appendItem(tr("Baltic"),(void*)FONTENCODING_BALTIC);
+    charset->appendItem(tr("Celtic"),(void*)FONTENCODING_CELTIC);
+    charset->appendItem(tr("Russian"),(void*)FONTENCODING_KOI8);
+    charset->appendItem(tr("Central European (cp1250)"),(void*)FONTENCODING_CP1250);
+    charset->appendItem(tr("Russian (cp1251)"),(void*)FONTENCODING_CP1251);
+    charset->appendItem(tr("Latin1 (cp1252)"),(void*)FONTENCODING_CP1252);
+    charset->appendItem(tr("Greek (cp1253)"),(void*)FONTENCODING_CP1253);
+    charset->appendItem(tr("Turkish (cp1254)"),(void*)FONTENCODING_CP1254);
+    charset->appendItem(tr("Hebrew (cp1255)"),(void*)FONTENCODING_CP1255);
+    charset->appendItem(tr("Arabic (cp1256)"),(void*)FONTENCODING_CP1256);
+    charset->appendItem(tr("Baltic (cp1257)"),(void*)FONTENCODING_CP1257);
+    charset->appendItem(tr("Vietnam (cp1258)"),(void*)FONTENCODING_CP1258);
+    charset->appendItem(tr("Thai (cp874)"),(void*)FONTENCODING_CP874);
+    charset->appendItem(tr("UNICODE"),(void*)FONTENCODING_UNICODE);
+    charset->setCurrentItem(0);
+
+    // Set width
+    new FXLabel(attributes,tr("Set Width:"),NULL,LAYOUT_CENTER_Y|LAYOUT_FILL_COLUMN);
+    setwidth=new FXComboBox(attributes,9,this,ID_SETWIDTH,COMBOBOX_STATIC|FRAME_SUNKEN|FRAME_THICK|LAYOUT_CENTER_Y|LAYOUT_FILL_COLUMN);
+    setwidth->setNumVisible(10);
+    setwidth->appendItem(tr("Any"),(void*)0);
+    setwidth->appendItem(tr("Ultra condensed"),(void*)FXFont::UltraCondensed);
+    setwidth->appendItem(tr("Extra condensed"),(void*)FXFont::ExtraCondensed);
+    setwidth->appendItem(tr("Condensed"),(void*)FXFont::Condensed);
+    setwidth->appendItem(tr("Semi condensed"),(void*)FXFont::SemiCondensed);
+    setwidth->appendItem(tr("Normal"),(void*)FXFont::NonExpanded);
+    setwidth->appendItem(tr("Semi expanded"),(void*)FXFont::SemiExpanded);
+    setwidth->appendItem(tr("Expanded"),(void*)FXFont::Expanded);
+    setwidth->appendItem(tr("Extra expanded"),(void*)FXFont::ExtraExpanded);
+    setwidth->appendItem(tr("Ultra expanded"),(void*)FXFont::UltraExpanded);
+    setwidth->setCurrentItem(0);
+
+    // Pitch
+    new FXLabel(attributes,tr("Pitch:"),NULL,LAYOUT_CENTER_Y|LAYOUT_FILL_COLUMN);
+    pitch=new FXComboBox(attributes,5,this,ID_PITCH,COMBOBOX_STATIC|FRAME_SUNKEN|FRAME_THICK|LAYOUT_CENTER_Y|LAYOUT_FILL_COLUMN);
+    pitch->setNumVisible(3);
+    pitch->appendItem(tr("Any"),(void*)0);
+    pitch->appendItem(tr("Fixed"),(void*)FXFont::Fixed);
+    pitch->appendItem(tr("Variable"),(void*)FXFont::Variable);
+    pitch->setCurrentItem(0);
+
+    // Check for scalable
+    new FXFrame(attributes,FRAME_NONE|LAYOUT_FILL_COLUMN);
+    scalable=new FXCheckButton(attributes,tr("Scalable:"),this,ID_SCALABLE,JUSTIFY_NORMAL|TEXT_BEFORE_ICON|LAYOUT_CENTER_Y|LAYOUT_FILL_COLUMN);
+
+    // Check for all (X11) fonts
+#ifndef WIN32
+    new FXFrame(attributes,FRAME_NONE|LAYOUT_FILL_COLUMN);
+    allfonts=new FXCheckButton(attributes,tr("All Fonts:"),this,ID_ALLFONTS,JUSTIFY_NORMAL|TEXT_BEFORE_ICON|LAYOUT_CENTER_Y|LAYOUT_FILL_COLUMN);
+#else
+    allfonts=NULL;
+#endif
+
+    // Preview
+    FXVerticalFrame *bottom=new FXVerticalFrame(this,LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X|LAYOUT_FILL_Y,0,0,0,0, DEFAULT_SPACING,DEFAULT_SPACING,DEFAULT_SPACING,DEFAULT_SPACING, 0,0);
+    new FXLabel(bottom,tr("Preview:"),NULL,JUSTIFY_LEFT|LAYOUT_FILL_X);
+    FXHorizontalFrame *box=new FXHorizontalFrame(bottom,LAYOUT_FILL_X|LAYOUT_FILL_Y|FRAME_SUNKEN|FRAME_THICK,0,0,0,0, 0,0,0,0, 0,0);
+    FXScrollWindow *scroll=new FXScrollWindow(box,LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    preview=new FXLabel(scroll,"ABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz\n0123456789",NULL,JUSTIFY_CENTER_X|JUSTIFY_CENTER_Y);
+    preview->setBackColor(getApp()->getBackColor());
+
+    strncpy(selected.face,"helvetica",sizeof(selected.face));
+    selected.size=90;
+    selected.weight=FXFont::Bold;
+    selected.slant=0;
+    selected.encoding=FONTENCODING_USASCII;
+    selected.setwidth=0;
+    selected.flags=0;
+    previewfont=NULL;
+}
+
+FXIMPLEMENT(dxEXFontDialog,FXFontDialog,NULL,0);
+
+// Construct file fialog box
+dxEXFontDialog::dxEXFontDialog(FXWindow* owner,const FXString& name,FXuint opts,FXint x,FXint y,FXint w,FXint h):
+  FXFontDialog(owner,name,opts,x,y,w,h)
+{
+    delete fontbox;
+    fontbox=new dxEXFontSelector(this,NULL,0,LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    fontbox->acceptButton()->setTarget(this);
+    fontbox->acceptButton()->setSelector(FXDialogBox::ID_ACCEPT);
+    fontbox->cancelButton()->setTarget(this);
+    fontbox->cancelButton()->setSelector(FXDialogBox::ID_CANCEL);
 }

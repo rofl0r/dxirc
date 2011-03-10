@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.01\n"
 "Report-Msgid-Bugs-To: david@konstrukce-cad.com\n"
-"POT-Creation-Date: 2011-03-06 17:20+0100\n"
+"POT-Creation-Date: 2011-03-10 19:36+0100\n"
 "PO-Revision-Date: 2011-02-20 17:41+0100\n"
 "Last-Translator: David Vachulka <david@konstrukce-cad.com>\n"
 "Language-Team: dvx-alone <david@konstrukce-cad.com>\n"
@@ -15,16 +15,16 @@ msgstr ""
 "X-Poedit-Country: CZECH REPUBLIC\n"
 "X-Poedit-Bookmarks: -1,-1,-1,-1,-1,-1,-1,55,-1,-1\n"
 
-#: src/configdialog.cpp:125 src/configdialog.cpp:395 src/configdialog.cpp:959
-#: src/configdialog.cpp:997 src/configdialog.cpp:1037
-#: src/configdialog.cpp:1343 src/configdialog.cpp:1383 src/dxirc.cpp:1566
+#: src/configdialog.cpp:125 src/configdialog.cpp:395 src/configdialog.cpp:966
+#: src/configdialog.cpp:1004 src/configdialog.cpp:1044
+#: src/configdialog.cpp:1350 src/configdialog.cpp:1390 src/dxirc.cpp:1566
 #: src/irctabitem.cpp:57 src/irctabitem.cpp:4273 src/irctabitem.cpp:4294
 #: src/irctabitem.cpp:4319 src/irctabitem.cpp:4349 src/irctabitem.cpp:4372
 #: src/serverdialog.cpp:101 src/serverdialog.cpp:181 src/serverdialog.cpp:268
 #: src/aliasdialog.cpp:53 src/aliasdialog.cpp:84 src/aliasdialog.cpp:127
-#: src/dccdialog.cpp:175 src/fxext.cpp:722 src/fxext.cpp:735 src/fxext.cpp:741
-#: src/fxext.cpp:748 src/fxext.cpp:755 src/fxext.cpp:763 src/fxext.cpp:904
-#: src/fxext.cpp:1048 src/fxext.cpp:1297
+#: src/dccdialog.cpp:175 src/fxext.cpp:724 src/fxext.cpp:737 src/fxext.cpp:743
+#: src/fxext.cpp:750 src/fxext.cpp:757 src/fxext.cpp:765 src/fxext.cpp:906
+#: src/fxext.cpp:1050 src/fxext.cpp:1299 src/fxext.cpp:1464
 #: ../../fox-1.6/src/FXMessageBox.cpp:107
 #: ../../fox-1.6/src/FXMessageBox.cpp:118
 #: ../../fox-1.6/src/FXMessageBox.cpp:123
@@ -39,13 +39,13 @@ msgstr ""
 msgid "&Cancel"
 msgstr "&Zrušit"
 
-#: src/configdialog.cpp:126 src/configdialog.cpp:960 src/configdialog.cpp:998
-#: src/configdialog.cpp:1038 src/configdialog.cpp:1344
-#: src/configdialog.cpp:1384 src/dxirc.cpp:1567 src/irctabitem.cpp:4274
+#: src/configdialog.cpp:126 src/configdialog.cpp:967 src/configdialog.cpp:1005
+#: src/configdialog.cpp:1045 src/configdialog.cpp:1351
+#: src/configdialog.cpp:1391 src/dxirc.cpp:1567 src/irctabitem.cpp:4274
 #: src/irctabitem.cpp:4295 src/irctabitem.cpp:4320 src/irctabitem.cpp:4350
 #: src/irctabitem.cpp:4373 src/serverdialog.cpp:182 src/serverdialog.cpp:269
-#: src/aliasdialog.cpp:85 src/aliasdialog.cpp:128 src/fxext.cpp:716
-#: src/fxext.cpp:721 src/fxext.cpp:903 src/fxext.cpp:1040 src/fxext.cpp:1296
+#: src/aliasdialog.cpp:85 src/aliasdialog.cpp:128 src/fxext.cpp:718
+#: src/fxext.cpp:723 src/fxext.cpp:905 src/fxext.cpp:1042 src/fxext.cpp:1298
 #: ../../fox-1.6/src/FXMessageBox.cpp:102
 #: ../../fox-1.6/src/FXMessageBox.cpp:106
 #: ../../fox-1.6/src/FXDirSelector.cpp:134
@@ -61,12 +61,13 @@ msgstr "Smajlík:"
 msgid "Path:"
 msgstr "Cesta:"
 
-#: src/configdialog.cpp:139 ../../fox-1.6/src/FXFontSelector.cpp:219
+#: src/configdialog.cpp:139 src/fxext.cpp:1569
+#: ../../fox-1.6/src/FXFontSelector.cpp:219
 msgid "Preview:"
 msgstr "Náhled:"
 
-#: src/configdialog.cpp:164 src/configdialog.cpp:1075
-#: src/configdialog.cpp:1975 src/irctabitem.cpp:70 src/irctabitem.cpp:80
+#: src/configdialog.cpp:164 src/configdialog.cpp:1082
+#: src/configdialog.cpp:1990 src/irctabitem.cpp:70 src/irctabitem.cpp:80
 msgid "Select file"
 msgstr "Vyberte soubor"
 
@@ -114,7 +115,7 @@ msgstr "Barva textu zvýrazněné zprávy"
 msgid "Link color"
 msgstr "Barva odkazu"
 
-#: src/configdialog.cpp:423 src/configdialog.cpp:625
+#: src/configdialog.cpp:423 src/configdialog.cpp:632
 msgid "Font"
 msgstr "Font"
 
@@ -143,12 +144,12 @@ msgid "Commands"
 msgstr "Příkazy"
 
 #: src/configdialog.cpp:438 src/configdialog.cpp:444 src/configdialog.cpp:472
-#: src/configdialog.cpp:696 src/configdialog.cpp:743
+#: src/configdialog.cpp:703 src/configdialog.cpp:750
 msgid "Add"
 msgstr "Přidat"
 
 #: src/configdialog.cpp:439 src/configdialog.cpp:446 src/configdialog.cpp:473
-#: src/configdialog.cpp:698 src/configdialog.cpp:745 src/logviewer.cpp:433
+#: src/configdialog.cpp:705 src/configdialog.cpp:752 src/logviewer.cpp:433
 msgid "Delete"
 msgstr "Smazat"
 
@@ -156,7 +157,7 @@ msgstr "Smazat"
 msgid "Users"
 msgstr "Uživatelé"
 
-#: src/configdialog.cpp:445 src/configdialog.cpp:697 src/configdialog.cpp:744
+#: src/configdialog.cpp:445 src/configdialog.cpp:704 src/configdialog.cpp:751
 msgid "Modify"
 msgstr "Upravit"
 
@@ -165,11 +166,11 @@ msgstr "Upravit"
 msgid "User"
 msgstr "Uživatel"
 
-#: src/configdialog.cpp:451 src/configdialog.cpp:703
+#: src/configdialog.cpp:451 src/configdialog.cpp:710
 msgid "Channel(s)"
 msgstr "Kanál(y)"
 
-#: src/configdialog.cpp:452 src/configdialog.cpp:704
+#: src/configdialog.cpp:452 src/configdialog.cpp:711
 msgid "Server(s)"
 msgstr "Server(y)"
 
@@ -372,267 +373,267 @@ msgstr "&Seznam serverů"
 msgid "Selected Menu Entry"
 msgstr "Vybraná položka menu"
 
-#: src/configdialog.cpp:616
+#: src/configdialog.cpp:617
 msgid "Standard tab"
 msgstr "Běžná záložka"
 
-#: src/configdialog.cpp:618
+#: src/configdialog.cpp:620
 msgid "Unreaded tab"
 msgstr "Nepřečtená záložka"
 
-#: src/configdialog.cpp:620
+#: src/configdialog.cpp:623
 msgid "Highlighted tab"
 msgstr "Zvýrazněná záložka"
 
-#: src/configdialog.cpp:623 src/dxirc.cpp:263 src/fxext.cpp:740
-#: src/fxext.cpp:746 ../../fox-1.6/src/FXMessageBox.cpp:122
+#: src/configdialog.cpp:630 src/dxirc.cpp:263 src/fxext.cpp:742
+#: src/fxext.cpp:748 ../../fox-1.6/src/FXMessageBox.cpp:122
 #: ../../fox-1.6/src/FXMessageBox.cpp:127
 msgid "&Quit"
 msgstr "&Ukončit"
 
-#: src/configdialog.cpp:629
+#: src/configdialog.cpp:636
 msgid "DCC settings"
 msgstr "Nastavení DCC"
 
-#: src/configdialog.cpp:631
+#: src/configdialog.cpp:638
 msgid "Directory for saving files:"
 msgstr "Adresář pro ukládání souborů:"
 
-#: src/configdialog.cpp:636
+#: src/configdialog.cpp:643
 msgid "DCC IP address:"
 msgstr "DCC IP adresa:"
 
-#: src/configdialog.cpp:644
+#: src/configdialog.cpp:651
 msgid "(Leave blank for use IP address from server)"
 msgstr "(Nechte prázdné pro použití IP adresy ze serveru)"
 
-#: src/configdialog.cpp:647
+#: src/configdialog.cpp:654
 msgid "DCC ports:"
 msgstr "DCC porty:"
 
-#: src/configdialog.cpp:653
+#: src/configdialog.cpp:660
 msgid "(Set 0 for use ports from OS)"
 msgstr "(Nechte nastavené na 0 pro použití portů z OS)"
 
-#: src/configdialog.cpp:655
+#: src/configdialog.cpp:662
 msgid "Time for waiting for connection in seconds"
 msgstr "Čas čekání na připojení v sekundách"
 
-#: src/configdialog.cpp:657
+#: src/configdialog.cpp:664
 msgid "Automatically connect offered chat"
 msgstr "Automaticky se připojit k nabízeným chatům"
 
-#: src/configdialog.cpp:658
+#: src/configdialog.cpp:665
 msgid "Automatically receive offered file"
 msgstr "Automaticky přijímat nabízené soubory"
 
-#: src/configdialog.cpp:661
+#: src/configdialog.cpp:668
 msgid "Sound settings"
 msgstr "Nastavení zvuků"
 
-#: src/configdialog.cpp:663
+#: src/configdialog.cpp:670
 msgid "Use sounds"
 msgstr "Používat zvuky"
 
-#: src/configdialog.cpp:664
+#: src/configdialog.cpp:671
 msgid "Events"
 msgstr "Události"
 
-#: src/configdialog.cpp:666
+#: src/configdialog.cpp:673
 msgid "Friend connected"
 msgstr "Kamarád se připojil"
 
-#: src/configdialog.cpp:672 src/configdialog.cpp:686 src/configdialog.cpp:728
+#: src/configdialog.cpp:679 src/configdialog.cpp:693 src/configdialog.cpp:735
 msgid "\tPlay"
 msgstr "\tPřehrát"
 
-#: src/configdialog.cpp:680
+#: src/configdialog.cpp:687
 msgid "Friend disconnected"
 msgstr "Kamarád se odpojil"
 
-#: src/configdialog.cpp:694
+#: src/configdialog.cpp:701
 msgid "Friends"
 msgstr "Kamarádi"
 
-#: src/configdialog.cpp:702
+#: src/configdialog.cpp:709
 msgid "Friend"
 msgstr "Kamarád"
 
-#: src/configdialog.cpp:722
+#: src/configdialog.cpp:729
 msgid "Highlighted message or query message"
 msgstr "Zvýrazněná zpráva nebo zpráva v rozhovoru"
 
-#: src/configdialog.cpp:738
+#: src/configdialog.cpp:745
 msgid "Smileys settings"
 msgstr "Nastavení smajlíků"
 
-#: src/configdialog.cpp:740
+#: src/configdialog.cpp:747
 msgid "Use smileys"
 msgstr "Používat smajlíky"
 
-#: src/configdialog.cpp:741
+#: src/configdialog.cpp:748
 msgid "Smileys"
 msgstr "Smajlíci"
 
-#: src/configdialog.cpp:746
+#: src/configdialog.cpp:753
 msgid "Import"
 msgstr "Import"
 
-#: src/configdialog.cpp:747
+#: src/configdialog.cpp:754
 msgid "Export"
 msgstr "Export"
 
-#: src/configdialog.cpp:778
+#: src/configdialog.cpp:785
 msgid "&General"
 msgstr "&Obecné"
 
-#: src/configdialog.cpp:779
+#: src/configdialog.cpp:786
 msgid "&Look"
 msgstr "&Vzhled"
 
-#: src/configdialog.cpp:780
+#: src/configdialog.cpp:787
 msgid "&Irc Text"
 msgstr "&Irc Text"
 
-#: src/configdialog.cpp:781
+#: src/configdialog.cpp:788
 msgid "I&gnore"
 msgstr "I&gnorování"
 
-#: src/configdialog.cpp:782
+#: src/configdialog.cpp:789
 msgid "&DCC"
 msgstr "&DCC"
 
-#: src/configdialog.cpp:783
+#: src/configdialog.cpp:790
 msgid "S&ounds"
 msgstr "Zvu&ky"
 
-#: src/configdialog.cpp:784
+#: src/configdialog.cpp:791
 msgid "S&mileys"
 msgstr "S&majlíci"
 
-#: src/configdialog.cpp:950
+#: src/configdialog.cpp:957
 msgid "Select ignore command"
 msgstr "Vyberte příkaz pro ignorování"
 
-#: src/configdialog.cpp:954 src/aliasdialog.cpp:80 src/aliasdialog.cpp:122
+#: src/configdialog.cpp:961 src/aliasdialog.cpp:80 src/aliasdialog.cpp:122
 msgid "Command:"
 msgstr "Příkaz:"
 
-#: src/configdialog.cpp:981 src/irctabitem.cpp:4333
+#: src/configdialog.cpp:988 src/irctabitem.cpp:4333
 msgid "Add ignore user"
 msgstr "Přidejte ignorovaného uživatele"
 
-#: src/configdialog.cpp:985 src/configdialog.cpp:1026
-#: src/configdialog.cpp:1331 src/configdialog.cpp:1372 src/irctabitem.cpp:4337
+#: src/configdialog.cpp:992 src/configdialog.cpp:1033
+#: src/configdialog.cpp:1338 src/configdialog.cpp:1379 src/irctabitem.cpp:4337
 #: src/dccdialog.cpp:75
 msgid "Nick:"
 msgstr "Přezdívka:"
 
-#: src/configdialog.cpp:988 src/configdialog.cpp:1029
-#: src/configdialog.cpp:1334 src/configdialog.cpp:1375 src/dxirc.cpp:1550
+#: src/configdialog.cpp:995 src/configdialog.cpp:1036
+#: src/configdialog.cpp:1341 src/configdialog.cpp:1382 src/dxirc.cpp:1550
 #: src/irctabitem.cpp:4340 src/serverdialog.cpp:160 src/serverdialog.cpp:244
 msgid "Channel(s):\tChannels need to be comma separated"
 msgstr "Kanál(y):\tKanály musí být odděleny čárkami"
 
-#: src/configdialog.cpp:991 src/configdialog.cpp:1337 src/irctabitem.cpp:4343
+#: src/configdialog.cpp:998 src/configdialog.cpp:1344 src/irctabitem.cpp:4343
 #: src/serverdialog.cpp:163 src/serverdialog.cpp:247
 msgid "Channels need to be comma separated"
 msgstr "Kanály musí být odděleny čárkami"
 
-#: src/configdialog.cpp:992 src/configdialog.cpp:1032
-#: src/configdialog.cpp:1338 src/configdialog.cpp:1378 src/irctabitem.cpp:4344
+#: src/configdialog.cpp:999 src/configdialog.cpp:1039
+#: src/configdialog.cpp:1345 src/configdialog.cpp:1385 src/irctabitem.cpp:4344
 msgid "Server:"
 msgstr "Server: "
 
-#: src/configdialog.cpp:1022
+#: src/configdialog.cpp:1029
 msgid "Modify ignore user"
 msgstr "Upravte ignorovaného uživatele"
 
-#: src/configdialog.cpp:1074
+#: src/configdialog.cpp:1081
 msgid "Warning"
 msgstr "Varování"
 
-#: src/configdialog.cpp:1074
+#: src/configdialog.cpp:1081
 msgid "File import overwrites current settings"
 msgstr "Import souboru přepíše aktuální nastavení"
 
-#: src/configdialog.cpp:1137
+#: src/configdialog.cpp:1144
 msgid "Save smiley settings as"
 msgstr "Uložit nastavení smajlíků jako"
 
-#: src/configdialog.cpp:1327
+#: src/configdialog.cpp:1334
 msgid "Add friend"
 msgstr "Přidat kamaráda"
 
-#: src/configdialog.cpp:1368
+#: src/configdialog.cpp:1375
 msgid "Modify friend"
 msgstr "Upravit kamaráda"
 
-#: src/configdialog.cpp:1419
+#: src/configdialog.cpp:1426
 msgid "Select theme directory"
 msgstr "Vybrat adresář s tématem"
 
-#: src/configdialog.cpp:1495 src/configdialog.cpp:1514
+#: src/configdialog.cpp:1502 src/configdialog.cpp:1521
 msgid "Select font"
 msgstr "Vyberte font"
 
-#: src/configdialog.cpp:1829
+#: src/configdialog.cpp:1844
 msgid "Select log directory"
 msgstr "Vybrat adresář pro záznamy"
 
-#: src/configdialog.cpp:1840
+#: src/configdialog.cpp:1855
 msgid "Select autoload directory"
 msgstr "Vybrat adresář pro automaticky načítané skripty"
 
-#: src/configdialog.cpp:1851
+#: src/configdialog.cpp:1866
 msgid "Select directory"
 msgstr "Vyberte adresář"
 
-#: src/configdialog.cpp:1976
+#: src/configdialog.cpp:1991
 msgid "Sound file (*.wav)"
 msgstr "Zvukový soubor (*.wav)"
 
-#: src/configdialog.cpp:2037 src/configdialog.cpp:2045
-#: src/configdialog.cpp:2050 src/configdialog.cpp:2055
-#: src/configdialog.cpp:2076 src/configdialog.cpp:2081
-#: src/configdialog.cpp:2086 src/configdialog.cpp:2238 src/aliasdialog.cpp:93
+#: src/configdialog.cpp:2052 src/configdialog.cpp:2060
+#: src/configdialog.cpp:2065 src/configdialog.cpp:2070
+#: src/configdialog.cpp:2091 src/configdialog.cpp:2096
+#: src/configdialog.cpp:2101 src/configdialog.cpp:2253 src/aliasdialog.cpp:93
 #: src/aliasdialog.cpp:98 src/aliasdialog.cpp:103 src/aliasdialog.cpp:136
 #: src/aliasdialog.cpp:141 src/aliasdialog.cpp:146 src/logviewer.cpp:170
 #: src/logviewer.cpp:216 src/logviewer.cpp:306
 msgid "Information"
 msgstr "Informace"
 
-#: src/configdialog.cpp:2037
+#: src/configdialog.cpp:2052
 msgid "Maximum number of 256 smileys is reached"
 msgstr "Maximální počet 256 smajlíků byl dosažen"
 
-#: src/configdialog.cpp:2040
+#: src/configdialog.cpp:2055
 msgid "Add smiley"
 msgstr "Přidat smajlík"
 
-#: src/configdialog.cpp:2045 src/configdialog.cpp:2076
+#: src/configdialog.cpp:2060 src/configdialog.cpp:2091
 #, c-format
 msgid "Icon file '%s' doesn't exist or isn't image file"
 msgstr "Soubor ikony '%s' neexistuje nebo není souborem s obrázkem"
 
-#: src/configdialog.cpp:2050 src/configdialog.cpp:2081
+#: src/configdialog.cpp:2065 src/configdialog.cpp:2096
 msgid "Smiley text is empty"
 msgstr "Text smajlíku je prázdný"
 
-#: src/configdialog.cpp:2055 src/configdialog.cpp:2086
+#: src/configdialog.cpp:2070 src/configdialog.cpp:2101
 #, c-format
 msgid "Smiley '%s' already exist"
 msgstr "Smajlík '%s' už existuje"
 
-#: src/configdialog.cpp:2071
+#: src/configdialog.cpp:2086
 msgid "Modify smiley"
 msgstr "Upravit smajlík"
 
-#: src/configdialog.cpp:2158
+#: src/configdialog.cpp:2173
 msgid "User Defined"
 msgstr "Uživatelský"
 
-#: src/configdialog.cpp:2238
+#: src/configdialog.cpp:2253
 msgid "Some changes need restart application"
 msgstr "Některé změny vyžadují restart aplikace"
 
@@ -791,13 +792,13 @@ msgstr ""
 "Port: %d\n"
 "Přezdívka: %s"
 
-#: src/dxirc.cpp:1680 src/dxirc.cpp:1732 src/fxext.cpp:728 src/fxext.cpp:734
+#: src/dxirc.cpp:1680 src/dxirc.cpp:1732 src/fxext.cpp:730 src/fxext.cpp:736
 #: ../../fox-1.6/src/FXMessageBox.cpp:112
 #: ../../fox-1.6/src/FXMessageBox.cpp:117
 msgid "&No"
 msgstr "&Ne"
 
-#: src/dxirc.cpp:1681 src/dxirc.cpp:1733 src/fxext.cpp:727 src/fxext.cpp:733
+#: src/dxirc.cpp:1681 src/dxirc.cpp:1733 src/fxext.cpp:729 src/fxext.cpp:735
 #: ../../fox-1.6/src/FXMessageBox.cpp:111
 #: ../../fox-1.6/src/FXMessageBox.cpp:116
 msgid "&Yes"
@@ -3301,124 +3302,124 @@ msgstr "Winsock chybový kód: %d"
 msgid "Unable set socket flag"
 msgstr "Nemohu nastavit socket"
 
-#: src/dxsocket.cpp:1300
+#: src/dxsocket.cpp:1296
 msgid "Can't write data - socket is not connected"
 msgstr "Nemohu zapsat data - soket není připojený"
 
-#: src/fxext.cpp:747 src/fxext.cpp:764 ../../fox-1.6/src/FXMessageBox.cpp:128
+#: src/fxext.cpp:749 src/fxext.cpp:766 ../../fox-1.6/src/FXMessageBox.cpp:128
 #: ../../fox-1.6/src/FXMessageBox.cpp:143
 msgid "&Save"
 msgstr "&Uložit"
 
-#: src/fxext.cpp:753 ../../fox-1.6/src/FXMessageBox.cpp:133
+#: src/fxext.cpp:755 ../../fox-1.6/src/FXMessageBox.cpp:133
 msgid "&Skip"
 msgstr "&Přeskočit"
 
-#: src/fxext.cpp:754 ../../fox-1.6/src/FXMessageBox.cpp:134
+#: src/fxext.cpp:756 ../../fox-1.6/src/FXMessageBox.cpp:134
 msgid "Skip &All"
 msgstr "Přeskočit &vše"
 
-#: src/fxext.cpp:761 ../../fox-1.6/src/FXMessageBox.cpp:140
+#: src/fxext.cpp:763 ../../fox-1.6/src/FXMessageBox.cpp:140
 msgid "&Don't Save"
 msgstr "&Neukládat"
 
-#: src/fxext.cpp:1038 ../../fox-1.6/src/FXFileSelector.cpp:196
+#: src/fxext.cpp:1040 ../../fox-1.6/src/FXFileSelector.cpp:196
 msgid "&File Name:"
 msgstr "&Jméno:"
 
-#: src/fxext.cpp:1042 ../../fox-1.6/src/FXFileSelector.cpp:200
+#: src/fxext.cpp:1044 ../../fox-1.6/src/FXFileSelector.cpp:200
 msgid "File F&ilter:"
 msgstr "F&iltr:"
 
-#: src/fxext.cpp:1047 ../../fox-1.6/src/FXFileSelector.cpp:204
+#: src/fxext.cpp:1049 ../../fox-1.6/src/FXFileSelector.cpp:204
 msgid "Read Only"
 msgstr "Jen pro čtení"
 
-#: src/fxext.cpp:1052 ../../fox-1.6/src/FXFileSelector.cpp:208
+#: src/fxext.cpp:1054 ../../fox-1.6/src/FXFileSelector.cpp:208
 msgid "Directory:"
 msgstr "Adresář:"
 
-#: src/fxext.cpp:1058 ../../fox-1.6/src/FXFileSelector.cpp:228
+#: src/fxext.cpp:1060 ../../fox-1.6/src/FXFileSelector.cpp:228
 msgid "&Set bookmark\t\tBookmark current directory."
 msgstr "&Nastavit záložky\t\tZazáložkuje aktuální adresář."
 
-#: src/fxext.cpp:1059 ../../fox-1.6/src/FXFileSelector.cpp:229
+#: src/fxext.cpp:1061 ../../fox-1.6/src/FXFileSelector.cpp:229
 msgid "&Clear bookmarks\t\tClear bookmarks."
 msgstr "&Vyčistit záložky\t\tVyčistí záložky."
 
-#: src/fxext.cpp:1074 ../../fox-1.6/src/FXFileSelector.cpp:244
+#: src/fxext.cpp:1076 ../../fox-1.6/src/FXFileSelector.cpp:244
 msgid "\tGo up one directory\tMove up to higher directory."
 msgstr "\tJít o adresář výše\tPřesune do adresáře výše."
 
-#: src/fxext.cpp:1075 ../../fox-1.6/src/FXFileSelector.cpp:245
+#: src/fxext.cpp:1077 ../../fox-1.6/src/FXFileSelector.cpp:245
 msgid "\tGo to home directory\tBack to home directory."
 msgstr "\tJít do domovského adresáře\tZpátky do domovského adresáře."
 
-#: src/fxext.cpp:1076 ../../fox-1.6/src/FXFileSelector.cpp:246
+#: src/fxext.cpp:1078 ../../fox-1.6/src/FXFileSelector.cpp:246
 msgid "\tGo to work directory\tBack to working directory."
 msgstr "\tJít do pracovního adresáře\tZpátky do pracovního adresáře."
 
-#: src/fxext.cpp:1077 ../../fox-1.6/src/FXFileSelector.cpp:247
+#: src/fxext.cpp:1079 ../../fox-1.6/src/FXFileSelector.cpp:247
 msgid "\tBookmarks\tVisit bookmarked directories."
 msgstr "\tZáložky\tNavštíví zazáložkované adresáře."
 
-#: src/fxext.cpp:1080 ../../fox-1.6/src/FXFileSelector.cpp:250
+#: src/fxext.cpp:1082 ../../fox-1.6/src/FXFileSelector.cpp:250
 msgid "\tCreate new directory\tCreate new directory."
 msgstr "\tVytvořit nový adresář\tVytvoří nový adresář."
 
-#: src/fxext.cpp:1081 ../../fox-1.6/src/FXFileSelector.cpp:251
+#: src/fxext.cpp:1083 ../../fox-1.6/src/FXFileSelector.cpp:251
 msgid "\tShow list\tDisplay directory with small icons."
 msgstr "\tZobrazit seznam\tZobrazí adresář s malými ikonami."
 
-#: src/fxext.cpp:1082 ../../fox-1.6/src/FXFileSelector.cpp:252
+#: src/fxext.cpp:1084 ../../fox-1.6/src/FXFileSelector.cpp:252
 msgid "\tShow icons\tDisplay directory with big icons."
 msgstr "\tZobrazit ikony\tZobrazí adresář s velkými ikonami."
 
-#: src/fxext.cpp:1083 ../../fox-1.6/src/FXFileSelector.cpp:253
+#: src/fxext.cpp:1085 ../../fox-1.6/src/FXFileSelector.cpp:253
 msgid "\tShow details\tDisplay detailed directory listing."
 msgstr "\tZobrazit detaily\tZobrazí detailní seznam adresářů."
 
-#: src/fxext.cpp:1084 ../../fox-1.6/src/FXFileSelector.cpp:254
+#: src/fxext.cpp:1086 ../../fox-1.6/src/FXFileSelector.cpp:254
 msgid "\tShow hidden files\tShow hidden files and directories."
 msgstr "\tZobrazit skryté soubory\tZobrazí skryté soubory a adresáře."
 
-#: src/fxext.cpp:1084 ../../fox-1.6/src/FXFileSelector.cpp:254
+#: src/fxext.cpp:1086 ../../fox-1.6/src/FXFileSelector.cpp:254
 msgid "\tHide Hidden Files\tHide hidden files and directories."
 msgstr "\tSkrýt skryté soubory\tSkryje skryté soubory a adresáře."
 
-#: src/fxext.cpp:1113 src/fxext.cpp:1321
+#: src/fxext.cpp:1115 src/fxext.cpp:1323
 #: ../../fox-1.6/src/FXDirSelector.cpp:281
 #: ../../fox-1.6/src/FXFileSelector.cpp:521
 msgid "Create New Directory"
 msgstr "Vytvořit nový adresář"
 
-#: src/fxext.cpp:1113 ../../fox-1.6/src/FXFileSelector.cpp:521
+#: src/fxext.cpp:1115 ../../fox-1.6/src/FXFileSelector.cpp:521
 msgid "Create new directory with name: "
 msgstr "Vytvořit nový adresář:"
 
-#: src/fxext.cpp:1118 src/fxext.cpp:1326
+#: src/fxext.cpp:1120 src/fxext.cpp:1328
 #: ../../fox-1.6/src/FXDirSelector.cpp:284
 #: ../../fox-1.6/src/FXFileSelector.cpp:524
 msgid "Already Exists"
 msgstr "Již existuje"
 
-#: src/fxext.cpp:1118 ../../fox-1.6/src/FXFileSelector.cpp:524
+#: src/fxext.cpp:1120 ../../fox-1.6/src/FXFileSelector.cpp:524
 #, c-format
 msgid "File or directory %s already exists.\n"
 msgstr "Soubor nebo adresář %s již existuje.\n"
 
-#: src/fxext.cpp:1123 src/fxext.cpp:1331
+#: src/fxext.cpp:1125 src/fxext.cpp:1333
 #: ../../fox-1.6/src/FXDirSelector.cpp:288
 #: ../../fox-1.6/src/FXFileSelector.cpp:528
 msgid "Cannot Create"
 msgstr "Nemohu vytvořit"
 
-#: src/fxext.cpp:1123 ../../fox-1.6/src/FXFileSelector.cpp:528
+#: src/fxext.cpp:1125 ../../fox-1.6/src/FXFileSelector.cpp:528
 #, c-format
 msgid "Cannot create directory %s.\n"
 msgstr "Nemohu vytvořit adresář %s.\n"
 
-#: src/fxext.cpp:1140 ../../fox-1.6/src/FXFileSelector.cpp:594
+#: src/fxext.cpp:1142 ../../fox-1.6/src/FXFileSelector.cpp:594
 #, c-format
 msgid ""
 "Copy file from location:\n"
@@ -3433,19 +3434,19 @@ msgstr ""
 "\n"
 "do: "
 
-#: src/fxext.cpp:1141 src/fxext.cpp:1344
+#: src/fxext.cpp:1143 src/fxext.cpp:1346
 #: ../../fox-1.6/src/FXDirSelector.cpp:309
 #: ../../fox-1.6/src/FXFileSelector.cpp:595
 msgid "Copy File"
 msgstr "Kopírovat soubor"
 
-#: src/fxext.cpp:1149 src/fxext.cpp:1352
+#: src/fxext.cpp:1151 src/fxext.cpp:1354
 #: ../../fox-1.6/src/FXDirSelector.cpp:315
 #: ../../fox-1.6/src/FXFileSelector.cpp:601
 msgid "Error Copying File"
 msgstr "Chyba kopírování souboru"
 
-#: src/fxext.cpp:1149 ../../fox-1.6/src/FXFileSelector.cpp:601
+#: src/fxext.cpp:1151 ../../fox-1.6/src/FXFileSelector.cpp:601
 #, c-format
 msgid ""
 "Unable to copy file:\n"
@@ -3460,7 +3461,7 @@ msgstr ""
 "\n"
 "Pokračovat?"
 
-#: src/fxext.cpp:1167 ../../fox-1.6/src/FXFileSelector.cpp:617
+#: src/fxext.cpp:1169 ../../fox-1.6/src/FXFileSelector.cpp:617
 #, c-format
 msgid ""
 "Move file from location:\n"
@@ -3475,19 +3476,19 @@ msgstr ""
 "\n"
 "do: "
 
-#: src/fxext.cpp:1168 src/fxext.cpp:1364
+#: src/fxext.cpp:1170 src/fxext.cpp:1366
 #: ../../fox-1.6/src/FXDirSelector.cpp:326
 #: ../../fox-1.6/src/FXFileSelector.cpp:618
 msgid "Move File"
 msgstr "Přesunutí souboru"
 
-#: src/fxext.cpp:1176 src/fxext.cpp:1372
+#: src/fxext.cpp:1178 src/fxext.cpp:1374
 #: ../../fox-1.6/src/FXDirSelector.cpp:332
 #: ../../fox-1.6/src/FXFileSelector.cpp:624
 msgid "Error Moving File"
 msgstr "Chyba přesunu souboru"
 
-#: src/fxext.cpp:1176 ../../fox-1.6/src/FXFileSelector.cpp:624
+#: src/fxext.cpp:1178 ../../fox-1.6/src/FXFileSelector.cpp:624
 #, c-format
 msgid ""
 "Unable to move file:\n"
@@ -3502,7 +3503,7 @@ msgstr ""
 "\n"
 "Pokračovat?"
 
-#: src/fxext.cpp:1194 ../../fox-1.6/src/FXFileSelector.cpp:640
+#: src/fxext.cpp:1196 ../../fox-1.6/src/FXFileSelector.cpp:640
 #, c-format
 msgid ""
 "Link file from location:\n"
@@ -3517,19 +3518,19 @@ msgstr ""
 "\n"
 "do: "
 
-#: src/fxext.cpp:1195 src/fxext.cpp:1384
+#: src/fxext.cpp:1197 src/fxext.cpp:1386
 #: ../../fox-1.6/src/FXDirSelector.cpp:343
 #: ../../fox-1.6/src/FXFileSelector.cpp:641
 msgid "Link File"
 msgstr "Odkázat soubor"
 
-#: src/fxext.cpp:1203 src/fxext.cpp:1392
+#: src/fxext.cpp:1205 src/fxext.cpp:1394
 #: ../../fox-1.6/src/FXDirSelector.cpp:349
 #: ../../fox-1.6/src/FXFileSelector.cpp:647
 msgid "Error Linking File"
 msgstr "Chyba odkazu soubor"
 
-#: src/fxext.cpp:1203 ../../fox-1.6/src/FXFileSelector.cpp:647
+#: src/fxext.cpp:1205 ../../fox-1.6/src/FXFileSelector.cpp:647
 #, c-format
 msgid ""
 "Unable to link file:\n"
@@ -3544,11 +3545,11 @@ msgstr ""
 "\n"
 "Pokračovat?"
 
-#: src/fxext.cpp:1221 ../../fox-1.6/src/FXFileSelector.cpp:663
+#: src/fxext.cpp:1223 ../../fox-1.6/src/FXFileSelector.cpp:663
 msgid "Deleting files"
 msgstr "Mazání souborů"
 
-#: src/fxext.cpp:1221 ../../fox-1.6/src/FXFileSelector.cpp:663
+#: src/fxext.cpp:1223 ../../fox-1.6/src/FXFileSelector.cpp:663
 #, c-format
 msgid ""
 "Are you sure you want to delete the file:\n"
@@ -3559,13 +3560,13 @@ msgstr ""
 "\n"
 "%s"
 
-#: src/fxext.cpp:1226 src/fxext.cpp:1407
+#: src/fxext.cpp:1228 src/fxext.cpp:1409
 #: ../../fox-1.6/src/FXDirSelector.cpp:361
 #: ../../fox-1.6/src/FXFileSelector.cpp:667
 msgid "Error Deleting File"
 msgstr "Chyba mazání souboru"
 
-#: src/fxext.cpp:1226 ../../fox-1.6/src/FXFileSelector.cpp:667
+#: src/fxext.cpp:1228 ../../fox-1.6/src/FXFileSelector.cpp:667
 #, c-format
 msgid ""
 "Unable to delete file:\n"
@@ -3580,18 +3581,205 @@ msgstr ""
 "\n"
 "Pokračovat?"
 
-#: src/fxext.cpp:1299 ../../fox-1.6/src/FXDirSelector.cpp:137
+#: src/fxext.cpp:1301 ../../fox-1.6/src/FXDirSelector.cpp:137
 msgid "&Directory:"
 msgstr "&Adresář:"
 
-#: src/fxext.cpp:1403 ../../fox-1.6/src/FXDirSelector.cpp:359
+#: src/fxext.cpp:1405 ../../fox-1.6/src/FXDirSelector.cpp:359
 msgid "Deleting file"
 msgstr "Mazání souboru"
 
-#: ../../fox-1.6/src/FXColorSelector.cpp:168
+#: src/fxext.cpp:1463 ../../fox-1.6/src/FXColorSelector.cpp:168
 #: ../../fox-1.6/src/FXFontSelector.cpp:113
 msgid "&Accept"
 msgstr "&Přijmout"
+
+#: src/fxext.cpp:1470 ../../fox-1.6/src/FXFontSelector.cpp:120
+msgid "&Family:"
+msgstr "&Rodina:"
+
+#: src/fxext.cpp:1479 ../../fox-1.6/src/FXFontSelector.cpp:129
+msgid "&Weight:"
+msgstr "&Tloušťka:"
+
+#: src/fxext.cpp:1485 ../../fox-1.6/src/FXFontSelector.cpp:135
+msgid "&Style:"
+msgstr "&Styl:"
+
+#: src/fxext.cpp:1491 ../../fox-1.6/src/FXFontSelector.cpp:141
+msgid "Si&ze:"
+msgstr "Ve&likost:"
+
+#: src/fxext.cpp:1499 ../../fox-1.6/src/FXFontSelector.cpp:149
+msgid "Character Set:"
+msgstr "Znaková sada:"
+
+#: src/fxext.cpp:1502 src/fxext.cpp:1534 src/fxext.cpp:1550
+#: ../../fox-1.6/src/FXFontSelector.cpp:152
+#: ../../fox-1.6/src/FXFontSelector.cpp:184
+#: ../../fox-1.6/src/FXFontSelector.cpp:200
+msgid "Any"
+msgstr "Vše"
+
+#: src/fxext.cpp:1503 ../../fox-1.6/src/FXFontSelector.cpp:153
+msgid "West European"
+msgstr "Západoevropské"
+
+#: src/fxext.cpp:1504 ../../fox-1.6/src/FXFontSelector.cpp:154
+msgid "East European"
+msgstr "Východoevropské"
+
+#: src/fxext.cpp:1505 ../../fox-1.6/src/FXFontSelector.cpp:155
+msgid "South European"
+msgstr "Jihoevropské"
+
+#: src/fxext.cpp:1506 ../../fox-1.6/src/FXFontSelector.cpp:156
+msgid "North European"
+msgstr "Severoevropské"
+
+#: src/fxext.cpp:1507 ../../fox-1.6/src/FXFontSelector.cpp:157
+msgid "Cyrillic"
+msgstr "Cyrilice"
+
+#: src/fxext.cpp:1508 ../../fox-1.6/src/FXFontSelector.cpp:158
+msgid "Arabic"
+msgstr "Arabské"
+
+#: src/fxext.cpp:1509 ../../fox-1.6/src/FXFontSelector.cpp:159
+msgid "Greek"
+msgstr "Řecké"
+
+#: src/fxext.cpp:1510 ../../fox-1.6/src/FXFontSelector.cpp:160
+msgid "Hebrew"
+msgstr "Hebrejské"
+
+#: src/fxext.cpp:1511 ../../fox-1.6/src/FXFontSelector.cpp:161
+msgid "Turkish"
+msgstr "Turecké"
+
+#: src/fxext.cpp:1512 ../../fox-1.6/src/FXFontSelector.cpp:162
+msgid "Nordic"
+msgstr "Skandinávský"
+
+#: src/fxext.cpp:1513 ../../fox-1.6/src/FXFontSelector.cpp:163
+msgid "Thai"
+msgstr "Thajské"
+
+#: src/fxext.cpp:1514 ../../fox-1.6/src/FXFontSelector.cpp:164
+msgid "Baltic"
+msgstr "Baltské"
+
+#: src/fxext.cpp:1515 ../../fox-1.6/src/FXFontSelector.cpp:165
+msgid "Celtic"
+msgstr "Keltské"
+
+#: src/fxext.cpp:1516 ../../fox-1.6/src/FXFontSelector.cpp:166
+msgid "Russian"
+msgstr "Ruské"
+
+#: src/fxext.cpp:1517 ../../fox-1.6/src/FXFontSelector.cpp:167
+msgid "Central European (cp1250)"
+msgstr "Středoevropské (cp1250)"
+
+#: src/fxext.cpp:1518 ../../fox-1.6/src/FXFontSelector.cpp:168
+msgid "Russian (cp1251)"
+msgstr "Ruské (cp1251)"
+
+#: src/fxext.cpp:1519 ../../fox-1.6/src/FXFontSelector.cpp:169
+msgid "Latin1 (cp1252)"
+msgstr "Latin1 (cp1252)"
+
+#: src/fxext.cpp:1520 ../../fox-1.6/src/FXFontSelector.cpp:170
+msgid "Greek (cp1253)"
+msgstr "Řecké (cp1253)"
+
+#: src/fxext.cpp:1521 ../../fox-1.6/src/FXFontSelector.cpp:171
+msgid "Turkish (cp1254)"
+msgstr "Turecké (cp1254)"
+
+#: src/fxext.cpp:1522 ../../fox-1.6/src/FXFontSelector.cpp:172
+msgid "Hebrew (cp1255)"
+msgstr "Hebrejské (cp1255)"
+
+#: src/fxext.cpp:1523 ../../fox-1.6/src/FXFontSelector.cpp:173
+msgid "Arabic (cp1256)"
+msgstr "Arabské (cp1256)"
+
+#: src/fxext.cpp:1524 ../../fox-1.6/src/FXFontSelector.cpp:174
+msgid "Baltic (cp1257)"
+msgstr "Baltské (cp1257)"
+
+#: src/fxext.cpp:1525 ../../fox-1.6/src/FXFontSelector.cpp:175
+msgid "Vietnam (cp1258)"
+msgstr "Vietnamské (cp1258)"
+
+#: src/fxext.cpp:1526 ../../fox-1.6/src/FXFontSelector.cpp:176
+msgid "Thai (cp874)"
+msgstr "Thajské (cp874)"
+
+#: src/fxext.cpp:1527 ../../fox-1.6/src/FXFontSelector.cpp:177
+msgid "UNICODE"
+msgstr "UNICODE"
+
+#: src/fxext.cpp:1531 ../../fox-1.6/src/FXFontSelector.cpp:181
+msgid "Set Width:"
+msgstr "Nastavit šířku:"
+
+#: src/fxext.cpp:1535 ../../fox-1.6/src/FXFontSelector.cpp:185
+msgid "Ultra condensed"
+msgstr "Ultra úzké"
+
+#: src/fxext.cpp:1536 ../../fox-1.6/src/FXFontSelector.cpp:186
+msgid "Extra condensed"
+msgstr "Extra úzké"
+
+#: src/fxext.cpp:1537 ../../fox-1.6/src/FXFontSelector.cpp:187
+msgid "Condensed"
+msgstr "Úzké"
+
+#: src/fxext.cpp:1538 ../../fox-1.6/src/FXFontSelector.cpp:188
+msgid "Semi condensed"
+msgstr "Polo úzké"
+
+#: src/fxext.cpp:1539 ../../fox-1.6/src/FXFontSelector.cpp:189
+msgid "Normal"
+msgstr "Normální"
+
+#: src/fxext.cpp:1540 ../../fox-1.6/src/FXFontSelector.cpp:190
+msgid "Semi expanded"
+msgstr "Polo roztažené"
+
+#: src/fxext.cpp:1541 ../../fox-1.6/src/FXFontSelector.cpp:191
+msgid "Expanded"
+msgstr "Roztažené"
+
+#: src/fxext.cpp:1542 ../../fox-1.6/src/FXFontSelector.cpp:192
+msgid "Extra expanded"
+msgstr "Extra roztažené"
+
+#: src/fxext.cpp:1543 ../../fox-1.6/src/FXFontSelector.cpp:193
+msgid "Ultra expanded"
+msgstr "Ultra roztažené"
+
+#: src/fxext.cpp:1547 ../../fox-1.6/src/FXFontSelector.cpp:197
+msgid "Pitch:"
+msgstr "Rozteč:"
+
+#: src/fxext.cpp:1551 ../../fox-1.6/src/FXFontSelector.cpp:201
+msgid "Fixed"
+msgstr "Fixní"
+
+#: src/fxext.cpp:1552 ../../fox-1.6/src/FXFontSelector.cpp:202
+msgid "Variable"
+msgstr "Variabilní"
+
+#: src/fxext.cpp:1557 ../../fox-1.6/src/FXFontSelector.cpp:207
+msgid "Scalable:"
+msgstr "S měřítkem:"
+
+#: src/fxext.cpp:1562 ../../fox-1.6/src/FXFontSelector.cpp:212
+msgid "All Fonts:"
+msgstr "Všechny fonty:"
 
 #: ../../fox-1.6/src/FXColorSelector.cpp:220
 msgid "\tPick color"
@@ -3658,192 +3846,6 @@ msgstr "Žlutá:"
 #: ../../fox-1.6/src/FXColorSelector.cpp:344
 msgid "\tBy Name"
 msgstr "\tPodle jména"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:120
-msgid "&Family:"
-msgstr "&Rodina:"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:129
-msgid "&Weight:"
-msgstr "&Tloušťka:"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:135
-msgid "&Style:"
-msgstr "&Styl:"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:141
-msgid "Si&ze:"
-msgstr "Ve&likost:"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:149
-msgid "Character Set:"
-msgstr "Znaková sada:"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:152
-#: ../../fox-1.6/src/FXFontSelector.cpp:184
-#: ../../fox-1.6/src/FXFontSelector.cpp:200
-msgid "Any"
-msgstr "Vše"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:153
-msgid "West European"
-msgstr "Západoevropské"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:154
-msgid "East European"
-msgstr "Východoevropské"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:155
-msgid "South European"
-msgstr "Jihoevropské"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:156
-msgid "North European"
-msgstr "Severoevropské"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:157
-msgid "Cyrillic"
-msgstr "Cyrilice"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:158
-msgid "Arabic"
-msgstr "Arabské"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:159
-msgid "Greek"
-msgstr "Řecké"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:160
-msgid "Hebrew"
-msgstr "Hebrejské"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:161
-msgid "Turkish"
-msgstr "Turecké"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:162
-msgid "Nordic"
-msgstr "Skandinávský"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:163
-msgid "Thai"
-msgstr "Thajské"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:164
-msgid "Baltic"
-msgstr "Baltské"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:165
-msgid "Celtic"
-msgstr "Keltské"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:166
-msgid "Russian"
-msgstr "Ruské"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:167
-msgid "Central European (cp1250)"
-msgstr "Středoevropské (cp1250)"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:168
-msgid "Russian (cp1251)"
-msgstr "Ruské (cp1251)"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:169
-msgid "Latin1 (cp1252)"
-msgstr "Latin1 (cp1252)"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:170
-msgid "Greek (cp1253)"
-msgstr "Řecké (cp1253)"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:171
-msgid "Turkish (cp1254)"
-msgstr "Turecké (cp1254)"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:172
-msgid "Hebrew (cp1255)"
-msgstr "Hebrejské (cp1255)"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:173
-msgid "Arabic (cp1256)"
-msgstr "Arabské (cp1256)"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:174
-msgid "Baltic (cp1257)"
-msgstr "Baltské (cp1257)"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:175
-msgid "Vietnam (cp1258)"
-msgstr "Vietnamské (cp1258)"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:176
-msgid "Thai (cp874)"
-msgstr "Thajské (cp874)"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:177
-msgid "UNICODE"
-msgstr "UNICODE"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:181
-msgid "Set Width:"
-msgstr "Nastavit šířku:"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:185
-msgid "Ultra condensed"
-msgstr "Ultra úzké"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:186
-msgid "Extra condensed"
-msgstr "Extra úzké"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:187
-msgid "Condensed"
-msgstr "Úzké"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:188
-msgid "Semi condensed"
-msgstr "Polo úzké"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:189
-msgid "Normal"
-msgstr "Normální"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:190
-msgid "Semi expanded"
-msgstr "Polo roztažené"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:191
-msgid "Expanded"
-msgstr "Roztažené"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:192
-msgid "Extra expanded"
-msgstr "Extra roztažené"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:193
-msgid "Ultra expanded"
-msgstr "Ultra roztažené"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:197
-msgid "Pitch:"
-msgstr "Rozteč:"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:201
-msgid "Fixed"
-msgstr "Fixní"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:202
-msgid "Variable"
-msgstr "Variabilní"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:207
-msgid "Scalable:"
-msgstr "S měřítkem:"
-
-#: ../../fox-1.6/src/FXFontSelector.cpp:212
-msgid "All Fonts:"
-msgstr "Všechny fonty:"
 
 #: ../../fox-1.6/src/FXDirSelector.cpp:381
 #: ../../fox-1.6/src/FXFileSelector.cpp:719

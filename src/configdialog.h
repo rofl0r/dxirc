@@ -25,6 +25,7 @@
 
 #include "defs.h"
 #include "fxext.h"
+#include "dxtabbook.h"
 
 const ColorTheme ColorThemes[]={
 //|--------------------+------------------+------------------+------------------+------------------+------------------+------------------+------------------+------------------+------------------+------------------|
@@ -229,13 +230,13 @@ class ConfigDialog: public FXDialogBox
         FXLabel *m_labelSelected, *m_labelNocurrent, *m_labelTip, *m_label;
         FXVerticalFrame *m_vframe2, *m_menuFrame;
         FXLabel *m_menuLabels[3];
-        FXHorizontalFrame *m_textFrame1, *m_textFrame2, *m_textFrame3;
+        FXHorizontalFrame *m_textFrame1, *m_textFrame2, *m_textFrame3, *m_tabFrame;
         FXGroupBox *m_menuGroup;
         FXSeparator *m_sep1, *m_sep2;
         FXFont *m_font, *m_ircFont;
         FXListBox *m_listTabs;
-        FXTabBook *m_tabs;
-        FXTabItem *m_tab, *m_unread, *m_highlight;
+        dxTabBook *m_tabs;
+        dxEXTabItem *m_tab, *m_unread, *m_highlight;
         FXVerticalFrame *m_tabframe1, *m_tabframe2, *m_tabframe3;
         FXMainWindow *m_owner;
         dxStringMap m_smileysMap;

@@ -1260,11 +1260,7 @@ FXint dxSocket::writeToSocket(const char *buffer, size_t len)
         }
         else
         {
-#ifdef WIN32
             size = send(m_sockfd, buffer, len, 0);
-#else
-            size = send(m_sockfd, buffer, len, MSG_NOSIGNAL|MSG_DONTWAIT);
-#endif
             if(size == -1)
             {
 #ifdef WIN32
