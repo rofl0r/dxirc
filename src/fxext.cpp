@@ -1320,17 +1320,17 @@ long dxEXDirSelector::onCmdNew(FXObject*,FXSelector,void*)
 {
     FXString dir=dirbox->getDirectory();
     FXString name="DirectoryName";
-    if(dxEXInputDialog::getString(name,this,tr("Create New Directory"),"Create new directory in: "+dir,NULL))
+    if(dxEXInputDialog::getString(name,this,tr("Create New Directory"),tr("Create new directory in: ")+dir,NULL))
     {
         FXString dirname=FXPath::absolute(dir,name);
         if(FXStat::exists(dirname))
         {
-            dxEXMessageBox::error(this,MBOX_OK,tr("Already Exists"),"File or directory %s already exists.\n",dirname.text());
+            dxEXMessageBox::error(this,MBOX_OK,tr("Already Exists"),tr("File or directory %s already exists.\n"),dirname.text());
             return 1;
         }
         if(!FXDir::create(dirname))
         {
-            dxEXMessageBox::error(this,MBOX_OK,tr("Cannot Create"),"Cannot create directory %s.\n",dirname.text());
+            dxEXMessageBox::error(this,MBOX_OK,tr("Cannot Create"),tr("Cannot create directory %s.\n"),dirname.text());
             return 1;
         }
         setDirectory(dirname);
@@ -1343,7 +1343,9 @@ long dxEXDirSelector::onCmdCopy(FXObject*,FXSelector,void*)
 {
     FXString oldname=dirbox->getCurrentFile();
     FXString newname=FXPath::directory(oldname)+PATHSEPSTRING "CopyOf"+FXPath::name(oldname);
-    dxEXInputDialog inputdialog(this,tr("Copy File"),"Copy file from location:\n\n"+oldname+"\n\nto location:",NULL,INPUTDIALOG_STRING,0,0,0,0);
+    FXString copymessage;
+    copymessage.format(tr("Copy file from location:\n\n%s\n\nto location:"),oldname.text());
+    dxEXInputDialog inputdialog(this,tr("Copy File"),copymessage,NULL,INPUTDIALOG_STRING,0,0,0,0);
     inputdialog.setText(newname);
     inputdialog.setNumColumns(60);
     if(inputdialog.execute())
@@ -1351,7 +1353,7 @@ long dxEXDirSelector::onCmdCopy(FXObject*,FXSelector,void*)
         newname=inputdialog.getText();
         if(!FXFile::copyFiles(oldname,newname,FALSE))
         {
-            dxEXMessageBox::error(this,MBOX_OK,tr("Error Copying File"),"Unable to copy file:\n\n%s  to:  %s.",oldname.text(),newname.text());
+            dxEXMessageBox::error(this,MBOX_OK,tr("Error Copying File"),tr("Unable to copy file:\n\n%s  to:  %s."),oldname.text(),newname.text());
         }
     }
     return 1;
@@ -1363,7 +1365,9 @@ long dxEXDirSelector::onCmdMove(FXObject*,FXSelector,void*)
 {
     FXString oldname=dirbox->getCurrentFile();
     FXString newname=oldname;
-    dxEXInputDialog inputdialog(this,tr("Move File"),"Move file from location:\n\n"+oldname+"\n\nto location:",NULL,INPUTDIALOG_STRING,0,0,0,0);
+    FXString movemessage;
+    movemessage.format(tr("Move file from location:\n\n%s\n\nto location:"),oldname.text());
+    dxEXInputDialog inputdialog(this,tr("Move File"),movemessage,NULL,INPUTDIALOG_STRING,0,0,0,0);
     inputdialog.setText(newname);
     inputdialog.setNumColumns(60);
     if(inputdialog.execute())
@@ -1371,7 +1375,7 @@ long dxEXDirSelector::onCmdMove(FXObject*,FXSelector,void*)
         newname=inputdialog.getText();
         if(!FXFile::moveFiles(oldname,newname,FALSE))
         {
-            dxEXMessageBox::error(this,MBOX_OK,tr("Error Moving File"),"Unable to move file:\n\n%s  to:  %s.",oldname.text(),newname.text());
+            dxEXMessageBox::error(this,MBOX_OK,tr("Error Moving File"),tr("Unable to move file:\n\n%s  to:  %s."),oldname.text(),newname.text());
         }
     }
     return 1;
@@ -1383,7 +1387,9 @@ long dxEXDirSelector::onCmdLink(FXObject*,FXSelector,void*)
 {
     FXString oldname=dirbox->getCurrentFile();
     FXString newname=FXPath::directory(oldname)+PATHSEPSTRING "LinkTo"+FXPath::name(oldname);
-    dxEXInputDialog inputdialog(this,tr("Link File"),"Link file from location:\n\n"+oldname+"\n\nto location:",NULL,INPUTDIALOG_STRING,0,0,0,0);
+    FXString linkmessage;
+    linkmessage.format(tr("Link file from location:\n\n%s\n\nto location:"),oldname.text());
+    dxEXInputDialog inputdialog(this,tr("Link File"),linkmessage,NULL,INPUTDIALOG_STRING,0,0,0,0);
     inputdialog.setText(newname);
     inputdialog.setNumColumns(60);
     if(inputdialog.execute())
@@ -1402,11 +1408,11 @@ long dxEXDirSelector::onCmdLink(FXObject*,FXSelector,void*)
 long dxEXDirSelector::onCmdDelete(FXObject*,FXSelector,void*)
 {
     FXString fullname=dirbox->getCurrentFile();
-    if(MBOX_CLICKED_YES==dxEXMessageBox::warning(this,MBOX_YES_NO,tr("Deleting file"),"Are you sure you want to delete the file:\n\n%s",fullname.text()))
+    if(MBOX_CLICKED_YES==dxEXMessageBox::warning(this,MBOX_YES_NO,tr("Deleting file"),tr("Are you sure you want to delete the file:\n\n%s"),fullname.text()))
     {
         if(!FXFile::removeFiles(fullname,TRUE))
         {
-            dxEXMessageBox::error(this,MBOX_YES_NO,tr("Error Deleting File"),"Unable to delete file:\n\n%s.",fullname.text());
+            dxEXMessageBox::error(this,MBOX_YES_NO,tr("Error Deleting File"),tr("Unable to delete file:\n\n%s."),fullname.text());
         }
     }
     return 1;

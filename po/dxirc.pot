@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: david@konstrukce-cad.com\n"
-"POT-Creation-Date: 2011-03-10 19:36+0100\n"
+"POT-Creation-Date: 2011-03-10 19:52+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,7 +25,7 @@ msgstr ""
 #: src/aliasdialog.cpp:53 src/aliasdialog.cpp:84 src/aliasdialog.cpp:127
 #: src/dccdialog.cpp:175 src/fxext.cpp:724 src/fxext.cpp:737 src/fxext.cpp:743
 #: src/fxext.cpp:750 src/fxext.cpp:757 src/fxext.cpp:765 src/fxext.cpp:906
-#: src/fxext.cpp:1050 src/fxext.cpp:1299 src/fxext.cpp:1464
+#: src/fxext.cpp:1050 src/fxext.cpp:1299 src/fxext.cpp:1470
 #: ../../fox-1.6/src/FXMessageBox.cpp:107
 #: ../../fox-1.6/src/FXMessageBox.cpp:118
 #: ../../fox-1.6/src/FXMessageBox.cpp:123
@@ -62,7 +62,7 @@ msgstr ""
 msgid "Path:"
 msgstr ""
 
-#: src/configdialog.cpp:139 src/fxext.cpp:1569
+#: src/configdialog.cpp:139 src/fxext.cpp:1575
 #: ../../fox-1.6/src/FXFontSelector.cpp:219
 msgid "Preview:"
 msgstr ""
@@ -3247,7 +3247,8 @@ msgstr ""
 msgid "Already Exists"
 msgstr ""
 
-#: src/fxext.cpp:1120 ../../fox-1.6/src/FXFileSelector.cpp:524
+#: src/fxext.cpp:1120 src/fxext.cpp:1328
+#: ../../fox-1.6/src/FXFileSelector.cpp:524
 #, c-format
 msgid "File or directory %s already exists.\n"
 msgstr ""
@@ -3258,7 +3259,8 @@ msgstr ""
 msgid "Cannot Create"
 msgstr ""
 
-#: src/fxext.cpp:1125 ../../fox-1.6/src/FXFileSelector.cpp:528
+#: src/fxext.cpp:1125 src/fxext.cpp:1333
+#: ../../fox-1.6/src/FXFileSelector.cpp:528
 #, c-format
 msgid "Cannot create directory %s.\n"
 msgstr ""
@@ -3273,13 +3275,13 @@ msgid ""
 "to location: "
 msgstr ""
 
-#: src/fxext.cpp:1143 src/fxext.cpp:1346
+#: src/fxext.cpp:1143 src/fxext.cpp:1348
 #: ../../fox-1.6/src/FXDirSelector.cpp:309
 #: ../../fox-1.6/src/FXFileSelector.cpp:595
 msgid "Copy File"
 msgstr ""
 
-#: src/fxext.cpp:1151 src/fxext.cpp:1354
+#: src/fxext.cpp:1151 src/fxext.cpp:1356
 #: ../../fox-1.6/src/FXDirSelector.cpp:315
 #: ../../fox-1.6/src/FXFileSelector.cpp:601
 msgid "Error Copying File"
@@ -3305,13 +3307,13 @@ msgid ""
 "to location: "
 msgstr ""
 
-#: src/fxext.cpp:1170 src/fxext.cpp:1366
+#: src/fxext.cpp:1170 src/fxext.cpp:1370
 #: ../../fox-1.6/src/FXDirSelector.cpp:326
 #: ../../fox-1.6/src/FXFileSelector.cpp:618
 msgid "Move File"
 msgstr ""
 
-#: src/fxext.cpp:1178 src/fxext.cpp:1374
+#: src/fxext.cpp:1178 src/fxext.cpp:1378
 #: ../../fox-1.6/src/FXDirSelector.cpp:332
 #: ../../fox-1.6/src/FXFileSelector.cpp:624
 msgid "Error Moving File"
@@ -3337,13 +3339,13 @@ msgid ""
 "to location: "
 msgstr ""
 
-#: src/fxext.cpp:1197 src/fxext.cpp:1386
+#: src/fxext.cpp:1197 src/fxext.cpp:1392
 #: ../../fox-1.6/src/FXDirSelector.cpp:343
 #: ../../fox-1.6/src/FXFileSelector.cpp:641
 msgid "Link File"
 msgstr ""
 
-#: src/fxext.cpp:1205 src/fxext.cpp:1394
+#: src/fxext.cpp:1205 src/fxext.cpp:1400
 #: ../../fox-1.6/src/FXDirSelector.cpp:349
 #: ../../fox-1.6/src/FXFileSelector.cpp:647
 msgid "Error Linking File"
@@ -3363,7 +3365,8 @@ msgstr ""
 msgid "Deleting files"
 msgstr ""
 
-#: src/fxext.cpp:1223 ../../fox-1.6/src/FXFileSelector.cpp:663
+#: src/fxext.cpp:1223 src/fxext.cpp:1411
+#: ../../fox-1.6/src/FXFileSelector.cpp:663
 #, c-format
 msgid ""
 "Are you sure you want to delete the file:\n"
@@ -3371,7 +3374,7 @@ msgid ""
 "%s"
 msgstr ""
 
-#: src/fxext.cpp:1228 src/fxext.cpp:1409
+#: src/fxext.cpp:1228 src/fxext.cpp:1415
 #: ../../fox-1.6/src/FXDirSelector.cpp:361
 #: ../../fox-1.6/src/FXFileSelector.cpp:667
 msgid "Error Deleting File"
@@ -3391,199 +3394,257 @@ msgstr ""
 msgid "&Directory:"
 msgstr ""
 
-#: src/fxext.cpp:1405 ../../fox-1.6/src/FXDirSelector.cpp:359
+#: src/fxext.cpp:1323
+msgid "Create new directory in: "
+msgstr ""
+
+#: src/fxext.cpp:1347
+#, c-format
+msgid ""
+"Copy file from location:\n"
+"\n"
+"%s\n"
+"\n"
+"to location:"
+msgstr ""
+
+#: src/fxext.cpp:1356
+#, c-format
+msgid ""
+"Unable to copy file:\n"
+"\n"
+"%s  to:  %s."
+msgstr ""
+
+#: src/fxext.cpp:1369
+#, c-format
+msgid ""
+"Move file from location:\n"
+"\n"
+"%s\n"
+"\n"
+"to location:"
+msgstr ""
+
+#: src/fxext.cpp:1378
+#, c-format
+msgid ""
+"Unable to move file:\n"
+"\n"
+"%s  to:  %s."
+msgstr ""
+
+#: src/fxext.cpp:1391
+#, c-format
+msgid ""
+"Link file from location:\n"
+"\n"
+"%s\n"
+"\n"
+"to location:"
+msgstr ""
+
+#: src/fxext.cpp:1411 ../../fox-1.6/src/FXDirSelector.cpp:359
 msgid "Deleting file"
 msgstr ""
 
-#: src/fxext.cpp:1463 ../../fox-1.6/src/FXColorSelector.cpp:168
+#: src/fxext.cpp:1415
+#, c-format
+msgid ""
+"Unable to delete file:\n"
+"\n"
+"%s."
+msgstr ""
+
+#: src/fxext.cpp:1469 ../../fox-1.6/src/FXColorSelector.cpp:168
 #: ../../fox-1.6/src/FXFontSelector.cpp:113
 msgid "&Accept"
 msgstr ""
 
-#: src/fxext.cpp:1470 ../../fox-1.6/src/FXFontSelector.cpp:120
+#: src/fxext.cpp:1476 ../../fox-1.6/src/FXFontSelector.cpp:120
 msgid "&Family:"
 msgstr ""
 
-#: src/fxext.cpp:1479 ../../fox-1.6/src/FXFontSelector.cpp:129
+#: src/fxext.cpp:1485 ../../fox-1.6/src/FXFontSelector.cpp:129
 msgid "&Weight:"
 msgstr ""
 
-#: src/fxext.cpp:1485 ../../fox-1.6/src/FXFontSelector.cpp:135
+#: src/fxext.cpp:1491 ../../fox-1.6/src/FXFontSelector.cpp:135
 msgid "&Style:"
 msgstr ""
 
-#: src/fxext.cpp:1491 ../../fox-1.6/src/FXFontSelector.cpp:141
+#: src/fxext.cpp:1497 ../../fox-1.6/src/FXFontSelector.cpp:141
 msgid "Si&ze:"
 msgstr ""
 
-#: src/fxext.cpp:1499 ../../fox-1.6/src/FXFontSelector.cpp:149
+#: src/fxext.cpp:1505 ../../fox-1.6/src/FXFontSelector.cpp:149
 msgid "Character Set:"
 msgstr ""
 
-#: src/fxext.cpp:1502 src/fxext.cpp:1534 src/fxext.cpp:1550
+#: src/fxext.cpp:1508 src/fxext.cpp:1540 src/fxext.cpp:1556
 #: ../../fox-1.6/src/FXFontSelector.cpp:152
 #: ../../fox-1.6/src/FXFontSelector.cpp:184
 #: ../../fox-1.6/src/FXFontSelector.cpp:200
 msgid "Any"
 msgstr ""
 
-#: src/fxext.cpp:1503 ../../fox-1.6/src/FXFontSelector.cpp:153
+#: src/fxext.cpp:1509 ../../fox-1.6/src/FXFontSelector.cpp:153
 msgid "West European"
 msgstr ""
 
-#: src/fxext.cpp:1504 ../../fox-1.6/src/FXFontSelector.cpp:154
+#: src/fxext.cpp:1510 ../../fox-1.6/src/FXFontSelector.cpp:154
 msgid "East European"
 msgstr ""
 
-#: src/fxext.cpp:1505 ../../fox-1.6/src/FXFontSelector.cpp:155
+#: src/fxext.cpp:1511 ../../fox-1.6/src/FXFontSelector.cpp:155
 msgid "South European"
 msgstr ""
 
-#: src/fxext.cpp:1506 ../../fox-1.6/src/FXFontSelector.cpp:156
+#: src/fxext.cpp:1512 ../../fox-1.6/src/FXFontSelector.cpp:156
 msgid "North European"
 msgstr ""
 
-#: src/fxext.cpp:1507 ../../fox-1.6/src/FXFontSelector.cpp:157
+#: src/fxext.cpp:1513 ../../fox-1.6/src/FXFontSelector.cpp:157
 msgid "Cyrillic"
 msgstr ""
 
-#: src/fxext.cpp:1508 ../../fox-1.6/src/FXFontSelector.cpp:158
+#: src/fxext.cpp:1514 ../../fox-1.6/src/FXFontSelector.cpp:158
 msgid "Arabic"
 msgstr ""
 
-#: src/fxext.cpp:1509 ../../fox-1.6/src/FXFontSelector.cpp:159
+#: src/fxext.cpp:1515 ../../fox-1.6/src/FXFontSelector.cpp:159
 msgid "Greek"
 msgstr ""
 
-#: src/fxext.cpp:1510 ../../fox-1.6/src/FXFontSelector.cpp:160
+#: src/fxext.cpp:1516 ../../fox-1.6/src/FXFontSelector.cpp:160
 msgid "Hebrew"
 msgstr ""
 
-#: src/fxext.cpp:1511 ../../fox-1.6/src/FXFontSelector.cpp:161
+#: src/fxext.cpp:1517 ../../fox-1.6/src/FXFontSelector.cpp:161
 msgid "Turkish"
 msgstr ""
 
-#: src/fxext.cpp:1512 ../../fox-1.6/src/FXFontSelector.cpp:162
+#: src/fxext.cpp:1518 ../../fox-1.6/src/FXFontSelector.cpp:162
 msgid "Nordic"
 msgstr ""
 
-#: src/fxext.cpp:1513 ../../fox-1.6/src/FXFontSelector.cpp:163
+#: src/fxext.cpp:1519 ../../fox-1.6/src/FXFontSelector.cpp:163
 msgid "Thai"
 msgstr ""
 
-#: src/fxext.cpp:1514 ../../fox-1.6/src/FXFontSelector.cpp:164
+#: src/fxext.cpp:1520 ../../fox-1.6/src/FXFontSelector.cpp:164
 msgid "Baltic"
 msgstr ""
 
-#: src/fxext.cpp:1515 ../../fox-1.6/src/FXFontSelector.cpp:165
+#: src/fxext.cpp:1521 ../../fox-1.6/src/FXFontSelector.cpp:165
 msgid "Celtic"
 msgstr ""
 
-#: src/fxext.cpp:1516 ../../fox-1.6/src/FXFontSelector.cpp:166
+#: src/fxext.cpp:1522 ../../fox-1.6/src/FXFontSelector.cpp:166
 msgid "Russian"
 msgstr ""
 
-#: src/fxext.cpp:1517 ../../fox-1.6/src/FXFontSelector.cpp:167
+#: src/fxext.cpp:1523 ../../fox-1.6/src/FXFontSelector.cpp:167
 msgid "Central European (cp1250)"
 msgstr ""
 
-#: src/fxext.cpp:1518 ../../fox-1.6/src/FXFontSelector.cpp:168
+#: src/fxext.cpp:1524 ../../fox-1.6/src/FXFontSelector.cpp:168
 msgid "Russian (cp1251)"
 msgstr ""
 
-#: src/fxext.cpp:1519 ../../fox-1.6/src/FXFontSelector.cpp:169
+#: src/fxext.cpp:1525 ../../fox-1.6/src/FXFontSelector.cpp:169
 msgid "Latin1 (cp1252)"
 msgstr ""
 
-#: src/fxext.cpp:1520 ../../fox-1.6/src/FXFontSelector.cpp:170
+#: src/fxext.cpp:1526 ../../fox-1.6/src/FXFontSelector.cpp:170
 msgid "Greek (cp1253)"
 msgstr ""
 
-#: src/fxext.cpp:1521 ../../fox-1.6/src/FXFontSelector.cpp:171
+#: src/fxext.cpp:1527 ../../fox-1.6/src/FXFontSelector.cpp:171
 msgid "Turkish (cp1254)"
 msgstr ""
 
-#: src/fxext.cpp:1522 ../../fox-1.6/src/FXFontSelector.cpp:172
+#: src/fxext.cpp:1528 ../../fox-1.6/src/FXFontSelector.cpp:172
 msgid "Hebrew (cp1255)"
 msgstr ""
 
-#: src/fxext.cpp:1523 ../../fox-1.6/src/FXFontSelector.cpp:173
+#: src/fxext.cpp:1529 ../../fox-1.6/src/FXFontSelector.cpp:173
 msgid "Arabic (cp1256)"
 msgstr ""
 
-#: src/fxext.cpp:1524 ../../fox-1.6/src/FXFontSelector.cpp:174
+#: src/fxext.cpp:1530 ../../fox-1.6/src/FXFontSelector.cpp:174
 msgid "Baltic (cp1257)"
 msgstr ""
 
-#: src/fxext.cpp:1525 ../../fox-1.6/src/FXFontSelector.cpp:175
+#: src/fxext.cpp:1531 ../../fox-1.6/src/FXFontSelector.cpp:175
 msgid "Vietnam (cp1258)"
 msgstr ""
 
-#: src/fxext.cpp:1526 ../../fox-1.6/src/FXFontSelector.cpp:176
+#: src/fxext.cpp:1532 ../../fox-1.6/src/FXFontSelector.cpp:176
 msgid "Thai (cp874)"
 msgstr ""
 
-#: src/fxext.cpp:1527 ../../fox-1.6/src/FXFontSelector.cpp:177
+#: src/fxext.cpp:1533 ../../fox-1.6/src/FXFontSelector.cpp:177
 msgid "UNICODE"
 msgstr ""
 
-#: src/fxext.cpp:1531 ../../fox-1.6/src/FXFontSelector.cpp:181
+#: src/fxext.cpp:1537 ../../fox-1.6/src/FXFontSelector.cpp:181
 msgid "Set Width:"
 msgstr ""
 
-#: src/fxext.cpp:1535 ../../fox-1.6/src/FXFontSelector.cpp:185
+#: src/fxext.cpp:1541 ../../fox-1.6/src/FXFontSelector.cpp:185
 msgid "Ultra condensed"
 msgstr ""
 
-#: src/fxext.cpp:1536 ../../fox-1.6/src/FXFontSelector.cpp:186
+#: src/fxext.cpp:1542 ../../fox-1.6/src/FXFontSelector.cpp:186
 msgid "Extra condensed"
 msgstr ""
 
-#: src/fxext.cpp:1537 ../../fox-1.6/src/FXFontSelector.cpp:187
+#: src/fxext.cpp:1543 ../../fox-1.6/src/FXFontSelector.cpp:187
 msgid "Condensed"
 msgstr ""
 
-#: src/fxext.cpp:1538 ../../fox-1.6/src/FXFontSelector.cpp:188
+#: src/fxext.cpp:1544 ../../fox-1.6/src/FXFontSelector.cpp:188
 msgid "Semi condensed"
 msgstr ""
 
-#: src/fxext.cpp:1539 ../../fox-1.6/src/FXFontSelector.cpp:189
+#: src/fxext.cpp:1545 ../../fox-1.6/src/FXFontSelector.cpp:189
 msgid "Normal"
 msgstr ""
 
-#: src/fxext.cpp:1540 ../../fox-1.6/src/FXFontSelector.cpp:190
+#: src/fxext.cpp:1546 ../../fox-1.6/src/FXFontSelector.cpp:190
 msgid "Semi expanded"
 msgstr ""
 
-#: src/fxext.cpp:1541 ../../fox-1.6/src/FXFontSelector.cpp:191
+#: src/fxext.cpp:1547 ../../fox-1.6/src/FXFontSelector.cpp:191
 msgid "Expanded"
 msgstr ""
 
-#: src/fxext.cpp:1542 ../../fox-1.6/src/FXFontSelector.cpp:192
+#: src/fxext.cpp:1548 ../../fox-1.6/src/FXFontSelector.cpp:192
 msgid "Extra expanded"
 msgstr ""
 
-#: src/fxext.cpp:1543 ../../fox-1.6/src/FXFontSelector.cpp:193
+#: src/fxext.cpp:1549 ../../fox-1.6/src/FXFontSelector.cpp:193
 msgid "Ultra expanded"
 msgstr ""
 
-#: src/fxext.cpp:1547 ../../fox-1.6/src/FXFontSelector.cpp:197
+#: src/fxext.cpp:1553 ../../fox-1.6/src/FXFontSelector.cpp:197
 msgid "Pitch:"
 msgstr ""
 
-#: src/fxext.cpp:1551 ../../fox-1.6/src/FXFontSelector.cpp:201
+#: src/fxext.cpp:1557 ../../fox-1.6/src/FXFontSelector.cpp:201
 msgid "Fixed"
 msgstr ""
 
-#: src/fxext.cpp:1552 ../../fox-1.6/src/FXFontSelector.cpp:202
+#: src/fxext.cpp:1558 ../../fox-1.6/src/FXFontSelector.cpp:202
 msgid "Variable"
 msgstr ""
 
-#: src/fxext.cpp:1557 ../../fox-1.6/src/FXFontSelector.cpp:207
+#: src/fxext.cpp:1563 ../../fox-1.6/src/FXFontSelector.cpp:207
 msgid "Scalable:"
 msgstr ""
 
-#: src/fxext.cpp:1562 ../../fox-1.6/src/FXFontSelector.cpp:212
+#: src/fxext.cpp:1568 ../../fox-1.6/src/FXFontSelector.cpp:212
 msgid "All Fonts:"
 msgstr ""
 
