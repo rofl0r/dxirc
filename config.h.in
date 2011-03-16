@@ -136,6 +136,9 @@
 /* Define to 1 if you have the `FOX-1.6' library (-lFOX-1.6). */
 #undef HAVE_LIBFOX_1_6
 
+/* Build with libnotify support */
+#undef HAVE_LIBNOTIFY
+
 /* Define to 1 if you have the `png' library (-lpng). */
 #undef HAVE_LIBPNG
 
@@ -285,6 +288,9 @@
 
 /* Define if you have the 'wint_t' type. */
 #undef HAVE_WINT_T
+
+/* Define to 1 if you have X11 */
+#undef HAVE_X11
 
 /* Define to 1 if you have the `__fsetlocking' function. */
 #undef HAVE___FSETLOCKING

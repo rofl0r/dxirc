@@ -144,6 +144,7 @@ class dxirc: public FXMainWindow
         static int onLuaCreateTab(lua_State*);
         static int onLuaGetTabCount(lua_State*);
         static int onLuaClear(lua_State*);
+        void showNotify(const FXString& notify);
 
     private:
         dxirc(){}
@@ -154,6 +155,7 @@ class dxirc: public FXMainWindow
         FXbool m_sameList, m_useTray, m_coloredNick, m_closeToTray, m_reconnect, m_autoload;
         FXbool m_sounds, m_soundConnect, m_soundDisconnect, m_soundMessage, m_stripColors, m_useSmileys;
         FXbool m_autoDccChat, m_autoDccFile;
+        FXbool m_notify, m_notifyConnect, m_notifyDisconnect, m_notifyMessage;
         IrcColor m_colors;
         FXString m_commandsList, m_themesList, m_themePath, m_logPath, m_autoloadPath;
         FXint m_maxAway, m_numberAttempt, m_delayAttempt, m_tabPosition;
@@ -186,6 +188,9 @@ class dxirc: public FXMainWindow
         dxDccEnginesArray m_dccengines;
         dxScriptEventsArray m_scriptEvents;
         FXbool m_useSpell, m_showSpellCombo;
+#ifndef HAVE_LIBNOTIFY
+        dxEXNotify *m_wnotify;
+#endif
 
         void onIrcNewchannel(IrcEngine*, IrcEvent*);
         void onIrcQuery(IrcEngine*, IrcEvent*);

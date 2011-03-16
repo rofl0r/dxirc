@@ -217,5 +217,55 @@ public:
     dxEXFontDialog(FXWindow* owner,const FXString& name,FXuint opts=0,FXint x=0,FXint y=0,FXint w=650,FXint h=380);
 };
 
+class dxEXNotify : public FXShell
+{
+    FXDECLARE(dxEXNotify)
+protected:
+    FXuint m_delay;
+    FXString m_title;
+    FXString m_body;
+    FXColor m_textColor;
+    FXIcon *m_icon;
+    FXFont *m_titleFont;
+    FXFont *m_bodyFont;
+    FXbool m_popped;
+    dxEXNotify();
+    virtual bool doesOverrideRedirect() const;
+    FXint textHeight() const;
+    FXint textWidth() const;
+private:
+    dxEXNotify(const dxEXNotify&);
+    dxEXNotify &operator=(const dxEXNotify&);
+#ifdef WIN32
+    virtual const char* GetClass() const;
+#endif
+public:
+    enum {
+        ID_NOTIFY_HIDE = FXShell::ID_LAST,
+        ID_LAST
+    };
+    dxEXNotify(FXApp *a, FXIcon *icon, FXString title, FXuint delay=5000);
+    virtual ~dxEXNotify();
+
+    virtual void create();
+    virtual void detach();
+    virtual void show();
+    virtual FXint getDefaultWidth();
+    virtual FXint getDefaultHeight();
+    void setText(const FXString& text);
+    FXString getText() const { return m_body; }
+    void setFont(FXFont *fnt);
+    FXFont* getFont() const { return m_bodyFont; }
+    void setTextColor(FXColor clr);
+    FXColor getTextColor() const { return m_textColor; }
+    virtual void save(FXStream& store) const;
+    virtual void load(FXStream& store);
+    virtual bool doesSaveUnder() const;
+    void notify();
+
+    long onPaint(FXObject*, FXSelector, void*);
+    long onNotifyHide(FXObject*, FXSelector, void*);
+};
+
 #endif	/* FXEXT_H */
 

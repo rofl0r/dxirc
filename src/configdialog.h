@@ -117,6 +117,8 @@ class ConfigDialog: public FXDialogBox
             ID_PLAYCONNECT,
             ID_PLAYDISCONNECT,
             ID_PLAYMESSAGE,
+            ID_NOTIFY,
+            ID_SHOWNOTIFY,
             ID_SELECTCONNECT,
             ID_SELECTDISCONNECT,
             ID_SELECTMESSAGE,
@@ -176,6 +178,8 @@ class ConfigDialog: public FXDialogBox
         long onSoundMessage(FXObject*,FXSelector,void*);
         long onPlay(FXObject*,FXSelector,void*);
         long onSelectPath(FXObject*,FXSelector,void*);
+        long onNotify(FXObject*,FXSelector,void*);
+        long onShowNotify(FXObject*,FXSelector,void*);
         long onUseSmileys(FXObject*,FXSelector,void*);
         long onAddSmiley(FXObject*,FXSelector,void*);
         long onModifySmiley(FXObject*,FXSelector,void*);
@@ -195,6 +199,7 @@ class ConfigDialog: public FXDialogBox
         dxEXButton *m_icon1, *m_icon2, *m_icon3, *m_icon4, *m_icon5, *m_icon6, *m_icon7;
         dxEXButton *m_fontButton, *m_ircfontButton, *m_addFriend, *m_modifyFriend, *m_deleteFriend;
         FXCheckButton *m_closeToTrayButton, *m_checkConnect, *m_checkDisconnect, *m_checkMessage;
+        FXCheckButton *m_checkNotifyConnect, *m_checkNotifyDisconnect, *m_checkNotifyMessage;
         FXTextField *m_textTest, *m_nickCharField;
         FXString m_commandsList, m_themePath, m_themesList, m_logPath, m_autoloadPath, m_dccPath;
         FXString m_dccIP1, m_dccIP2, m_dccIP3, m_dccIP4;
@@ -202,6 +207,7 @@ class ConfigDialog: public FXDialogBox
         FXbool m_statusShown, m_autoload, m_sounds, m_soundConnect, m_soundDisconnect, m_soundMessage;
         FXbool m_stripColors, m_useSmileys, m_showImportwarning, m_showWarning;
         FXbool m_autoDccChat, m_autoDccFile;
+        FXbool m_notify, m_notifyConnect, m_notifyDisconnect, m_notifyMessage;
         dxServerInfoArray m_serverList;
         dxIgnoreUserArray m_usersList, m_friendsList;
         FXToolBar *m_iconsBar;
@@ -222,6 +228,7 @@ class ConfigDialog: public FXDialogBox
         FXDataTarget m_targetDccPath, m_targetLogPath, m_targetAutoloadPath;
         FXDataTarget m_targetDccIP1, m_targetDccIP2, m_targetDccIP3, m_targetDccIP4, m_targetDccPortD, m_targetDccPortH, m_targetDccTimeout;
         FXDataTarget m_targetSound, m_targetSoundConnect, m_targetSoundDisconnect, m_targetSoundMessage;
+        FXDataTarget m_targetNotify, m_targetNotifyConnect, m_targetNotifyDisconnect, m_targetNotifyMessage;
         FXDataTarget m_targetPathConnect, m_targetPathDisconnect, m_targetPathMessage, m_targetStripColors;
         FXDataTarget m_targetUseSmileys, m_targetAutoDccChat, m_targetAutoDccFile, m_targetTrayColor;
         FXDataTarget m_targetUnreadColor, m_targetHighlightColor;

@@ -41,6 +41,9 @@
 #include "tetristabitem.h"
 #include "scriptdialog.h"
 #include "aboutdialog.h"
+#ifdef HAVE_LIBNOTIFY
+#include <libnotify/notify.h>
+#endif
 
 #define DISPLAY(app) ((Display*)((app)->getDisplay()))
 
@@ -134,7 +137,7 @@ FXDEFMAP(dxirc) dxircMap[] = {
     FXMAPFUNC(SEL_COMMAND,      DccDialog::ID_DCCCANCEL,    dxirc::onCmdDccCancel),
     FXMAPFUNC(SEL_COMMAND,      dxirc::ID_SPELL,            dxirc::onCmdSpell),
     FXMAPFUNC(SEL_COMMAND,      dxirc::ID_FORCEFOCUS,       dxirc::onCmdForceFocus),
-    FXMAPFUNC(SEL_TIMEOUT,      dxirc::ID_AWAYTIMEOUT,      dxirc::onAwayTimeout)
+    FXMAPFUNC(SEL_TIMEOUT,      dxirc::ID_AWAYTIMEOUT,      dxirc::onAwayTimeout),
 };
 
 FXIMPLEMENT(dxirc, FXMainWindow, dxircMap, ARRAYNUMBER(dxircMap))
@@ -266,6 +269,9 @@ dxirc::dxirc(FXApp *app)
 #endif //HAVE_TRAY
 
     new FXToolTip(app,0);
+#ifndef HAVE_LIBNOTIFY
+    m_wnotify = new dxEXNotify(m_app,ICO_BIG,PACKAGE);
+#endif
 
     updateTheme();
     updateFont(m_fontSpec);
@@ -554,6 +560,10 @@ void dxirc::readConfig()
     m_pathConnect = set.readStringEntry("SETTINGS", "pathConnect", DXIRC_DATADIR PATHSEPSTRING "sounds" PATHSEPSTRING "connected.wav");
     m_pathDisconnect = set.readStringEntry("SETTINGS", "pathDisconnect", DXIRC_DATADIR PATHSEPSTRING "sounds" PATHSEPSTRING "disconnected.wav");
     m_pathMessage = set.readStringEntry("SETTINGS", "pathMessage", DXIRC_DATADIR PATHSEPSTRING "sounds" PATHSEPSTRING "message.wav");
+    m_notify = set.readBoolEntry("SETTINGS", "notify", FALSE);
+    m_notifyConnect = set.readBoolEntry("SETTINGS", "notifyConnect", FALSE);
+    m_notifyDisconnect = set.readBoolEntry("SETTINGS", "notifyDisconnect", FALSE);
+    m_notifyMessage = set.readBoolEntry("SETTINGS", "notifyMessage", FALSE);
     m_stripColors = set.readBoolEntry("SETTINGS", "stripColors", TRUE);
     m_useSmileys = set.readBoolEntry("SETTINGS", "useSmileys", FALSE);
     FXint smileysNum = set.readIntEntry("SMILEYS", "number", 0);
@@ -733,6 +743,10 @@ void dxirc::saveConfig()
     set.writeStringEntry("SETTINGS", "pathConnect", m_pathConnect.text());
     set.writeStringEntry("SETTINGS", "pathDisconnect", m_pathDisconnect.text());
     set.writeStringEntry("SETTINGS", "pathMessage", m_pathMessage.text());
+    set.writeBoolEntry("SETTINGS", "notify", m_notify);
+    set.writeBoolEntry("SETTINGS", "notifyConnect", m_notifyConnect);
+    set.writeBoolEntry("SETTINGS", "notifyDisconnect", m_notifyDisconnect);
+    set.writeBoolEntry("SETTINGS", "notifyMessage", m_notifyMessage);
     set.writeBoolEntry("SETTINGS", "stripColors", m_stripColors);
     set.writeBoolEntry("SETTINGS", "useSmileys", m_useSmileys);
     set.writeIntEntry("SMILEYS", "number", (FXint)m_smileysMap.size());
@@ -1007,6 +1021,7 @@ void dxirc::updateTheme()
     FXCheckButton * checkbutton;
     FXToolTip * tooltip;
     FXImageFrame * imageframe;
+    dxEXNotify * notify;
 
     FXbool update = FALSE;
     FXColor oldForeColor = m_app->getForeColor();
@@ -1281,6 +1296,11 @@ void dxirc::updateTheme()
         {
             tooltip->setTextColor(m_appTheme.tipfore);
             tooltip->setBackColor(m_appTheme.tipback);
+        }
+        else if ((notify = dynamic_cast<dxEXNotify*> (w)))
+        {
+            notify->setTextColor(m_appTheme.tipfore);
+            notify->setBackColor(m_appTheme.tipback);
         }
 
         w->update();
@@ -1951,8 +1971,13 @@ void dxirc::onIrcQuery(IrcEngine *server, IrcEvent *ev)
 //handle IrcEvent IRC_PART
 void dxirc::onIrcPart(IrcEngine *server, IrcEvent *ev)
 {
-    if(isFriend(ev->param1, ev->param2, server->getServerName()) && m_sounds && m_soundDisconnect)
-        utils::instance().playFile(m_pathDisconnect);
+    if(isFriend(ev->param1, ev->param2, server->getServerName()))
+    {
+        if(m_sounds && m_soundDisconnect)
+            utils::instance().playFile(m_pathDisconnect);
+        if(m_notify && m_notifyDisconnect)
+            showNotify(FXStringFormat(_("%s has parted %s"), ev->param1.text(), ev->param2.text()));
+    }
     if(tabExist(server, ev->param2))
     {
         if(ev->param1 == server->getNickName())
@@ -2102,8 +2127,13 @@ void dxirc::onIrcPrivmsgAndAction(IrcEngine *server, IrcEvent *ev)
 //handle IrcEvent IRC_JOIN
 void dxirc::onIrcJoin(IrcEngine *server, IrcEvent *ev)
 {
-    if(isFriend(ev->param1, ev->param2, server->getServerName()) && m_sounds && m_soundConnect)
-        utils::instance().playFile(m_pathConnect);
+    if(isFriend(ev->param1, ev->param2, server->getServerName()))
+    {
+        if(m_sounds && m_soundConnect)
+            utils::instance().playFile(m_pathConnect);
+        if(m_notify && m_notifyConnect)
+            showNotify(FXStringFormat(_("%s has joined to %s"), ev->param1.text(), ev->param2.text()));
+    }
 #ifdef HAVE_LUA
     if(server->isUserIgnored(ev->param1, ev->param2)) return;
     if(!m_scripts.no() || !m_scriptEvents.no()) return;
@@ -2139,8 +2169,13 @@ void dxirc::onIrcJoin(IrcEngine *server, IrcEvent *ev)
 //handle IrcEvent IRC_QUIT
 void dxirc::onIrcQuit(IrcEngine *server, IrcEvent *ev)
 {
-    if(isFriend(ev->param1, "all", server->getServerName()) && m_sounds && m_soundDisconnect)
-        utils::instance().playFile(m_pathDisconnect);
+    if(isFriend(ev->param1, "all", server->getServerName()))
+    {
+        if(m_sounds && m_soundDisconnect)
+            utils::instance().playFile(m_pathDisconnect);
+        if(m_notify && m_notifyDisconnect)
+            showNotify(FXStringFormat(_("%s has quit"), ev->param1.text()));
+    }
 }
 
 //handle IrcEvent IRC_DCCCHAT
@@ -3028,8 +3063,18 @@ long dxirc::onNewMsg(FXObject *obj, FXSelector, void*)
 #endif //HAVE_TRAY
     if(m_sounds && m_soundMessage && (!shown() || isMinimized() || static_cast<dxTabItem*>(m_tabbook->childAtIndex(m_tabbook->getCurrent()*2)) != static_cast<dxTabItem*>(obj)))
         utils::instance().playFile(m_pathMessage);
-    if(static_cast<IrcTabItem*>(obj)->getType() == CHANNEL) updateStatus(FXStringFormat(_("New highlighted message on %s"), static_cast<IrcTabItem*>(obj)->getText().text()));
-    else updateStatus(FXStringFormat(_("New message on %s"), static_cast<dxTabItem*>(obj)->getText().text()));
+    if(static_cast<IrcTabItem*>(obj)->getType() == CHANNEL)
+    {
+        updateStatus(FXStringFormat(_("New highlighted message on %s"), static_cast<IrcTabItem*>(obj)->getText().text()));
+        if(m_notify && m_notifyMessage)
+            showNotify(FXStringFormat(_("New highlighted message on %s"), static_cast<IrcTabItem*>(obj)->getText().text()));
+    }
+    else
+    {
+        updateStatus(FXStringFormat(_("New message on %s"), static_cast<dxTabItem*>(obj)->getText().text()));
+        if(m_notify && m_notifyMessage)
+            showNotify(FXStringFormat(_("New message on %s"), static_cast<dxTabItem*>(obj)->getText().text()));
+    }
     flash(TRUE);
     return 1;
 }
@@ -4662,6 +4707,24 @@ int dxirc::onLuaClear(lua_State *lua)
 #else
     return 0;
 #endif //HAVE_LUA
+}
+
+//show notify
+void dxirc::showNotify(const FXString& notify)
+{
+#ifdef HAVE_LIBNOTIFY
+    NotifyNotification *notification = NULL;
+    notify_init("Basics");
+    FXString datadir;
+    datadir.format("%s%sicons%sbig_dxirc.png",DXIRC_DATADIR,PATHSEPSTRING,PATHSEPSTRING);
+    notification = notify_notification_new(PACKAGE, notify.text(), datadir.text(), NULL);
+    if(!notify_notification_show(notification, NULL))
+        return;
+    g_object_unref(G_OBJECT(notification));
+#else
+    m_wnotify->setText(notify);
+    m_wnotify->notify();
+#endif //HAVE_LIBNOTIFY
 }
 
 

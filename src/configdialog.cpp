@@ -27,6 +27,7 @@
 #include "i18n.h"
 #include "icons.h"
 #include "utils.h"
+#include "dxirc.h"
 
 #define MAXBUFFER 2000
 #define MAXVALUE  2000
@@ -230,6 +231,8 @@ FXDEFMAP(ConfigDialog) ConfigDialogMap[] = {
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_SOUNDMESSAGE, ConfigDialog::onSoundMessage),
     FXMAPFUNCS(SEL_COMMAND, ConfigDialog::ID_PLAYCONNECT, ConfigDialog::ID_PLAYMESSAGE, ConfigDialog::onPlay),
     FXMAPFUNCS(SEL_COMMAND, ConfigDialog::ID_SELECTCONNECT, ConfigDialog::ID_SELECTMESSAGE, ConfigDialog::onSelectPath),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_NOTIFY, ConfigDialog::onNotify),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_SHOWNOTIFY, ConfigDialog::onShowNotify),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_USESMILEYS, ConfigDialog::onUseSmileys),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_ADDSMILEY, ConfigDialog::onAddSmiley),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog::ID_MODIFYSMILEY, ConfigDialog::onModifySmiley),
@@ -365,6 +368,13 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     m_targetPathConnect.connect(m_pathConnect);
     m_targetPathDisconnect.connect(m_pathDisconnect);
     m_targetPathMessage.connect(m_pathMessage);
+
+    m_targetNotify.connect(m_notify);
+    m_targetNotify.setTarget(this);
+    m_targetNotify.setSelector(ID_NOTIFY);
+    m_targetNotifyConnect.connect(m_notifyConnect);
+    m_targetNotifyDisconnect.connect(m_notifyDisconnect);
+    m_targetNotifyMessage.connect(m_notifyMessage);
 
     m_targetStripColors.connect(m_stripColors);
 
@@ -665,10 +675,32 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     new FXCheckButton(dccpane, _("Automatically receive offered file"), &m_targetAutoDccFile, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
 
     FXVerticalFrame *soundpane = new FXVerticalFrame(switcher, LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    new FXLabel(soundpane, _("Sound settings"), NULL, LAYOUT_LEFT);
+    new FXLabel(soundpane, _("Notification settings"), NULL, LAYOUT_LEFT);
     new FXHorizontalSeparator(soundpane, SEPARATOR_LINE|LAYOUT_FILL_X);
+    FXGroupBox *friendsgroup = new FXGroupBox(soundpane, _("Friends"), FRAME_GROOVE|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    FXVerticalFrame *friendsbuttons = new FXVerticalFrame(friendsgroup, LAYOUT_SIDE_RIGHT|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
+    m_addFriend = new dxEXButton(friendsbuttons, _("Add"), NULL, this, ID_ADDFRIEND, FRAME_RAISED|FRAME_THICK);
+    m_modifyFriend = new dxEXButton(friendsbuttons, _("Modify"), NULL, this, ID_MODIFYFRIEND, FRAME_RAISED|FRAME_THICK);
+    m_deleteFriend = new dxEXButton(friendsbuttons, _("Delete"), NULL, this, ID_DELETEFRIEND, FRAME_RAISED|FRAME_THICK);
+    FXVerticalFrame *friendspane = new FXVerticalFrame(friendsgroup, LAYOUT_FILL_X|LAYOUT_FILL_Y|FRAME_SUNKEN|FRAME_THICK);
+    FXHorizontalFrame *friendsframe = new FXHorizontalFrame(friendspane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    m_friends = new FXIconList(friendsframe, this, ID_FRIEND, ICONLIST_AUTOSIZE|ICONLIST_DETAILED|ICONLIST_BROWSESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    m_friends->appendHeader(_("Friend"), NULL, 150);
+    m_friends->appendHeader(_("Channel(s)"), NULL, 150);
+    m_friends->appendHeader(_("Server(s)"), NULL, 150);
+    fillFriends();
+    if(m_friendsList.no())
+    {
+        m_deleteFriend->enable();
+        m_modifyFriend->enable();
+    }
+    else
+    {
+        m_deleteFriend->disable();
+        m_modifyFriend->disable();
+    }
     new FXCheckButton(soundpane, _("Use sounds"), &m_targetSound, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
-    FXGroupBox *eventsgroup = new FXGroupBox(soundpane, _("Events"), FRAME_GROOVE|LAYOUT_FILL_X|LAYOUT_FILL_Y|LAYOUT_SIDE_TOP);
+    FXGroupBox *eventsgroup = new FXGroupBox(soundpane, _("Events"), FRAME_GROOVE|LAYOUT_FILL_X);
     FXVerticalFrame *eventsframe = new FXVerticalFrame(eventsgroup, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     m_checkConnect = new FXCheckButton(eventsframe, _("Friend connected"), &m_targetSoundConnect, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
     if(!m_sounds)
@@ -698,34 +730,6 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     }
     if(!FXStat::exists(m_pathDisconnect))
         m_playDisconnect->disable();
-    FXGroupBox *friendsgroup = new FXGroupBox(eventsframe, _("Friends"), FRAME_GROOVE|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    FXVerticalFrame *friendsbuttons = new FXVerticalFrame(friendsgroup, LAYOUT_SIDE_RIGHT|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
-    m_addFriend = new dxEXButton(friendsbuttons, _("Add"), NULL, this, ID_ADDFRIEND, FRAME_RAISED|FRAME_THICK);
-    m_modifyFriend = new dxEXButton(friendsbuttons, _("Modify"), NULL, this, ID_MODIFYFRIEND, FRAME_RAISED|FRAME_THICK);
-    m_deleteFriend = new dxEXButton(friendsbuttons, _("Delete"), NULL, this, ID_DELETEFRIEND, FRAME_RAISED|FRAME_THICK);
-    FXVerticalFrame *friendspane = new FXVerticalFrame(friendsgroup, LAYOUT_FILL_X|LAYOUT_FILL_Y|FRAME_SUNKEN|FRAME_THICK);
-    FXHorizontalFrame *friendsframe = new FXHorizontalFrame(friendspane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    m_friends = new FXIconList(friendsframe, this, ID_FRIEND, ICONLIST_AUTOSIZE|ICONLIST_DETAILED|ICONLIST_BROWSESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    m_friends->appendHeader(_("Friend"), NULL, 150);
-    m_friends->appendHeader(_("Channel(s)"), NULL, 150);
-    m_friends->appendHeader(_("Server(s)"), NULL, 150);
-    fillFriends();
-    if(m_friendsList.no())
-    {
-        m_deleteFriend->enable();
-        m_modifyFriend->enable();
-    }
-    else
-    {
-        m_deleteFriend->disable();
-        m_modifyFriend->disable();
-    }
-    if(!m_sounds)
-    {
-        m_addFriend->disable();
-        m_deleteFriend->disable();
-        m_modifyFriend->disable();
-    }
     m_checkMessage = new FXCheckButton(eventsframe, _("Highlighted message or query message"), &m_targetSoundMessage, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
     if(!m_sounds)
         m_checkMessage->disable();
@@ -740,6 +744,26 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     }
     if(!FXStat::exists(m_pathMessage))
         m_playMessage->disable();
+    FXHorizontalFrame *notifyframe = new FXHorizontalFrame(soundpane, LAYOUT_FILL_X|PACK_UNIFORM_HEIGHT);
+    new FXCheckButton(notifyframe, _("Use notify popup"), &m_targetNotify, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
+    new dxEXButton(notifyframe, _("Show"), NULL, this, ID_SHOWNOTIFY, FRAME_RAISED|FRAME_THICK|LAYOUT_SIDE_LEFT);
+    FXGroupBox *neventsgroup = new FXGroupBox(soundpane, _("Events"), FRAME_GROOVE|LAYOUT_FILL_X);
+    FXVerticalFrame *neventsframe = new FXVerticalFrame(neventsgroup, LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    m_checkNotifyConnect = new FXCheckButton(neventsframe, _("Friend connected"), &m_targetNotifyConnect, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
+    if(!m_notify)
+        m_checkNotifyConnect->disable();
+    m_checkNotifyDisconnect = new FXCheckButton(neventsframe, _("Friend disconnected"), &m_targetNotifyDisconnect, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
+    if(!m_notify)
+        m_checkNotifyDisconnect->disable();
+    m_checkNotifyMessage = new FXCheckButton(neventsframe, _("Highlighted message or query message"), &m_targetNotifyMessage, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
+    if(!m_notify)
+        m_checkNotifyMessage->disable();
+    if(!m_sounds && !m_notify)
+    {
+        m_addFriend->disable();
+        m_deleteFriend->disable();
+        m_modifyFriend->disable();
+    }
 
     FXVerticalFrame *smileypane = new FXVerticalFrame(switcher, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     new FXLabel(smileypane, _("Smileys settings"), NULL, LAYOUT_LEFT);
@@ -787,7 +811,7 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     new dxEXButton(buttonframe, _("&Irc Text"), NULL, switcher, FXSwitcher::ID_OPEN_FIRST, FRAME_RAISED);
     new dxEXButton(buttonframe, _("I&gnore"), NULL, switcher, FXSwitcher::ID_OPEN_SECOND, FRAME_RAISED);
     new dxEXButton(buttonframe, _("&DCC"), NULL, switcher, FXSwitcher::ID_OPEN_FIFTH, FRAME_RAISED);
-    new dxEXButton(buttonframe, _("S&ounds"), NULL, switcher, FXSwitcher::ID_OPEN_SIXTH, FRAME_RAISED);
+    new dxEXButton(buttonframe, _("N&otification"), NULL, switcher, FXSwitcher::ID_OPEN_SIXTH, FRAME_RAISED);
     new dxEXButton(buttonframe, _("S&mileys"), NULL, switcher, FXSwitcher::ID_OPEN_SEVENTH, FRAME_RAISED);
     switcher->setCurrent(2);
 
@@ -1899,12 +1923,6 @@ long ConfigDialog::onSounds(FXObject*, FXSelector, void*)
         m_checkMessage->enable();
         m_selectMessage->enable();
         if(FXStat::exists(m_pathMessage)) m_playMessage->enable();
-        m_addFriend->enable();
-        if(m_friendsList.no())
-        {
-            m_deleteFriend->enable();
-            m_modifyFriend->enable();
-        }
     }
     else
     {
@@ -1917,6 +1935,21 @@ long ConfigDialog::onSounds(FXObject*, FXSelector, void*)
         m_checkMessage->disable();
         m_selectMessage->disable();
         m_playMessage->disable();
+        m_addFriend->disable();
+        m_modifyFriend->disable();
+        m_deleteFriend->disable();
+    }
+    if(m_sounds || m_notify)
+    {
+        m_addFriend->enable();
+        if(m_friendsList.no())
+        {
+            m_deleteFriend->enable();
+            m_modifyFriend->enable();
+        }
+    }
+    else
+    {
         m_addFriend->disable();
         m_modifyFriend->disable();
         m_deleteFriend->disable();
@@ -2012,6 +2045,44 @@ long ConfigDialog::onSelectPath(FXObject*, FXSelector sel, void*)
             }
             return 1;
     }
+    return 1;
+}
+
+long ConfigDialog::onNotify(FXObject*, FXSelector, void*)
+{
+    if(m_notify)
+    {
+        m_checkNotifyConnect->enable();
+        m_checkNotifyDisconnect->enable();
+        m_checkNotifyMessage->enable();
+    }
+    else
+    {
+        m_checkNotifyConnect->disable();
+        m_checkNotifyDisconnect->disable();
+        m_checkNotifyMessage->disable();
+    }
+    if(m_sounds || m_notify)
+    {
+        m_addFriend->enable();
+        if(m_friendsList.no())
+        {
+            m_deleteFriend->enable();
+            m_modifyFriend->enable();
+        }
+    }
+    else
+    {
+        m_addFriend->disable();
+        m_modifyFriend->disable();
+        m_deleteFriend->disable();
+    }
+    return 1;
+}
+
+long ConfigDialog::onShowNotify(FXObject*, FXSelector, void*)
+{
+    ((dxirc*)m_owner)->showNotify(FXStringFormat(_("%s has joined to %s"), "dvx", "#dxirc"));
     return 1;
 }
 
@@ -2438,6 +2509,10 @@ void ConfigDialog::readConfig()
     m_pathConnect = set.readStringEntry("SETTINGS", "pathConnect", DXIRC_DATADIR PATHSEPSTRING "sounds" PATHSEPSTRING "connected.wav");
     m_pathDisconnect = set.readStringEntry("SETTINGS", "pathDisconnect", DXIRC_DATADIR PATHSEPSTRING "sounds" PATHSEPSTRING "disconnected.wav");
     m_pathMessage = set.readStringEntry("SETTINGS", "pathMessage", DXIRC_DATADIR PATHSEPSTRING "sounds" PATHSEPSTRING "message.wav");
+    m_notify = set.readBoolEntry("SETTINGS", "notify", FALSE);
+    m_notifyConnect = set.readBoolEntry("SETTINGS", "notifyConnect", FALSE);
+    m_notifyDisconnect = set.readBoolEntry("SETTINGS", "notifyDisconnect", FALSE);
+    m_notifyMessage = set.readBoolEntry("SETTINGS", "notifyMessage", FALSE);
     m_stripColors = set.readBoolEntry("SETTINGS", "stripColors", TRUE);
     m_useSmileys = set.readBoolEntry("SETTINGS", "useSmileys", FALSE);
     FXint smileysNum = set.readIntEntry("SMILEYS", "number", 0);
@@ -2582,6 +2657,10 @@ void ConfigDialog::saveConfig()
     set.writeStringEntry("SETTINGS", "pathConnect", m_pathConnect.text());
     set.writeStringEntry("SETTINGS", "pathDisconnect", m_pathDisconnect.text());
     set.writeStringEntry("SETTINGS", "pathMessage", m_pathMessage.text());
+    set.writeBoolEntry("SETTINGS", "notify", m_notify);
+    set.writeBoolEntry("SETTINGS", "notifyConnect", m_notifyConnect);
+    set.writeBoolEntry("SETTINGS", "notifyDisconnect", m_notifyDisconnect);
+    set.writeBoolEntry("SETTINGS", "notifyMessage", m_notifyMessage);
     set.writeBoolEntry("SETTINGS", "stripColors", m_stripColors);
     set.writeBoolEntry("SETTINGS", "useSmileys", m_useSmileys);
     set.writeIntEntry("SMILEYS", "number", (FXint)m_smileysMap.size());

@@ -22,11 +22,23 @@
 
 #include "defs.h"
 #include "fxext.h"
+#include "config.h"
+#ifdef WIN32
+ #define WIN32_LEAN_AND_MEAN
+ #include <windows.h>
+#endif
+#ifdef HAVE_X11
+ #include <X11/Xlib.h>
+ #include <X11/Xatom.h>
+#endif
 
 #define TAB_ORIENT_MASK (TAB_TOP|TAB_LEFT|TAB_RIGHT|TAB_BOTTOM)
 #define HORZ_PAD 20
 #define VERT_PAD 2
 #define MBOX_BUTTON_MASK (MBOX_OK|MBOX_OK_CANCEL|MBOX_YES_NO|MBOX_YES_NO_CANCEL|MBOX_QUIT_CANCEL|MBOX_QUIT_SAVE_CANCEL|MBOX_SAVE_CANCEL_DONTSAVE)
+#define HSPACE  4
+#define VSPACE  2
+#define DISPLAY(app) ((Display*)((app)->getDisplay()))
 
 /* created by reswrap from file erroricon.gif */
 const unsigned char erroricon[]={
@@ -1600,4 +1612,353 @@ dxEXFontDialog::dxEXFontDialog(FXWindow* owner,const FXString& name,FXuint opts,
     fontbox->acceptButton()->setSelector(FXDialogBox::ID_ACCEPT);
     fontbox->cancelButton()->setTarget(this);
     fontbox->cancelButton()->setSelector(FXDialogBox::ID_CANCEL);
+}
+
+FXDEFMAP(dxEXNotify) dxEXNotifyMap[] = {
+    FXMAPFUNC(SEL_PAINT, 0, dxEXNotify::onPaint),
+    FXMAPFUNC(SEL_TIMEOUT, dxEXNotify::ID_NOTIFY_HIDE, dxEXNotify::onNotifyHide)
+};
+
+FXIMPLEMENT(dxEXNotify,FXShell,dxEXNotifyMap,ARRAYNUMBER(dxEXNotifyMap));
+
+// Deserialization
+dxEXNotify::dxEXNotify()
+{
+    m_titleFont = NULL;
+    m_bodyFont = NULL;
+    m_icon = NULL;
+    m_textColor = 0;
+    m_popped = FALSE;
+}
+
+// Construct NotifyWindow
+dxEXNotify::dxEXNotify(FXApp* a, FXIcon* icon, FXString title, FXuint delay):
+  FXShell(a,0,0,0,0,0), m_delay(delay), m_title(title), m_body("Notify"), m_icon(icon)
+{
+    FXFontDesc fontdescription;
+    getApp()->getNormalFont()->getFontDesc(fontdescription);
+    fontdescription.size  += 10;
+    fontdescription.weight = FXFont::Bold;
+    m_titleFont = new FXFont(getApp(),fontdescription);
+    m_bodyFont = getApp()->getNormalFont();
+    m_textColor = getApp()->getTipforeColor();
+    backColor = getApp()->getTipbackColor();
+    m_popped = FALSE;
+}
+
+dxEXNotify::~dxEXNotify()
+{
+    getApp()->removeTimeout(this,ID_NOTIFY_HIDE);
+    m_titleFont=(FXFont*)-1L;
+    m_bodyFont=(FXFont*)-1L;
+}
+
+// Handle repaint
+long dxEXNotify::onPaint(FXObject*, FXSelector, void* ptr)
+{
+    FXEvent *ev=(FXEvent*)ptr;
+    FXDCWindow dc(this,ev);
+    const FXchar *beg,*end;
+    FXint tw=0,th=0,iw=0,ih=0,tx,ty;
+    if(!m_body.empty()&&!m_title.empty())
+    {
+        tw = textWidth();
+        th = textHeight();
+    }
+    if(m_icon)
+    {
+        iw = m_icon->getWidth();
+        ih = m_icon->getHeight();
+    }
+    dc.setForeground(backColor);
+    dc.fillRectangle(ev->rect.x,ev->rect.y,ev->rect.w,ev->rect.h);
+    dc.setForeground(m_textColor);
+    dc.drawRectangle(0,0,width-1,height-1);
+    if(m_icon)
+        dc.drawIcon(m_icon, 1+HSPACE, 1+height/2-ih/2);
+    dc.setFont(m_titleFont);
+    beg=m_title.text();
+    if(beg)
+    {
+        tx=1+HSPACE+(iw?HSPACE:0)+iw;
+        ty=1+VSPACE+m_titleFont->getFontAscent();
+        do
+        {
+            end=beg;
+            while(*end!='\0' && *end!='\n') end++;
+            dc.drawText(tx,ty,beg,end-beg);
+            ty+=m_titleFont->getFontHeight();
+            beg=end+1;
+        }
+        while(*end!='\0');
+    }
+    dc.setFont(m_bodyFont);
+    beg=m_body.text();
+    if(beg)
+    {
+        tx=1+HSPACE+(iw?HSPACE:0)+iw;
+        ty=1+2*VSPACE+m_titleFont->getFontAscent()+m_bodyFont->getFontAscent();
+        do
+        {
+            end=beg;
+            while(*end!='\0' && *end!='\n') end++;
+            dc.drawText(tx,ty,beg,end-beg);
+            ty+=m_bodyFont->getFontHeight();
+            beg=end+1;
+        }
+        while(*end!='\0');
+    }
+    return 1;
+}
+
+// Hide notify
+long dxEXNotify::onNotifyHide(FXObject*, FXSelector, void*)
+{
+    m_popped = FALSE;
+    hide();
+    return 1;
+}
+
+// Create window
+void dxEXNotify::create()
+{
+    FXShell::create();
+    m_titleFont->create();
+    m_bodyFont->create();
+    if(m_icon) m_icon->create();
+}
+
+// Detach window
+void dxEXNotify::detach()
+{
+    FXShell::detach();
+    m_titleFont->detach();
+    m_bodyFont->detach();
+    if(m_icon) m_icon->detach();
+}
+
+// Show window
+void dxEXNotify::show()
+{
+    FXShell::show();
+    raise();
+}
+
+// Get default width
+FXint dxEXNotify::getDefaultWidth()
+{
+    FXint tw=0,iw=0,w;
+    if(!m_body.empty()&&!m_title.empty())
+        tw = textWidth();
+    if(m_icon)
+        iw = m_icon->getWidth();
+    if(tw&&iw) w=HSPACE;
+    w+=tw+iw;
+    return w+HSPACE*2+2;
+}
+
+// Get default height
+FXint dxEXNotify::getDefaultHeight()
+{
+    FXint th=0,ih=0;
+    if(!m_body.empty()&&!m_title.empty())
+        th = textHeight();
+    if(m_icon)
+        ih = m_icon->getHeight();
+    return FXMAX(th,ih)+VSPACE*2+2;
+}
+
+// Place the notify
+void dxEXNotify::notify()
+{
+    if(m_popped)
+    {
+        getApp()->removeTimeout(this, ID_NOTIFY_HIDE);
+        hide();
+    }
+    show();
+    m_popped = TRUE;
+    getApp()->addTimeout(this, ID_NOTIFY_HIDE, m_delay);
+    FXint rx,ry,rw,rh,px,py,w,h;
+    w=getDefaultWidth();
+    h=getDefaultHeight();
+#ifndef WIN32
+#ifdef HAVE_X11
+    Atom strut = XInternAtom(DISPLAY(getApp()), "_NET_WORKAREA", False);
+    Atom ret;
+    int format, e;
+    unsigned char *data = 0;
+    unsigned long nitems, after;
+    e = XGetWindowProperty(DISPLAY(getApp()),XDefaultRootWindow(DISPLAY(getApp())),strut,0,4,False,XA_CARDINAL,&ret, &format, &nitems, &after, &data);
+    if (e == Success && ret == XA_CARDINAL && format == 32 && nitems == 4)
+    {
+        FXint *workarea = (FXint *) data;
+        rx=workarea[0];
+        ry=workarea[1];
+        rw=workarea[2];
+        rh=workarea[3];
+    }
+    else
+    {
+        rx=getRoot()->getX();
+        ry=getRoot()->getY();
+        rw=getRoot()->getWidth();
+        rh=getRoot()->getHeight();
+    }
+#else
+    rx=getRoot()->getX();
+    ry=getRoot()->getY();
+    rw=getRoot()->getWidth();
+    rh=getRoot()->getHeight();
+#endif //HAVE_X11
+#else
+    RECT rect;
+
+    rect.left=0;
+    rect.right=w;
+    rect.top=0;
+    rect.bottom=h;
+
+    SystemParametersInfo(SPI_GETWORKAREA,sizeof(RECT),&rect,0);
+    rx=rect.left;
+    ry=rect.top;
+    rw=rect.right-rect.left;
+    rh=rect.bottom-rect.top;
+#endif
+    px=rx+rw-w;
+    py=ry+rh-h;
+    position(px,py,w,h);
+}
+
+// Change text
+void dxEXNotify::setText(const FXString& text)
+{
+    if(m_body != text)
+    {
+        m_body = text;
+        recalc();
+        m_popped = FALSE;
+        update();
+    }
+}
+
+// Change text font
+void dxEXNotify::setFont(FXFont* fnt)
+{
+    if(!fnt){ fxerror("%s::setFont: NULL font specified.\n",getClassName()); }
+    if(m_bodyFont != fnt)
+    {
+        m_bodyFont = fnt;
+        FXFontDesc fontdescription;
+        m_bodyFont->getFontDesc(fontdescription);
+        fontdescription.size  += 10;
+        fontdescription.weight = FXFont::Bold;
+        m_titleFont = new FXFont(getApp(),fontdescription);
+        recalc();
+        update();
+    }
+}
+
+// Set text color
+void dxEXNotify::setTextColor(FXColor clr)
+{
+    if(clr != m_textColor)
+    {
+        m_textColor = clr;
+        update();
+    }
+}
+
+// Save data
+void dxEXNotify::save(FXStream& store) const
+{
+    FXShell::save(store);
+    store << m_title;
+    store << m_titleFont;
+    store << m_body;
+    store << m_bodyFont;
+    store << m_icon;
+    store << m_textColor;
+}
+
+// Load data
+void dxEXNotify::load(FXStream& store)
+{
+    FXShell::load(store);
+    store >> m_title;
+    store >> m_titleFont;
+    store >> m_body;
+    store >> m_bodyFont;
+    store >> m_icon;
+    store >> m_textColor;
+}
+
+#ifdef WIN32
+const char* dxEXNotify::GetClass() const { return "FXPopup"; }
+#endif
+
+// Notify do override-redirect
+bool dxEXNotify::doesOverrideRedirect() const
+{
+    return true;
+}
+
+// Notify do save-unders
+bool dxEXNotify::doesSaveUnder() const
+{
+    return true;
+}
+
+// Get height of title & body text
+FXint dxEXNotify::textHeight() const
+{
+    register FXint beg,end;
+    register FXint th=0;
+    beg=0;
+    do
+    {
+        end=beg;
+        while(end<m_title.length() && m_title[end]!='\n') end++;
+        th+=m_titleFont->getFontHeight();
+        beg=end+1;
+    }
+    while(end<m_title.length());
+    th+=VSPACE;
+    beg=0;
+    do
+    {
+        end=beg;
+        while(end<m_body.length() && m_body[end]!='\n') end++;
+        th+=m_bodyFont->getFontHeight();
+        beg=end+1;
+    }
+    while(end<m_body.length());
+    return th;
+}
+
+
+// Get width of multi-line label
+FXint dxEXNotify::textWidth() const
+{
+    register FXint beg,end;
+    register FXint w,tw=0;
+    beg=0;
+    do
+    {
+        end=beg;
+        while(end<m_body.length() && m_body[end]!='\n') end++;
+        if((w=m_bodyFont->getTextWidth(&m_body[beg],end-beg))>tw) tw=w;
+        beg=end+1;
+    }
+    while(end<m_body.length());
+    beg=0;
+    do
+    {
+        end=beg;
+        while(end<m_title.length() && m_title[end]!='\n') end++;
+        if((w=m_titleFont->getTextWidth(&m_title[beg],end-beg))>tw) tw=w;
+        beg=end+1;
+    }
+    while(end<m_title.length());
+    return tw;
 }
