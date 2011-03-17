@@ -74,63 +74,6 @@ class ConfigDialog: public FXDialogBox
     public:
         ConfigDialog(FXMainWindow *owner);
         virtual ~ConfigDialog();
-        enum {
-            ID_ADDCOMMAND = FXTopWindow::ID_LAST,
-            ID_DELETECOMMAND,
-            ID_ADDUSER,
-            ID_MODIFYUSER,
-            ID_DELETEUSER,
-            ID_ADDFRIEND,
-            ID_MODIFYFRIEND,
-            ID_DELETEFRIEND,
-            ID_ADDICONS,
-            ID_DELETEICONS,
-            ID_COMMAND,
-            ID_USER,
-            ID_FRIEND,
-            ID_IRCCOLORS,
-            ID_IRCFONT,
-            ID_COLORS,
-            ID_TABCOLORS,
-            ID_THEME,
-            ID_FONT,
-            ID_ACCEPT,
-            ID_CANCEL,
-            ID_ICONS,
-            ID_LOG,
-            ID_LOGPATH,
-            ID_SERVERWINDOW,
-            ID_TRAY,
-            ID_NICK,
-            ID_RECONNECT,
-            ID_TABPOS,
-            ID_AUTOLOAD,
-            ID_AUTOLOADPATH,
-            ID_DCCPATH,
-            ID_DCCPORTD,
-            ID_DCCPORTH,
-            ID_DCCTIMEOUT,
-            ID_SOUNDS,
-            ID_SOUNDCONNECT,
-            ID_SOUNDDISCONNECT,
-            ID_SOUNDMESSAGE,
-            ID_PLAYCONNECT,
-            ID_PLAYDISCONNECT,
-            ID_PLAYMESSAGE,
-            ID_NOTIFY,
-            ID_SHOWNOTIFY,
-            ID_SELECTCONNECT,
-            ID_SELECTDISCONNECT,
-            ID_SELECTMESSAGE,
-            ID_USESMILEYS,
-            ID_ADDSMILEY,
-            ID_MODIFYSMILEY,
-            ID_DELETESMILEY,
-            ID_SMILEY,
-            ID_IMPORTSMILEY,
-            ID_EXPORTSMILEY,
-            ID_LAST
-        };
 
         long onCommandsSelected(FXObject*,FXSelector,void*);
         long onCommandsDeselected(FXObject*,FXSelector,void*);
@@ -279,11 +222,6 @@ class SmileyDialog: public FXDialogBox
 public:
     SmileyDialog(FXWindow *owner, FXString title, FXString smiley, FXString path);
     virtual ~SmileyDialog();
-    enum {
-        ID_ACCEPT = ConfigDialog::ID_LAST,
-        ID_CANCEL,
-        ID_PATH
-    };
 
     long onAccept(FXObject*,FXSelector,void*);
     long onCancel(FXObject*,FXSelector,void*);

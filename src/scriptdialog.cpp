@@ -25,13 +25,13 @@
 #include "dxirc.h"
 
 FXDEFMAP(ScriptDialog) ScriptDialogMap[] = {
-    FXMAPFUNC(SEL_COMMAND,          ScriptDialog::ID_LOAD,      ScriptDialog::onLoad),
-    FXMAPFUNC(SEL_COMMAND,          ScriptDialog::ID_VIEW,      ScriptDialog::onView),
-    FXMAPFUNC(SEL_COMMAND,          ScriptDialog::ID_VIEWNEW,   ScriptDialog::onViewNew),
-    FXMAPFUNC(SEL_COMMAND,          ScriptDialog::ID_UNLOAD,    ScriptDialog::onUnload),
-    FXMAPFUNC(SEL_COMMAND,          ScriptDialog::ID_CLOSE,     ScriptDialog::onClose),
-    FXMAPFUNC(SEL_COMMAND,          ScriptDialog::ID_LIST,      ScriptDialog::onList),
-    FXMAPFUNC(SEL_KEYPRESS,         0,                          ScriptDialog::onKeyPress)
+    FXMAPFUNC(SEL_COMMAND,          ScriptDialog_LOAD,      ScriptDialog::onLoad),
+    FXMAPFUNC(SEL_COMMAND,          ScriptDialog_VIEW,      ScriptDialog::onView),
+    FXMAPFUNC(SEL_COMMAND,          ScriptDialog_VIEWNEW,   ScriptDialog::onViewNew),
+    FXMAPFUNC(SEL_COMMAND,          ScriptDialog_UNLOAD,    ScriptDialog::onUnload),
+    FXMAPFUNC(SEL_COMMAND,          ScriptDialog_CLOSE,     ScriptDialog::onClose),
+    FXMAPFUNC(SEL_COMMAND,          ScriptDialog_LIST,      ScriptDialog::onList),
+    FXMAPFUNC(SEL_KEYPRESS,         0,                      ScriptDialog::onKeyPress)
 };
 
 FXIMPLEMENT(ScriptDialog, FXDialogBox, ScriptDialogMap, ARRAYNUMBER(ScriptDialogMap))
@@ -43,7 +43,7 @@ ScriptDialog::ScriptDialog(dxirc *owner)
 
     m_scriptframe = new FXHorizontalFrame(m_contents, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     m_listframe = new FXVerticalFrame(m_scriptframe, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    m_names = new FXList(m_listframe, this, ID_LIST, LIST_BROWSESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    m_names = new FXList(m_listframe, this, ScriptDialog_LIST, LIST_BROWSESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     m_names->setScrollStyle(HSCROLLING_OFF);
 
     m_group = new FXGroupBox(m_scriptframe, _("Details"), FRAME_GROOVE|LAYOUT_RIGHT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 4,4,4,4, 4,4);
@@ -74,11 +74,11 @@ ScriptDialog::ScriptDialog(dxirc *owner)
 
     m_buttonframe = new FXHorizontalFrame(m_contents, LAYOUT_FILL_X|LAYOUT_FILL_Y);
 
-    m_buttonClose = new dxEXButton(m_buttonframe, _("C&lose"), NULL, this, ID_CLOSE, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
-    m_buttonUnload = new dxEXButton(m_buttonframe, _("&Unload"), NULL, this, ID_UNLOAD, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
-    m_buttonViewNew = new dxEXButton(m_buttonframe, _("View &script"), NULL, this, ID_VIEWNEW, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
-    m_buttonView = new dxEXButton(m_buttonframe, _("&View current"), NULL, this, ID_VIEW, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
-    m_buttonLoad = new dxEXButton(m_buttonframe, _("L&oad"), NULL, this, ID_LOAD, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
+    m_buttonClose = new dxEXButton(m_buttonframe, _("C&lose"), NULL, this, ScriptDialog_CLOSE, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
+    m_buttonUnload = new dxEXButton(m_buttonframe, _("&Unload"), NULL, this, ScriptDialog_UNLOAD, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
+    m_buttonViewNew = new dxEXButton(m_buttonframe, _("View &script"), NULL, this, ScriptDialog_VIEWNEW, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
+    m_buttonView = new dxEXButton(m_buttonframe, _("&View current"), NULL, this, ScriptDialog_VIEW, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
+    m_buttonLoad = new dxEXButton(m_buttonframe, _("L&oad"), NULL, this, ScriptDialog_LOAD, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
 
     updateList();
     updateDetails();

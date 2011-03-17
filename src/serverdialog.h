@@ -32,16 +32,6 @@ class ServerDialog: public FXDialogBox
     public:
         ServerDialog(FXMainWindow *owner, dxServerInfoArray servers);
         virtual ~ServerDialog();
-        enum {
-            ID_JOIN = FXTopWindow::ID_LAST,
-            ID_LIST,
-            ID_CANCEL,
-            ID_ADD,
-            ID_MODIFY,
-            ID_DELETE,
-            ID_SAVECLOSE,
-            ID_LAST
-        };
 
         dxServerInfoArray getServers() { return m_serverList; }
         FXint getIndexJoin() { return m_indexJoin; }

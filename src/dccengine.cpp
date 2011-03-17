@@ -19,20 +19,19 @@
  *      MA 02110-1301, USA.
  */
 
-#include <fx.h>
 #include "dccengine.h"
 #include "i18n.h"
 
 FXDEFMAP(DccEngine) DccEngineMap[] = {
-    FXMAPFUNC(SEL_TIMEOUT,          DccEngine::ID_CTIME,     DccEngine::onCloseTimeout),
-    FXMAPFUNC(SEL_TIMEOUT,          DccEngine::ID_PTIME,     DccEngine::onPositionTimeout),
-    FXMAPFUNC(SOCKET_CANREAD,       DccEngine::ID_SOCKET,    DccEngine::onSocketCanRead),
-    FXMAPFUNC(SOCKET_CONNECTED,     DccEngine::ID_SOCKET,    DccEngine::onSocketConnected),
-    FXMAPFUNC(SOCKET_DISCONNECTED,  DccEngine::ID_SOCKET,    DccEngine::onSocketDisconnected),
-    FXMAPFUNC(SOCKET_ERR,           DccEngine::ID_SOCKET,    DccEngine::onSocketError),
-    FXMAPFUNC(SOCKET_STARTACCEPT,   DccEngine::ID_SOCKET,    DccEngine::onSocketStartAccept),
-    FXMAPFUNC(SOCKET_LISTEN,        DccEngine::ID_SOCKET,    DccEngine::onSocketListen),
-    FXMAPFUNC(SOCKET_WRITTEN,       DccEngine::ID_SOCKET,    DccEngine::onSocketWritten)
+    FXMAPFUNC(SEL_TIMEOUT,          DccEngine_CTIME,     DccEngine::onCloseTimeout),
+    FXMAPFUNC(SEL_TIMEOUT,          DccEngine_PTIME,     DccEngine::onPositionTimeout),
+    FXMAPFUNC(SOCKET_CANREAD,       DccEngine_SOCKET,    DccEngine::onSocketCanRead),
+    FXMAPFUNC(SOCKET_CONNECTED,     DccEngine_SOCKET,    DccEngine::onSocketConnected),
+    FXMAPFUNC(SOCKET_DISCONNECTED,  DccEngine_SOCKET,    DccEngine::onSocketDisconnected),
+    FXMAPFUNC(SOCKET_ERR,           DccEngine_SOCKET,    DccEngine::onSocketError),
+    FXMAPFUNC(SOCKET_STARTACCEPT,   DccEngine_SOCKET,    DccEngine::onSocketStartAccept),
+    FXMAPFUNC(SOCKET_LISTEN,        DccEngine_SOCKET,    DccEngine::onSocketListen),
+    FXMAPFUNC(SOCKET_WRITTEN,       DccEngine_SOCKET,    DccEngine::onSocketWritten)
 };
 
 FXIMPLEMENT(DccEngine, FXObject, DccEngineMap, ARRAYNUMBER(DccEngineMap))
@@ -41,7 +40,7 @@ DccEngine::DccEngine(FXApp* app, FXObject* tgt, DccFile file, IrcEngine* engine)
         : m_application(app), m_target(tgt), m_file(file), m_engine(engine)
 {
     m_connected = FALSE;
-    m_socket = new dxSocket(app, this, ID_SOCKET);
+    m_socket = new dxSocket(app, this, DccEngine_SOCKET);
     m_positionChanged = FALSE;
     m_lastChange = 0;
     m_dataAmount = 0;
@@ -72,7 +71,7 @@ long DccEngine::onPositionTimeout(FXObject*, FXSelector, void*)
 {
     updateDcc();
     if(m_file.currentPosition < m_file.size && m_connected)
-        m_application->addTimeout(this, ID_PTIME, 1000);
+        m_application->addTimeout(this, DccEngine_PTIME, 1000);
     return 1;
 }
 
@@ -111,14 +110,14 @@ long DccEngine::onSocketConnected(FXObject*, FXSelector, void*)
         writeData();
     }
     m_connected = TRUE;
-    m_application->addTimeout(this, ID_PTIME, 1000);
+    m_application->addTimeout(this, DccEngine_PTIME, 1000);
     return 1;
 }
 
 long DccEngine::onSocketDisconnected(FXObject*, FXSelector, void*)
 {
     m_connected = FALSE;
-    m_application->removeTimeout(this, ID_CTIME);
+    m_application->removeTimeout(this, DccEngine_CTIME);
     closeFile();
     return 1;
 }
@@ -126,7 +125,7 @@ long DccEngine::onSocketDisconnected(FXObject*, FXSelector, void*)
 long DccEngine::onSocketError(FXObject*, FXSelector, void *ptr)
 {
     m_connected = FALSE;
-    m_application->removeTimeout(this, ID_CTIME);
+    m_application->removeTimeout(this, DccEngine_CTIME);
     closeFile();
     SocketError *err = NULL;
     if(ptr) err = *((SocketError**)ptr);
@@ -220,7 +219,7 @@ long DccEngine::onSocketError(FXObject*, FXSelector, void *ptr)
 
 long DccEngine::onSocketListen(FXObject*, FXSelector, void*)
 {
-    m_application->removeTimeout(this, ID_CTIME);
+    m_application->removeTimeout(this, DccEngine_CTIME);
     if(m_file.type == DCC_OUT)
     {
         m_sentFile.open(m_file.path.text(), std::ios_base::binary);
@@ -232,7 +231,7 @@ long DccEngine::onSocketListen(FXObject*, FXSelector, void*)
         m_receivedFile.open(FXString(m_file.path+".part").text(), std::ios_base::binary);
     }
     m_connected = TRUE;
-    m_application->addTimeout(this, ID_PTIME, 1000);
+    m_application->addTimeout(this, DccEngine_PTIME, 1000);
     return 1;
 }
 
@@ -248,7 +247,7 @@ long DccEngine::onSocketStartAccept(FXObject*, FXSelector, void*)
         m_file.port = m_socket->getPort();
         m_engine->sendCtcp(m_file.nick, "DCC SEND "+utils::instance().removeSpaces(m_file.path.rafter(PATHSEP))+" "+m_socket->stringIPToBinary(m_file.ip)+" "+FXStringVal(m_file.port)+" "+FXStringVal(m_file.size)+" "+FXStringVal(m_file.token));
     }
-    m_application->addTimeout(this, ID_CTIME, m_dccTimeout*1000);
+    m_application->addTimeout(this, DccEngine_CTIME, m_dccTimeout*1000);
     return 1;
 }
 
@@ -262,7 +261,7 @@ void DccEngine::sendEvent(IrcEventType eventType, const FXString &param1)
     ev.param4 = "";
     ev.dccFile = m_file;
     ev.time = FXSystem::now();
-    m_target->handle(this, FXSEL(SEL_COMMAND, ID_DCC), &ev);
+    m_target->handle(this, FXSEL(SEL_COMMAND, DccEngine_DCC), &ev);
 }
 
 void DccEngine::sendEvent(IrcEventType eventType, const FXString &param1, const FXString &param2, const FXString &param3, const FXString &param4)
@@ -275,7 +274,7 @@ void DccEngine::sendEvent(IrcEventType eventType, const FXString &param1, const 
     ev.param4 = param4;
     ev.dccFile = m_file;
     ev.time = FXSystem::now();
-    m_target->handle(this, FXSEL(SEL_COMMAND, ID_DCC), &ev);
+    m_target->handle(this, FXSEL(SEL_COMMAND, DccEngine_DCC), &ev);
 }
 
 void DccEngine::updateDcc()
@@ -299,7 +298,7 @@ void DccEngine::updateDcc()
     ev.param4 = "";
     ev.dccFile = m_file;
     ev.time = FXSystem::now();
-    m_target->handle(this, FXSEL(SEL_COMMAND, ID_DCC), &ev);
+    m_target->handle(this, FXSEL(SEL_COMMAND, DccEngine_DCC), &ev);
     m_positionChanged = FALSE;
 }
 

@@ -79,14 +79,6 @@ class TetrisTabItem : public dxEXTabItem
 public:
     TetrisTabItem(dxTabBook*, const FXString&, FXIcon*, FXuint, FXint);
     virtual ~TetrisTabItem();
-    enum {
-        ID_GAMECANVAS = FXMainWindow::ID_LAST+400,
-        ID_NEXTCANVAS,
-        ID_TETRISTIMEOUT,
-        ID_NEW,
-        ID_PAUSE,
-        ID_LAST
-    };
 
     FXbool cell(FXint x, FXint y) const;
     void addCell(FXint x, FXint y, FXint type);

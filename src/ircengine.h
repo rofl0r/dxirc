@@ -36,13 +36,6 @@ class IrcEngine: public FXObject
     public:
         IrcEngine(FXApp*, FXObject*, FXString, FXString);
         virtual ~IrcEngine();
-        enum {
-            ID_DXSOCKET = FXMainWindow::ID_LAST+100,
-            ID_SERVER,
-            ID_RTIME, //reconnect
-            ID_TATIME, //try again timeout
-            ID_LAST
-        };
 
         void startConnection();
         void disconnect();

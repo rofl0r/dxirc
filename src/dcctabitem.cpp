@@ -28,20 +28,20 @@
 #include "ircengine.h"
 
 FXDEFMAP(DccTabItem) DccTabItemMap[] = {
-    FXMAPFUNC(SEL_COMMAND,          DccTabItem::ID_COMMANDLINE,     DccTabItem::onCommandline),
-    FXMAPFUNC(SEL_KEYPRESS,         DccTabItem::ID_COMMANDLINE,     DccTabItem::onKeyPress),
-    FXMAPFUNC(SEL_TIMEOUT,          DccTabItem::ID_PTIME,           DccTabItem::onPipeTimeout),
-    FXMAPFUNC(SEL_TEXTLINK,         DccTabItem::ID_TEXT,            DccTabItem::onTextLink),
-    FXMAPFUNC(SEL_COMMAND,          DccTabItem::ID_SPELL,           DccTabItem::onSpellLang),
+    FXMAPFUNC(SEL_COMMAND,          DccTabItem_COMMANDLINE,     DccTabItem::onCommandline),
+    FXMAPFUNC(SEL_KEYPRESS,         DccTabItem_COMMANDLINE,     DccTabItem::onKeyPress),
+    FXMAPFUNC(SEL_TIMEOUT,          DccTabItem_PTIME,           DccTabItem::onPipeTimeout),
+    FXMAPFUNC(SEL_TEXTLINK,         DccTabItem_TEXT,            DccTabItem::onTextLink),
+    FXMAPFUNC(SEL_COMMAND,          DccTabItem_SPELL,           DccTabItem::onSpellLang),
     FXMAPFUNC(SEL_COMMAND,          dxPipe::ID_PIPE,                DccTabItem::onPipe),
-    FXMAPFUNC(SEL_TIMEOUT,          DccTabItem::ID_CTIME,           DccTabItem::onCloseTimeout),
-    FXMAPFUNC(SEL_COMMAND,          IrcEngine::ID_SERVER,           DccTabItem::onIrcEvent),
-    FXMAPFUNC(SOCKET_CANREAD,       DccTabItem::ID_SOCKET,          DccTabItem::onSocketCanRead),
-    FXMAPFUNC(SOCKET_CONNECTED,     DccTabItem::ID_SOCKET,          DccTabItem::onSocketConnected),
-    FXMAPFUNC(SOCKET_DISCONNECTED,  DccTabItem::ID_SOCKET,          DccTabItem::onSocketDisconnected),
-    FXMAPFUNC(SOCKET_ERR,           DccTabItem::ID_SOCKET,          DccTabItem::onSocketError),
-    FXMAPFUNC(SOCKET_STARTACCEPT,   DccTabItem::ID_SOCKET,          DccTabItem::onSocketStartAccept),
-    FXMAPFUNC(SOCKET_LISTEN,        DccTabItem::ID_SOCKET,          DccTabItem::onSocketListen)
+    FXMAPFUNC(SEL_TIMEOUT,          DccTabItem_CTIME,           DccTabItem::onCloseTimeout),
+    FXMAPFUNC(SEL_COMMAND,          IrcEngine_SERVER,           DccTabItem::onIrcEvent),
+    FXMAPFUNC(SOCKET_CANREAD,       DccTabItem_SOCKET,          DccTabItem::onSocketCanRead),
+    FXMAPFUNC(SOCKET_CONNECTED,     DccTabItem_SOCKET,          DccTabItem::onSocketConnected),
+    FXMAPFUNC(SOCKET_DISCONNECTED,  DccTabItem_SOCKET,          DccTabItem::onSocketDisconnected),
+    FXMAPFUNC(SOCKET_ERR,           DccTabItem_SOCKET,          DccTabItem::onSocketError),
+    FXMAPFUNC(SOCKET_STARTACCEPT,   DccTabItem_SOCKET,          DccTabItem::onSocketStartAccept),
+    FXMAPFUNC(SOCKET_LISTEN,        DccTabItem_SOCKET,          DccTabItem::onSocketListen)
 };
 
 FXIMPLEMENT(DccTabItem, dxTabItem, DccTabItemMap, ARRAYNUMBER(DccTabItemMap))
@@ -72,15 +72,15 @@ DccTabItem::DccTabItem(dxTabBook *tab, const FXString &mynick, const FXString &n
     m_mainframe = new FXVerticalFrame(m_parent, FRAME_RAISED|LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
 
     m_textframe = new FXVerticalFrame(m_mainframe, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    m_text = new dxText(m_textframe, this, ID_TEXT, FRAME_SUNKEN|LAYOUT_FILL_X|LAYOUT_FILL_Y|TEXT_READONLY|TEXT_WORDWRAP|TEXT_SHOWACTIVE|TEXT_AUTOSCROLL);
+    m_text = new dxText(m_textframe, this, DccTabItem_TEXT, FRAME_SUNKEN|LAYOUT_FILL_X|LAYOUT_FILL_Y|TEXT_READONLY|TEXT_WORDWRAP|TEXT_SHOWACTIVE|TEXT_AUTOSCROLL);
     m_text->setFont(font);
     m_text->setSelTextColor(getApp()->getSelforeColor());
     m_text->setSelBackColor(getApp()->getSelbackColor());
 
     m_commandframe = new FXHorizontalFrame(m_mainframe, LAYOUT_FILL_X, 0,0,0,0, 0,0,0,0);
-    m_commandline = new dxTextField(m_commandframe, 25, this, ID_COMMANDLINE, TEXTFIELD_ENTER_ONLY|FRAME_SUNKEN|JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_BOTTOM, 0, 0, 0, 0, 1, 1, 1, 1);
+    m_commandline = new dxTextField(m_commandframe, 25, this, DccTabItem_COMMANDLINE, TEXTFIELD_ENTER_ONLY|FRAME_SUNKEN|JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_BOTTOM, 0, 0, 0, 0, 1, 1, 1, 1);
     if(m_sameCmd) m_commandline->setFont(font);
-    m_spellLangs = new FXComboBox(m_commandframe, 6, this, ID_SPELL, COMBOBOX_STATIC);
+    m_spellLangs = new FXComboBox(m_commandframe, 6, this, DccTabItem_SPELL, COMBOBOX_STATIC);
     m_spellLangs->setTipText(_("Spellchecking language list"));
     m_spellLangs->hide();
     if(m_sameCmd) m_spellLangs->setFont(font);
@@ -145,7 +145,7 @@ DccTabItem::DccTabItem(dxTabBook *tab, const FXString &mynick, const FXString &n
     m_spellLangs->setBackColor(m_colors.back);
     m_spellLangs->setTextColor(m_colors.text);
 
-    m_socket = new dxSocket(getApp(), this, ID_SOCKET);
+    m_socket = new dxSocket(getApp(), this, DccTabItem_SOCKET);
 }
 
 DccTabItem::~DccTabItem()
@@ -153,7 +153,7 @@ DccTabItem::~DccTabItem()
     this->stopLogging();
     if(m_pipe) m_pipe->stopCmd();
     m_pipeStrings.clear();
-    getApp()->removeTimeout(this, ID_PTIME);
+    getApp()->removeTimeout(this, DccTabItem_PTIME);
     m_socket->disconnect();
     delete m_socket;
 }
@@ -874,8 +874,8 @@ long DccTabItem::onCommandline(FXObject *, FXSelector, void *)
             return 1;
         }
 #ifdef HAVE_LUA
-        if(text[0] != '/') m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_MYMSG), &text);
-        m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_COMMAND), &text);
+        if(text[0] != '/') m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, DccTabItem_MYMSG), &text);
+        m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, DccTabItem_COMMAND), &text);
         if(text[0] == '/' && !m_scriptHasAll) processLine(text);
         else if(!m_scriptHasMyMsg && !m_scriptHasAll) processLine(text);
 #else
@@ -922,7 +922,7 @@ FXbool DccTabItem::processCommand(const FXString& commandtext)
         LuaRequest lua;
         lua.type = LUA_COMMAND;
         lua.text = commandtext.after('/');
-        m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_LUA), &lua);
+        m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, DccTabItem_LUA), &lua);
         return TRUE;
     }
     if(command == "commands")
@@ -990,7 +990,7 @@ FXbool DccTabItem::processCommand(const FXString& commandtext)
             return FALSE;
         }
         lua.text = luatext;
-        m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_LUA), &lua);
+        m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, DccTabItem_LUA), &lua);
         return TRUE;
 #else
         appendIrcStyledText(_("dxirc is compiled without support for Lua scripting"), 4, FXSystem::now(), FALSE, FALSE);
@@ -1026,7 +1026,7 @@ FXbool DccTabItem::processCommand(const FXString& commandtext)
     }
     if(command == "tetris")
     {
-        m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_NEWTETRIS), NULL);
+        m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, DccTabItem_NEWTETRIS), NULL);
         return TRUE;
     }
     if(commandtext[0] != '/')
@@ -1130,7 +1130,7 @@ long DccTabItem::onKeyPress(FXObject *, FXSelector, void *ptr)
             case KEY_Tab:
                 if(event->state&CONTROLMASK)
                 {
-                    m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_NEXTTAB), NULL);
+                    m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, DccTabItem_NEXTTAB), NULL);
                     return 1;
                 }
                 if(line[0] == '/' && line.after(' ').empty())
@@ -1248,7 +1248,7 @@ long DccTabItem::onPipe(FXObject*, FXSelector, void *ptr)
     FXString text = *(FXString*)ptr;    
     if(m_sendPipe)
     {
-        if(!getApp()->hasTimeout(this, ID_PTIME)) getApp()->addTimeout(this, ID_PTIME);
+        if(!getApp()->hasTimeout(this, DccTabItem_PTIME)) getApp()->addTimeout(this, DccTabItem_PTIME);
         m_pipeStrings.append(text);
     }
     else appendIrcText(text, FXSystem::now());
@@ -1286,7 +1286,7 @@ long DccTabItem::onPipeTimeout(FXObject*, FXSelector, void*)
         else appendIrcNickText(getNickName(), m_pipeStrings[0], 5, FXSystem::now());
         sendLine(m_pipeStrings[0]+"\n");
         m_pipeStrings.erase(0);
-        getApp()->addTimeout(this, ID_PTIME, 3000);
+        getApp()->addTimeout(this, DccTabItem_PTIME, 3000);
     }
     else
     {
@@ -1522,7 +1522,7 @@ void DccTabItem::writeIrcEvent(IrcEvent event)
                 }
                 else this->setTextColor(m_unreadColor);
                 this->setIcon(ICO_DCCNEWMSG);
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_NEWMSG), NULL);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, DccTabItem_NEWMSG), NULL);
             }
         }break;
         case IRC_DCCACTION:
@@ -1536,7 +1536,7 @@ void DccTabItem::writeIrcEvent(IrcEvent event)
                 }
                 else this->setTextColor(m_unreadColor);
                 this->setIcon(ICO_DCCNEWMSG);
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_NEWMSG), NULL);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, DccTabItem_NEWMSG), NULL);
             }
         }break;
         case IRC_CONNECT:
@@ -1728,7 +1728,7 @@ long DccTabItem::onSocketStartAccept(FXObject*, FXSelector, void*)
 {
     m_portD = m_socket->getPort();
     if(m_engine && m_listen) m_engine->sendCtcp(m_nick, "DCC CHAT chat "+m_socket->stringIPToBinary(m_address)+" "+FXStringVal(m_portD));
-    getApp()->addTimeout(this, ID_CTIME, m_dccTimeout*1000);
+    getApp()->addTimeout(this, DccTabItem_CTIME, m_dccTimeout*1000);
     return 1;
 }
 
@@ -1739,6 +1739,6 @@ long DccTabItem::onSocketListen(FXObject*, FXSelector, void*)
     ev.param1 = FXStringFormat(_("Someone connected from %s"), m_socket->getRemoteIP().text());
     ev.time = FXSystem::now();
     writeIrcEvent(ev);
-    getApp()->removeTimeout(this, ID_CTIME);
+    getApp()->removeTimeout(this, DccTabItem_CTIME);
     return 1;
 }

@@ -150,21 +150,6 @@ class LogViewer: public FXTopWindow
 public:
     LogViewer(FXApp *app, const FXString &lpath, FXFont *fnt);
     virtual ~LogViewer();
-    enum {
-        ID_ADD = FXTopWindow::ID_LAST,
-        ID_CLOSE,
-        ID_TREE,
-        ID_RESET,
-        ID_ALL,
-        ID_CHANNEL,
-        ID_FILE,
-        ID_SEARCH,
-        ID_SEARCHNEXT,
-        ID_PACK,
-        ID_UNPACK,
-        ID_DELETEITEM,
-        ID_LAST
-    };
 
     virtual void create();
 

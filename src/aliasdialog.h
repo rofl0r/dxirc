@@ -31,15 +31,6 @@ class AliasDialog: public FXDialogBox
 public:
     AliasDialog(FXMainWindow *owner);
     virtual ~AliasDialog();
-    enum {
-        ID_ADD = FXTopWindow::ID_LAST,
-        ID_MODIFY,
-        ID_DELETE,
-        ID_TABLE,
-        ID_SAVECLOSE,
-        ID_CANCEL,
-        ID_LAST
-    };
 
     virtual void create();
 

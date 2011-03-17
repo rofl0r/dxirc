@@ -34,15 +34,6 @@ class ScriptDialog: public FXDialogBox
     public:
         ScriptDialog(dxirc *owner);
         virtual ~ScriptDialog();
-        enum {
-            ID_LIST = FXTopWindow::ID_LAST,
-            ID_LOAD,
-            ID_VIEW,
-            ID_VIEWNEW,
-            ID_UNLOAD,
-            ID_CLOSE,
-            ID_LAST
-        };
         
         long onLoad(FXObject*,FXSelector,void*);
         long onView(FXObject*,FXSelector,void*);

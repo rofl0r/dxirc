@@ -89,55 +89,55 @@ const FXchar* dxTranslator::tr(const FXchar*, const FXchar* message, const FXcha
 
 FXDEFMAP(dxirc) dxircMap[] = {
     FXMAPFUNC(SEL_CLOSE,        0,                          dxirc::onCmdClose),
-    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_QUIT,             dxirc::onCmdQuit),
-    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_ABOUT,            dxirc::onCmdAbout),
-    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_CONNECT,          dxirc::onCmdConnect),
-    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_DISCONNECT,       dxirc::onCmdDisconnect),
-    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_SERVERS,          dxirc::onCmdServers),
-    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_TABS,             dxirc::onTabBook),
-    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_CLEAR,            dxirc::onCmdClear),
-    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_CLEARALL,         dxirc::onCmdClearAll),
-    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_CLOSETAB,         dxirc::onCmdCloseTab),
-    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_USERS,            dxirc::onCmdUsers),
-    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_STATUS,           dxirc::onCmdStatus),
-    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_HELP,             dxirc::onCmdHelp),
-    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_OPTIONS,          dxirc::onCmdOptions),
-    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_SELECTTAB,        dxirc::onCmdSelectTab),
-    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_NEXTTAB,          dxirc::onCmdNextTab),
-    FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_NEXTTAB,     dxirc::onCmdNextTab),
-    FXMAPFUNC(SEL_COMMAND,      DccTabItem::ID_NEXTTAB,     dxirc::onCmdNextTab),
-    FXMAPFUNC(SEL_MOUSEWHEEL,   dxirc::ID_TABS,             dxirc::onMouseWheel),
-    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_NEXTUNREAD,       dxirc::onCmdNextUnread),
-    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_ALIAS,            dxirc::onCmdAlias),
-    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_LOG,              dxirc::onCmdLog),
-    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_TRANSFERS,        dxirc::onCmdTransfers),
-    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_TRAY,             dxirc::onTrayClicked),
-    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_SCRIPTS,          dxirc::onCmdScripts),
-    FXMAPFUNC(SEL_TIMEOUT,      dxirc::ID_STIMEOUT,         dxirc::onStatusTimeout),
-    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_TETRIS,           dxirc::onTetrisKey),
-    FXMAPFUNC(SEL_COMMAND,      IrcEngine::ID_SERVER,       dxirc::onIrcEvent),
-    FXMAPFUNC(SEL_COMMAND,      DccEngine::ID_DCC,          dxirc::onDccEvent),
-    FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_CDIALOG,     dxirc::onCmdConnect),
-    FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_CSERVER,     dxirc::onTabConnect),
-    FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_CQUIT,       dxirc::onCmdQuit),
-    FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_NEWMSG,      dxirc::onNewMsg),
-    FXMAPFUNC(SEL_COMMAND,      DccTabItem::ID_NEWMSG,      dxirc::onNewMsg),
-    FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_LUA,         dxirc::onLua),
-    FXMAPFUNC(SEL_COMMAND,      DccTabItem::ID_LUA,         dxirc::onLua),
-    FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_COMMAND,     dxirc::onIrcCommand),
-    FXMAPFUNC(SEL_COMMAND,      DccTabItem::ID_COMMAND,     dxirc::onIrcCommand),
-    FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_MYMSG,       dxirc::onIrcMyMsg),
-    FXMAPFUNC(SEL_COMMAND,      DccTabItem::ID_MYMSG,       dxirc::onIrcMyMsg),
-    FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_NEWTETRIS,   dxirc::onNewTetris),
-    FXMAPFUNC(SEL_COMMAND,      DccTabItem::ID_NEWTETRIS,   dxirc::onNewTetris),
-    FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_ADDICOMMAND, dxirc::onAddIgnoreCommand),
-    FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_RMICOMMAND,  dxirc::onRemoveIgnoreCommand),
-    FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_ADDIUSER,    dxirc::onAddIgnoreUser),
-    FXMAPFUNC(SEL_COMMAND,      IrcTabItem::ID_RMIUSER,     dxirc::onRemoveIgnoreUser),
-    FXMAPFUNC(SEL_COMMAND,      DccDialog::ID_DCCCANCEL,    dxirc::onCmdDccCancel),
-    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_SPELL,            dxirc::onCmdSpell),
-    FXMAPFUNC(SEL_COMMAND,      dxirc::ID_FORCEFOCUS,       dxirc::onCmdForceFocus),
-    FXMAPFUNC(SEL_TIMEOUT,      dxirc::ID_AWAYTIMEOUT,      dxirc::onAwayTimeout),
+    FXMAPFUNC(SEL_COMMAND,      dxirc_QUIT,             dxirc::onCmdQuit),
+    FXMAPFUNC(SEL_COMMAND,      dxirc_ABOUT,            dxirc::onCmdAbout),
+    FXMAPFUNC(SEL_COMMAND,      dxirc_CONNECT,          dxirc::onCmdConnect),
+    FXMAPFUNC(SEL_COMMAND,      dxirc_DISCONNECT,       dxirc::onCmdDisconnect),
+    FXMAPFUNC(SEL_COMMAND,      dxirc_SERVERS,          dxirc::onCmdServers),
+    FXMAPFUNC(SEL_COMMAND,      dxirc_TABS,             dxirc::onTabBook),
+    FXMAPFUNC(SEL_COMMAND,      dxirc_CLEAR,            dxirc::onCmdClear),
+    FXMAPFUNC(SEL_COMMAND,      dxirc_CLEARALL,         dxirc::onCmdClearAll),
+    FXMAPFUNC(SEL_COMMAND,      dxirc_CLOSETAB,         dxirc::onCmdCloseTab),
+    FXMAPFUNC(SEL_COMMAND,      dxirc_USERS,            dxirc::onCmdUsers),
+    FXMAPFUNC(SEL_COMMAND,      dxirc_STATUS,           dxirc::onCmdStatus),
+    FXMAPFUNC(SEL_COMMAND,      dxirc_HELP,             dxirc::onCmdHelp),
+    FXMAPFUNC(SEL_COMMAND,      dxirc_OPTIONS,          dxirc::onCmdOptions),
+    FXMAPFUNC(SEL_COMMAND,      dxirc_SELECTTAB,        dxirc::onCmdSelectTab),
+    FXMAPFUNC(SEL_COMMAND,      dxirc_NEXTTAB,          dxirc::onCmdNextTab),
+    FXMAPFUNC(SEL_COMMAND,      IrcTabItem_NEXTTAB,     dxirc::onCmdNextTab),
+    FXMAPFUNC(SEL_COMMAND,      DccTabItem_NEXTTAB,     dxirc::onCmdNextTab),
+    FXMAPFUNC(SEL_MOUSEWHEEL,   dxirc_TABS,             dxirc::onMouseWheel),
+    FXMAPFUNC(SEL_COMMAND,      dxirc_NEXTUNREAD,       dxirc::onCmdNextUnread),
+    FXMAPFUNC(SEL_COMMAND,      dxirc_ALIAS,            dxirc::onCmdAlias),
+    FXMAPFUNC(SEL_COMMAND,      dxirc_LOG,              dxirc::onCmdLog),
+    FXMAPFUNC(SEL_COMMAND,      dxirc_TRANSFERS,        dxirc::onCmdTransfers),
+    FXMAPFUNC(SEL_COMMAND,      dxirc_TRAY,             dxirc::onTrayClicked),
+    FXMAPFUNC(SEL_COMMAND,      dxirc_SCRIPTS,          dxirc::onCmdScripts),
+    FXMAPFUNC(SEL_TIMEOUT,      dxirc_STIMEOUT,         dxirc::onStatusTimeout),
+    FXMAPFUNC(SEL_COMMAND,      dxirc_TETRIS,           dxirc::onTetrisKey),
+    FXMAPFUNC(SEL_COMMAND,      IrcEngine_SERVER,       dxirc::onIrcEvent),
+    FXMAPFUNC(SEL_COMMAND,      DccEngine_DCC,          dxirc::onDccEvent),
+    FXMAPFUNC(SEL_COMMAND,      IrcTabItem_CDIALOG,     dxirc::onCmdConnect),
+    FXMAPFUNC(SEL_COMMAND,      IrcTabItem_CSERVER,     dxirc::onTabConnect),
+    FXMAPFUNC(SEL_COMMAND,      IrcTabItem_CQUIT,       dxirc::onCmdQuit),
+    FXMAPFUNC(SEL_COMMAND,      IrcTabItem_NEWMSG,      dxirc::onNewMsg),
+    FXMAPFUNC(SEL_COMMAND,      DccTabItem_NEWMSG,      dxirc::onNewMsg),
+    FXMAPFUNC(SEL_COMMAND,      IrcTabItem_LUA,         dxirc::onLua),
+    FXMAPFUNC(SEL_COMMAND,      DccTabItem_LUA,         dxirc::onLua),
+    FXMAPFUNC(SEL_COMMAND,      IrcTabItem_COMMAND,     dxirc::onIrcCommand),
+    FXMAPFUNC(SEL_COMMAND,      DccTabItem_COMMAND,     dxirc::onIrcCommand),
+    FXMAPFUNC(SEL_COMMAND,      IrcTabItem_MYMSG,       dxirc::onIrcMyMsg),
+    FXMAPFUNC(SEL_COMMAND,      DccTabItem_MYMSG,       dxirc::onIrcMyMsg),
+    FXMAPFUNC(SEL_COMMAND,      IrcTabItem_NEWTETRIS,   dxirc::onNewTetris),
+    FXMAPFUNC(SEL_COMMAND,      DccTabItem_NEWTETRIS,   dxirc::onNewTetris),
+    FXMAPFUNC(SEL_COMMAND,      IrcTabItem_ADDICOMMAND, dxirc::onAddIgnoreCommand),
+    FXMAPFUNC(SEL_COMMAND,      IrcTabItem_RMICOMMAND,  dxirc::onRemoveIgnoreCommand),
+    FXMAPFUNC(SEL_COMMAND,      IrcTabItem_ADDIUSER,    dxirc::onAddIgnoreUser),
+    FXMAPFUNC(SEL_COMMAND,      IrcTabItem_RMIUSER,     dxirc::onRemoveIgnoreUser),
+    FXMAPFUNC(SEL_COMMAND,      DccDialog_DCCCANCEL,    dxirc::onCmdDccCancel),
+    FXMAPFUNC(SEL_COMMAND,      dxirc_SPELL,            dxirc::onCmdSpell),
+    FXMAPFUNC(SEL_COMMAND,      dxirc_FORCEFOCUS,       dxirc::onCmdForceFocus),
+    FXMAPFUNC(SEL_TIMEOUT,      dxirc_AWAYTIMEOUT,      dxirc::onAwayTimeout),
 };
 
 FXIMPLEMENT(dxirc, FXMainWindow, dxircMap, ARRAYNUMBER(dxircMap))
@@ -185,39 +185,39 @@ dxirc::dxirc(FXApp *app)
     m_menubar = new FXMenuBar(this, FRAME_RAISED|LAYOUT_SIDE_TOP|LAYOUT_FILL_X);
 
     m_servermenu = new FXMenuPane(this);
-    new FXMenuCommand(m_servermenu, _("&Server list\tF2"), ICO_SERVERLIST, this, ID_SERVERS);
-    new FXMenuCommand(m_servermenu, _("Quick &connect\tF7"), ICO_CONNECT, this, ID_CONNECT);
-    m_disconnect = new FXMenuCommand(m_servermenu, _("&Disconnect\tCtrl-D"), ICO_DISCONNECT, this, ID_DISCONNECT);
+    new FXMenuCommand(m_servermenu, _("&Server list\tF2"), ICO_SERVERLIST, this, dxirc_SERVERS);
+    new FXMenuCommand(m_servermenu, _("Quick &connect\tF7"), ICO_CONNECT, this, dxirc_CONNECT);
+    m_disconnect = new FXMenuCommand(m_servermenu, _("&Disconnect\tCtrl-D"), ICO_DISCONNECT, this, dxirc_DISCONNECT);
     m_disconnect->disable();
     new FXMenuSeparator(m_servermenu);
-    new FXMenuCommand(m_servermenu, _("DCC &transfers\tCtrl-T"), ICO_TRANSFER, this, ID_TRANSFERS);
+    new FXMenuCommand(m_servermenu, _("DCC &transfers\tCtrl-T"), ICO_TRANSFER, this, dxirc_TRANSFERS);
 #ifdef HAVE_LUA
     new FXMenuSeparator(m_servermenu);
-    new FXMenuCommand(m_servermenu, _("S&cripts\tCtrl-S"), ICO_SCRIPT, this, ID_SCRIPTS);
+    new FXMenuCommand(m_servermenu, _("S&cripts\tCtrl-S"), ICO_SCRIPT, this, dxirc_SCRIPTS);
 #endif //HAVE_LUA
     new FXMenuSeparator(m_servermenu);
-    m_logviewer = new FXMenuCommand(m_servermenu, _("&Log viewer\tCtrl-G"), ICO_LOGS, this, ID_LOG);
+    m_logviewer = new FXMenuCommand(m_servermenu, _("&Log viewer\tCtrl-G"), ICO_LOGS, this, dxirc_LOG);
     if(!m_logging) m_logviewer->disable();
     new FXMenuSeparator(m_servermenu);
 #ifdef WIN32
-    new FXMenuCommand(m_servermenu, _("&Quit\tAlt-F4"), ICO_QUIT, this, ID_QUIT);
+    new FXMenuCommand(m_servermenu, _("&Quit\tAlt-F4"), ICO_QUIT, this, dxirc_QUIT);
 #else
-    new FXMenuCommand(m_servermenu, _("&Quit\tCtrl-Q"), ICO_QUIT, this, ID_QUIT);
+    new FXMenuCommand(m_servermenu, _("&Quit\tCtrl-Q"), ICO_QUIT, this, dxirc_QUIT);
 #endif //WIN32
     new FXMenuTitle(m_menubar, _("&Server"), NULL, m_servermenu);
 
     m_editmenu = new FXMenuPane(this);
-    m_closeTab = new FXMenuCommand(m_editmenu, _("Close current tab\tCtrl-W"), ICO_CLOSE, this, ID_CLOSETAB);
+    m_closeTab = new FXMenuCommand(m_editmenu, _("Close current tab\tCtrl-W"), ICO_CLOSE, this, dxirc_CLOSETAB);
     m_closeTab->disable();
     new FXMenuSeparator(m_editmenu);
-    m_clearTab = new FXMenuCommand(m_editmenu, _("Clear window\tCtrl-L"), ICO_CLEAR, this, ID_CLEAR);
-    m_clearTabs = new FXMenuCommand(m_editmenu, _("Clear all windows\tCtrl-Shift-L"), NULL, this, ID_CLEARALL);
+    m_clearTab = new FXMenuCommand(m_editmenu, _("Clear window\tCtrl-L"), ICO_CLEAR, this, dxirc_CLEAR);
+    m_clearTabs = new FXMenuCommand(m_editmenu, _("Clear all windows\tCtrl-Shift-L"), NULL, this, dxirc_CLEARALL);
     new FXMenuSeparator(m_editmenu);
     m_usersShown = utils::instance().getBoolIniEntry("SETTINGS", "usersShown", TRUE);
-    m_users = new FXMenuCheck(m_editmenu, _("Users list\tCtrl-U\tShow/Hide users list"), this, ID_USERS);
+    m_users = new FXMenuCheck(m_editmenu, _("Users list\tCtrl-U\tShow/Hide users list"), this, dxirc_USERS);
     m_users->setCheck(m_usersShown);
 #ifdef HAVE_ENCHANT
-    m_spellCombo = new FXMenuCheck(m_editmenu, _("Spellchecking language list\tCtrl-P\tShow/Hide spellchecking language list"), this, ID_SPELL);
+    m_spellCombo = new FXMenuCheck(m_editmenu, _("Spellchecking language list\tCtrl-P\tShow/Hide spellchecking language list"), this, dxirc_SPELL);
     if(utils::instance().getLangsNum())
         m_showSpellCombo = utils::instance().getBoolIniEntry("SETTINGS", "showSpellCombo", TRUE);
     else
@@ -227,20 +227,20 @@ dxirc::dxirc(FXApp *app)
     }
     m_spellCombo->setCheck(m_showSpellCombo);
 #endif //HAVE_ENCHANT
-    m_status = new FXMenuCheck(m_editmenu, _("Status bar"), this, ID_STATUS);
+    m_status = new FXMenuCheck(m_editmenu, _("Status bar"), this, dxirc_STATUS);
     m_status->setCheck(m_statusShown);
-    new FXMenuCommand(m_editmenu, _("&Aliases"), NULL, this, ID_ALIAS);
-    new FXMenuCommand(m_editmenu, _("&Preferences"), ICO_OPTION, this, ID_OPTIONS);
+    new FXMenuCommand(m_editmenu, _("&Aliases"), NULL, this, dxirc_ALIAS);
+    new FXMenuCommand(m_editmenu, _("&Preferences"), ICO_OPTION, this, dxirc_OPTIONS);
     new FXMenuTitle(m_menubar, _("&Edit"), NULL, m_editmenu);
 
     m_helpmenu = new FXMenuPane(this);
-    new FXMenuCommand(m_helpmenu, _("&Help\tF1"), ICO_HELP, this, ID_HELP);
-    new FXMenuCommand(m_helpmenu, _("&About..."), NULL, this, ID_ABOUT);
+    new FXMenuCommand(m_helpmenu, _("&Help\tF1"), ICO_HELP, this, dxirc_HELP);
+    new FXMenuCommand(m_helpmenu, _("&About..."), NULL, this, dxirc_ABOUT);
     new FXMenuTitle(m_menubar, _("&Help"), NULL, m_helpmenu);
 
     m_mainframe = new FXVerticalFrame(this, LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 1,1,1,1);
 
-    m_tabbook = new dxTabBook(m_mainframe, this, ID_TABS, PACK_UNIFORM_WIDTH|PACK_UNIFORM_HEIGHT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    m_tabbook = new dxTabBook(m_mainframe, this, dxirc_TABS, PACK_UNIFORM_WIDTH|PACK_UNIFORM_HEIGHT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
 
     IrcEngine *server = new IrcEngine(app, this, "", "");
     server->setUsersList(m_usersList);
@@ -260,10 +260,10 @@ dxirc::dxirc(FXApp *app)
 #ifdef HAVE_TRAY
     if(m_useTray)
     {
-        m_trayIcon = new FXTrayIcon(app, "dxirc", ICO_TRAY, 0, this, ID_TRAY, TRAY_CMD_ON_LEFT|TRAY_MENU_ON_RIGHT);
+        m_trayIcon = new FXTrayIcon(app, "dxirc", ICO_TRAY, 0, this, dxirc_TRAY, TRAY_CMD_ON_LEFT|TRAY_MENU_ON_RIGHT);
         if(m_traymenu == NULL)
             m_traymenu = new FXPopup(m_trayIcon);
-        new FXMenuCommand(m_traymenu, _("&Quit"), ICO_QUIT, this, ID_QUIT);
+        new FXMenuCommand(m_traymenu, _("&Quit"), ICO_QUIT, this, dxirc_QUIT);
         m_trayIcon->setMenu(m_traymenu);
     }
 #endif //HAVE_TRAY
@@ -279,37 +279,37 @@ dxirc::dxirc(FXApp *app)
     updateTabPosition();
     updateTrayColor();
 
-    getAccelTable()->addAccel(MKUINT(KEY_1, ALTMASK), this, FXSEL(SEL_COMMAND, ID_SELECTTAB));
-    getAccelTable()->addAccel(MKUINT(KEY_2, ALTMASK), this, FXSEL(SEL_COMMAND, ID_SELECTTAB));
-    getAccelTable()->addAccel(MKUINT(KEY_3, ALTMASK), this, FXSEL(SEL_COMMAND, ID_SELECTTAB));
-    getAccelTable()->addAccel(MKUINT(KEY_4, ALTMASK), this, FXSEL(SEL_COMMAND, ID_SELECTTAB));
-    getAccelTable()->addAccel(MKUINT(KEY_5, ALTMASK), this, FXSEL(SEL_COMMAND, ID_SELECTTAB));
-    getAccelTable()->addAccel(MKUINT(KEY_6, ALTMASK), this, FXSEL(SEL_COMMAND, ID_SELECTTAB));
-    getAccelTable()->addAccel(MKUINT(KEY_7, ALTMASK), this, FXSEL(SEL_COMMAND, ID_SELECTTAB));
-    getAccelTable()->addAccel(MKUINT(KEY_8, ALTMASK), this, FXSEL(SEL_COMMAND, ID_SELECTTAB));
-    getAccelTable()->addAccel(MKUINT(KEY_9, ALTMASK), this, FXSEL(SEL_COMMAND, ID_SELECTTAB));
-    getAccelTable()->addAccel(MKUINT(KEY_Tab, CONTROLMASK), this, FXSEL(SEL_COMMAND, ID_NEXTTAB));
-    getAccelTable()->addAccel(MKUINT(KEY_n, CONTROLMASK), this, FXSEL(SEL_COMMAND, ID_NEXTUNREAD));
-    getAccelTable()->addAccel(MKUINT(KEY_N, CONTROLMASK), this, FXSEL(SEL_COMMAND, ID_NEXTUNREAD));
-    getAccelTable()->addAccel(MKUINT(KEY_f, CONTROLMASK), this, FXSEL(SEL_COMMAND, ID_FORCEFOCUS));
-    getAccelTable()->addAccel(MKUINT(KEY_F, CONTROLMASK), this, FXSEL(SEL_COMMAND, ID_FORCEFOCUS));
-    getAccelTable()->addAccel(KEY_n, this, FXSEL(SEL_COMMAND, ID_TETRIS));
-    getAccelTable()->addAccel(KEY_N, this, FXSEL(SEL_COMMAND, ID_TETRIS));
-    getAccelTable()->addAccel(KEY_p, this, FXSEL(SEL_COMMAND, ID_TETRIS));
-    getAccelTable()->addAccel(KEY_P, this, FXSEL(SEL_COMMAND, ID_TETRIS));
-    getAccelTable()->addAccel(KEY_i, this, FXSEL(SEL_COMMAND, ID_TETRIS));
-    getAccelTable()->addAccel(KEY_I, this, FXSEL(SEL_COMMAND, ID_TETRIS));
-    getAccelTable()->addAccel(KEY_l, this, FXSEL(SEL_COMMAND, ID_TETRIS));
-    getAccelTable()->addAccel(KEY_L, this, FXSEL(SEL_COMMAND, ID_TETRIS));
-    getAccelTable()->addAccel(KEY_k, this, FXSEL(SEL_COMMAND, ID_TETRIS));
-    getAccelTable()->addAccel(KEY_K, this, FXSEL(SEL_COMMAND, ID_TETRIS));
-    getAccelTable()->addAccel(KEY_j, this, FXSEL(SEL_COMMAND, ID_TETRIS));
-    getAccelTable()->addAccel(KEY_J, this, FXSEL(SEL_COMMAND, ID_TETRIS));
+    getAccelTable()->addAccel(MKUINT(KEY_1, ALTMASK), this, FXSEL(SEL_COMMAND, dxirc_SELECTTAB));
+    getAccelTable()->addAccel(MKUINT(KEY_2, ALTMASK), this, FXSEL(SEL_COMMAND, dxirc_SELECTTAB));
+    getAccelTable()->addAccel(MKUINT(KEY_3, ALTMASK), this, FXSEL(SEL_COMMAND, dxirc_SELECTTAB));
+    getAccelTable()->addAccel(MKUINT(KEY_4, ALTMASK), this, FXSEL(SEL_COMMAND, dxirc_SELECTTAB));
+    getAccelTable()->addAccel(MKUINT(KEY_5, ALTMASK), this, FXSEL(SEL_COMMAND, dxirc_SELECTTAB));
+    getAccelTable()->addAccel(MKUINT(KEY_6, ALTMASK), this, FXSEL(SEL_COMMAND, dxirc_SELECTTAB));
+    getAccelTable()->addAccel(MKUINT(KEY_7, ALTMASK), this, FXSEL(SEL_COMMAND, dxirc_SELECTTAB));
+    getAccelTable()->addAccel(MKUINT(KEY_8, ALTMASK), this, FXSEL(SEL_COMMAND, dxirc_SELECTTAB));
+    getAccelTable()->addAccel(MKUINT(KEY_9, ALTMASK), this, FXSEL(SEL_COMMAND, dxirc_SELECTTAB));
+    getAccelTable()->addAccel(MKUINT(KEY_Tab, CONTROLMASK), this, FXSEL(SEL_COMMAND, dxirc_NEXTTAB));
+    getAccelTable()->addAccel(MKUINT(KEY_n, CONTROLMASK), this, FXSEL(SEL_COMMAND, dxirc_NEXTUNREAD));
+    getAccelTable()->addAccel(MKUINT(KEY_N, CONTROLMASK), this, FXSEL(SEL_COMMAND, dxirc_NEXTUNREAD));
+    getAccelTable()->addAccel(MKUINT(KEY_f, CONTROLMASK), this, FXSEL(SEL_COMMAND, dxirc_FORCEFOCUS));
+    getAccelTable()->addAccel(MKUINT(KEY_F, CONTROLMASK), this, FXSEL(SEL_COMMAND, dxirc_FORCEFOCUS));
+    getAccelTable()->addAccel(KEY_n, this, FXSEL(SEL_COMMAND, dxirc_TETRIS));
+    getAccelTable()->addAccel(KEY_N, this, FXSEL(SEL_COMMAND, dxirc_TETRIS));
+    getAccelTable()->addAccel(KEY_p, this, FXSEL(SEL_COMMAND, dxirc_TETRIS));
+    getAccelTable()->addAccel(KEY_P, this, FXSEL(SEL_COMMAND, dxirc_TETRIS));
+    getAccelTable()->addAccel(KEY_i, this, FXSEL(SEL_COMMAND, dxirc_TETRIS));
+    getAccelTable()->addAccel(KEY_I, this, FXSEL(SEL_COMMAND, dxirc_TETRIS));
+    getAccelTable()->addAccel(KEY_l, this, FXSEL(SEL_COMMAND, dxirc_TETRIS));
+    getAccelTable()->addAccel(KEY_L, this, FXSEL(SEL_COMMAND, dxirc_TETRIS));
+    getAccelTable()->addAccel(KEY_k, this, FXSEL(SEL_COMMAND, dxirc_TETRIS));
+    getAccelTable()->addAccel(KEY_K, this, FXSEL(SEL_COMMAND, dxirc_TETRIS));
+    getAccelTable()->addAccel(KEY_j, this, FXSEL(SEL_COMMAND, dxirc_TETRIS));
+    getAccelTable()->addAccel(KEY_J, this, FXSEL(SEL_COMMAND, dxirc_TETRIS));
 }
 
 dxirc::~dxirc()
 {
-    m_app->removeTimeout(this, ID_STIMEOUT);
+    m_app->removeTimeout(this, dxirc_STIMEOUT);
     delete ICO_BIG;
     delete ICO_SMALL;
     delete ICO_IRCADMIN;
@@ -398,7 +398,7 @@ void dxirc::create()
     readServersConfig();
     _pThis = this;
     autoloadScripts();
-    m_app->addTimeout(this, ID_AWAYTIMEOUT,180000);
+    m_app->addTimeout(this, dxirc_AWAYTIMEOUT, 180000);
 }
 
 // Flash the window to get user's attention
@@ -901,7 +901,7 @@ long dxirc::onCmdForceFocus(FXObject*, FXSelector, void*)
 //check away on channels
 long dxirc::onAwayTimeout(FXObject*, FXSelector, void*)
 {
-    m_app->addTimeout(this, ID_AWAYTIMEOUT,180000);
+    m_app->addTimeout(this, dxirc_AWAYTIMEOUT, 180000);
     for(FXint i = 0; i<m_tabbook->numChildren(); i+=2)
     {
         if(m_tabbook->childAtIndex(i)->getMetaClass()==&IrcTabItem::metaClass)
@@ -3914,7 +3914,7 @@ void dxirc::updateStatus(FXString text)
         m_trayIcon->setText("dxirc\n"+text);
     }
 #endif //HAVE_TRAY
-    m_app->addTimeout(this, ID_STIMEOUT, 5000);
+    m_app->addTimeout(this, dxirc_STIMEOUT, 5000);
 }
 
 long dxirc::onStatusTimeout(FXObject*, FXSelector, void*)

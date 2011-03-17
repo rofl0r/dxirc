@@ -131,7 +131,7 @@ class dxSocket: public FXObject
         dxSocket(FXApp *app, FXObject *tgt=NULL, FXSelector sel=0, FXbool isSSL=FALSE);
         virtual ~dxSocket();
         enum {
-            ID_SOCKET = FXMainWindow::ID_LAST+200,
+            ID_SOCKET = FXMainWindow::ID_LAST+1100,
             ID_SSLTIME, //ssl on windows
             ID_LAST
         };

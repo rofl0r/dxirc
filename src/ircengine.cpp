@@ -26,12 +26,12 @@
 #include "irctabitem.h"
 
 FXDEFMAP(IrcEngine) IrcEngineMap[] = {
-    FXMAPFUNC(SOCKET_CANREAD,       IrcEngine::ID_DXSOCKET, IrcEngine::onSocketCanRead),
-    FXMAPFUNC(SOCKET_CONNECTED,     IrcEngine::ID_DXSOCKET, IrcEngine::onSocketConnected),
-    FXMAPFUNC(SOCKET_DISCONNECTED,  IrcEngine::ID_DXSOCKET, IrcEngine::onSocketDisconnected),
-    FXMAPFUNC(SOCKET_ERR,           IrcEngine::ID_DXSOCKET, IrcEngine::onSocketError),
-    FXMAPFUNC(SEL_TIMEOUT,          IrcEngine::ID_RTIME,    IrcEngine::onReconnectTimeout),
-    FXMAPFUNC(SEL_TIMEOUT,          IrcEngine::ID_TATIME,   IrcEngine::onTryAgainTimeout)
+    FXMAPFUNC(SOCKET_CANREAD,       IrcEngine_DXSOCKET, IrcEngine::onSocketCanRead),
+    FXMAPFUNC(SOCKET_CONNECTED,     IrcEngine_DXSOCKET, IrcEngine::onSocketConnected),
+    FXMAPFUNC(SOCKET_DISCONNECTED,  IrcEngine_DXSOCKET, IrcEngine::onSocketDisconnected),
+    FXMAPFUNC(SOCKET_ERR,           IrcEngine_DXSOCKET, IrcEngine::onSocketError),
+    FXMAPFUNC(SEL_TIMEOUT,          IrcEngine_RTIME,    IrcEngine::onReconnectTimeout),
+    FXMAPFUNC(SEL_TIMEOUT,          IrcEngine_TATIME,   IrcEngine::onTryAgainTimeout)
 };
 
 FXIMPLEMENT(IrcEngine, FXObject, IrcEngineMap, ARRAYNUMBER(IrcEngineMap))
@@ -66,7 +66,7 @@ IrcEngine::IrcEngine(FXApp *app, FXObject *tgt, FXString channels, FXString comm
     m_topicLen = 460;
     m_kickLen = 460;
     m_awayLen = 460;
-    m_socket = new dxSocket(app, this, ID_DXSOCKET);
+    m_socket = new dxSocket(app, this, IrcEngine_DXSOCKET);
 }
 
 IrcEngine::~IrcEngine()
@@ -87,12 +87,12 @@ long IrcEngine::onReconnectTimeout(FXObject*, FXSelector, void*)
     {
         if(m_connecting)
         {
-            m_application->addTimeout(this, ID_RTIME, 1000);
+            m_application->addTimeout(this, IrcEngine_RTIME, 1000);
             return 1;
         }
         clearChannelsCommands(FALSE);
         startConnection();
-        m_application->addTimeout(this, ID_RTIME, m_delayAttempt*1000);
+        m_application->addTimeout(this, IrcEngine_RTIME, m_delayAttempt*1000);
     }
     else
         clearAttempts();
@@ -148,11 +148,11 @@ long IrcEngine::onSocketDisconnected(FXObject*, FXSelector, void*)
     if(m_reconnect && m_attempts < m_numberAttempt)
     {
         sendEvent(IRC_RECONNECT, FXStringFormat(_("Server %s was disconnected"), m_serverName.text()));
-        m_application->addTimeout(this, ID_RTIME, m_delayAttempt*1000);
+        m_application->addTimeout(this, IrcEngine_RTIME, m_delayAttempt*1000);
     }
     else
     {
-        m_application->removeTimeout(this, ID_RTIME);
+        m_application->removeTimeout(this, IrcEngine_RTIME);
         sendEvent(IRC_DISCONNECT, FXStringFormat(_("Server %s was disconnected"), m_serverName.text()));
     }
     return 1;
@@ -300,7 +300,7 @@ void IrcEngine::closeConnection(FXbool disableReconnect)
     clearChannelsCommands(disableReconnect);
     if(!m_connected && disableReconnect)
     {
-        m_application->removeTimeout(this, ID_RTIME);
+        m_application->removeTimeout(this, IrcEngine_RTIME);
         return;
     }
     m_connected = FALSE;
@@ -308,11 +308,11 @@ void IrcEngine::closeConnection(FXbool disableReconnect)
     if(m_reconnect && m_attempts < m_numberAttempt && !disableReconnect)
     {
         sendEvent(IRC_RECONNECT, FXStringFormat(_("Server %s was disconnected"), m_serverName.text()));
-        m_application->addTimeout(this, ID_RTIME, m_delayAttempt*1000);
+        m_application->addTimeout(this, IrcEngine_RTIME, m_delayAttempt*1000);
     }
     else
     {
-        m_application->removeTimeout(this, ID_RTIME);
+        m_application->removeTimeout(this, IrcEngine_RTIME);
         sendEvent(IRC_DISCONNECT, FXStringFormat(_("Server %s was disconnected"), m_serverName.text()));
     }
     m_socket->disconnect();
@@ -395,9 +395,9 @@ void IrcEngine::numeric(const FXint &command, const FXString &params)
         case 263: //RPL_TRYAGAIN
         {
             //this reply is for 99,9% thru sended WHO
-            if(m_application->hasTimeout(this, ID_TATIME))
-                m_application->removeTimeout(this, ID_TATIME);
-            m_application->addTimeout(this, ID_TATIME, 60000);
+            if(m_application->hasTimeout(this, IrcEngine_TATIME))
+                m_application->removeTimeout(this, IrcEngine_TATIME);
+            m_application->addTimeout(this, IrcEngine_TATIME, 60000);
             m_ignoreWho = "";
             utils::instance().debugLine("RPL_TRYAGAIN fired!!!");
         }break;
@@ -1217,7 +1217,7 @@ void IrcEngine::addIgnoreWho(const FXString& who)
         if(m_ignoreWho.empty())
         {
             m_ignoreWho = who;
-            if(!m_application->hasTimeout(this, ID_TATIME)) sendWho(who);
+            if(!m_application->hasTimeout(this, IrcEngine_TATIME)) sendWho(who);
             else m_ignoreWhoQueue.append(who);
         }
         else
@@ -1574,7 +1574,7 @@ void IrcEngine::sendEvent(IrcEventType eventType)
     ev.time = FXSystem::now();
     for(FXint i=0; i < m_targets.no(); i++)
     {
-        m_targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
+        m_targets.at(i)->handle(this, FXSEL(SEL_COMMAND, IrcEngine_SERVER), &ev);
     }
 }
 
@@ -1590,7 +1590,7 @@ void IrcEngine::sendEvent(IrcEventType eventType, const FXString &param1)
     ev.time = FXSystem::now();
     for(FXint i=0; i < m_targets.no(); i++)
     {
-        m_targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
+        m_targets.at(i)->handle(this, FXSEL(SEL_COMMAND, IrcEngine_SERVER), &ev);
     }
 }
 
@@ -1606,7 +1606,7 @@ void IrcEngine::sendEvent(IrcEventType eventType, const FXString &param1, const 
     ev.time = FXSystem::now();
     for(FXint i=0; i < m_targets.no(); i++)
     {
-        m_targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
+        m_targets.at(i)->handle(this, FXSEL(SEL_COMMAND, IrcEngine_SERVER), &ev);
     }
 }
 
@@ -1622,7 +1622,7 @@ void IrcEngine::sendEvent(IrcEventType eventType, const FXString &param1, const 
     ev.time = FXSystem::now();
     for(FXint i=0; i < m_targets.no(); i++)
     {
-        m_targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
+        m_targets.at(i)->handle(this, FXSEL(SEL_COMMAND, IrcEngine_SERVER), &ev);
     }
 }
 
@@ -1638,7 +1638,7 @@ void IrcEngine::sendEvent(IrcEventType eventType, const FXString &param1, const 
     ev.time = FXSystem::now();
     for(FXint i=0; i < m_targets.no(); i++)
     {
-        m_targets.at(i)->handle(this, FXSEL(SEL_COMMAND, ID_SERVER), &ev);
+        m_targets.at(i)->handle(this, FXSEL(SEL_COMMAND, IrcEngine_SERVER), &ev);
     }
 }
 
@@ -1908,15 +1908,15 @@ FXbool IrcEngine::isUserIgnored(const FXString &nick, const FXString &on)
 // reset running reconnect timeout
 void IrcEngine::resetReconnect()
 {
-    if(m_application->hasTimeout(this, ID_RTIME))
+    if(m_application->hasTimeout(this, IrcEngine_RTIME))
     {
-        m_application->removeTimeout(this, ID_RTIME);
-        m_application->addTimeout(this, ID_RTIME, m_delayAttempt*1000);
+        m_application->removeTimeout(this, IrcEngine_RTIME);
+        m_application->addTimeout(this, IrcEngine_RTIME, m_delayAttempt*1000);
         return;
     }
     if(m_reconnect && m_attempts < m_numberAttempt)
     {
-        m_application->addTimeout(this, ID_RTIME, m_delayAttempt*1000);
+        m_application->addTimeout(this, IrcEngine_RTIME, m_delayAttempt*1000);
     }
 }
 

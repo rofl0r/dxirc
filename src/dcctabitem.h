@@ -40,21 +40,6 @@ class DccTabItem: public dxTabItem
     public:
         DccTabItem(dxTabBook *tab, const FXString &mynick, const FXString &nick, const FXString &address="0", FXint portD=0, FXint portH=0, FXbool listen=FALSE, FXIcon *icon=0, FXuint opts=TAB_TOP_NORMAL, FXint id=0, FXbool logging=FALSE, FXString logPath="", IrcColor colorss=IrcColor(), FXFont *font=NULL, FXbool sameCommand=FALSE, FXbool coloredNick=FALSE, FXbool stripColors=TRUE, FXbool useSpell=TRUE, FXbool showSpellCombo=FALSE, IrcEngine *engine=NULL);
         virtual ~DccTabItem();
-        enum {
-            ID_COMMANDLINE = FXMainWindow::ID_LAST+25,
-            ID_PTIME,
-            ID_NEXTTAB,
-            ID_TEXT,
-            ID_SPELL,
-            ID_MYMSG,
-            ID_COMMAND,
-            ID_SOCKET,
-            ID_CTIME, //timeout for check and disconnect offered connection
-            ID_LUA,
-            ID_NEWTETRIS,
-            ID_NEWMSG,
-            ID_LAST
-        };
 
         void createGeom();
         void clearChat();

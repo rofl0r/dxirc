@@ -41,11 +41,6 @@ class DccSendDialog: public FXDialogBox
 public:
     DccSendDialog(FXMainWindow *owner, FXString nick);
     virtual ~DccSendDialog();
-    enum {
-        ID_SEND = FXTopWindow::ID_LAST,
-        ID_CANCEL,
-        ID_FILE
-    };
 
     long onSend(FXObject*,FXSelector,void*);
     long onCancel(FXObject*,FXSelector,void*);
@@ -113,43 +108,6 @@ class IrcTabItem: public dxTabItem
     public:
         IrcTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *icon=0, FXuint opts=TAB_TOP_NORMAL, FXint id=0, TYPE type=CHANNEL, IrcEngine *socket=NULL, FXbool ownServerWindow=FALSE, FXbool usersShown=TRUE, FXbool logging=FALSE, FXString commandsList="", FXString logPath="", FXint maxAway=200, IrcColor colorss=IrcColor(), FXString nickChar=":", FXFont *font=NULL, FXbool sameCommand=FALSE, FXbool sameList=FALSE, FXbool coloredNick=FALSE, FXbool stripColors=TRUE, FXbool useSpell=TRUE, FXbool showSpellCombo=FALSE);
         virtual ~IrcTabItem();
-        enum {
-            ID_COMMANDLINE = FXMainWindow::ID_LAST+25,
-            ID_CDIALOG,
-            ID_CQUIT,
-            ID_PTIME,
-            ID_ETIME,
-            ID_USERS,
-            ID_NEWQUERY,
-            ID_WHOIS,
-            ID_OP,
-            ID_DEOP,
-            ID_VOICE,
-            ID_DEVOICE,
-            ID_KICK,
-            ID_BAN,
-            ID_KICKBAN,
-            ID_IGNORE,
-            ID_TOPIC,
-            ID_CSERVER,
-            ID_NEXTTAB,
-            ID_TEXT,
-            ID_NEWMSG,
-            ID_LUA,
-            ID_COMMAND,
-            ID_MYMSG,
-            ID_NEWTETRIS,
-            ID_DCCCHAT, //dcc chat on right click
-            ID_DCCSEND, //dcc sending on right click
-            ID_ADDICOMMAND, //for handle /ignore addcmd
-            ID_RMICOMMAND, //for handle /ignore rmcmd
-            ID_ADDIUSER, //for handle /ignore addusr
-            ID_RMIUSER, //for handle /ignore rmusr
-            ID_AWAY, //set away on right click
-            ID_DEAWAY, //remove away on right click
-            ID_SPELL,
-            ID_LAST
-        };
 
         void createGeom();
         void clearChat();

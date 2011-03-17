@@ -24,16 +24,16 @@
 #include "i18n.h"
 
 FXDEFMAP(ServerDialog) ServerDialogMap[] = {
-    FXMAPFUNC(SEL_COMMAND,          ServerDialog::ID_JOIN,      ServerDialog::onJoin),
-    FXMAPFUNC(SEL_COMMAND,          ServerDialog::ID_ADD,       ServerDialog::onAdd),
-    FXMAPFUNC(SEL_COMMAND,          ServerDialog::ID_MODIFY,    ServerDialog::onModify),
-    FXMAPFUNC(SEL_COMMAND,          ServerDialog::ID_DELETE,    ServerDialog::onDelete),
-    FXMAPFUNC(SEL_COMMAND,          ServerDialog::ID_CANCEL,    ServerDialog::onCancel),
-    FXMAPFUNC(SEL_CLOSE,            0,                          ServerDialog::onCancel),
-    FXMAPFUNC(SEL_COMMAND,          ServerDialog::ID_SAVECLOSE, ServerDialog::onSaveClose),
-    FXMAPFUNC(SEL_COMMAND,          ServerDialog::ID_LIST,      ServerDialog::onList),
-    FXMAPFUNC(SEL_DOUBLECLICKED,    ServerDialog::ID_LIST,      ServerDialog::onDoubleClick),
-    FXMAPFUNC(SEL_KEYPRESS,         0,                          ServerDialog::onKeyPress),
+    FXMAPFUNC(SEL_COMMAND,          ServerDialog_JOIN,      ServerDialog::onJoin),
+    FXMAPFUNC(SEL_COMMAND,          ServerDialog_ADD,       ServerDialog::onAdd),
+    FXMAPFUNC(SEL_COMMAND,          ServerDialog_MODIFY,    ServerDialog::onModify),
+    FXMAPFUNC(SEL_COMMAND,          ServerDialog_DELETE,    ServerDialog::onDelete),
+    FXMAPFUNC(SEL_COMMAND,          ServerDialog_CANCEL,    ServerDialog::onCancel),
+    FXMAPFUNC(SEL_CLOSE,            0,                      ServerDialog::onCancel),
+    FXMAPFUNC(SEL_COMMAND,          ServerDialog_SAVECLOSE, ServerDialog::onSaveClose),
+    FXMAPFUNC(SEL_COMMAND,          ServerDialog_LIST,      ServerDialog::onList),
+    FXMAPFUNC(SEL_DOUBLECLICKED,    ServerDialog_LIST,      ServerDialog::onDoubleClick),
+    FXMAPFUNC(SEL_KEYPRESS,         0,                      ServerDialog::onKeyPress),
 };
 
 FXIMPLEMENT(ServerDialog, FXDialogBox, ServerDialogMap, ARRAYNUMBER(ServerDialogMap))
@@ -45,7 +45,7 @@ ServerDialog::ServerDialog(FXMainWindow *owner, dxServerInfoArray servers)
 
     m_serverframe = new FXHorizontalFrame(m_contents, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     m_listframe = new FXVerticalFrame(m_serverframe, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    m_names = new FXList(m_listframe, this, ID_LIST, LIST_BROWSESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    m_names = new FXList(m_listframe, this, ServerDialog_LIST, LIST_BROWSESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     m_names->setScrollStyle(HSCROLLING_OFF);
     updateList();
 
@@ -98,14 +98,14 @@ ServerDialog::ServerDialog(FXMainWindow *owner, dxServerInfoArray servers)
 
     m_buttonframe = new FXHorizontalFrame(m_contents, LAYOUT_FILL_X|LAYOUT_FILL_Y);
 
-    m_buttonCancel = new dxEXButton(m_buttonframe, _("&Cancel"), NULL, this, ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
-    m_buttonSaveClose = new dxEXButton(m_buttonframe, _("&Save&&Close"), NULL, this, ID_SAVECLOSE, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
-    m_buttonDelete = new dxEXButton(m_buttonframe, _("&Delete"), NULL, this, ID_DELETE, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
+    m_buttonCancel = new dxEXButton(m_buttonframe, _("&Cancel"), NULL, this, ServerDialog_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
+    m_buttonSaveClose = new dxEXButton(m_buttonframe, _("&Save&&Close"), NULL, this, ServerDialog_SAVECLOSE, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
+    m_buttonDelete = new dxEXButton(m_buttonframe, _("&Delete"), NULL, this, ServerDialog_DELETE, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
     m_serverList.no()? m_buttonDelete->enable() : m_buttonDelete->disable();
-    m_buttonModify = new dxEXButton(m_buttonframe, _("&Modify"), NULL, this, ID_MODIFY, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
+    m_buttonModify = new dxEXButton(m_buttonframe, _("&Modify"), NULL, this, ServerDialog_MODIFY, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
     m_serverList.no()? m_buttonModify->enable() : m_buttonModify->disable();
-    m_buttonAdd = new dxEXButton(m_buttonframe, _("&Add"), NULL, this, ID_ADD, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
-    m_buttonJoin = new dxEXButton(m_buttonframe, _("&Join"), NULL, this, ID_JOIN, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
+    m_buttonAdd = new dxEXButton(m_buttonframe, _("&Add"), NULL, this, ServerDialog_ADD, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
+    m_buttonJoin = new dxEXButton(m_buttonframe, _("&Join"), NULL, this, ServerDialog_JOIN, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
     m_serverList.no()? m_buttonJoin->enable() : m_buttonJoin->disable();
 
     updateDetails();
@@ -317,7 +317,7 @@ long ServerDialog::onKeyPress(FXObject *sender,FXSelector sel,void *ptr)
     if(FXTopWindow::onKeyPress(sender,sel,ptr)) return 1;
     if(((FXEvent*)ptr)->code == KEY_Escape)
     {
-        handle(this,FXSEL(SEL_COMMAND,ID_CANCEL),NULL);
+        handle(this,FXSEL(SEL_COMMAND,ServerDialog_CANCEL),NULL);
         return 1;
     }
     return 0;

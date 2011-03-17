@@ -31,9 +31,9 @@
 #include "i18n.h"
 
 FXDEFMAP(DccSendDialog) DccSendDialogMap[] = {
-    FXMAPFUNC(SEL_COMMAND,  DccSendDialog::ID_FILE,     DccSendDialog::onFile),
-    FXMAPFUNC(SEL_COMMAND,  DccSendDialog::ID_SEND,     DccSendDialog::onSend),
-    FXMAPFUNC(SEL_COMMAND,  DccSendDialog::ID_CANCEL,   DccSendDialog::onCancel),
+    FXMAPFUNC(SEL_COMMAND,  DccSendDialog_FILE,     DccSendDialog::onFile),
+    FXMAPFUNC(SEL_COMMAND,  DccSendDialog_SEND,     DccSendDialog::onSend),
+    FXMAPFUNC(SEL_COMMAND,  DccSendDialog_CANCEL,   DccSendDialog::onCancel),
     FXMAPFUNC(SEL_CLOSE,    0,                          DccSendDialog::onCancel),
     FXMAPFUNC(SEL_KEYPRESS, 0,                          DccSendDialog::onKeyPress)
 };
@@ -48,14 +48,14 @@ DccSendDialog::DccSendDialog(FXMainWindow* owner, FXString nick)
     m_fileFrame = new FXHorizontalFrame(m_mainFrame, LAYOUT_FILL_X);
     new FXLabel(m_fileFrame, _("File:"));
     m_fileText = new FXTextField(m_fileFrame, 25, NULL, 0, TEXTFIELD_READONLY|FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_X);
-    m_buttonFile = new dxEXButton(m_fileFrame, "...", NULL, this, ID_FILE, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,2);
+    m_buttonFile = new dxEXButton(m_fileFrame, "...", NULL, this, DccSendDialog_FILE, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,2);
 
     m_passiveFrame = new FXHorizontalFrame(m_mainFrame, LAYOUT_FILL_X);
     m_checkPassive = new FXCheckButton(m_passiveFrame, _("Send passive"), NULL, 0);
 
     m_buttonFrame = new FXHorizontalFrame(m_mainFrame, LAYOUT_FILL_X|PACK_UNIFORM_WIDTH);
-    m_buttonCancel = new dxEXButton(m_buttonFrame, _("&Cancel"), NULL, this, ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
-    m_buttonSend = new dxEXButton(m_buttonFrame, _("&Send file"), NULL, this, ID_SEND, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
+    m_buttonCancel = new dxEXButton(m_buttonFrame, _("&Cancel"), NULL, this, DccSendDialog_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
+    m_buttonSend = new dxEXButton(m_buttonFrame, _("&Send file"), NULL, this, DccSendDialog_SEND, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
 }
 
 DccSendDialog::~DccSendDialog()
@@ -104,7 +104,7 @@ long DccSendDialog::onKeyPress(FXObject *sender, FXSelector sel, void *ptr)
     if(FXTopWindow::onKeyPress(sender,sel,ptr)) return 1;
     if(((FXEvent*)ptr)->code == KEY_Escape)
     {
-        handle(this,FXSEL(SEL_COMMAND,ID_CANCEL),NULL);
+        handle(this,FXSEL(SEL_COMMAND,DccSendDialog_CANCEL),NULL);
         return 1;
     }
     return 0;
@@ -168,32 +168,32 @@ void NickListItem::changeAway(FXbool away)
 }
 
 FXDEFMAP(IrcTabItem) IrcTabItemMap[] = {
-    FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_COMMANDLINE,     IrcTabItem::onCommandline),
-    FXMAPFUNC(SEL_KEYPRESS,             IrcTabItem::ID_COMMANDLINE,     IrcTabItem::onKeyPress),
-    FXMAPFUNC(SEL_COMMAND,              IrcEngine::ID_SERVER,           IrcTabItem::onIrcEvent),
-    FXMAPFUNC(SEL_TIMEOUT,              IrcTabItem::ID_PTIME,           IrcTabItem::onPipeTimeout),
-    FXMAPFUNC(SEL_TIMEOUT,              IrcTabItem::ID_ETIME,           IrcTabItem::onEggTimeout),
-    FXMAPFUNC(SEL_TEXTLINK,             IrcTabItem::ID_TEXT,            IrcTabItem::onTextLink),
-    FXMAPFUNC(SEL_RIGHTBUTTONRELEASE,   IrcTabItem::ID_USERS,           IrcTabItem::onRightMouse),
-    FXMAPFUNC(SEL_DOUBLECLICKED,        IrcTabItem::ID_USERS,           IrcTabItem::onDoubleclick),
-    FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_NEWQUERY,        IrcTabItem::onNewQuery),
-    FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_WHOIS,           IrcTabItem::onWhois),
-    FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_DCCCHAT,         IrcTabItem::onDccChat),
-    FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_DCCSEND,         IrcTabItem::onDccSend),
-    FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_OP,              IrcTabItem::onOp),
-    FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_DEOP,            IrcTabItem::onDeop),
-    FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_VOICE,           IrcTabItem::onVoice),
-    FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_DEVOICE,         IrcTabItem::onDevoice),
-    FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_KICK,            IrcTabItem::onKick),
-    FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_BAN,             IrcTabItem::onBan),
-    FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_KICKBAN,         IrcTabItem::onKickban),
-    FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_IGNORE,          IrcTabItem::onIgnore),
-    FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_TOPIC,           IrcTabItem::onTopic),
-    FXMAPFUNC(SEL_LINK,                 IrcTabItem::ID_TOPIC,           IrcTabItem::onTopicLink),
-    FXMAPFUNC(SEL_COMMAND,              dxPipe::ID_PIPE,                IrcTabItem::onPipe),
-    FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_AWAY,            IrcTabItem::onSetAway),
-    FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_DEAWAY,          IrcTabItem::onRemoveAway),
-    FXMAPFUNC(SEL_COMMAND,              IrcTabItem::ID_SPELL,           IrcTabItem::onSpellLang)
+    FXMAPFUNC(SEL_COMMAND,              IrcTabItem_COMMANDLINE,     IrcTabItem::onCommandline),
+    FXMAPFUNC(SEL_KEYPRESS,             IrcTabItem_COMMANDLINE,     IrcTabItem::onKeyPress),
+    FXMAPFUNC(SEL_COMMAND,              IrcEngine_SERVER,           IrcTabItem::onIrcEvent),
+    FXMAPFUNC(SEL_TIMEOUT,              IrcTabItem_PTIME,           IrcTabItem::onPipeTimeout),
+    FXMAPFUNC(SEL_TIMEOUT,              IrcTabItem_ETIME,           IrcTabItem::onEggTimeout),
+    FXMAPFUNC(SEL_TEXTLINK,             IrcTabItem_TEXT,            IrcTabItem::onTextLink),
+    FXMAPFUNC(SEL_RIGHTBUTTONRELEASE,   IrcTabItem_USERS,           IrcTabItem::onRightMouse),
+    FXMAPFUNC(SEL_DOUBLECLICKED,        IrcTabItem_USERS,           IrcTabItem::onDoubleclick),
+    FXMAPFUNC(SEL_COMMAND,              IrcTabItem_NEWQUERY,        IrcTabItem::onNewQuery),
+    FXMAPFUNC(SEL_COMMAND,              IrcTabItem_WHOIS,           IrcTabItem::onWhois),
+    FXMAPFUNC(SEL_COMMAND,              IrcTabItem_DCCCHAT,         IrcTabItem::onDccChat),
+    FXMAPFUNC(SEL_COMMAND,              IrcTabItem_DCCSEND,         IrcTabItem::onDccSend),
+    FXMAPFUNC(SEL_COMMAND,              IrcTabItem_OP,              IrcTabItem::onOp),
+    FXMAPFUNC(SEL_COMMAND,              IrcTabItem_DEOP,            IrcTabItem::onDeop),
+    FXMAPFUNC(SEL_COMMAND,              IrcTabItem_VOICE,           IrcTabItem::onVoice),
+    FXMAPFUNC(SEL_COMMAND,              IrcTabItem_DEVOICE,         IrcTabItem::onDevoice),
+    FXMAPFUNC(SEL_COMMAND,              IrcTabItem_KICK,            IrcTabItem::onKick),
+    FXMAPFUNC(SEL_COMMAND,              IrcTabItem_BAN,             IrcTabItem::onBan),
+    FXMAPFUNC(SEL_COMMAND,              IrcTabItem_KICKBAN,         IrcTabItem::onKickban),
+    FXMAPFUNC(SEL_COMMAND,              IrcTabItem_IGNORE,          IrcTabItem::onIgnore),
+    FXMAPFUNC(SEL_COMMAND,              IrcTabItem_TOPIC,           IrcTabItem::onTopic),
+    FXMAPFUNC(SEL_LINK,                 IrcTabItem_TOPIC,           IrcTabItem::onTopicLink),
+    FXMAPFUNC(SEL_COMMAND,              dxPipe::ID_PIPE,            IrcTabItem::onPipe),
+    FXMAPFUNC(SEL_COMMAND,              IrcTabItem_AWAY,            IrcTabItem::onSetAway),
+    FXMAPFUNC(SEL_COMMAND,              IrcTabItem_DEAWAY,          IrcTabItem::onRemoveAway),
+    FXMAPFUNC(SEL_COMMAND,              IrcTabItem_SPELL,           IrcTabItem::onSpellLang)
 };
 
 FXIMPLEMENT(IrcTabItem, dxTabItem, IrcTabItemMap, ARRAYNUMBER(IrcTabItemMap))
@@ -234,7 +234,7 @@ IrcTabItem::IrcTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *icon, FX
     m_splitter = new FXSplitter(m_mainframe, LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y|SPLITTER_REVERSED|SPLITTER_TRACKING);
 
     m_textframe = new FXVerticalFrame(m_splitter, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    m_topicline = new dxTextField(m_textframe, 50, this, ID_TOPIC, FRAME_SUNKEN|TEXTFIELD_ENTER_ONLY|JUSTIFY_LEFT|LAYOUT_FILL_X);
+    m_topicline = new dxTextField(m_textframe, 50, this, IrcTabItem_TOPIC, FRAME_SUNKEN|TEXTFIELD_ENTER_ONLY|JUSTIFY_LEFT|LAYOUT_FILL_X);
     m_topicline->setFont(font);
     m_topicline->setLinkColor(m_colors.link);
     m_topicline->setText(m_topic);
@@ -244,13 +244,13 @@ IrcTabItem::IrcTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *icon, FX
     {
         m_topicline->hide();
     }
-    m_text = new dxText(m_textframe, this, ID_TEXT, FRAME_SUNKEN|LAYOUT_FILL_X|LAYOUT_FILL_Y|TEXT_READONLY|TEXT_WORDWRAP|TEXT_SHOWACTIVE|TEXT_AUTOSCROLL);
+    m_text = new dxText(m_textframe, this, IrcTabItem_TEXT, FRAME_SUNKEN|LAYOUT_FILL_X|LAYOUT_FILL_Y|TEXT_READONLY|TEXT_WORDWRAP|TEXT_SHOWACTIVE|TEXT_AUTOSCROLL);
     m_text->setFont(font);
     m_text->setSelTextColor(getApp()->getSelforeColor());
     m_text->setSelBackColor(getApp()->getSelbackColor());
 
     m_usersframe = new FXVerticalFrame(m_splitter, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y|LAYOUT_FIX_WIDTH);
-    m_users = new NickList(m_usersframe, this, ID_USERS, LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    m_users = new NickList(m_usersframe, this, IrcTabItem_USERS, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     m_users->setSortFunc(FXList::ascendingCase);
     m_users->setScrollStyle(HSCROLLING_OFF);
     if(m_sameList) m_users->setFont(font);
@@ -261,9 +261,9 @@ IrcTabItem::IrcTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *icon, FX
     }
 
     m_commandframe = new FXHorizontalFrame(m_mainframe, LAYOUT_FILL_X, 0,0,0,0, 0,0,0,0);
-    m_commandline = new dxTextField(m_commandframe, 25, this, ID_COMMANDLINE, TEXTFIELD_ENTER_ONLY|FRAME_SUNKEN|JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_BOTTOM, 0, 0, 0, 0, 1, 1, 1, 1);
+    m_commandline = new dxTextField(m_commandframe, 25, this, IrcTabItem_COMMANDLINE, TEXTFIELD_ENTER_ONLY|FRAME_SUNKEN|JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_BOTTOM, 0, 0, 0, 0, 1, 1, 1, 1);
     if(m_sameCmd) m_commandline->setFont(font);
-    m_spellLangs = new FXComboBox(m_commandframe, 6, this, ID_SPELL, COMBOBOX_STATIC);
+    m_spellLangs = new FXComboBox(m_commandframe, 6, this, IrcTabItem_SPELL, COMBOBOX_STATIC);
     m_spellLangs->setTipText(_("Spellchecking language list"));
     m_spellLangs->hide();
     if(m_sameCmd) m_spellLangs->setFont(font);
@@ -341,7 +341,7 @@ IrcTabItem::~IrcTabItem()
     this->stopLogging();
     if(m_pipe) m_pipe->stopCmd();
     m_pipeStrings.clear();
-    getApp()->removeTimeout(this, ID_PTIME);
+    getApp()->removeTimeout(this, IrcTabItem_PTIME);
 }
 
 void IrcTabItem::createGeom()
@@ -1138,8 +1138,8 @@ long IrcTabItem::onCommandline(FXObject *, FXSelector, void *)
             return 1;
         }
 #ifdef HAVE_LUA
-        if(text[0] != '/') m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_MYMSG), &text);
-        m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_COMMAND), &text);
+        if(text[0] != '/') m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_MYMSG), &text);
+        m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_COMMAND), &text);
         if(text[0] == '/' && !m_scriptHasAll) processLine(text);
         else if(!m_scriptHasMyMsg && !m_scriptHasAll) processLine(text);
 #else
@@ -1187,7 +1187,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
             LuaRequest lua;
             lua.type = LUA_COMMAND;
             lua.text = commandtext.after('/');
-            m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_LUA), &lua);
+            m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_LUA), &lua);
             return TRUE;
         }
         if(command == "commands")
@@ -1199,7 +1199,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         {
             m_text->clearText();
             m_text->appendStyledText(FXString("ahoj sem pan Vajíčko.\n"), 3);
-            getApp()->addTimeout(this, ID_ETIME, 1000);
+            getApp()->addTimeout(this, IrcTabItem_ETIME, 1000);
             m_pics = 0;
             return TRUE;
         }
@@ -1209,7 +1209,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         }
         if(command == "tetris")
         {
-            m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_NEWTETRIS), NULL);
+            m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_NEWTETRIS), NULL);
             return TRUE;
         }
         return TRUE;
@@ -1221,7 +1221,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
             LuaRequest lua;
             lua.type = LUA_COMMAND;
             lua.text = commandtext.after('/');
-            m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_LUA), &lua);
+            m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_LUA), &lua);
             return TRUE;
         }
         if(command == "admin")
@@ -1230,7 +1230,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_CDIALOG), NULL);
                 return TRUE;
             }
         }
@@ -1249,7 +1249,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_CDIALOG), NULL);
                 return TRUE;
             }
         }
@@ -1269,7 +1269,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_CDIALOG), NULL);
                 return TRUE;
             }
         }
@@ -1289,7 +1289,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                 srv.passwd = commandtext.after(' ').section(' ', 3).empty() ? "" : commandtext.after(' ').section(' ', 3);
                 srv.realname = commandtext.after(' ').section(' ', 4).empty() ? FXSystem::currentUserName() : commandtext.after(' ').section(' ', 4);
                 srv.channels = commandtext.after(' ').section(' ', 5).empty() ? "" : commandtext.after(' ').section(' ', 5);
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CSERVER), &srv);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_CSERVER), &srv);
                 return TRUE;
             }
         }
@@ -1319,7 +1319,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_CDIALOG), NULL);
                 return TRUE;
             }
         }
@@ -1361,7 +1361,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_CDIALOG), NULL);
                 return TRUE;
             }
         }
@@ -1386,7 +1386,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                     IrcEvent ev;
                     ev.eventType = IRC_DCCSERVER;
                     ev.param1 = nick;
-                    m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine::ID_SERVER), &ev);
+                    m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine_SERVER), &ev);
                     return TRUE;
                 }
                 else if(dccCommand == "send")
@@ -1417,7 +1417,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                     ev.eventType = IRC_DCCOUT;
                     ev.param1 = nick;
                     ev.param2 = file;
-                    m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine::ID_SERVER), &ev);
+                    m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine_SERVER), &ev);
                     return TRUE;
                 }
                 else if(dccCommand == "psend")
@@ -1448,7 +1448,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                     ev.eventType = IRC_DCCPOUT;
                     ev.param1 = nick;
                     ev.param2 = file;
-                    m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine::ID_SERVER), &ev);
+                    m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine_SERVER), &ev);
                     return TRUE;
                 }
                 else
@@ -1460,7 +1460,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_CDIALOG), NULL);
                 return TRUE;
             }
         }
@@ -1515,7 +1515,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_CDIALOG), NULL);
                 return TRUE;
             }
         }
@@ -1570,7 +1570,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_CDIALOG), NULL);
                 return TRUE;
             }
         }
@@ -1612,7 +1612,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         {
             m_text->clearText();
             m_text->appendStyledText(FXString("ahoj sem pan Vajíčko.\n"), 3);
-            getApp()->addTimeout(this, ID_ETIME, 1000);
+            getApp()->addTimeout(this, IrcTabItem_ETIME, 1000);
             m_pics = 0;
             return TRUE;
         }
@@ -1684,7 +1684,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                     appendIrcStyledText(_("/ignore addcmd <command>, adds command to ignored commands."), 4, FXSystem::now(), FALSE, FALSE);
                     return FALSE;
                 }
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_ADDICOMMAND), &ignoretext);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_ADDICOMMAND), &ignoretext);
                 return TRUE;
             }
             else if(comparecase(ignorecommand, "rmcmd")==0)
@@ -1694,7 +1694,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                     appendIrcStyledText(_("/ignore rmcmd <command>, removes command from ignored commands."), 4, FXSystem::now(), FALSE, FALSE);
                     return FALSE;
                 }
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_RMICOMMAND), &ignoretext);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_RMICOMMAND), &ignoretext);
                 return TRUE;
             }
             else if(comparecase(ignorecommand, "addusr")==0)
@@ -1704,7 +1704,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                     appendIrcStyledText(_("/ignore addusr <user> [channel] [server], adds user to ignored users."), 4, FXSystem::now(), FALSE, FALSE);
                     return FALSE;
                 }
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_ADDIUSER), &ignoretext);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_ADDIUSER), &ignoretext);
                 return TRUE;
             }
             else if(comparecase(ignorecommand, "rmusr")==0)
@@ -1714,7 +1714,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                     appendIrcStyledText(_("/ignore rmusr <user>, removes user from ignored users."), 4, FXSystem::now(), FALSE, FALSE);
                     return FALSE;
                 }
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_RMIUSER), &ignoretext);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_RMIUSER), &ignoretext);
                 return TRUE;
             }
             else
@@ -1748,7 +1748,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_CDIALOG), NULL);
                 return TRUE;
             }
         }
@@ -1768,7 +1768,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_CDIALOG), NULL);
                 return TRUE;
             }
         }
@@ -1838,7 +1838,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_CDIALOG), NULL);
                 return TRUE;
             }
         }
@@ -1864,7 +1864,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_CDIALOG), NULL);
                 return TRUE;
             }
         }
@@ -1874,7 +1874,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_CDIALOG), NULL);
                 return TRUE;
             }
         }
@@ -1903,7 +1903,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                 return FALSE;
             }
             lua.text = luatext;
-            m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_LUA), &lua);
+            m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_LUA), &lua);
             return TRUE;
 #else
             appendIrcStyledText(_("dxirc is compiled without support for Lua scripting"), 4, FXSystem::now(), FALSE, FALSE);
@@ -1934,7 +1934,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                             ev.param1 = getNickName();
                             ev.param2 = channel;
                             ev.param3 = message;
-                            m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine::ID_SERVER), &ev);
+                            m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine_SERVER), &ev);
                         }
                         if(message.length() > m_maxLen-19-channel.length())
                         {
@@ -1956,7 +1956,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                         ev.param1 = getNickName();
                         ev.param2 = getText();
                         ev.param3 = params;
-                        m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine::ID_SERVER), &ev);
+                        m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine_SERVER), &ev);
                         if(params.length() > m_maxLen-19-getText().length())
                         {
                             dxStringArray messages = cutText(params, m_maxLen-19-getText().length());
@@ -1985,7 +1985,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                         ev.param1 = getNickName();
                         ev.param2 = getText();
                         ev.param3 = params;
-                        m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine::ID_SERVER), &ev);
+                        m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine_SERVER), &ev);
                         if(params.length() > m_maxLen-19-getText().length())
                         {
                             dxStringArray messages = cutText(params, m_maxLen-19-getText().length());
@@ -2027,7 +2027,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_CDIALOG), NULL);
                 return TRUE;
             }
         }
@@ -2047,7 +2047,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_CDIALOG), NULL);
                 return TRUE;
             }
         }
@@ -2069,7 +2069,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                         ev.param1 = getNickName();
                         ev.param2 = to;
                         ev.param3 = message;
-                        m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine::ID_SERVER), &ev);
+                        m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine_SERVER), &ev);
                     }
                     if(message.length() > m_maxLen-10-to.length())
                     {
@@ -2092,7 +2092,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_CDIALOG), NULL);
                 return TRUE;
             }
         }
@@ -2119,7 +2119,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_CDIALOG), NULL);
                 return TRUE;
             }
         }
@@ -2146,7 +2146,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_CDIALOG), NULL);
                 return TRUE;
             }
         }
@@ -2181,7 +2181,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_CDIALOG), NULL);
                 return TRUE;
             }
         }
@@ -2236,7 +2236,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_CDIALOG), NULL);
                 return TRUE;
             }
         }
@@ -2257,7 +2257,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_CDIALOG), NULL);
                 return TRUE;
             }
         }
@@ -2289,7 +2289,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_CDIALOG), NULL);
                 return TRUE;
             }
         }
@@ -2308,20 +2308,20 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                     ev.eventType = IRC_QUERY;
                     ev.param1 = commandtext.after(' ').before(' ');
                     ev.param2 = getNickName();
-                    m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine::ID_SERVER), &ev);
+                    m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine_SERVER), &ev);
                     return TRUE;
                 }
             }
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_CDIALOG), NULL);
                 return TRUE;
             }
         }
         if(command == "quit")
         {
-            m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CQUIT), NULL);
+            m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_CQUIT), NULL);
             return TRUE;
         }
         if(command == "quote")
@@ -2330,7 +2330,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_CDIALOG), NULL);
                 return TRUE;
             }
         }
@@ -2347,7 +2347,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                     ev.param1 = getNickName();
                     ev.param2 = getText();
                     ev.param3 = commandtext.after(' ');
-                    m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine::ID_SERVER), &ev);
+                    m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine_SERVER), &ev);
                     if(commandtext.after(' ').length() > m_maxLen-10-getText().length())
                     {
                         dxStringArray messages = cutText(commandtext.after(' '), m_maxLen-10-getText().length());
@@ -2365,7 +2365,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_CDIALOG), NULL);
                 return TRUE;
             }
         }
@@ -2376,13 +2376,13 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_CDIALOG), NULL);
                 return TRUE;
             }
         }
         if(command == "tetris")
         {
-            m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_NEWTETRIS), NULL);
+            m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_NEWTETRIS), NULL);
             return TRUE;
         }
         if(command == "time")
@@ -2391,7 +2391,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_CDIALOG), NULL);
                 return TRUE;
             }
         }
@@ -2447,7 +2447,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_CDIALOG), NULL);
                 return TRUE;
             }
         }
@@ -2502,7 +2502,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_CDIALOG), NULL);
                 return TRUE;
             }
         }
@@ -2534,7 +2534,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_CDIALOG), NULL);
                 return TRUE;
             }
         }
@@ -2553,7 +2553,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_CDIALOG), NULL);
                 return TRUE;
             }
         }
@@ -2563,7 +2563,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_CDIALOG), NULL);
                 return TRUE;
             }
         }
@@ -2584,7 +2584,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_CDIALOG), NULL);
                 return TRUE;
             }
         }
@@ -2603,7 +2603,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
             else
             {
                 appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_CDIALOG), NULL);
                 return TRUE;
             }
         }
@@ -2621,7 +2621,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
             ev.param1 = getNickName();
             ev.param2 = getText();
             ev.param3 = commandtext;
-            m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine::ID_SERVER), &ev);
+            m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine_SERVER), &ev);
             if(commandtext.length() > m_maxLen-10-getText().length())
             {
                 dxStringArray messages = cutText(commandtext, m_maxLen-10-getText().length());
@@ -2637,7 +2637,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
         if(!m_engine->getConnected())
         {
             appendIrcStyledText(_("You aren't connected"), 4, FXSystem::now(), FALSE, FALSE);
-            m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_CDIALOG), NULL);
+            m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_CDIALOG), NULL);
             return TRUE;
         }
         return FALSE;
@@ -2927,7 +2927,7 @@ long IrcTabItem::onKeyPress(FXObject *, FXSelector, void *ptr)
             case KEY_Tab:
                 if(event->state&CONTROLMASK)
                 {
-                    m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_NEXTTAB), NULL);
+                    m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_NEXTTAB), NULL);
                     return 1;
                 }
                 if(line[0] == '/' && line.after(' ').empty())
@@ -3408,7 +3408,7 @@ void IrcTabItem::onIrcPrivmsg(IrcEvent* ev)
             if(m_type == QUERY) this->setIcon(ICO_QUERYNEWMSG);
         }
         if((m_type == CHANNEL && needHighlight) || m_type == QUERY)
-            m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_NEWMSG), NULL);
+            m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_NEWMSG), NULL);
     }
 }
 
@@ -3434,7 +3434,7 @@ void IrcTabItem::onIrcAction(IrcEvent* ev)
                 if(m_type == QUERY) this->setIcon(ICO_QUERYNEWMSG);
             }
             if((m_type == CHANNEL && needHighlight) || m_type == QUERY)
-                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_NEWMSG), NULL);
+                m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_NEWMSG), NULL);
         }
     }
 }
@@ -3544,7 +3544,7 @@ void IrcTabItem::onIrcChnotice(IrcEvent* ev)
                     if(m_type == QUERY) this->setIcon(ICO_QUERYNEWMSG);
                 }
                 if((m_type == CHANNEL && needHighlight) || m_type == QUERY)
-                    m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_NEWMSG), NULL);
+                    m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_NEWMSG), NULL);
             }
         }
         else
@@ -4007,7 +4007,7 @@ long IrcTabItem::onPipe(FXObject*, FXSelector, void *ptr)
     FXString text = *(FXString*)ptr;    
     if(m_sendPipe && (m_type == CHANNEL || m_type == QUERY))
     {
-        if(!getApp()->hasTimeout(this, ID_PTIME)) getApp()->addTimeout(this, ID_PTIME);
+        if(!getApp()->hasTimeout(this, IrcTabItem_PTIME)) getApp()->addTimeout(this, IrcTabItem_PTIME);
         m_pipeStrings.append(text);
     }
     else appendIrcText(text, FXSystem::now());
@@ -4047,7 +4047,7 @@ long IrcTabItem::onPipeTimeout(FXObject*, FXSelector, void*)
                 m_engine->sendMsg(getText(), m_pipeStrings[0]);
             }
             m_pipeStrings.erase(0);
-            getApp()->addTimeout(this, ID_PTIME, 3000);
+            getApp()->addTimeout(this, IrcTabItem_PTIME, 3000);
         }
         else
         {
@@ -4085,7 +4085,7 @@ long IrcTabItem::onEggTimeout(FXObject*, FXSelector, void*)
     if(m_pics<24)
     {
         
-        getApp()->addTimeout(this, ID_ETIME, 222);
+        getApp()->addTimeout(this, IrcTabItem_ETIME, 222);
         m_text->clearText();
         if((m_pics)%3==0)
         {
@@ -4146,34 +4146,34 @@ long IrcTabItem::onRightMouse(FXObject *, FXSelector, void *ptr)
         if(FXStat::exists(flagpath+PATHSEPSTRING+nick.host.rafter('.')+".png")) ICO_FLAG = makeIcon(getApp(), flagpath, nick.host.rafter('.')+".png", TRUE);
         else ICO_FLAG = makeIcon(getApp(), flagpath, "unknown.png", TRUE);
         FXMenuPane opmenu(this);
-        new FXMenuCommand(&opmenu, _("Give op"), NULL, this, ID_OP);
-        new FXMenuCommand(&opmenu, _("Remove op"), NULL, this, ID_DEOP);
+        new FXMenuCommand(&opmenu, _("Give op"), NULL, this, IrcTabItem_OP);
+        new FXMenuCommand(&opmenu, _("Remove op"), NULL, this, IrcTabItem_DEOP);
         new FXMenuSeparator(&opmenu);
-        new FXMenuCommand(&opmenu, _("Give voice"), NULL, this, ID_VOICE);
-        new FXMenuCommand(&opmenu, _("Remove voice"), NULL, this, ID_DEVOICE);
+        new FXMenuCommand(&opmenu, _("Give voice"), NULL, this, IrcTabItem_VOICE);
+        new FXMenuCommand(&opmenu, _("Remove voice"), NULL, this, IrcTabItem_DEVOICE);
         new FXMenuSeparator(&opmenu);
-        new FXMenuCommand(&opmenu, _("Kick"), NULL, this, ID_KICK);
+        new FXMenuCommand(&opmenu, _("Kick"), NULL, this, IrcTabItem_KICK);
         new FXMenuSeparator(&opmenu);
-        new FXMenuCommand(&opmenu, _("Ban"), NULL, this, ID_BAN);
-        new FXMenuCommand(&opmenu, _("KickBan"), NULL, this, ID_KICKBAN);
+        new FXMenuCommand(&opmenu, _("Ban"), NULL, this, IrcTabItem_BAN);
+        new FXMenuCommand(&opmenu, _("KickBan"), NULL, this, IrcTabItem_KICKBAN);
         FXMenuPane popup(this);
         new FXMenuCommand(&popup, FXStringFormat(_("User: %s@%s"), nick.user.text(), nick.host.text()), ICO_FLAG);
         new FXMenuCommand(&popup, FXStringFormat(_("Realname: %s"), nick.real.text()));
         if(nick.nick != getNickName())
         {
             new FXMenuSeparator(&popup);
-            new FXMenuCommand(&popup, _("Query"), NULL, this, ID_NEWQUERY);
-            new FXMenuCommand(&popup, _("User information (WHOIS)"), NULL, this, ID_WHOIS);
-            new FXMenuCommand(&popup, _("DCC chat"), NULL, this, ID_DCCCHAT);
-            new FXMenuCommand(&popup, _("Send file"), NULL, this, ID_DCCSEND);
-            new FXMenuCommand(&popup, _("Ignore"), NULL, this, ID_IGNORE);
+            new FXMenuCommand(&popup, _("Query"), NULL, this, IrcTabItem_NEWQUERY);
+            new FXMenuCommand(&popup, _("User information (WHOIS)"), NULL, this, IrcTabItem_WHOIS);
+            new FXMenuCommand(&popup, _("DCC chat"), NULL, this, IrcTabItem_DCCCHAT);
+            new FXMenuCommand(&popup, _("Send file"), NULL, this, IrcTabItem_DCCSEND);
+            new FXMenuCommand(&popup, _("Ignore"), NULL, this, IrcTabItem_IGNORE);
             if(m_iamOp) new FXMenuCascade(&popup, _("Operator actions"), NULL, &opmenu);
         }
         else
         {
             new FXMenuSeparator(&popup);
-            if(m_engine->isAway(getNickName())) new FXMenuCommand(&popup, _("Remove Away"), NULL, this, ID_DEAWAY);
-            else new FXMenuCommand(&popup, _("Set Away"), NULL, this, ID_AWAY);
+            if(m_engine->isAway(getNickName())) new FXMenuCommand(&popup, _("Remove Away"), NULL, this, IrcTabItem_DEAWAY);
+            else new FXMenuCommand(&popup, _("Set Away"), NULL, this, IrcTabItem_AWAY);
         }
         popup.create();
         popup.popup(NULL,event->root_x,event->root_y);
@@ -4192,7 +4192,7 @@ long IrcTabItem::onDoubleclick(FXObject*, FXSelector, void*)
         ev.eventType = IRC_QUERY;
         ev.param1 = m_users->getItemText(index);
         ev.param2 = getNickName();
-        m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine::ID_SERVER), &ev);
+        m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine_SERVER), &ev);
     }
     return 1;
 }
@@ -4203,7 +4203,7 @@ long IrcTabItem::onNewQuery(FXObject *, FXSelector, void *)
     ev.eventType = IRC_QUERY;
     ev.param1 = m_nickOnRight.nick;
     ev.param2 = getNickName();
-    m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine::ID_SERVER), &ev);
+    m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine_SERVER), &ev);
     return 1;
 }
 
@@ -4218,7 +4218,7 @@ long IrcTabItem::onDccChat(FXObject*, FXSelector, void*)
     IrcEvent ev;
     ev.eventType = IRC_DCCSERVER;
     ev.param1 = m_nickOnRight.nick;
-    m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine::ID_SERVER), &ev);
+    m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine_SERVER), &ev);
     return 1;
 }
 
@@ -4231,7 +4231,7 @@ long IrcTabItem::onDccSend(FXObject*, FXSelector, void*)
         ev.eventType = dialog.getPassive() ? IRC_DCCPOUT: IRC_DCCOUT;
         ev.param1 = m_nickOnRight.nick;
         ev.param2 = dialog.getFilename();
-        m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine::ID_SERVER), &ev);
+        m_parent->getParent()->getParent()->handle(m_engine, FXSEL(SEL_COMMAND, IrcEngine_SERVER), &ev);
     }
     return 1;
 }
@@ -4352,12 +4352,12 @@ long IrcTabItem::onIgnore(FXObject*, FXSelector, void*)
     if(dialog.execute(PLACEMENT_CURSOR))
     {
         FXString ignoretext = nick->getText()+" "+channel->getText()+" "+server->getText();
-        m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, ID_ADDIUSER), &ignoretext);
+        m_parent->getParent()->getParent()->handle(this, FXSEL(SEL_COMMAND, IrcTabItem_ADDIUSER), &ignoretext);
     }
     return 1;
 }
 
-//handle ID_AWAY
+//handle IrcTabItem_AWAY
 long IrcTabItem::onSetAway(FXObject*, FXSelector, void*)
 {
     FXDialogBox awayDialog(this, _("Away dialog"), DECOR_TITLE|DECOR_BORDER, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -4379,7 +4379,7 @@ long IrcTabItem::onSetAway(FXObject*, FXSelector, void*)
     return 1;
 }
 
-//handle ID_DEAWAY
+//handle IrcTabItem_DEAWAY
 long IrcTabItem::onRemoveAway(FXObject*, FXSelector, void*)
 {
     m_engine->sendAway("");

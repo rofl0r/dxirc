@@ -20,7 +20,7 @@
  */
 
 #ifndef _DXPIPE_H
-#define	_DXPIPE_H
+#define _DXPIPE_H
 
 #include <fx.h>
 #ifndef WIN32
@@ -35,10 +35,9 @@ class dxPipe : public FXObject
 public:
     dxPipe(FXApp*, FXObject*);
     virtual ~dxPipe();
-
     enum
     {
-        ID_READ = FXMainWindow::ID_LAST+300,
+        ID_READ = FXMainWindow::ID_LAST+1000,
         ID_PIPE,
         ID_LAST
     };
@@ -62,5 +61,5 @@ private:
     FXbool m_running;
 };
 
-#endif	/* _DXPIPE_H */
+#endif  /* _DXPIPE_H */
 

@@ -34,16 +34,6 @@ class DccDialog: public FXTopWindow
     public:
         DccDialog(FXApp *app, dxirc *win);
         virtual ~DccDialog();
-        enum {
-            ID_CLOSE = FXMainWindow::ID_LAST+150,
-            ID_CLEAR,
-            ID_CANCELED,
-            ID_UTIME,
-            ID_POPUPCANCEL,
-            ID_DCCCANCEL,
-            ID_TABLE,
-            ID_LAST
-        };
 
         virtual void create();
         

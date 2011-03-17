@@ -52,35 +52,6 @@ class dxirc: public FXMainWindow
     public:
         dxirc(FXApp *app);
         virtual ~dxirc();
-        enum {
-            ID_QUIT = FXMainWindow::ID_LAST,
-            ID_SERVERS,
-            ID_CONNECT,
-            ID_DISCONNECT,
-            ID_CLOSETAB,
-            ID_SELECTTAB,
-            ID_NEXTTAB,
-            ID_NEXTUNREAD,
-            ID_CLEAR,
-            ID_CLEARALL,
-            ID_USERS,
-            ID_STATUS,
-            ID_OPTIONS,
-            ID_HELP,
-            ID_ABOUT,
-            ID_TABS,
-            ID_ALIAS,
-            ID_TRAY,
-            ID_LOG,
-            ID_SCRIPTS,
-            ID_STIMEOUT, //timeout for status change
-            ID_TETRIS,
-            ID_TRANSFERS,
-            ID_SPELL,
-            ID_FORCEFOCUS,
-            ID_AWAYTIMEOUT, //timeout for checking away on channels
-            ID_LAST
-        };
 
         void create();
         void flash(FXbool yes);

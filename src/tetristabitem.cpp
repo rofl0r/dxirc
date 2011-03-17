@@ -144,11 +144,11 @@ FXbool Piece::updatePosition(const Cell* ucells)
 }
 
 FXDEFMAP(TetrisTabItem) TetrisTabItemMap[] = {
-    FXMAPFUNC(SEL_PAINT,      TetrisTabItem::ID_GAMECANVAS,         TetrisTabItem::onPaint),
-    FXMAPFUNC(SEL_PAINT,      TetrisTabItem::ID_NEXTCANVAS,         TetrisTabItem::onPaint),
-    FXMAPFUNC(SEL_COMMAND,    TetrisTabItem::ID_NEW,                TetrisTabItem::onNewGame),
-    FXMAPFUNC(SEL_COMMAND,    TetrisTabItem::ID_PAUSE,              TetrisTabItem::onPauseGame),
-    FXMAPFUNC(SEL_TIMEOUT,    TetrisTabItem::ID_TETRISTIMEOUT,      TetrisTabItem::onTimeout)
+    FXMAPFUNC(SEL_PAINT,      TetrisTabItem_GAMECANVAS,         TetrisTabItem::onPaint),
+    FXMAPFUNC(SEL_PAINT,      TetrisTabItem_NEXTCANVAS,         TetrisTabItem::onPaint),
+    FXMAPFUNC(SEL_COMMAND,    TetrisTabItem_NEW,                TetrisTabItem::onNewGame),
+    FXMAPFUNC(SEL_COMMAND,    TetrisTabItem_PAUSE,              TetrisTabItem::onPauseGame),
+    FXMAPFUNC(SEL_TIMEOUT,    TetrisTabItem_TETRISTIMEOUT,      TetrisTabItem::onTimeout)
 };
 
 FXIMPLEMENT(TetrisTabItem, dxEXTabItem, TetrisTabItemMap, ARRAYNUMBER(TetrisTabItemMap))
@@ -172,19 +172,19 @@ TetrisTabItem::TetrisTabItem(dxTabBook *tab, const FXString &tabtext, FXIcon *ic
     m_splitter = new FXSplitter(m_mainframe, LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y|SPLITTER_REVERSED|SPLITTER_TRACKING);
 
     m_gameframe = new FXVerticalFrame(m_splitter, LAYOUT_FILL_X|LAYOUT_FILL_Y, 0, 0, 0, 0, 1, 1, 1, 1);
-    m_gamecanvas = new FXCanvas(m_gameframe, this, ID_GAMECANVAS, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    m_gamecanvas = new FXCanvas(m_gameframe, this, TetrisTabItem_GAMECANVAS, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     m_gamecanvas->setFocus();
 
     m_otherframe = new FXVerticalFrame(m_splitter, LAYOUT_FILL_X|LAYOUT_FILL_Y|LAYOUT_FIX_WIDTH, 0, 0, 0, 0, 1, 1, 1, 1);
     new FXLabel(m_otherframe, _("Next piece:"));
-    m_nextcanvas = new FXCanvas(m_otherframe, this, ID_NEXTCANVAS, LAYOUT_LEFT|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT);
+    m_nextcanvas = new FXCanvas(m_otherframe, this, TetrisTabItem_NEXTCANVAS, LAYOUT_LEFT|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT);
     m_nextcanvas->setWidth(40);
     m_nextcanvas->setHeight(80);
     m_levelLabel = new FXLabel(m_otherframe, FXStringFormat(_("Level: %d"), m_level));
     m_scoreLabel = new FXLabel(m_otherframe, FXStringFormat(_("Score: %d"), m_score));
     m_linesLabel = new FXLabel(m_otherframe, FXStringFormat(_("Lines: %d"), m_removedLines));
-    m_newButton = new dxEXButton(m_otherframe, _("&New game"), NULL, this, ID_NEW);
-    m_pauseButton = new dxEXButton(m_otherframe, _("&Pause game"), NULL, this, ID_PAUSE);
+    m_newButton = new dxEXButton(m_otherframe, _("&New game"), NULL, this, TetrisTabItem_NEW);
+    m_pauseButton = new dxEXButton(m_otherframe, _("&Pause game"), NULL, this, TetrisTabItem_PAUSE);
     m_pauseButton->disable();
 
     m_messageFont = new FXFont(getApp(), "helvetica", 25, FXFont::Bold, FXFont::Straight, FONTENCODING_DEFAULT, FXFont::NonExpanded, FXFont::Scalable|FXFont::Rotatable);
@@ -291,8 +291,8 @@ void TetrisTabItem::setGameFocus()
 
 void TetrisTabItem::newGame()
 {
-    if(getApp()->hasTimeout(this, ID_TETRISTIMEOUT)) return;
-    getApp()->removeTimeout(this, ID_TETRISTIMEOUT);
+    if(getApp()->hasTimeout(this, TetrisTabItem_TETRISTIMEOUT)) return;
+    getApp()->removeTimeout(this, TetrisTabItem_TETRISTIMEOUT);
     delete m_piece;
     m_piece = 0;
     m_paused = FALSE;
@@ -321,7 +321,7 @@ void TetrisTabItem::newGame()
 
 void TetrisTabItem::stopGame()
 {
-    getApp()->removeTimeout(this, ID_TETRISTIMEOUT);
+    getApp()->removeTimeout(this, TetrisTabItem_TETRISTIMEOUT);
     delete m_piece;
     m_piece = 0;
     m_paused = FALSE;
@@ -393,7 +393,7 @@ void TetrisTabItem::createPiece()
     }
     m_nextPiece = rand()%7+1;
     redraw();
-    getApp()->addTimeout(this, ID_TETRISTIMEOUT, timeout-(m_level-1)*13);
+    getApp()->addTimeout(this, TetrisTabItem_TETRISTIMEOUT, timeout-(m_level-1)*13);
 }
 
 void TetrisTabItem::drawLines()
@@ -461,7 +461,7 @@ void TetrisTabItem::drawNextPiece(FXint type)
 
 void TetrisTabItem::removeLines()
 {
-    getApp()->removeTimeout(this, ID_TETRISTIMEOUT);
+    getApp()->removeTimeout(this, TetrisTabItem_TETRISTIMEOUT);
     FXint deltascore = basicscore*m_level;
     // Loop through full lines
     for(FXint i = 0; i < 4; ++i)
@@ -505,7 +505,7 @@ void TetrisTabItem::removeLines()
 
 void TetrisTabItem::landPiece()
 {
-    getApp()->removeTimeout(this, ID_TETRISTIMEOUT);
+    getApp()->removeTimeout(this, TetrisTabItem_TETRISTIMEOUT);
     delete m_piece;
     m_piece = 0;
     findFullLines();
@@ -519,12 +519,12 @@ void TetrisTabItem::pauseResumeGame()
     if(!m_pauseEnable) return;
     if(m_paused)
     {
-        getApp()->addTimeout(this, ID_TETRISTIMEOUT, timeout-(m_level-1)*13);
+        getApp()->addTimeout(this, TetrisTabItem_TETRISTIMEOUT, timeout-(m_level-1)*13);
         m_pauseButton->setText(_("&Pause game"));
     }
     else
     {
-        getApp()->removeTimeout(this, ID_TETRISTIMEOUT);
+        getApp()->removeTimeout(this, TetrisTabItem_TETRISTIMEOUT);
         m_newButton->enable();
         m_pauseButton->setText(_("&Resume game"));
     }
@@ -534,7 +534,7 @@ void TetrisTabItem::pauseResumeGame()
 
 void TetrisTabItem::gameOver()
 {
-    getApp()->removeTimeout(this, ID_TETRISTIMEOUT);
+    getApp()->removeTimeout(this, TetrisTabItem_TETRISTIMEOUT);
     m_done = TRUE;
     m_newButton->enable();
     m_pauseEnable = FALSE;
@@ -578,7 +578,7 @@ long TetrisTabItem::onTimeout(FXObject*, FXSelector, void*)
     FXASSERT(m_piece != 0);
     if(m_piece->moveDown())
     {
-        getApp()->addTimeout(this, ID_TETRISTIMEOUT, timeout-(m_level-1)*13);
+        getApp()->addTimeout(this, TetrisTabItem_TETRISTIMEOUT, timeout-(m_level-1)*13);
     }
     else landPiece();
     return 1;

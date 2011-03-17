@@ -24,6 +24,7 @@
 #define DCCENGINE_H
 
 #include <fstream>
+#include "defs.h"
 #include "ircengine.h"
 
 class DccEngine : public FXObject
@@ -32,13 +33,6 @@ class DccEngine : public FXObject
 public:
     DccEngine(FXApp *app, FXObject *tgt, DccFile file, IrcEngine *engine);
     virtual ~DccEngine();
-    enum {
-        ID_SOCKET = IrcEngine::ID_LAST,
-        ID_DCC,
-        ID_CTIME, //timeout for check and disconnect offered connection
-        ID_PTIME, //dccfile position
-        ID_LAST
-    };
     
     void startConnection();
     void disconnect();

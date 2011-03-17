@@ -29,19 +29,19 @@
 FXIMPLEMENT(LogItem, FXTreeItem, NULL, 0)
 
 FXDEFMAP(LogViewer) LogViewerMap[] = {
-    FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_CLOSE,      LogViewer::onClose),
-    FXMAPFUNC(SEL_CLOSE,    0,                        LogViewer::onClose),
-    FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_TREE,       LogViewer::onTree),
-    FXMAPFUNC(SEL_EXPANDED, LogViewer::ID_TREE,       LogViewer::onTree),
-    FXMAPFUNC(SEL_RIGHTBUTTONRELEASE,   LogViewer::ID_TREE, LogViewer::onRightTree),
-    FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_RESET,      LogViewer::onReset),
-    FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_SEARCH,     LogViewer::onSearch),
-    FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_SEARCHNEXT, LogViewer::onSearchNext),
-    FXMAPFUNCS(SEL_COMMAND, LogViewer::ID_ALL, LogViewer::ID_FILE, LogViewer::onCmdSearchOptions),
-    FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_PACK,       LogViewer::onPack),
-    FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_UNPACK,     LogViewer::onUnpack),
-    FXMAPFUNC(SEL_COMMAND,  LogViewer::ID_DELETEITEM,     LogViewer::onDelete),
-    FXMAPFUNC(SEL_KEYPRESS, 0,                        LogViewer::onKeyPress)
+    FXMAPFUNC(SEL_COMMAND,  LogViewer_CLOSE,                LogViewer::onClose),
+    FXMAPFUNC(SEL_CLOSE,    0,                              LogViewer::onClose),
+    FXMAPFUNC(SEL_COMMAND,  LogViewer_TREE,                 LogViewer::onTree),
+    FXMAPFUNC(SEL_EXPANDED, LogViewer_TREE,                 LogViewer::onTree),
+    FXMAPFUNC(SEL_RIGHTBUTTONRELEASE,   LogViewer_TREE,     LogViewer::onRightTree),
+    FXMAPFUNC(SEL_COMMAND,  LogViewer_RESET,                LogViewer::onReset),
+    FXMAPFUNC(SEL_COMMAND,  LogViewer_SEARCH,               LogViewer::onSearch),
+    FXMAPFUNC(SEL_COMMAND,  LogViewer_SEARCHNEXT,           LogViewer::onSearchNext),
+    FXMAPFUNCS(SEL_COMMAND, LogViewer_ALL, LogViewer_FILE,  LogViewer::onCmdSearchOptions),
+    FXMAPFUNC(SEL_COMMAND,  LogViewer_PACK,                 LogViewer::onPack),
+    FXMAPFUNC(SEL_COMMAND,  LogViewer_UNPACK,               LogViewer::onUnpack),
+    FXMAPFUNC(SEL_COMMAND,  LogViewer_DELETEITEM,           LogViewer::onDelete),
+    FXMAPFUNC(SEL_KEYPRESS, 0,                              LogViewer::onKeyPress)
 };
 
 FXIMPLEMENT(LogViewer, FXTopWindow, LogViewerMap, ARRAYNUMBER(LogViewerMap))
@@ -59,17 +59,17 @@ LogViewer::LogViewer(FXApp *app, const FXString &lpath, FXFont *fnt)
     m_treeLoaded = FALSE;
     m_targetAll.connect(m_all);
     m_targetAll.setTarget(this);
-    m_targetAll.setSelector(ID_ALL);
+    m_targetAll.setSelector(LogViewer_ALL);
     m_targetChannel.connect(m_channel);
     m_targetChannel.setTarget(this);
-    m_targetChannel.setSelector(ID_CHANNEL);
+    m_targetChannel.setSelector(LogViewer_CHANNEL);
     m_targetFile.connect(m_file);
     m_targetFile.setTarget(this);
-    m_targetFile.setSelector(ID_FILE);
+    m_targetFile.setSelector(LogViewer_FILE);
     m_targetIcase.connect(m_icase);
 
     m_buttonframe = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X);
-    m_buttonClose = new dxEXButton(m_buttonframe, _("C&lose"), NULL, this, ID_CLOSE, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,2);
+    m_buttonClose = new dxEXButton(m_buttonframe, _("C&lose"), NULL, this, LogViewer_CLOSE, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,2);
 
     m_content = new FXHorizontalFrame(this,  LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
 
@@ -80,12 +80,12 @@ LogViewer::LogViewer(FXApp *app, const FXString &lpath, FXFont *fnt)
     m_text->setVisibleColumns(80);
     m_listframe = new FXVerticalFrame(m_splitter, FRAME_SUNKEN | FRAME_THICK | LAYOUT_FILL_X | LAYOUT_FILL_Y | LAYOUT_FIX_WIDTH);
     m_searchframe = new FXHorizontalFrame(m_listframe, FRAME_THICK | LAYOUT_FILL_X);
-    m_searchfield = new FXTextField(m_searchframe, 15, this, ID_SEARCH, TEXTFIELD_ENTER_ONLY|FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    m_searchfield = new FXTextField(m_searchframe, 15, this, LogViewer_SEARCH, TEXTFIELD_ENTER_ONLY|FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     m_searchfield->setTipText(_("F3 for next"));
     m_searchfield->disable();
-    m_buttonSearch = new dxEXButton(m_searchframe, _("&Search"), NULL, this, ID_SEARCH, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,2);
+    m_buttonSearch = new dxEXButton(m_searchframe, _("&Search"), NULL, this, LogViewer_SEARCH, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,2);
     m_buttonSearch->disable();
-    m_buttonReset = new dxEXButton(m_searchframe, _("&Reset"), NULL, this, ID_RESET, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,2);
+    m_buttonReset = new dxEXButton(m_searchframe, _("&Reset"), NULL, this, LogViewer_RESET, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X, 0,0,0,0, 10,10,2,2);
     m_buttonReset->disable();
     m_group = new FXGroupBox(m_listframe, _("Search options"), LAYOUT_SIDE_TOP|FRAME_GROOVE|LAYOUT_FILL_X, 0,0,0,0);
     m_buttonIcase = new FXCheckButton(m_group, _("&Ignore case"), &m_targetIcase, FXDataTarget::ID_VALUE);
@@ -97,10 +97,10 @@ LogViewer::LogViewer(FXApp *app, const FXString &lpath, FXFont *fnt)
     m_buttonAll = new FXRadioButton(m_group, _("Search all"), &m_targetAll, FXDataTarget::ID_VALUE);
     m_buttonAll->disable();
     m_treeframe = new FXVerticalFrame(m_listframe, FRAME_THICK | LAYOUT_FILL_X | LAYOUT_FILL_Y);
-    m_treeHistory = new FXTreeList(m_treeframe, this, ID_TREE, TREELIST_SHOWS_BOXES | TREELIST_SHOWS_LINES | FRAME_SUNKEN | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+    m_treeHistory = new FXTreeList(m_treeframe, this, LogViewer_TREE, TREELIST_SHOWS_BOXES | TREELIST_SHOWS_LINES | FRAME_SUNKEN | LAYOUT_FILL_X | LAYOUT_FILL_Y);
     m_treeHistory->setSortFunc(FXTreeList::ascendingCase);
     m_treeHistory->setScrollStyle(HSCROLLING_OFF);
-    getAccelTable()->addAccel(MKUINT(KEY_F3, 0), this, FXSEL(SEL_COMMAND,LogViewer::ID_SEARCHNEXT));
+    getAccelTable()->addAccel(MKUINT(KEY_F3, 0), this, FXSEL(SEL_COMMAND,LogViewer_SEARCHNEXT));
 
     m_searchstring = "";
     m_itemOnRight = NULL;
@@ -427,10 +427,10 @@ long LogViewer::onRightTree(FXObject*, FXSelector, void *ptr)
         m_itemOnRight = item;
         FXMenuPane popup(this);
         if(item->isExpanded())
-            new FXMenuCommand(&popup, _("Collapse"), NULL, this, ID_PACK);
+            new FXMenuCommand(&popup, _("Collapse"), NULL, this, LogViewer_PACK);
         else
-            new FXMenuCommand(&popup, _("Expand"), NULL, this, ID_UNPACK);
-        new FXMenuCommand(&popup, _("Delete"), NULL, this, ID_DELETEITEM);
+            new FXMenuCommand(&popup, _("Expand"), NULL, this, LogViewer_UNPACK);
+        new FXMenuCommand(&popup, _("Delete"), NULL, this, LogViewer_DELETEITEM);
         popup.create();
         popup.popup(NULL,event->root_x,event->root_y);
         getApp()->runModalWhileShown(&popup);
@@ -491,7 +491,7 @@ long LogViewer::onKeyPress(FXObject *sender, FXSelector sel, void *ptr)
     FXEvent *event = (FXEvent*)ptr;
     if(event->code == KEY_Escape)
     {
-        handle(this, FXSEL(SEL_COMMAND, ID_CLOSE), NULL);
+        handle(this, FXSEL(SEL_COMMAND, LogViewer_CLOSE), NULL);
         return 1;
     }
     else
@@ -506,17 +506,17 @@ long LogViewer::onCmdSearchOptions(FXObject*, FXSelector sel, void*)
 {
     switch(FXSELID(sel))
     {
-    case ID_ALL:
+    case LogViewer_ALL:
         m_channel = FALSE;
         m_file = FALSE;
         m_all = TRUE;
         break;
-    case ID_CHANNEL:
+    case LogViewer_CHANNEL:
         m_all = FALSE;
         m_file = FALSE;
         m_channel = TRUE;
         break;
-    case ID_FILE:
+    case LogViewer_FILE:
         m_all = FALSE;
         m_channel = FALSE;
         m_file = TRUE;

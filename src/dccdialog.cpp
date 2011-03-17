@@ -27,15 +27,15 @@
 #include "utils.h"
 
 FXDEFMAP(DccDialog) DccDialogMap[] = {
-    FXMAPFUNC(SEL_COMMAND,              DccDialog::ID_CLOSE,        DccDialog::onClose),
-    FXMAPFUNC(SEL_CLOSE,                0,                          DccDialog::onClose),
-    FXMAPFUNC(SEL_KEYPRESS,             0,                          DccDialog::onKeyPress),
-    FXMAPFUNC(SEL_TIMEOUT,              DccDialog::ID_UTIME,        DccDialog::onTimeout),
-    FXMAPFUNC(SEL_COMMAND,              DccDialog::ID_CLEAR,        DccDialog::onClear),
-    FXMAPFUNC(SEL_COMMAND,              DccDialog::ID_CANCELED,     DccDialog::onCanceled),
-    FXMAPFUNC(SEL_RIGHTBUTTONRELEASE,   DccDialog::ID_TABLE,        DccDialog::onRightClick),
-    FXMAPFUNC(SEL_CHANGED,              DccDialog::ID_TABLE,        DccDialog::onTableChanged),
-    FXMAPFUNC(SEL_COMMAND,              DccDialog::ID_POPUPCANCEL,  DccDialog::onPopupCancel)
+    FXMAPFUNC(SEL_COMMAND,              DccDialog_CLOSE,        DccDialog::onClose),
+    FXMAPFUNC(SEL_CLOSE,                0,                      DccDialog::onClose),
+    FXMAPFUNC(SEL_KEYPRESS,             0,                      DccDialog::onKeyPress),
+    FXMAPFUNC(SEL_TIMEOUT,              DccDialog_UTIME,        DccDialog::onTimeout),
+    FXMAPFUNC(SEL_COMMAND,              DccDialog_CLEAR,        DccDialog::onClear),
+    FXMAPFUNC(SEL_COMMAND,              DccDialog_CANCELED,     DccDialog::onCanceled),
+    FXMAPFUNC(SEL_RIGHTBUTTONRELEASE,   DccDialog_TABLE,        DccDialog::onRightClick),
+    FXMAPFUNC(SEL_CHANGED,              DccDialog_TABLE,        DccDialog::onTableChanged),
+    FXMAPFUNC(SEL_COMMAND,              DccDialog_POPUPCANCEL,  DccDialog::onPopupCancel)
 };
 
 FXIMPLEMENT(DccDialog, FXTopWindow, DccDialogMap, ARRAYNUMBER(DccDialogMap))
@@ -49,7 +49,7 @@ DccDialog::DccDialog(FXApp *app, dxirc *win)
     m_contents = new FXVerticalFrame(this, LAYOUT_SIDE_TOP|FRAME_NONE|LAYOUT_FILL_X|LAYOUT_FILL_Y);
 
     m_tableframe = new FXVerticalFrame(m_contents, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 0,0,0,0);
-    m_table = new FXTable(m_tableframe, this, ID_TABLE, TABLE_COL_SIZABLE|LAYOUT_FILL_X|LAYOUT_FILL_Y,0,0,0,0, 2,2,2,2);
+    m_table = new FXTable(m_tableframe, this, DccDialog_TABLE, TABLE_COL_SIZABLE|LAYOUT_FILL_X|LAYOUT_FILL_Y,0,0,0,0, 2,2,2,2);
     m_table->setVisibleRows(5);
     m_table->setVisibleColumns(6);
     m_table->setTableSize(0, 6);
@@ -76,9 +76,9 @@ DccDialog::DccDialog(FXApp *app, dxirc *win)
     m_nick = new FXLabel(m_matrix, "", NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN);
 
     m_buttonframe = new FXHorizontalFrame(m_contents, LAYOUT_FILL_X);
-    m_buttonClose = new dxEXButton(m_buttonframe, _("C&lose"), NULL, this, ID_CLOSE, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
-    m_buttonClear = new dxEXButton(m_buttonframe, _("Clear &finished"), NULL, this, ID_CLEAR, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
-    m_buttonCanceled = new dxEXButton(m_buttonframe, _("Clear &canceled"), NULL, this, ID_CANCELED, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
+    m_buttonClose = new dxEXButton(m_buttonframe, _("C&lose"), NULL, this, DccDialog_CLOSE, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
+    m_buttonClear = new dxEXButton(m_buttonframe, _("Clear &finished"), NULL, this, DccDialog_CLEAR, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
+    m_buttonCanceled = new dxEXButton(m_buttonframe, _("Clear &canceled"), NULL, this, DccDialog_CANCELED, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
 }
 
 DccDialog::~DccDialog()
@@ -91,12 +91,12 @@ void DccDialog::create()
     FXTopWindow::create();
     show(PLACEMENT_CURSOR);
     updateTable();
-    getApp()->addTimeout(this, ID_UTIME, 1000);
+    getApp()->addTimeout(this, DccDialog_UTIME, 1000);
 }
 
 long DccDialog::onClose(FXObject*,FXSelector,void*)
 {
-    getApp()->removeTimeout(this, ID_UTIME);
+    getApp()->removeTimeout(this, DccDialog_UTIME);
     hide();    
     return 1;
 }
@@ -120,7 +120,7 @@ long DccDialog::onKeyPress(FXObject *sender,FXSelector sel,void *ptr)
 long DccDialog::onTimeout(FXObject*, FXSelector, void*)
 {
     updateTable();
-    getApp()->addTimeout(this, ID_UTIME, 1000);
+    getApp()->addTimeout(this, DccDialog_UTIME, 1000);
     return 1;
 }
 
@@ -172,7 +172,7 @@ long DccDialog::onRightClick(FXObject*, FXSelector, void *ptr)
     if(m_irc->m_dccfilesList[m_indexOnRight].canceled)
         return 1;
     FXMenuPane popup(this);
-    new FXMenuCommand(&popup, _("&Cancel"), NULL, this, ID_POPUPCANCEL);
+    new FXMenuCommand(&popup, _("&Cancel"), NULL, this, DccDialog_POPUPCANCEL);
     popup.create();
     popup.popup(NULL, event->root_x, event->root_y);
     getApp()->runModalWhileShown(&popup);
@@ -181,7 +181,7 @@ long DccDialog::onRightClick(FXObject*, FXSelector, void *ptr)
 
 long DccDialog::onPopupCancel(FXObject*, FXSelector, void*)
 {
-    m_irc->handle(this, FXSEL(SEL_COMMAND, DccDialog::ID_DCCCANCEL), (void*)(FXival)m_indexOnRight);
+    m_irc->handle(this, FXSEL(SEL_COMMAND, DccDialog_DCCCANCEL), (void*)(FXival)m_indexOnRight);
     return 1;
 }
 
