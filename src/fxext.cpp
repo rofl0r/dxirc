@@ -1697,7 +1697,7 @@ long dxEXNotify::onPaint(FXObject*, FXSelector, void* ptr)
     if(beg)
     {
         tx=1+HSPACE+(iw?HSPACE:0)+iw;
-        ty=1+2*VSPACE+m_titleFont->getFontAscent()+m_bodyFont->getFontAscent();
+        ty=1+VSPACE+m_titleFont->getFontAscent()+2*m_bodyFont->getFontAscent();
         do
         {
             end=beg;
@@ -1923,7 +1923,7 @@ FXint dxEXNotify::textHeight() const
         beg=end+1;
     }
     while(end<m_title.length());
-    th+=VSPACE;
+    th+=m_bodyFont->getFontHeight();
     beg=0;
     do
     {
