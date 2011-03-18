@@ -4717,7 +4717,7 @@ void dxirc::showNotify(const FXString& notify)
     notify_init("Basics");
     FXString datadir;
     datadir.format("%s%sicons%sbig_dxirc.png",DXIRC_DATADIR,PATHSEPSTRING,PATHSEPSTRING);
-    notification = notify_notification_new(PACKAGE, notify.text(), datadir.text(), NULL);
+    notification = notify_notification_new(PACKAGE, notify.text(), datadir.text());
     if(!notify_notification_show(notification, NULL))
         return;
     g_object_unref(G_OBJECT(notification));

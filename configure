@@ -777,7 +777,7 @@ enable_ipv6
 enable_ssl
 enable_lua
 enable_enchant
-enable_notify
+enable_libnotify
 enable_debug
 enable_release
 '
@@ -12558,15 +12558,16 @@ fi
 LIBS="$LIBS $X11_LIBS"
 CXXFLAGS="${CXXFLAGS} $X11_CFLAGS"
 
-# Check whether --enable-notify was given.
-if test "${enable_notify+set}" = set; then :
-  enableval=$enable_notify;
+LIBNOTIFY_REQUIRED=0.7.0
+have_libnotify=no
+# Check whether --enable-libnotify was given.
+if test "${enable_libnotify+set}" = set; then :
+  enableval=$enable_libnotify; enable_libnotify=$enableval
 else
-  enable_notify="yes"
+  enable_libnotify=auto
 fi
 
-have_notify=no
-if test "x$enable_notify" = "xyes"; then
+if test "x$enable_libnotify" != "xno"; then
 
 pkg_failed=no
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for LIBNOTIFY" >&5
@@ -12576,12 +12577,12 @@ if test -n "$LIBNOTIFY_CFLAGS"; then
     pkg_cv_LIBNOTIFY_CFLAGS="$LIBNOTIFY_CFLAGS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libnotify >= 0.3.2\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "libnotify >= 0.3.2") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libnotify >= \$LIBNOTIFY_REQUIRED\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libnotify >= $LIBNOTIFY_REQUIRED") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_LIBNOTIFY_CFLAGS=`$PKG_CONFIG --cflags "libnotify >= 0.3.2" 2>/dev/null`
+  pkg_cv_LIBNOTIFY_CFLAGS=`$PKG_CONFIG --cflags "libnotify >= $LIBNOTIFY_REQUIRED" 2>/dev/null`
 else
   pkg_failed=yes
 fi
@@ -12592,12 +12593,12 @@ if test -n "$LIBNOTIFY_LIBS"; then
     pkg_cv_LIBNOTIFY_LIBS="$LIBNOTIFY_LIBS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libnotify >= 0.3.2\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "libnotify >= 0.3.2") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libnotify >= \$LIBNOTIFY_REQUIRED\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libnotify >= $LIBNOTIFY_REQUIRED") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_LIBNOTIFY_LIBS=`$PKG_CONFIG --libs "libnotify >= 0.3.2" 2>/dev/null`
+  pkg_cv_LIBNOTIFY_LIBS=`$PKG_CONFIG --libs "libnotify >= $LIBNOTIFY_REQUIRED" 2>/dev/null`
 else
   pkg_failed=yes
 fi
@@ -12617,52 +12618,40 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-	        LIBNOTIFY_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors "libnotify >= 0.3.2" 2>&1`
+	        LIBNOTIFY_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors "libnotify >= $LIBNOTIFY_REQUIRED" 2>&1`
         else
-	        LIBNOTIFY_PKG_ERRORS=`$PKG_CONFIG --print-errors "libnotify >= 0.3.2" 2>&1`
+	        LIBNOTIFY_PKG_ERRORS=`$PKG_CONFIG --print-errors "libnotify >= $LIBNOTIFY_REQUIRED" 2>&1`
         fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$LIBNOTIFY_PKG_ERRORS" >&5
 
-	as_fn_error $? "Package requirements (libnotify >= 0.3.2) were not met:
-
-$LIBNOTIFY_PKG_ERRORS
-
-Consider adjusting the PKG_CONFIG_PATH environment variable if you
-installed software in a non-standard prefix.
-
-Alternatively, you may set the environment variables LIBNOTIFY_CFLAGS
-and LIBNOTIFY_LIBS to avoid the need to call pkg-config.
-See the pkg-config man page for more details." "$LINENO" 5
+	have_libnotify=no
 elif test $pkg_failed = untried; then
      	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
-	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "The pkg-config script could not be found or is too old.  Make sure it
-is in your PATH or set the PKG_CONFIG environment variable to the full
-path to pkg-config.
-
-Alternatively, you may set the environment variables LIBNOTIFY_CFLAGS
-and LIBNOTIFY_LIBS to avoid the need to call pkg-config.
-See the pkg-config man page for more details.
-
-To get pkg-config, see <http://pkg-config.freedesktop.org/>.
-See \`config.log' for more details" "$LINENO" 5; }
+	have_libnotify=no
 else
 	LIBNOTIFY_CFLAGS=$pkg_cv_LIBNOTIFY_CFLAGS
 	LIBNOTIFY_LIBS=$pkg_cv_LIBNOTIFY_LIBS
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-	have_notify=yes
+	have_libnotify=yes
 fi
-  if test "x${have_notify}" = "xyes" ;  then
+  if test "x$have_libnotify" = "xno" -a "x$enable_libnotify" = "xyes"; then
+    as_fn_error $? "libnotify support explicitly requested, but libnotify couldn't be found or is too old" "$LINENO" 5
+  fi
+  if test "x$have_libnotify" = "xyes"; then
+    enable_libnotify=yes
+  else
+    enable_libnotify=no
+  fi
+fi
+if test "x$enable_libnotify" = "xyes"; then
 
 $as_echo "#define HAVE_LIBNOTIFY 1" >>confdefs.h
 
-    CXXFLAGS="${CXXFLAGS} $LIBNOTIFY_CFLAGS"
-    LIBS="$LIBS $LIBNOTIFY_LIBS"
-  fi
+  CXXFLAGS="${CXXFLAGS} $LIBNOTIFY_CFLAGS"
+  LIBS="$LIBS $LIBNOTIFY_LIBS"
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for fxfindfox in -lFOX-1.6" >&5
@@ -14744,7 +14733,7 @@ echo "Configure finished!"
 echo "Install prefix:                             $prefix"
 echo "Build with IPv6:                            $have_ipv6"
 echo "Build with tray support:                    $enable_tray"
-echo "Build with libnotify support:               $have_notify"
+echo "Build with libnotify support:               $have_libnotify"
 echo "Build with lua scripting support:           $have_lua"
 echo "Build with SSL:                             $have_openssl"
 echo "Build with spellchecking support:           $have_enchant"
