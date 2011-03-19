@@ -459,7 +459,7 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     m_users = new FXIconList(usersframe, this, ConfigDialog_USER, ICONLIST_AUTOSIZE|ICONLIST_DETAILED|ICONLIST_BROWSESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     m_users->appendHeader(_("User"), NULL, 200);
     m_users->appendHeader(_("Channel(s)"), NULL, 150);
-    m_users->appendHeader(_("Server(s)"), NULL, 150);
+    m_users->appendHeader(_("Network"), NULL, 150);
     fillCommnads();
     fillUsers();
     m_commands->getNumItems() ? m_deleteCommand->enable() : m_deleteCommand->disable();
@@ -687,7 +687,7 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     m_friends = new FXIconList(friendsframe, this, ConfigDialog_FRIEND, ICONLIST_AUTOSIZE|ICONLIST_DETAILED|ICONLIST_BROWSESELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
     m_friends->appendHeader(_("Friend"), NULL, 150);
     m_friends->appendHeader(_("Channel(s)"), NULL, 150);
-    m_friends->appendHeader(_("Server(s)"), NULL, 150);
+    m_friends->appendHeader(_("Network"), NULL, 150);
     fillFriends();
     if(m_friendsList.no())
     {
@@ -1020,9 +1020,9 @@ long ConfigDialog::onAddUser(FXObject*, FXSelector, void*)
     FXTextField *channel = new FXTextField(matrix, 25, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     channel->setText("all");
     channel->setTipText(_("Channels need to be comma separated"));
-    new FXLabel(matrix, _("Server:"), NULL,JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    FXTextField *server = new FXTextField(matrix, 25, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    server->setText("all");
+    new FXLabel(matrix, _("Network:"), NULL,JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    FXTextField *network = new FXTextField(matrix, 25, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    network->setText("all");
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
     new dxEXButton(buttonframe, _("&Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
@@ -1035,9 +1035,9 @@ long ConfigDialog::onAddUser(FXObject*, FXSelector, void*)
             IgnoreUser user;
             user.nick = nick->getText();
             channel->getText().empty() ? user.channel = "all" : user.channel = channel->getText();
-            server->getText().empty() ? user.server = "all" : user.server = server->getText();
+            network->getText().empty() ? user.network = "all" : user.network = network->getText();
             m_usersList.append(user);
-            m_users->appendItem(user.nick+"\t"+user.channel+"\t"+user.server);
+            m_users->appendItem(user.nick+"\t"+user.channel+"\t"+user.network);
             if(!m_deleteUser->isEnabled()) m_deleteUser->enable();
             if(!m_modifyUser->isEnabled()) m_modifyUser->enable();
         }
@@ -1060,9 +1060,9 @@ long ConfigDialog::onModifyUser(FXObject*, FXSelector, void*)
     new FXLabel(matrix, _("Channel(s):\tChannels need to be comma separated"), NULL,JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     FXTextField *channel = new FXTextField(matrix, 25, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     channel->setText(m_usersList[i].channel);
-    new FXLabel(matrix, _("Server:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    FXTextField *server = new FXTextField(matrix, 25, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    server->setText(m_usersList[i].server);
+    new FXLabel(matrix, _("Network:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    FXTextField *network = new FXTextField(matrix, 25, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    network->setText(m_usersList[i].network);
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
     new dxEXButton(buttonframe, _("&Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
@@ -1074,8 +1074,8 @@ long ConfigDialog::onModifyUser(FXObject*, FXSelector, void*)
         {
             m_usersList[i].nick = nick->getText();
             channel->getText().empty() ? m_usersList[i].channel = "all" : m_usersList[i].channel = channel->getText();
-            server->getText().empty() ? m_usersList[i].server = "all" : m_usersList[i].server = server->getText();
-            m_users->setItemText(i, m_usersList[i].nick+"\t"+m_usersList[i].channel+"\t"+m_usersList[i].server);
+            network->getText().empty() ? m_usersList[i].network = "all" : m_usersList[i].network = network->getText();
+            m_users->setItemText(i, m_usersList[i].nick+"\t"+m_usersList[i].channel+"\t"+m_usersList[i].network);
         }
     }
     return 1;
@@ -1364,11 +1364,11 @@ long ConfigDialog::onAddFriend(FXObject*, FXSelector, void*)
     nick->setText("example");
     new FXLabel(matrix, _("Channel(s):\tChannels need to be comma separated"), NULL,JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     FXTextField *channel = new FXTextField(matrix, 25, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    channel->setText("all");
+    channel->setText("#dxirc,#prd");
     channel->setTipText(_("Channels need to be comma separated"));
-    new FXLabel(matrix, _("Server:"), NULL,JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    FXTextField *server = new FXTextField(matrix, 25, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    server->setText("all");
+    new FXLabel(matrix, _("Network:"), NULL,JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    FXTextField *network = new FXTextField(matrix, 25, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    network->setText("freenode");
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
     new dxEXButton(buttonframe, _("&Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
@@ -1381,9 +1381,9 @@ long ConfigDialog::onAddFriend(FXObject*, FXSelector, void*)
             IgnoreUser user;
             user.nick = nick->getText();
             channel->getText().empty() ? user.channel = "all" : user.channel = channel->getText();
-            server->getText().empty() ? user.server = "all" : user.server = server->getText();
+            network->getText().empty() ? user.network = "all" : user.network = network->getText();
             m_friendsList.append(user);
-            m_friends->appendItem(user.nick+"\t"+user.channel+"\t"+user.server);
+            m_friends->appendItem(user.nick+"\t"+user.channel+"\t"+user.network);
             if(!m_deleteFriend->isEnabled()) m_deleteFriend->enable();
             if(!m_modifyFriend->isEnabled()) m_modifyFriend->enable();
         }
@@ -1406,9 +1406,9 @@ long ConfigDialog::onModifyFriend(FXObject*, FXSelector, void*)
     new FXLabel(matrix, _("Channel(s):\tChannels need to be comma separated"), NULL,JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     FXTextField *channel = new FXTextField(matrix, 25, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
     channel->setText(m_friendsList[i].channel);
-    new FXLabel(matrix, _("Server:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    FXTextField *server = new FXTextField(matrix, 25, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    server->setText(m_friendsList[i].server);
+    new FXLabel(matrix, _("Network:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    FXTextField *network = new FXTextField(matrix, 25, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
+    network->setText(m_friendsList[i].network);
 
     FXHorizontalFrame *buttonframe = new FXHorizontalFrame(contents,LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
     new dxEXButton(buttonframe, _("&Cancel"), NULL, &dialog, FXDialogBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0,0,0,0, 10,10,2,2);
@@ -1420,8 +1420,8 @@ long ConfigDialog::onModifyFriend(FXObject*, FXSelector, void*)
         {
             m_friendsList[i].nick = nick->getText();
             channel->getText().empty() ? m_friendsList[i].channel = "all" : m_friendsList[i].channel = channel->getText();
-            server->getText().empty() ? m_friendsList[i].server = "all" : m_friendsList[i].server = server->getText();
-            m_friends->setItemText(i, m_friendsList[i].nick+"\t"+m_friendsList[i].channel+"\t"+m_friendsList[i].server);
+            network->getText().empty() ? m_friendsList[i].network = "all" : m_friendsList[i].network = network->getText();
+            m_friends->setItemText(i, m_friendsList[i].nick+"\t"+m_friendsList[i].channel+"\t"+m_friendsList[i].network);
         }
     }
     return 1;
@@ -2271,7 +2271,7 @@ void ConfigDialog::fillUsers()
     {
         for(FXint i=0; i<m_usersList.no(); i++)
         {
-            m_users->appendItem(m_usersList[i].nick+"\t"+m_usersList[i].channel+"\t"+m_usersList[i].server);
+            m_users->appendItem(m_usersList[i].nick+"\t"+m_usersList[i].channel+"\t"+m_usersList[i].network);
         }
     }
 }
@@ -2282,7 +2282,7 @@ void ConfigDialog::fillFriends()
     {
         for(FXint i=0; i<m_friendsList.no(); i++)
         {
-            m_friends->appendItem(m_friendsList[i].nick+"\t"+m_friendsList[i].channel+"\t"+m_friendsList[i].server);
+            m_friends->appendItem(m_friendsList[i].nick+"\t"+m_friendsList[i].channel+"\t"+m_friendsList[i].network);
         }
     }
 }
@@ -2438,7 +2438,7 @@ void ConfigDialog::readConfig()
             IgnoreUser user;
             user.nick = set.readStringEntry(FXStringFormat("USER%d", i).text(), "nick", FXStringFormat("xxx%d", i).text());
             user.channel = set.readStringEntry(FXStringFormat("USER%d", i).text(), "channel", "all");
-            user.server = set.readStringEntry(FXStringFormat("USER%d", i).text(), "server", "all");
+            user.network = set.readStringEntry(FXStringFormat("USER%d", i).text(), "network", "all");
             m_usersList.append(user);
         }
     }
@@ -2450,8 +2450,8 @@ void ConfigDialog::readConfig()
         {
             IgnoreUser user;
             user.nick = set.readStringEntry(FXStringFormat("FRIEND%d", i).text(), "nick", FXStringFormat("xxx%d", i).text());
-            user.channel = set.readStringEntry(FXStringFormat("FRIEND%d", i).text(), "channel", "");
-            user.server = set.readStringEntry(FXStringFormat("FRIEND%d", i).text(), "server", "");
+            user.channel = set.readStringEntry(FXStringFormat("FRIEND%d", i).text(), "channel", "all");
+            user.network = set.readStringEntry(FXStringFormat("FRIEND%d", i).text(), "network", "all");
             m_friendsList.append(user);
         }
     }
@@ -2594,7 +2594,7 @@ void ConfigDialog::saveConfig()
         {
             set.writeStringEntry(FXStringFormat("USER%d", i).text(), "nick", m_usersList[i].nick.text());
             set.writeStringEntry(FXStringFormat("USER%d", i).text(), "channel", m_usersList[i].channel.text());
-            set.writeStringEntry(FXStringFormat("USER%d", i).text(), "server", m_usersList[i].server.text());
+            set.writeStringEntry(FXStringFormat("USER%d", i).text(), "network", m_usersList[i].network.text());
         }
     }
     set.writeIntEntry("FRIENDS", "number", m_friendsList.no());
@@ -2605,7 +2605,7 @@ void ConfigDialog::saveConfig()
         {
             set.writeStringEntry(FXStringFormat("FRIEND%d", i).text(), "nick", m_friendsList[i].nick.text());
             set.writeStringEntry(FXStringFormat("FRIEND%d", i).text(), "channel", m_friendsList[i].channel.text());
-            set.writeStringEntry(FXStringFormat("FRIEND%d", i).text(), "server", m_friendsList[i].server.text());
+            set.writeStringEntry(FXStringFormat("FRIEND%d", i).text(), "network", m_friendsList[i].network.text());
         }
     }
     set.writeIntEntry("SETTINGS","x", m_owner->getX());

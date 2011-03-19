@@ -186,7 +186,7 @@ class dxirc: public FXMainWindow
         void onIrcDccAccept(IrcEngine*, IrcEvent*);
         void onIrcDccPaccept(IrcEngine*, IrcEvent*);
         FXbool tabExist(IrcEngine*, FXString);
-        FXbool serverExist(const FXString&, const FXint&, const FXString&);
+        FXbool serverExist(FXString, FXint, FXString);
         FXint getServerTab(IrcEngine*);
         FXint getTabId(IrcEngine*, FXString);
         FXint getTabId(FXString);
@@ -194,7 +194,7 @@ class dxirc: public FXMainWindow
         FXbool isValidTabId(FXint id);
         FXbool isIddxTabItem(FXint id);
         FXbool isLastTab(IrcEngine*);
-        FXbool isFriend(const FXString &nick, const FXString &on, const FXString &server);
+        FXbool isFriend(FXString nick, FXString on, FXString network);
         void connectServer(FXString hostname, FXint port, FXString pass, FXString nick, FXString rname, FXString channels, FXString commands, FXbool ssl);
         void readServersConfig();
         void readConfig();

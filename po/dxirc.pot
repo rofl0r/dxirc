@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: david@konstrukce-cad.com\n"
-"POT-Creation-Date: 2011-03-16 19:42+0100\n"
+"POT-Creation-Date: 2011-03-19 13:19+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -172,7 +172,7 @@ msgid "Channel(s)"
 msgstr ""
 
 #: src/configdialog.cpp:462 src/configdialog.cpp:690
-msgid "Server(s)"
+msgid "Network"
 msgstr ""
 
 #: src/configdialog.cpp:478
@@ -548,8 +548,8 @@ msgid "Channels need to be comma separated"
 msgstr ""
 
 #: src/configdialog.cpp:1023 src/configdialog.cpp:1063
-#: src/configdialog.cpp:1369 src/configdialog.cpp:1409 src/irctabitem.cpp:4344
-msgid "Server:"
+#: src/configdialog.cpp:1369 src/configdialog.cpp:1409
+msgid "Network:"
 msgstr ""
 
 #: src/configdialog.cpp:1053
@@ -1096,66 +1096,66 @@ msgstr ""
 msgid "Server %s was disconnected"
 msgstr ""
 
-#: src/ircengine.cpp:174 src/dccengine.cpp:140 src/dcctabitem.cpp:1631
+#: src/ircengine.cpp:174 src/dccengine.cpp:139 src/dcctabitem.cpp:1631
 msgid "Unable to initiliaze socket"
 msgstr ""
 
-#: src/ircengine.cpp:179 src/dccengine.cpp:145 src/dcctabitem.cpp:1637
+#: src/ircengine.cpp:179 src/dccengine.cpp:144 src/dcctabitem.cpp:1637
 #, c-format
 msgid "Bad host: %s"
 msgstr ""
 
-#: src/ircengine.cpp:184 src/dccengine.cpp:150 src/dcctabitem.cpp:1643
+#: src/ircengine.cpp:184 src/dccengine.cpp:149 src/dcctabitem.cpp:1643
 msgid "Unable to create socket"
 msgstr ""
 
-#: src/ircengine.cpp:189 src/dccengine.cpp:155 src/dcctabitem.cpp:1649
+#: src/ircengine.cpp:189 src/dccengine.cpp:154 src/dcctabitem.cpp:1649
 #, c-format
 msgid "Unable to connect to: %s"
 msgstr ""
 
-#: src/ircengine.cpp:194 src/dccengine.cpp:160 src/dcctabitem.cpp:1655
+#: src/ircengine.cpp:194 src/dccengine.cpp:159 src/dcctabitem.cpp:1655
 msgid "SSL creation error"
 msgstr ""
 
-#: src/ircengine.cpp:199 src/dccengine.cpp:165 src/dcctabitem.cpp:1661
+#: src/ircengine.cpp:199 src/dccengine.cpp:164 src/dcctabitem.cpp:1661
 msgid "SSL connect error"
 msgstr ""
 
-#: src/ircengine.cpp:204 src/dccengine.cpp:170 src/dcctabitem.cpp:1667
+#: src/ircengine.cpp:204 src/dccengine.cpp:169 src/dcctabitem.cpp:1667
 msgid "Unable to bind socket"
 msgstr ""
 
-#: src/ircengine.cpp:209 src/dccengine.cpp:175 src/dcctabitem.cpp:1673
+#: src/ircengine.cpp:209 src/dccengine.cpp:174 src/dcctabitem.cpp:1673
 msgid "Unable to listen"
 msgstr ""
 
-#: src/ircengine.cpp:214 src/dccengine.cpp:180 src/dcctabitem.cpp:1679
+#: src/ircengine.cpp:214 src/dccengine.cpp:179 src/dcctabitem.cpp:1679
 msgid "Unable to accept connection"
 msgstr ""
 
-#: src/ircengine.cpp:219 src/dccengine.cpp:185 src/dcctabitem.cpp:1685
+#: src/ircengine.cpp:219 src/dccengine.cpp:184 src/dcctabitem.cpp:1685
 msgid "Unable to send data"
 msgstr ""
 
-#: src/ircengine.cpp:225 src/dccengine.cpp:190 src/dcctabitem.cpp:1691
+#: src/ircengine.cpp:225 src/dccengine.cpp:189 src/dcctabitem.cpp:1691
 #, c-format
 msgid "Error in reading data from %s"
 msgstr ""
 
-#: src/ircengine.cpp:231 src/dccengine.cpp:195 src/dcctabitem.cpp:1697
+#: src/ircengine.cpp:231 src/dccengine.cpp:194 src/dcctabitem.cpp:1697
 msgid "SSL_read() returns zero - closing socket"
 msgstr ""
 
-#: src/ircengine.cpp:237 src/dccengine.cpp:200 src/dcctabitem.cpp:1703
+#: src/ircengine.cpp:237 src/dccengine.cpp:199 src/dcctabitem.cpp:1703
 msgid "SSL read problem"
 msgstr ""
 
-#: src/ircengine.cpp:243 src/dccengine.cpp:205 src/dcctabitem.cpp:1709
+#: src/ircengine.cpp:243 src/dccengine.cpp:204 src/dcctabitem.cpp:1709
 msgid "Abnormal value from SSL read"
 msgstr ""
 
-#: src/ircengine.cpp:249 src/dccengine.cpp:210 src/dcctabitem.cpp:1715
+#: src/ircengine.cpp:249 src/dccengine.cpp:209 src/dcctabitem.cpp:1715
 msgid "Unable read data from buffer"
 msgstr ""
 
@@ -1689,7 +1689,7 @@ msgstr ""
 
 #: src/irctabitem.cpp:1675
 #, c-format
-msgid "%s on channel(s): %s and server(s): %s"
+msgid "%s on channel(s): %s and network: %s"
 msgstr ""
 
 #: src/irctabitem.cpp:1684
@@ -2444,6 +2444,10 @@ msgstr ""
 msgid "Kick/Ban dialog"
 msgstr ""
 
+#: src/irctabitem.cpp:4344
+msgid "Server:"
+msgstr ""
+
 #: src/irctabitem.cpp:4363
 msgid "Away dialog"
 msgstr ""
@@ -2862,7 +2866,7 @@ msgstr ""
 msgid "Clear &canceled"
 msgstr ""
 
-#: src/dccengine.cpp:66 src/dcctabitem.cpp:1310
+#: src/dccengine.cpp:65 src/dcctabitem.cpp:1310
 msgid "Connection closed. Client didn't connect in given timeout"
 msgstr ""
 

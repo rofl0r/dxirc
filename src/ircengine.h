@@ -48,7 +48,7 @@ class IrcEngine: public FXObject
         void clearAttempts() { m_attempts = 0; }
         void setServerName(const FXString &name) { m_serverName = name; }
         FXString getServerName() const { return m_serverName; }
-        FXString getRealServerName() const { return m_realServerName; }
+        FXString getNetworkName() const { return m_networkName; }
         void setServerPort(FXint port) { m_serverPort = port; }
         FXint getServerPort() const { return m_serverPort; }
         void setServerPassword(const FXString &pass) { m_serverPassword = pass; }
@@ -116,8 +116,8 @@ class IrcEngine: public FXObject
         FXbool sendWhoami();
         FXbool sendWhois(const FXString &params);
         FXbool sendWhowas(const FXString &params);
-        FXbool isUserIgnored(const FXString &nick, const FXString &user, const FXString &host, const FXString &on);
-        FXbool isUserIgnored(const FXString &nick, const FXString &on);
+        FXbool isUserIgnored(FXString nick, FXString user, FXString host, FXString on);
+        FXbool isUserIgnored(FXString nick, FXString on);
         FXbool isAway(const FXString &nick);
         FXString getMyUserHost() const { return m_myUserHost; }
 
@@ -136,7 +136,7 @@ class IrcEngine: public FXObject
         FXbool m_ignoreUserHost;
         FXint m_serverPort, m_numberAttempt, m_delayAttempt, m_attempts;
         FXint m_nickLen, m_topicLen, m_kickLen, m_awayLen;
-        FXString m_serverName, m_realServerName, m_serverPassword, m_nickName;
+        FXString m_serverName, m_networkName, m_serverPassword, m_nickName;
         FXString m_realName, m_userName, m_startChannels, m_startCommands;
         FXString m_receiveRest;
         FXString m_chanTypes; //channel prefixes

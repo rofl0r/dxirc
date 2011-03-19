@@ -41,7 +41,7 @@ IrcEngine::IrcEngine(FXApp *app, FXObject *tgt, FXString channels, FXString comm
 {
     m_targets.append(tgt);
     m_serverName = "localhost";
-    m_realServerName = "";
+    m_networkName = "";
     m_serverPort = 6667;
     m_serverPassword = "";
     m_nickName = "xxx";
@@ -356,8 +356,8 @@ void IrcEngine::parseLine(const FXString &line)
     if(command.length() == 3)
     {
         FXint ncommand = FXIntVal(command);
-        if((ncommand==376||ncommand==422)&&m_realServerName.empty())
-            m_realServerName = from;
+        if((ncommand==376||ncommand==422)&&m_networkName.empty())
+            m_networkName = from;
         numeric(ncommand, params);
     }
     else if(command == "PRIVMSG") privmsg(from, params);
@@ -898,7 +898,7 @@ void IrcEngine::parseRplsupport(FXString text)
         }
         if(!comparecase(parameter, "NETWORK"))
         {
-            m_realServerName = value;
+            m_networkName = value;
             continue;
         }
         if(!comparecase(parameter, "NICKLEN"))
@@ -1819,28 +1819,28 @@ FXbool IrcEngine::isAway(const FXString& nick)
     return FALSE;
 }
 
-FXbool IrcEngine::isUserIgnored(const FXString &nick, const FXString &user, const FXString &host, const FXString &on)
+FXbool IrcEngine::isUserIgnored(FXString nick, FXString user, FXString host, FXString on)
 {
     FXbool bnick = FALSE;
     FXbool buser = FALSE;
     FXbool bhost = FALSE;
     FXbool bchannel = FALSE;
-    FXbool bserver = FALSE;
+    FXbool bnetwork = FALSE;
     for(FXint i=0; i<m_usersList.no(); i++)
     {
         FXString inick, iuser, ihost;
-        inick = m_usersList[i].nick.before('!');
-        iuser = m_usersList[i].nick.after('!').before('@');
-        ihost = m_usersList[i].nick.after('@');
-        if(FXRex(FXString("\\<"+inick+"\\>").substitute("*","\\w*")).match(nick)) bnick = TRUE;
-        if(FXRex(FXString("\\<"+iuser+"\\>").substitute("*","\\w*")).match(user) || iuser.empty()) buser = TRUE;
-        if(FXRex(FXString("\\<"+ihost+"\\>").substitute("*","\\w*")).match(host) || ihost.empty()) bhost = TRUE;
+        inick = m_usersList[i].nick.before('!').lower();
+        iuser = m_usersList[i].nick.after('!').before('@').lower();
+        ihost = m_usersList[i].nick.after('@').lower();
+        if(FXRex(FXString("\\<"+inick+"\\>").substitute("*","\\w*")).match(nick.lower())) bnick = TRUE;
+        if(FXRex(FXString("\\<"+iuser+"\\>").substitute("*","\\w*")).match(user.lower()) || iuser.empty()) buser = TRUE;
+        if(FXRex(FXString("\\<"+ihost+"\\>").substitute("*","\\w*")).match(host.lower()) || ihost.empty()) bhost = TRUE;
         if(m_usersList[i].channel == "all") bchannel = TRUE;
         if(m_usersList[i].channel.contains(','))
         {
             for(FXint j=1; j<m_usersList[i].channel.contains(',')+2; j++)
             {
-                if(FXRex(FXString(utils::instance().getParam(m_usersList[i].channel, j, FALSE, ',')+"\\>").substitute("*","\\w*")).match(on))
+                if(FXRex(FXString(utils::instance().getParam(m_usersList[i].channel, j, FALSE, ',')+"\\>").lower().substitute("*","\\w*")).match(on.lower()))
                 {
                     bchannel = TRUE;
                     break;
@@ -1849,21 +1849,21 @@ FXbool IrcEngine::isUserIgnored(const FXString &nick, const FXString &user, cons
         }
         else
         {
-            if(FXRex(FXString(m_usersList[i].channel+"\\>").substitute("*","\\w*")).match(on)) bchannel = TRUE;
+            if(FXRex(FXString(m_usersList[i].channel+"\\>").lower().substitute("*","\\w*")).match(on.lower())) bchannel = TRUE;
         }
-        if(m_usersList[i].server == "all") bserver = TRUE;
-        if(FXRex(FXString("\\<"+m_usersList[i].server+"\\>").substitute("*","\\w*")).match(m_serverName)) bserver = TRUE;
+        if(m_usersList[i].network == "all") bnetwork = TRUE;
+        if(FXRex(FXString("\\<"+m_usersList[i].network+"\\>").lower().substitute("*","\\w*")).match(getNetworkName().lower())) bnetwork = TRUE;
     }
-    return bnick && buser && bhost && bchannel && bserver;
+    return bnick && buser && bhost && bchannel && bnetwork;
 }
 
-FXbool IrcEngine::isUserIgnored(const FXString &nick, const FXString &on)
+FXbool IrcEngine::isUserIgnored(FXString nick, FXString on)
 {
     FXbool bnick = FALSE;
     FXbool buser = FALSE;
     FXbool bhost = FALSE;
     FXbool bchannel = FALSE;
-    FXbool bserver = FALSE;
+    FXbool bnetwork = FALSE;
     FXString user, host;
     for(FXint i = 0; i < m_nicks.no(); i++)
     {
@@ -1877,18 +1877,18 @@ FXbool IrcEngine::isUserIgnored(const FXString &nick, const FXString &on)
     for(FXint i=0; i<m_usersList.no(); i++)
     {
         FXString inick, iuser, ihost;
-        inick = m_usersList[i].nick.before('!');
-        iuser = m_usersList[i].nick.after('!').before('@');
-        ihost = m_usersList[i].nick.after('@');
-        if(FXRex(FXString("\\<"+inick+"\\>").substitute("*","\\w*")).match(nick)) bnick = TRUE;
-        if(FXRex(FXString("\\<"+iuser+"\\>").substitute("*","\\w*")).match(user) || iuser.empty()) buser = TRUE;
-        if(FXRex(FXString("\\<"+ihost+"\\>").substitute("*","\\w*")).match(host) || ihost.empty()) bhost = TRUE;
+        inick = m_usersList[i].nick.before('!').lower();
+        iuser = m_usersList[i].nick.after('!').before('@').lower();
+        ihost = m_usersList[i].nick.after('@').lower();
+        if(FXRex(FXString("\\<"+inick+"\\>").substitute("*","\\w*")).match(nick.lower())) bnick = TRUE;
+        if(FXRex(FXString("\\<"+iuser+"\\>").substitute("*","\\w*")).match(user.lower()) || iuser.empty()) buser = TRUE;
+        if(FXRex(FXString("\\<"+ihost+"\\>").substitute("*","\\w*")).match(host.lower()) || ihost.empty()) bhost = TRUE;
         if(m_usersList[i].channel == "all") bchannel = TRUE;
         if(m_usersList[i].channel.contains(','))
         {
             for(FXint j=1; j<m_usersList[i].channel.contains(',')+2; j++)
             {
-                if(FXRex(FXString(utils::instance().getParam(m_usersList[i].channel, j, FALSE, ',')+"\\>").substitute("*","\\w*")).match(on))
+                if(FXRex(FXString(utils::instance().getParam(m_usersList[i].channel, j, FALSE, ',')+"\\>").lower().substitute("*","\\w*")).match(on.lower()))
                 {
                     bchannel = TRUE;
                     break;
@@ -1897,12 +1897,12 @@ FXbool IrcEngine::isUserIgnored(const FXString &nick, const FXString &on)
         }
         else
         {
-            if(FXRex(FXString(m_usersList[i].channel+"\\>").substitute("*","\\w*")).match(on)) bchannel = TRUE;
+            if(FXRex(FXString(m_usersList[i].channel+"\\>").lower().substitute("*","\\w*")).match(on.lower())) bchannel = TRUE;
         }
-        if(m_usersList[i].server == "all") bserver = TRUE;
-        if(FXRex(FXString("\\<"+m_usersList[i].server+"\\>").substitute("*","\\w*")).match(m_serverName)) bserver = TRUE;
+        if(m_usersList[i].network == "all") bnetwork = TRUE;
+        if(FXRex(FXString("\\<"+m_usersList[i].network+"\\>").lower().substitute("*","\\w*")).match(getServerName().lower())) bnetwork = TRUE;
     }
-    return bnick && buser && bhost && bchannel && bserver;
+    return bnick && buser && bhost && bchannel && bnetwork;
 }
 
 // reset running reconnect timeout

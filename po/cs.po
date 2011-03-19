@@ -3,8 +3,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.01\n"
 "Report-Msgid-Bugs-To: david@konstrukce-cad.com\n"
-"POT-Creation-Date: 2011-03-16 19:42+0100\n"
-"PO-Revision-Date: 2011-03-16 19:44+0100\n"
+"POT-Creation-Date: 2011-03-19 13:19+0100\n"
+"PO-Revision-Date: 2011-03-19 13:20+0100\n"
 "Last-Translator: David Vachulka <david@konstrukce-cad.com>\n"
 "Language-Team: dvx-alone <david@konstrukce-cad.com>\n"
 "Language: \n"
@@ -227,8 +227,8 @@ msgstr "Kanál(y)"
 
 #: src/configdialog.cpp:462
 #: src/configdialog.cpp:690
-msgid "Server(s)"
-msgstr "Server(y)"
+msgid "Network"
+msgstr "Síť"
 
 #: src/configdialog.cpp:478
 msgid "General settings"
@@ -628,9 +628,8 @@ msgstr "Kanály musí být odděleny čárkami"
 #: src/configdialog.cpp:1063
 #: src/configdialog.cpp:1369
 #: src/configdialog.cpp:1409
-#: src/irctabitem.cpp:4344
-msgid "Server:"
-msgstr "Server: "
+msgid "Network:"
+msgstr "Síť:"
 
 #: src/configdialog.cpp:1053
 msgid "Modify ignore user"
@@ -1277,94 +1276,94 @@ msgid "Server %s was disconnected"
 msgstr "Server %s byl odpojen"
 
 #: src/ircengine.cpp:174
-#: src/dccengine.cpp:140
+#: src/dccengine.cpp:139
 #: src/dcctabitem.cpp:1631
 msgid "Unable to initiliaze socket"
 msgstr "Nemohu inicializovat socket"
 
 #: src/ircengine.cpp:179
-#: src/dccengine.cpp:145
+#: src/dccengine.cpp:144
 #: src/dcctabitem.cpp:1637
 #, c-format
 msgid "Bad host: %s"
 msgstr "Špatný server: %s"
 
 #: src/ircengine.cpp:184
-#: src/dccengine.cpp:150
+#: src/dccengine.cpp:149
 #: src/dcctabitem.cpp:1643
 msgid "Unable to create socket"
 msgstr "Nemohu vytvořit socket"
 
 #: src/ircengine.cpp:189
-#: src/dccengine.cpp:155
+#: src/dccengine.cpp:154
 #: src/dcctabitem.cpp:1649
 #, c-format
 msgid "Unable to connect to: %s"
 msgstr "Nemohu se připojit k: %s"
 
 #: src/ircengine.cpp:194
-#: src/dccengine.cpp:160
+#: src/dccengine.cpp:159
 #: src/dcctabitem.cpp:1655
 msgid "SSL creation error"
 msgstr "Chyba při vytvoření SSL"
 
 #: src/ircengine.cpp:199
-#: src/dccengine.cpp:165
+#: src/dccengine.cpp:164
 #: src/dcctabitem.cpp:1661
 msgid "SSL connect error"
 msgstr "Chyba připojení SSL"
 
 #: src/ircengine.cpp:204
-#: src/dccengine.cpp:170
+#: src/dccengine.cpp:169
 #: src/dcctabitem.cpp:1667
 msgid "Unable to bind socket"
 msgstr "Nemohu pojmenovat socket"
 
 #: src/ircengine.cpp:209
-#: src/dccengine.cpp:175
+#: src/dccengine.cpp:174
 #: src/dcctabitem.cpp:1673
 msgid "Unable to listen"
 msgstr "Nemohu naslouchat"
 
 #: src/ircengine.cpp:214
-#: src/dccengine.cpp:180
+#: src/dccengine.cpp:179
 #: src/dcctabitem.cpp:1679
 msgid "Unable to accept connection"
 msgstr "Nemohu přijmout připojení"
 
 #: src/ircengine.cpp:219
-#: src/dccengine.cpp:185
+#: src/dccengine.cpp:184
 #: src/dcctabitem.cpp:1685
 msgid "Unable to send data"
 msgstr "Nemohu poslat data"
 
 #: src/ircengine.cpp:225
-#: src/dccengine.cpp:190
+#: src/dccengine.cpp:189
 #: src/dcctabitem.cpp:1691
 #, c-format
 msgid "Error in reading data from %s"
 msgstr "Chyba při čtení dat z %s"
 
 #: src/ircengine.cpp:231
-#: src/dccengine.cpp:195
+#: src/dccengine.cpp:194
 #: src/dcctabitem.cpp:1697
 msgid "SSL_read() returns zero - closing socket"
 msgstr "SSL_read() vrátil nulu - zavírám socket"
 
 #: src/ircengine.cpp:237
-#: src/dccengine.cpp:200
+#: src/dccengine.cpp:199
 #: src/dcctabitem.cpp:1703
 msgid "SSL read problem"
 msgstr "Problém s SSL read"
 
 #: src/ircengine.cpp:243
-#: src/dccengine.cpp:205
+#: src/dccengine.cpp:204
 #: src/dcctabitem.cpp:1709
 msgid "Abnormal value from SSL read"
 msgstr "Nenormální hodnota od SSL read"
 
 #: src/ircengine.cpp:249
-#: src/dccengine.cpp:210
+#: src/dccengine.cpp:209
 #: src/dcctabitem.cpp:1715
 msgid "Unable read data from buffer"
 msgstr "Nemohu přečíst data ze zásobníku"
@@ -1935,8 +1934,8 @@ msgstr "Žádní ignorovaní uživatelé"
 
 #: src/irctabitem.cpp:1675
 #, c-format
-msgid "%s on channel(s): %s and server(s): %s"
-msgstr "%s na kanále(ch): %s a serveru(ech): %s"
+msgid "%s on channel(s): %s and network: %s"
+msgstr "%s na kanále(ch): %s a sítích: %s"
 
 #: src/irctabitem.cpp:1684
 msgid "/ignore addcmd <command>, adds command to ignored commands."
@@ -2712,6 +2711,10 @@ msgstr "Maska banu:"
 msgid "Kick/Ban dialog"
 msgstr "Dialog o vykopnutí/banování"
 
+#: src/irctabitem.cpp:4344
+msgid "Server:"
+msgstr "Server: "
+
 #: src/irctabitem.cpp:4363
 msgid "Away dialog"
 msgstr "Dialog o Pryč"
@@ -3229,7 +3232,7 @@ msgstr "Vyčistit &dokončené"
 msgid "Clear &canceled"
 msgstr "Vyčistit z&rušené"
 
-#: src/dccengine.cpp:66
+#: src/dccengine.cpp:65
 #: src/dcctabitem.cpp:1310
 msgid "Connection closed. Client didn't connect in given timeout"
 msgstr "Připojení zavřeno. Klient se nepřipojil během daného času."
@@ -4439,6 +4442,9 @@ msgstr "&Zpětně"
 #: ../../fox-1.6/src/FXStatusLine.cpp:82
 msgid "Ready."
 msgstr "Připraven."
+
+#~ msgid "Server(s)"
+#~ msgstr "Server(y)"
 
 #~ msgid "S&ounds"
 #~ msgstr "Zvu&ky"

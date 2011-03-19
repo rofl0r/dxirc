@@ -116,7 +116,7 @@ class IrcTabItem: public dxTabItem
         FXString getServerName() { return m_engine ? m_engine->getServerName() : ""; }
         FXint getServerPort() { return m_engine ? m_engine->getServerPort() : 0; }
         FXString getNickName() { return m_engine ? m_engine->getNickName() : ""; }
-        FXString getRealServerName() { return m_engine ? m_engine->getRealServerName() : ""; }
+        FXString getRealServerName() { return m_engine ? m_engine->getNetworkName() : ""; }
         void setType(const TYPE &typ, const FXString &tabtext);
         TYPE getType() { return m_type; }
         void reparentTab();

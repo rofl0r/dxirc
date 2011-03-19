@@ -1081,13 +1081,13 @@ void IrcTabItem::appendLinkText(const FXString &txt, FXint stylenum)
 
 void IrcTabItem::startLogging()
 {
-    if(m_logstream && FXStat::exists(m_logPath+PATHSEPSTRING+m_engine->getRealServerName()+PATHSEPSTRING+getText()+PATHSEPSTRING+FXSystem::time("%Y-%m-%d", FXSystem::now())))
+    if(m_logstream && FXStat::exists(m_logPath+PATHSEPSTRING+m_engine->getNetworkName()+PATHSEPSTRING+getText()+PATHSEPSTRING+FXSystem::time("%Y-%m-%d", FXSystem::now())))
         return;
     if(m_logging && m_type != SERVER)
     {
-        if(!FXStat::exists(m_logPath+PATHSEPSTRING+m_engine->getRealServerName())) FXDir::create(m_logPath+PATHSEPSTRING+m_engine->getRealServerName());
-        if(!FXStat::exists(m_logPath+PATHSEPSTRING+m_engine->getRealServerName()+PATHSEPSTRING+getText())) FXDir::create(m_logPath+PATHSEPSTRING+m_engine->getRealServerName()+PATHSEPSTRING+getText());
-        m_logstream = new std::ofstream(FXString(m_logPath+PATHSEPSTRING+m_engine->getRealServerName()+PATHSEPSTRING+getText()+PATHSEPSTRING+FXSystem::time("%Y-%m-%d", FXSystem::now())).text(), std::ios::out|std::ios::app);
+        if(!FXStat::exists(m_logPath+PATHSEPSTRING+m_engine->getNetworkName())) FXDir::create(m_logPath+PATHSEPSTRING+m_engine->getNetworkName());
+        if(!FXStat::exists(m_logPath+PATHSEPSTRING+m_engine->getNetworkName()+PATHSEPSTRING+getText())) FXDir::create(m_logPath+PATHSEPSTRING+m_engine->getNetworkName()+PATHSEPSTRING+getText());
+        m_logstream = new std::ofstream(FXString(m_logPath+PATHSEPSTRING+m_engine->getNetworkName()+PATHSEPSTRING+getText()+PATHSEPSTRING+FXSystem::time("%Y-%m-%d", FXSystem::now())).text(), std::ios::out|std::ios::app);
     }
 }
 
@@ -1672,7 +1672,7 @@ FXbool IrcTabItem::processCommand(const FXString& commandtext)
                 {
                     for(FXint i=0; i<users.no(); i++)
                     {
-                        appendIrcText(FXStringFormat(_("%s on channel(s): %s and server(s): %s"), users[i].nick.text(), users[i].channel.text(), users[i].server.text()), FXSystem::now(), FALSE, FALSE);
+                        appendIrcText(FXStringFormat(_("%s on channel(s): %s and network: %s"), users[i].nick.text(), users[i].channel.text(), users[i].network.text()), FXSystem::now(), FALSE, FALSE);
                     }
                 }
                 return TRUE;
@@ -3998,8 +3998,8 @@ void IrcTabItem::onIrcAway(IrcEvent* ev)
 void IrcTabItem::onIrcEndMotd()
 {
     m_text->makeLastRowVisible(TRUE);
-    if(m_type == SERVER && !m_engine->getRealServerName().empty())
-        setText(m_engine->getRealServerName());
+    if(m_type == SERVER && !m_engine->getNetworkName().empty())
+        setText(m_engine->getNetworkName());
 }
 
 long IrcTabItem::onPipe(FXObject*, FXSelector, void *ptr)

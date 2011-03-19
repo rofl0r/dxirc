@@ -323,7 +323,7 @@ struct NickInfo {
 struct IgnoreUser {
     FXString nick;
     FXString channel;
-    FXString server;
+    FXString network;
 };
 
 struct ServerInfo {

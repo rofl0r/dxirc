@@ -7,6 +7,10 @@ Version 0.70.svn
 - small issue in translation fixed
 - small improvement in logging
 - small improvement in handle server message
+- friends and ignore users lists now use network name
+- some look improvement
+- add support for notify (libontify)
+- add IPv6 
 
 Version 0.60.0 (released 04-09-2010)
 - added support for spellchecking.
