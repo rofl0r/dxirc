@@ -151,6 +151,7 @@ class ConfigDialog: public FXDialogBox
         FXbool m_stripColors, m_useSmileys, m_showImportwarning, m_showWarning;
         FXbool m_autoDccChat, m_autoDccFile;
         FXbool m_notify, m_notifyConnect, m_notifyDisconnect, m_notifyMessage;
+        FXbool m_oneInstance;
         dxServerInfoArray m_serverList;
         dxIgnoreUserArray m_usersList, m_friendsList;
         FXToolBar *m_iconsBar;
@@ -171,7 +172,7 @@ class ConfigDialog: public FXDialogBox
         FXDataTarget m_targetDccPath, m_targetLogPath, m_targetAutoloadPath;
         FXDataTarget m_targetDccIP1, m_targetDccIP2, m_targetDccIP3, m_targetDccIP4, m_targetDccPortD, m_targetDccPortH, m_targetDccTimeout;
         FXDataTarget m_targetSound, m_targetSoundConnect, m_targetSoundDisconnect, m_targetSoundMessage;
-        FXDataTarget m_targetNotify, m_targetNotifyConnect, m_targetNotifyDisconnect, m_targetNotifyMessage;
+        FXDataTarget m_targetNotify, m_targetNotifyConnect, m_targetNotifyDisconnect, m_targetNotifyMessage, m_targetOneInstance;
         FXDataTarget m_targetPathConnect, m_targetPathDisconnect, m_targetPathMessage, m_targetStripColors;
         FXDataTarget m_targetUseSmileys, m_targetAutoDccChat, m_targetAutoDccFile, m_targetTrayColor;
         FXDataTarget m_targetUnreadColor, m_targetHighlightColor;

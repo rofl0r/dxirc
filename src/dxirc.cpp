@@ -23,6 +23,8 @@
  #define WIN32_LEAN_AND_MEAN
  #include <windows.h>
 #else
+ #include <sys/file.h>
+ #include <errno.h>
  #include <signal.h>
  #include <X11/Xlib.h>
 #endif
@@ -46,6 +48,46 @@
 #endif
 
 #define DISPLAY(app) ((Display*)((app)->getDisplay()))
+
+// For handling Single Instance of Application
+FXbool IsInstanceRunningAlready()
+{
+#ifdef WIN32
+    HANDLE hSingleInstance = NULL;
+    hSingleInstance = CreateMutex( NULL, FALSE,TEXT("dxirc.exe"));
+    DWORD dwLastError = GetLastError();
+    if(dwLastError == ERROR_ALREADY_EXISTS)
+    {
+        MessageBox(NULL, TEXT(_("dxirc already running")), TEXT("dxirc"), MB_OK | MB_ICONINFORMATION);
+        CloseHandle(hSingleInstance);
+        return TRUE;
+    }
+#else
+    int pid_file = open(FXString(FXSystem::getTempDirectory()+PATHSEPSTRING+".dxirc.pid").text(), O_CREAT | O_RDWR, 0666);
+    int rc = flock(pid_file, LOCK_EX | LOCK_NB);
+    if(rc)
+    {
+        if(EWOULDBLOCK == errno)
+        {
+            fxmessage(_("dxirc already running"));
+            FXString exec = FXPath::search(FXSystem::getExecPath(), "xmessage");
+            if(exec.empty()) return TRUE;
+            exec += " -center -timeout 3 ";
+            exec += _("dxirc already running");
+            system(exec.text());
+            return TRUE;
+        }
+    }
+#endif
+    return FALSE;
+}
+
+int CompareTabs(const void **a,const void **b)
+{
+    dxTabItem *fa = (dxTabItem*)*a;
+    dxTabItem *fb = (dxTabItem*)*b;
+    return comparecase((fa->getType() == SERVER ? fa->getRealServerName() : fa->getRealServerName()+fa->getText()), (fb->getType() == SERVER ? fb->getRealServerName() : fb->getRealServerName()+fb->getText()));
+}
 
 /*from Goggles Music Manager
 thanks Sander Jansen */
@@ -426,13 +468,6 @@ void dxirc::flash(FXbool yes)
     }
 }
 
-int CompareTabs(const void **a,const void **b)
-{
-    dxTabItem *fa = (dxTabItem*)*a;
-    dxTabItem *fb = (dxTabItem*)*b;
-    return comparecase((fa->getType() == SERVER ? fa->getRealServerName() : fa->getRealServerName()+fa->getText()), (fb->getType() == SERVER ? fb->getRealServerName() : fb->getRealServerName()+fb->getText()));
-}
-
 void dxirc::readConfig()
 {
     FXString ircfontspec;
@@ -588,6 +623,7 @@ void dxirc::readConfig()
 #else
     m_useSpell = FALSE;
 #endif //HAVE_ENCHANT
+    m_oneInstance = set.readBoolEntry("SETTINGS", "oneinstance", FALSE);
     setX(xx);
     setY(yy);
     setWidth(ww);
@@ -762,6 +798,7 @@ void dxirc::saveConfig()
     }
     set.writeBoolEntry("SETTINGS", "useSpell", m_useSpell);
     set.writeBoolEntry("SETTINGS", "showSpellCombo", m_showSpellCombo);
+    set.writeBoolEntry("SETTINGS", "oneinstance", m_oneInstance);
     set.setModified();
     set.unparseFile(utils::instance().getIniFile());
 }
@@ -4769,6 +4806,10 @@ int main(int argc,char *argv[])
         }
     }
     utils::instance().setLangs();
+
+    FXbool oneinstance = utils::instance().getBoolIniEntry("SETTINGS", "oneinstance", FALSE);
+    if(oneinstance && IsInstanceRunningAlready())
+        return 0;
 
 #ifdef HAVE_TRAY
     FXTrayApp app(PACKAGE, FXString::null);

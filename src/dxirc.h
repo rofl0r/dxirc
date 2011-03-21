@@ -127,6 +127,7 @@ class dxirc: public FXMainWindow
         FXbool m_sounds, m_soundConnect, m_soundDisconnect, m_soundMessage, m_stripColors, m_useSmileys;
         FXbool m_autoDccChat, m_autoDccFile;
         FXbool m_notify, m_notifyConnect, m_notifyDisconnect, m_notifyMessage;
+        FXbool m_oneInstance;
         IrcColor m_colors;
         FXString m_commandsList, m_themesList, m_themePath, m_logPath, m_autoloadPath;
         FXint m_maxAway, m_numberAttempt, m_delayAttempt, m_tabPosition;

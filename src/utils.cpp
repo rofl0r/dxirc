@@ -30,6 +30,7 @@
 #include "utils.h"
 #ifdef HAVE_ENCHANT
 #include <enchant++.h>
+#include <FXString.h>
 #endif
 
 #ifdef HAVE_ENCHANT
@@ -1196,14 +1197,14 @@ FXString utils::decrypt(const FXString &text)
 FXString utils::getStringIniEntry(const FXchar *section,const FXchar *key,const FXchar *def)
 {
     FXSettings set;
-    set.parseFile(m_iniFile, TRUE);
+    set.parseFile(m_iniFile.empty()?getIniFile():m_iniFile, TRUE);
     return set.readStringEntry(section, key, def);
 }
 
 FXint utils::getIntIniEntry(const FXchar* section, const FXchar* key, FXint def)
 {
     FXSettings set;
-    set.parseFile(m_iniFile, TRUE);
+    set.parseFile(m_iniFile.empty()?getIniFile():m_iniFile, TRUE);
     return set.readIntEntry(section, key, def);
 }
 
@@ -1211,7 +1212,7 @@ FXint utils::getIntIniEntry(const FXchar* section, const FXchar* key, FXint def)
 FXbool utils::getBoolIniEntry(const FXchar* section, const FXchar* key, FXbool def)
 {
     FXSettings set;
-    set.parseFile(m_iniFile, TRUE);
+    set.parseFile(m_iniFile.empty()?getIniFile():m_iniFile, TRUE);
     return set.readBoolEntry(section, key, def);
 }
 
@@ -1219,7 +1220,7 @@ FXbool utils::getBoolIniEntry(const FXchar* section, const FXchar* key, FXbool d
 FXColor utils::getColorIniEntry(const FXchar* section, const FXchar* key, FXColor def)
 {
     FXSettings set;
-    set.parseFile(m_iniFile, TRUE);
+    set.parseFile(m_iniFile.empty()?getIniFile():m_iniFile, TRUE);
     return set.readColorEntry(section, key, def);
 }
 

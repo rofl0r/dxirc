@@ -393,6 +393,8 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     m_targetHighlightColor.setTarget(this);
     m_targetHighlightColor.setSelector(ConfigDialog_TABCOLORS);
 
+    m_targetOneInstance.connect(m_oneInstance);
+
     getApp()->getNormalFont()->create();
     FXFontDesc fontdescription;
     getApp()->getNormalFont()->getFontDesc(fontdescription);
@@ -501,6 +503,7 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     m_icon5 = new dxEXButton(m_iconsBar, _("\tVoice"), makeIcon(getApp(), m_themePath, "irc_voice.png", TRUE), NULL, 0, BUTTON_TOOLBAR);
     m_icon6 = new dxEXButton(m_iconsBar, _("\tNormal"), makeIcon(getApp(), m_themePath, "irc_normal.png", TRUE), NULL, 0, BUTTON_TOOLBAR);
     m_icon7 = new dxEXButton(m_iconsBar, _("\tAway"), makeAwayIcon(getApp(), m_themePath, "irc_normal.png"), NULL, 0, BUTTON_TOOLBAR);
+    new FXCheckButton(otherpane, _("Run one instance"), &m_targetOneInstance, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
     new FXCheckButton(otherpane, _("Reconnect after disconnection"), &m_targetReconnect, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
     FXHorizontalFrame *napane = new FXHorizontalFrame(otherpane, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     m_numberAttemptLabel = new FXLabel(napane, _("Number of attempts"), NULL, LAYOUT_LEFT);
@@ -2536,6 +2539,7 @@ void ConfigDialog::readConfig()
 #else
     m_useSpell = FALSE;
 #endif
+    m_oneInstance = set.readBoolEntry("SETTINGS", "oneinstance", FALSE);
 }
 
 void ConfigDialog::saveConfig()
@@ -2675,6 +2679,7 @@ void ConfigDialog::saveConfig()
         }
     }
     set.writeBoolEntry("SETTINGS", "useSpell", m_useSpell);
+    set.writeBoolEntry("SETTINGS", "oneinstance", m_oneInstance);
     set.setModified();
     set.unparseFile(utils::instance().instance().getIniFile());
 }
