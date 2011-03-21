@@ -58,7 +58,7 @@ FXbool IsInstanceRunningAlready()
     DWORD dwLastError = GetLastError();
     if(dwLastError == ERROR_ALREADY_EXISTS)
     {
-        MessageBox(NULL, TEXT(_("dxirc already running")), TEXT("dxirc"), MB_OK | MB_ICONINFORMATION);
+        MessageBox(NULL, TEXT("dxirc already running"), TEXT("dxirc"), MB_OK | MB_ICONINFORMATION);
         CloseHandle(hSingleInstance);
         return TRUE;
     }
