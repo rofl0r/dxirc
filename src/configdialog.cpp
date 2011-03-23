@@ -215,6 +215,7 @@ FXDEFMAP(ConfigDialog) ConfigDialogMap[] = {
     FXMAPFUNC(SEL_COMMAND, ConfigDialog_FONT, ConfigDialog::onFont),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog_IRCFONT, ConfigDialog::onIrcFont),
     FXMAPFUNC(SEL_COMMAND, ConfigDialog_TABPOS, ConfigDialog::onTabPosition),
+    FXMAPFUNC(SEL_COMMAND, ConfigDialog_NOTIFYPOS, ConfigDialog::onNotifyPosition),
     FXMAPFUNC(SEL_SELECTED, ConfigDialog_USER, ConfigDialog::onUsersSelected),
     FXMAPFUNC(SEL_DESELECTED, ConfigDialog_USER, ConfigDialog::onUsersDeselected),
     FXMAPFUNC(SEL_CHANGED, ConfigDialog_USER, ConfigDialog::onUsersChanged),
@@ -311,6 +312,12 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     m_targetTipfore.connect(m_themeCurrent.tipfore);
     m_targetTipfore.setTarget(this);
     m_targetTipfore.setSelector(ConfigDialog_COLORS);
+    m_targetNotifyback.connect(m_themeCurrent.notifyback);
+    m_targetNotifyback.setTarget(this);
+    m_targetNotifyback.setSelector(ConfigDialog_COLORS);
+    m_targetNotifyfore.connect(m_themeCurrent.notifyfore);
+    m_targetNotifyfore.setTarget(this);
+    m_targetNotifyfore.setSelector(ConfigDialog_COLORS);
 
     m_trayTarget.connect(m_useTray);
     m_trayTarget.setTarget(this);
@@ -601,6 +608,12 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     new FXLabel(themeMatrix, _("Tip Text Color"));
     new FXColorWell(themeMatrix, FXRGB(0,0,255), &m_targetTipback, FXDataTarget::ID_VALUE);
     new FXLabel(themeMatrix, _("Tip Background Color"));
+#ifndef HAVE_LIBNOTIFY
+    new FXColorWell(themeMatrix, FXRGB(0,0,255), &m_targetNotifyfore, FXDataTarget::ID_VALUE);
+    new FXLabel(themeMatrix, _("Notify Text Color"));
+    new FXColorWell(themeMatrix, FXRGB(0,0,255), &m_targetNotifyback, FXDataTarget::ID_VALUE);
+    new FXLabel(themeMatrix, _("Notify Background Color"));
+#endif
 #ifndef WIN32
 #ifdef HAVE_TRAY
     new FXColorWell(themeMatrix, FXRGB(0,0,255), &m_targetTrayColor, FXDataTarget::ID_VALUE);
@@ -625,6 +638,9 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     m_menuFrame = new FXVerticalFrame(m_menuGroup, FRAME_RAISED|FRAME_THICK|LAYOUT_CENTER_X|LAYOUT_CENTER_Y, 0,0,0,0,0,0,0,0,0,0);
     m_menuLabels[0] = new FXLabel(m_menuFrame, _("&Server list"), NULL, LABEL_NORMAL, 0,0,0,0,16,4);
     m_menuLabels[1] = new FXLabel(m_menuFrame, _("Selected Menu Entry"), NULL, LABEL_NORMAL, 0,0,0,0,16,4);
+#ifndef HAVE_LIBNOTIFY
+    m_labelNotify = new FXLabel(m_vframe2, _("Notify example"), ICO_BIG, FRAME_LINE|LAYOUT_CENTER_X|ICON_BEFORE_TEXT);
+#endif
     m_tabFrame = new FXHorizontalFrame(m_vframe2, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     m_tabs = new dxTabBook(m_tabFrame, NULL, 0, LAYOUT_FILL_X|LAYOUT_FILL_Y|TABBOOK_LEFTTABS);
     m_tab = new dxEXTabItem(m_tabs, _("Standard tab"));
@@ -750,6 +766,17 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     FXHorizontalFrame *notifyframe = new FXHorizontalFrame(soundpane, LAYOUT_FILL_X|PACK_UNIFORM_HEIGHT);
     new FXCheckButton(notifyframe, _("Use notify popup"), &m_targetNotify, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
     new dxEXButton(notifyframe, _("Show"), NULL, this, ConfigDialog_SHOWNOTIFY, FRAME_RAISED|FRAME_THICK|LAYOUT_SIDE_LEFT);
+#ifndef HAVE_LIBNOTIFY
+    FXHorizontalFrame *notifyposframe = new FXHorizontalFrame(soundpane, LAYOUT_FILL_X|PACK_UNIFORM_HEIGHT);
+    new FXLabel(notifyposframe, _("Notify position"), NULL, LAYOUT_LEFT);
+    m_listNotifyPos = new FXListBox(notifyposframe, this, ConfigDialog_NOTIFYPOS);
+    m_listNotifyPos->appendItem(_("Left Top"));
+    m_listNotifyPos->appendItem(_("Right Top"));
+    m_listNotifyPos->appendItem(_("Left Bottom"));
+    m_listNotifyPos->appendItem(_("Right Bottom"));
+    m_listNotifyPos->setNumVisible(4);
+    if(m_notifyPosition>=0 && m_notifyPosition<4) m_listNotifyPos->setCurrentItem(m_notifyPosition);
+#endif
     FXGroupBox *neventsgroup = new FXGroupBox(soundpane, _("Events"), FRAME_GROOVE|LAYOUT_FILL_X);
     FXVerticalFrame *neventsframe = new FXVerticalFrame(neventsgroup, LAYOUT_FILL_X|LAYOUT_FILL_Y);
     m_checkNotifyConnect = new FXCheckButton(neventsframe, _("Friend connected"), &m_targetNotifyConnect, FXDataTarget::ID_VALUE, CHECKBUTTON_NORMAL|LAYOUT_FILL_X|LAYOUT_SIDE_LEFT|JUSTIFY_LEFT);
@@ -949,6 +976,12 @@ long ConfigDialog::onColor(FXObject*, FXSelector, void*)
 long ConfigDialog::onTabPosition(FX::FXObject *, FX::FXSelector, void *ptr)
 {
     m_tabPosition = (FXint)(FXival)ptr;
+    return 1;
+}
+
+long ConfigDialog::onNotifyPosition(FX::FXObject *, FX::FXSelector, void *ptr)
+{
+    m_notifyPosition = (FXint)(FXival)ptr;
     return 1;
 }
 
@@ -1509,6 +1542,8 @@ long ConfigDialog::onTheme(FXObject*, FXSelector, void *ptr)
         m_themeCurrent.selfore = themeSelected->selfore;
         m_themeCurrent.tipback = themeSelected->tipback;
         m_themeCurrent.tipfore = themeSelected->tipfore;
+        m_themeCurrent.notifyback = themeSelected->notifyback;
+        m_themeCurrent.notifyfore = themeSelected->notifyfore;
         if(m_themeCurrent.fore == m_unreadColor)
         {
             if(m_themeCurrent.fore != FXRGB(0,0,255)) m_unreadColor = FXRGB(0,0,255);
@@ -1638,6 +1673,15 @@ void ConfigDialog::updateColors()
     m_labelTip->setTextColor(m_themeCurrent.tipfore);
     m_labelTip->setShadowColor(m_themeCurrent.shadow);
     m_labelTip->setHiliteColor(m_themeCurrent.hilite);
+
+#ifndef HAVE_LIBNOTIFY
+    m_labelNotify->setBorderColor(m_themeCurrent.notifyfore);
+    m_labelNotify->setBaseColor(m_themeCurrent.notifyback);
+    m_labelNotify->setBackColor(m_themeCurrent.notifyback);
+    m_labelNotify->setTextColor(m_themeCurrent.notifyfore);
+    m_labelNotify->setShadowColor(m_themeCurrent.shadow);
+    m_labelNotify->setHiliteColor(m_themeCurrent.hilite);
+#endif
     
     m_menuGroup->setBorderColor(m_themeCurrent.border);
     m_menuGroup->setBaseColor(m_themeCurrent.base);
@@ -2085,7 +2129,7 @@ long ConfigDialog::onNotify(FXObject*, FXSelector, void*)
 
 long ConfigDialog::onShowNotify(FXObject*, FXSelector, void*)
 {
-    ((dxirc*)m_owner)->showNotify(FXStringFormat(_("%s has joined to %s"), "dvx", "#dxirc"));
+    ((dxirc*)m_owner)->showNotify(FXStringFormat(_("%s has joined to %s"), "dvx", "#dxirc"), m_notifyPosition);
     return 1;
 }
 
@@ -2234,7 +2278,9 @@ void ConfigDialog::fillThemes()
                 (m_themeCurrent.selback == ColorThemes[i].selback) &&
                 (m_themeCurrent.selfore == ColorThemes[i].selfore) &&
                 (m_themeCurrent.tipback == ColorThemes[i].tipback) &&
-                (m_themeCurrent.tipfore == ColorThemes[i].tipfore))
+                (m_themeCurrent.tipfore == ColorThemes[i].tipfore) &&
+                (m_themeCurrent.notifyback == ColorThemes[i].notifyback) &&
+                (m_themeCurrent.notifyfore == ColorThemes[i].notifyfore))
         {
             scheme = i;
         }
@@ -2375,6 +2421,8 @@ void ConfigDialog::readConfig()
     m_themeCurrent.selfore = set.readColorEntry("SETTINGS", "selforecolor", getApp()->getSelforeColor());
     m_themeCurrent.tipback = set.readColorEntry("SETTINGS", "tipbackcolor", getApp()->getTipbackColor());
     m_themeCurrent.tipfore = set.readColorEntry("SETTINGS", "tipforecolor", getApp()->getTipforeColor());
+    m_themeCurrent.notifyback = set.readColorEntry("SETTINGS", "notifybackcolor", getApp()->getTipbackColor());
+    m_themeCurrent.notifyfore = set.readColorEntry("SETTINGS", "notifyforecolor", getApp()->getTipforeColor());
     m_themeCurrent.hilite = set.readColorEntry("SETTINGS", "hilitecolor", getApp()->getHiliteColor());
     m_themeCurrent.shadow = set.readColorEntry("SETTINGS", "shadowcolor", getApp()->getShadowColor());
     m_trayColor = set.readColorEntry("SETTINGS", "traycolor", m_themeCurrent.base);
@@ -2382,6 +2430,7 @@ void ConfigDialog::readConfig()
     m_highlightColor = set.readColorEntry("SETTINGS", "highlightcolor", FXRGB(255,0,0));
     m_statusShown = set.readBoolEntry("SETTINGS", "statusShown", TRUE);
     m_tabPosition = set.readIntEntry("SETTINGS", "tabPosition", 0);
+    m_notifyPosition = set.readIntEntry("SETTINGS", "notifyPosition", 3);
     m_commandsList = set.readStringEntry("SETTINGS", "commandsList");
     m_themePath = utils::instance().checkThemePath(set.readStringEntry("SETTINGS", "themePath", DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "default"));
     m_themesList = utils::instance().checkThemesList(set.readStringEntry("SETTINGS", "themesList", FXString(m_themePath+";").text()));
@@ -2617,6 +2666,7 @@ void ConfigDialog::saveConfig()
     set.writeIntEntry("SETTINGS","w", m_owner->getWidth());
     set.writeIntEntry("SETTINGS","h", m_owner->getHeight());
     set.writeIntEntry("SETTINGS", "tabPosition", m_tabPosition);
+    set.writeIntEntry("SETTINGS", "notifyPosition", m_notifyPosition);
     set.writeColorEntry("SETTINGS", "basecolor", m_themeCurrent.base);
     set.writeColorEntry("SETTINGS", "bordercolor", m_themeCurrent.border);
     set.writeColorEntry("SETTINGS", "backcolor", m_themeCurrent.back);
@@ -2627,6 +2677,8 @@ void ConfigDialog::saveConfig()
     set.writeColorEntry("SETTINGS", "selbackcolor", m_themeCurrent.selback);
     set.writeColorEntry("SETTINGS", "tipforecolor", m_themeCurrent.tipfore);
     set.writeColorEntry("SETTINGS", "tipbackcolor", m_themeCurrent.tipback);
+    set.writeColorEntry("SETTINGS", "notifyforecolor", m_themeCurrent.notifyfore);
+    set.writeColorEntry("SETTINGS", "notifybackcolor", m_themeCurrent.notifyback);
     set.writeColorEntry("SETTINGS", "selmenutextcolor", m_themeCurrent.menufore);
     set.writeColorEntry("SETTINGS", "selmenubackcolor", m_themeCurrent.menuback);
     set.writeColorEntry("SETTINGS", "traycolor", m_trayColor);

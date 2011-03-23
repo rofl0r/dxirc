@@ -212,6 +212,7 @@ enum dxircID {
     ConfigDialog_SMILEY,
     ConfigDialog_IMPORTSMILEY,
     ConfigDialog_EXPORTSMILEY,
+    ConfigDialog_NOTIFYPOS,
     SmileyDialog_ACCEPT,
     SmileyDialog_CANCEL,
     SmileyDialog_PATH,
@@ -361,6 +362,8 @@ struct ColorTheme {
     FXColor tipfore;
     FXColor menuback;
     FXColor menufore;
+    FXColor notifyback;
+    FXColor notifyfore;
     FXColor shadow;
     FXColor hilite;
 };

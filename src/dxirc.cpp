@@ -93,6 +93,7 @@ int CompareTabs(const void **a,const void **b)
 thanks Sander Jansen */
 #ifdef ENABLE_NLS
 #include <FXTranslator.h>
+#include <fxdefs.h>
 
 class dxTranslator : public FXTranslator
 {
@@ -312,7 +313,9 @@ dxirc::dxirc(FXApp *app)
 
     new FXToolTip(app,0);
 #ifndef HAVE_LIBNOTIFY
-    m_wnotify = new dxEXNotify(m_app,ICO_BIG,PACKAGE);
+    m_wnotify = new dxEXNotify(m_app, ICO_BIG, PACKAGE);
+    m_wnotify->setTextColor(m_appTheme.notifyfore);
+    m_wnotify->setBackColor(m_appTheme.notifyback);
 #endif
 
     updateTheme();
@@ -487,6 +490,8 @@ void dxirc::readConfig()
     m_appTheme.selfore = set.readColorEntry("SETTINGS", "selforecolor", m_app->getSelforeColor());
     m_appTheme.tipback = set.readColorEntry("SETTINGS", "tipbackcolor", m_app->getTipbackColor());
     m_appTheme.tipfore = set.readColorEntry("SETTINGS", "tipforecolor", m_app->getTipforeColor());
+    m_appTheme.notifyback = set.readColorEntry("SETTINGS", "notifybackcolor", m_app->getTipbackColor());
+    m_appTheme.notifyfore = set.readColorEntry("SETTINGS", "notifyforecolor", m_app->getTipforeColor());
     m_appTheme.hilite = set.readColorEntry("SETTINGS", "hilitecolor", m_app->getHiliteColor());
     m_appTheme.shadow = set.readColorEntry("SETTINGS", "shadowcolor", m_app->getShadowColor());
     m_trayColor = set.readColorEntry("SETTINGS", "traycolor", m_appTheme.base);
@@ -495,6 +500,7 @@ void dxirc::readConfig()
     m_fontSpec = set.readStringEntry("SETTINGS", "normalfont", m_app->getNormalFont()->getFont().text());
     m_statusShown = set.readBoolEntry("SETTINGS", "statusShown", TRUE);
     m_tabPosition = set.readIntEntry("SETTINGS", "tabPosition", 0);
+    m_notifyPosition = set.readIntEntry("SETTINGS", "notifyPosition", 3);
     m_commandsList = set.readStringEntry("SETTINGS", "commandsList");
     m_themePath = utils::instance().checkThemePath(set.readStringEntry("SETTINGS", "themePath", DXIRC_DATADIR PATHSEPSTRING "icons" PATHSEPSTRING "default"));
     m_themesList = utils::instance().checkThemesList(set.readStringEntry("SETTINGS", "themesList", FXString(m_themePath+";").text()));
@@ -736,6 +742,7 @@ void dxirc::saveConfig()
     set.writeIntEntry("SETTINGS","h",getHeight());
     set.writeBoolEntry("SETTINGS", "maximized", isMaximized());
     set.writeIntEntry("SETTINGS", "tabPosition", m_tabPosition);
+    set.writeIntEntry("SETTINGS", "notifyPosition", m_notifyPosition);
     set.writeColorEntry("SETTINGS", "basecolor", m_appTheme.base);
     set.writeColorEntry("SETTINGS", "bordercolor", m_appTheme.border);
     set.writeColorEntry("SETTINGS", "backcolor", m_appTheme.back);
@@ -746,6 +753,8 @@ void dxirc::saveConfig()
     set.writeColorEntry("SETTINGS", "selbackcolor", m_appTheme.selback);
     set.writeColorEntry("SETTINGS", "tipforecolor", m_appTheme.tipfore);
     set.writeColorEntry("SETTINGS", "tipbackcolor", m_appTheme.tipback);
+    set.writeColorEntry("SETTINGS", "notifyforecolor", m_appTheme.notifyfore);
+    set.writeColorEntry("SETTINGS", "notifybackcolor", m_appTheme.notifyback);
     set.writeColorEntry("SETTINGS", "selmenutextcolor", m_appTheme.menufore);
     set.writeColorEntry("SETTINGS", "selmenubackcolor", m_appTheme.menuback);
     set.writeColorEntry("SETTINGS", "traycolor", m_trayColor);
@@ -1122,6 +1131,14 @@ void dxirc::updateTheme()
         update = TRUE;
         m_app->setShadowColor(m_appTheme.shadow);
     }
+    if(m_wnotify->getBackColor() != m_appTheme.notifyback)
+    {
+        update = TRUE;
+    }
+    if(m_wnotify->getTextColor() != m_appTheme.notifyfore)
+    {
+        update = TRUE;
+    }
     if(!update)
         return;
 
@@ -1336,8 +1353,8 @@ void dxirc::updateTheme()
         }
         else if ((notify = dynamic_cast<dxEXNotify*> (w)))
         {
-            notify->setTextColor(m_appTheme.tipfore);
-            notify->setBackColor(m_appTheme.tipback);
+            notify->setTextColor(m_appTheme.notifyfore);
+            notify->setBackColor(m_appTheme.notifyback);
         }
 
         w->update();
@@ -4747,7 +4764,7 @@ int dxirc::onLuaClear(lua_State *lua)
 }
 
 //show notify
-void dxirc::showNotify(const FXString& notify)
+void dxirc::showNotify(const FXString& notify, FXint pos)
 {
 #ifdef HAVE_LIBNOTIFY
     NotifyNotification *notification = NULL;
@@ -4760,7 +4777,7 @@ void dxirc::showNotify(const FXString& notify)
     g_object_unref(G_OBJECT(notification));
 #else
     m_wnotify->setText(notify);
-    m_wnotify->notify();
+    m_wnotify->notify(pos);
 #endif //HAVE_LIBNOTIFY
 }
 

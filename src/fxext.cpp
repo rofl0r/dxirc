@@ -1644,6 +1644,7 @@ dxEXNotify::dxEXNotify(FXApp* a, FXIcon* icon, FXString title, FXuint delay):
     m_textColor = getApp()->getTipforeColor();
     backColor = getApp()->getTipbackColor();
     m_popped = FALSE;
+    m_position = 3;
 }
 
 dxEXNotify::~dxEXNotify()
@@ -1769,8 +1770,9 @@ FXint dxEXNotify::getDefaultHeight()
 }
 
 // Place the notify
-void dxEXNotify::notify()
+void dxEXNotify::notify(FXint pos)
 {
+    if(pos<0 || pos>3) pos = m_position;
     if(m_popped)
     {
         getApp()->removeTimeout(this, ID_NOTIFY_HIDE);
@@ -1825,8 +1827,24 @@ void dxEXNotify::notify()
     rw=rect.right-rect.left;
     rh=rect.bottom-rect.top;
 #endif
-    px=rx+rw-w;
-    py=ry+rh-h;
+    switch(pos) {
+        case 0:
+            px=rx;
+            py=ry;
+            break;
+        case 1:
+            px=rx+rw-w;
+            py=ry;
+            break;
+        case 2:
+            px=rx;
+            py=ry+rh-h;
+            break;
+        case 3:
+            px=rx+rw-w;
+            py=ry+rh-h;
+            break;
+    }
     position(px,py,w,h);
 }
 

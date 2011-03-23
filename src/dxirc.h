@@ -115,7 +115,7 @@ class dxirc: public FXMainWindow
         static int onLuaCreateTab(lua_State*);
         static int onLuaGetTabCount(lua_State*);
         static int onLuaClear(lua_State*);
-        void showNotify(const FXString& notify);
+        void showNotify(const FXString& notify, FXint pos=-1);
 
     private:
         dxirc(){}
@@ -130,7 +130,7 @@ class dxirc: public FXMainWindow
         FXbool m_oneInstance;
         IrcColor m_colors;
         FXString m_commandsList, m_themesList, m_themePath, m_logPath, m_autoloadPath;
-        FXint m_maxAway, m_numberAttempt, m_delayAttempt, m_tabPosition;
+        FXint m_maxAway, m_numberAttempt, m_delayAttempt, m_tabPosition, m_notifyPosition;
         FXint m_dccPortD, m_dccPortH, m_dccTimeout;
         FXString m_nickCompletionChar, m_fontSpec, m_dccPath, m_dccIP;
         FXString m_pathConnect, m_pathDisconnect, m_pathMessage;

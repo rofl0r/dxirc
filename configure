@@ -1438,7 +1438,7 @@ Optional Features:
   --disable-ssl           disable Secure Sockets Layer support
   --disable-lua           disable Lua scripting
   --disable-enchant       disable spellchecking support
-  --disable-libnotify     disable libnotify support
+  --enable-libnotify      enable libnotify support
   --enable-debug          compile for debugging
   --enable-release        compile for release (advanced optimizations)
 
@@ -12564,7 +12564,7 @@ have_libnotify=no
 if test "${enable_libnotify+set}" = set; then :
   enableval=$enable_libnotify; enable_libnotify=$enableval
 else
-  enable_libnotify=auto
+  enable_libnotify=no
 fi
 
 if test "x$enable_libnotify" != "xno"; then

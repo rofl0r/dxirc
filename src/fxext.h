@@ -229,6 +229,7 @@ protected:
     FXFont *m_titleFont;
     FXFont *m_bodyFont;
     FXbool m_popped;
+    FXint m_position; //0-lefttop,1-righttop,2-leftbottom,3-rightbottom
     dxEXNotify();
     virtual bool doesOverrideRedirect() const;
     FXint textHeight() const;
@@ -261,7 +262,7 @@ public:
     virtual void save(FXStream& store) const;
     virtual void load(FXStream& store);
     virtual bool doesSaveUnder() const;
-    void notify();
+    void notify(FXint pos=-1);
 
     long onPaint(FXObject*, FXSelector, void*);
     long onNotifyHide(FXObject*, FXSelector, void*);
