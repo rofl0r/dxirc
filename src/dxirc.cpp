@@ -515,7 +515,7 @@ void dxirc::readConfig()
     ircfontspec = set.readStringEntry("SETTINGS", "ircFont", "");
     m_sameCmd = set.readBoolEntry("SETTINGS", "sameCmd", FALSE);
     m_sameList = set.readBoolEntry("SETTINGS", "sameList", FALSE);
-    m_coloredNick = set.readBoolEntry("SETTINGS", "coloredNick", FALSE);
+    m_coloredNick = set.readBoolEntry("SETTINGS", "coloredNick", TRUE);
     if(!ircfontspec.empty())
     {
         m_ircFont = new FXFont(m_app, ircfontspec);
@@ -3727,6 +3727,25 @@ FXint dxirc::getCurrentTabId()
     return -1;
 }
 
+void dxirc::setCurrentTabById(FXint id)
+{
+    for(FXint i = 0; i < m_tabbook->numChildren(); i+=2)
+    {
+        if(m_tabbook->childAtIndex(i)->getMetaClass()!=&TetrisTabItem::metaClass
+                && static_cast<dxTabItem*>(m_tabbook->childAtIndex(i))->getID() == id)
+        {
+            m_tabbook->setCurrent(i/2, TRUE);
+            return;
+        }
+        if(m_tabbook->childAtIndex(i)->getMetaClass()==&TetrisTabItem::metaClass
+                && static_cast<TetrisTabItem*>(m_tabbook->childAtIndex(i))->getID() == id)
+        {
+            m_tabbook->setCurrent(i/2, TRUE);
+            return;
+        }
+    }
+}
+
 FXbool dxirc::isValidTabId(FXint id)
 {
     if(id<0) return FALSE;
@@ -3892,6 +3911,7 @@ void dxirc::sortTabs()
 {
     if(m_tabbook->numChildren()/2 > 1)
     {
+        FXint id = getCurrentTabId();
         if(hasTetrisTab())
         {
             FXint index = 0;
@@ -3930,9 +3950,7 @@ void dxirc::sortTabs()
             m_tabbook->recalc();
             delete []tabpole;
         }
-        FXint index = m_tabbook->getCurrent()*2;
-        if(m_tabbook->childAtIndex(index)->getMetaClass()!=&TetrisTabItem::metaClass)
-            static_cast<dxTabItem*>(m_tabbook->childAtIndex(index))->setCommandFocus();
+        setCurrentTabById(id);
     }
 }
 
@@ -4677,21 +4695,7 @@ int dxirc::onLuaGetTabInfo(lua_State *lua)
 int dxirc::onLuaSetTab(lua_State *lua)
 {
 #ifdef HAVE_LUA
-    FXint id = 0;
-    if(lua_isnumber(lua, 1) && _pThis->isIddxTabItem(lua_tointeger(lua, 1)))  id = lua_tointeger(lua, 1);
-    else return 0;
-    if(_pThis->m_tabbook->numChildren())
-    {
-        for(FXint i = 0; i < _pThis->m_tabbook->numChildren(); i+=2)
-        {
-            if(_pThis->m_tabbook->childAtIndex(i)->getMetaClass()!=&TetrisTabItem::metaClass
-                    && static_cast<dxTabItem*>(_pThis->m_tabbook->childAtIndex(i))->getID() == id)
-            {
-                _pThis->m_tabbook->setCurrent(i/2, TRUE);
-                return 1;
-            }
-        }
-    }
+    _pThis->setCurrentTabById(lua_tointeger(lua, 1));
     return  1;
 #else
     return 0;
