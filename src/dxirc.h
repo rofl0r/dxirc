@@ -47,14 +47,18 @@ typedef void (dxirc::* func_ptr) (const FXString&);
 class dxirc: public FXMainWindow
 {
     FXDECLARE(dxirc)
-    friend class ScriptDialog;
-    friend class DccDialog;
     public:
         dxirc(FXApp *app);
         virtual ~dxirc();
 
         void create();
         void flash(FXbool yes);
+        void showNotify(const FXString& notify, FXint pos=-1);
+        static dxirc* instance();
+        dxDccFilesArray & getDccFilesList() { return m_dccfilesList; }
+        dxScriptsArray & getScripts() { return m_scripts; }
+        FXint loadLuaScript(FXString, FXbool=TRUE);
+        FXint unloadLuaScript(FXString);
 
         long onCmdQuit(FXObject*, FXSelector, void*);
         long onCmdAbout(FXObject*, FXSelector, void*);
@@ -115,13 +119,15 @@ class dxirc: public FXMainWindow
         static int onLuaCreateTab(lua_State*);
         static int onLuaGetTabCount(lua_State*);
         static int onLuaClear(lua_State*);
-        void showNotify(const FXString& notify, FXint pos=-1);
 
     private:
         dxirc(){}
+        static dxirc *_pThis;
         FXApp *m_app;
         dxServerInfoArray m_serverList;
         dxIgnoreUserArray m_usersList, m_friendsList;
+        dxScriptsArray m_scripts;
+        dxDccFilesArray m_dccfilesList;
         FXbool m_usersShown, m_statusShown, m_logging, m_ownServerWindow, m_tempServerWindow, m_sameCmd;
         FXbool m_sameList, m_useTray, m_coloredNick, m_closeToTray, m_reconnect, m_autoload;
         FXbool m_sounds, m_soundConnect, m_soundDisconnect, m_soundMessage, m_stripColors, m_useSmileys;
@@ -224,14 +230,6 @@ class dxirc: public FXMainWindow
         FXbool isForResume(const FXString &name);
         FXint createIrcTab(const FXString &tabtext, FXIcon *icon, TYPE typ, IrcEngine *engine);
         void createDccTab(const FXString &mynick, const FXString &nick, const FXString &address="0", FXint portD=0, FXint portH=0, FXbool listen=FALSE, IrcEngine *engine=NULL);
-
-    protected:
-        dxScriptsArray m_scripts;
-        dxDccFilesArray m_dccfilesList;
-        static dxirc *_pThis;
-
-        FXint loadLuaScript(FXString, FXbool=TRUE);
-        FXint unloadLuaScript(FXString);
 };
 
 #endif // DXIRC_H

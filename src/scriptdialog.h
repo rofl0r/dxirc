@@ -32,7 +32,7 @@ class ScriptDialog: public FXDialogBox
 {
     FXDECLARE(ScriptDialog)
     public:
-        ScriptDialog(dxirc *owner);
+        ScriptDialog(FXMainWindow *owner);
         virtual ~ScriptDialog();
         
         long onLoad(FXObject*,FXSelector,void*);
@@ -47,7 +47,6 @@ class ScriptDialog: public FXDialogBox
         ScriptDialog() {}
         ScriptDialog(const ScriptDialog&);
 
-        dxirc *m_irc;
         FXVerticalFrame *m_contents, *m_listframe;
         FXHorizontalFrame *m_buttonframe, *m_scriptframe;
         FXGroupBox *m_group;

@@ -36,8 +36,8 @@ FXDEFMAP(ScriptDialog) ScriptDialogMap[] = {
 
 FXIMPLEMENT(ScriptDialog, FXDialogBox, ScriptDialogMap, ARRAYNUMBER(ScriptDialogMap))
 
-ScriptDialog::ScriptDialog(dxirc *owner)
-    : FXDialogBox(owner, _("Scripts list"), DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0), m_irc(owner)
+ScriptDialog::ScriptDialog(FXMainWindow *owner)
+    : FXDialogBox(owner, _("Scripts list"), DECOR_TITLE|DECOR_BORDER, 0,0,0,0, 0,0,0,0, 0,0)
 {
     m_contents = new FXVerticalFrame(this, LAYOUT_SIDE_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0,0,0,0, 10,10,10,10, 0,0);
 
@@ -102,7 +102,7 @@ long ScriptDialog::onLoad(FXObject*,FXSelector,void*)
     file.setPatternList(_("Lua scripts (*.lua)"));
     if(file.execute(PLACEMENT_CURSOR))
     {
-        m_irc->loadLuaScript(file.getFilename());
+        dxirc::instance()->loadLuaScript(file.getFilename());
     }
     updateList();
     updateDetails();
@@ -114,7 +114,7 @@ long ScriptDialog::onView(FXObject*,FXSelector,void*)
 {
     FXint index = m_names->getCurrentItem();
     if(index == -1) return 0;
-    viewFile(m_irc->m_scripts[index].path);
+    viewFile(dxirc::instance()->getScripts()[index].path);
     return 1;
 }
 
@@ -133,7 +133,7 @@ long ScriptDialog::onUnload(FXObject*,FXSelector,void*)
 {
     FXint index = m_names->getCurrentItem();
     if(index == -1) return 0;
-    m_irc->unloadLuaScript(m_irc->m_scripts[index].name);
+    dxirc::instance()->unloadLuaScript(dxirc::instance()->getScripts()[index].name);
     updateList();
     updateDetails();
     return 1;
@@ -161,11 +161,11 @@ long ScriptDialog::onList(FXObject*,FXSelector,void*)
 void ScriptDialog::updateList()
 {
     m_names->clearItems();
-    for(FXint i=0; i<m_irc->m_scripts.no(); i++)
+    for(FXint i=0; i<dxirc::instance()->getScripts().no(); i++)
     {
-        m_names->appendItem(m_irc->m_scripts[i].name);
+        m_names->appendItem(dxirc::instance()->getScripts()[i].name);
     }
-    if(m_irc->m_scripts.no())
+    if(dxirc::instance()->getScripts().no())
     {
         m_buttonView->enable();
         m_buttonUnload->enable();
@@ -188,17 +188,17 @@ void ScriptDialog::updateDetails()
         m_path->setText("");
         return;
     }
-    m_name->setText(m_irc->m_scripts[index].name);
-        if(m_irc->m_scripts[index].name.length()>18) m_name->setTipText(m_irc->m_scripts[index].name);
+    m_name->setText(dxirc::instance()->getScripts()[index].name);
+        if(dxirc::instance()->getScripts()[index].name.length()>18) m_name->setTipText(dxirc::instance()->getScripts()[index].name);
         else m_name->setTipText("");
-    m_version->setText(m_irc->m_scripts[index].version);
-        if(m_irc->m_scripts[index].version.length()>18) m_version->setTipText(m_irc->m_scripts[index].version);
+    m_version->setText(dxirc::instance()->getScripts()[index].version);
+        if(dxirc::instance()->getScripts()[index].version.length()>18) m_version->setTipText(dxirc::instance()->getScripts()[index].version);
         else m_version->setTipText("");
-    m_description->setText(m_irc->m_scripts[index].description);
-        if(m_description->getNumRows()>3) m_description->setTipText(m_irc->m_scripts[index].description);
+    m_description->setText(dxirc::instance()->getScripts()[index].description);
+        if(m_description->getNumRows()>3) m_description->setTipText(dxirc::instance()->getScripts()[index].description);
         else m_description->setTipText("");
-    m_path->setText(m_irc->m_scripts[index].path);
-        if(m_description->getNumRows()>2) m_path->setTipText(m_irc->m_scripts[index].path);
+    m_path->setText(dxirc::instance()->getScripts()[index].path);
+        if(m_description->getNumRows()>2) m_path->setTipText(dxirc::instance()->getScripts()[index].path);
         else m_path->setTipText("");
     recalc();
 }

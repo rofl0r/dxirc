@@ -2129,7 +2129,7 @@ long ConfigDialog::onNotify(FXObject*, FXSelector, void*)
 
 long ConfigDialog::onShowNotify(FXObject*, FXSelector, void*)
 {
-    ((dxirc*)m_owner)->showNotify(FXStringFormat(_("%s has joined to %s"), "dvx", "#dxirc"), m_notifyPosition);
+    dxirc::instance()->showNotify(FXStringFormat(_("%s has joined to %s"), "dvx", "#dxirc"), m_notifyPosition);
     return 1;
 }
 

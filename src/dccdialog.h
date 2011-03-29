@@ -26,13 +26,11 @@
 #include "defs.h"
 #include "fxext.h"
 
-class dxirc;
-
 class DccDialog: public FXTopWindow
 {
     FXDECLARE(DccDialog)
     public:
-        DccDialog(FXApp *app, dxirc *win);
+        DccDialog(FXApp *app);
         virtual ~DccDialog();
 
         virtual void create();
@@ -50,7 +48,6 @@ class DccDialog: public FXTopWindow
         DccDialog() {}
         DccDialog(const DccDialog&);
 
-        dxirc *m_irc;
         FXVerticalFrame *m_contents, *m_tableframe;
         FXMatrix *m_matrix;
         FXHorizontalFrame *m_buttonframe;

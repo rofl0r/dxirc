@@ -40,8 +40,8 @@ FXDEFMAP(DccDialog) DccDialogMap[] = {
 
 FXIMPLEMENT(DccDialog, FXTopWindow, DccDialogMap, ARRAYNUMBER(DccDialogMap))
 
-DccDialog::DccDialog(FXApp *app, dxirc *win)
-    : FXTopWindow(app, _("DCC transfers"), NULL, NULL, DECOR_ALL, 0,0,0,0, 0,0,0,0, 0,0), m_irc(win)
+DccDialog::DccDialog(FXApp *app)
+    : FXTopWindow(app, _("DCC transfers"), NULL, NULL, DECOR_ALL, 0,0,0,0, 0,0,0,0, 0,0)
 {
     setIcon(ICO_BIG);
     setMiniIcon(ICO_SMALL);
@@ -126,22 +126,22 @@ long DccDialog::onTimeout(FXObject*, FXSelector, void*)
 
 long DccDialog::onClear(FXObject*, FXSelector, void*)
 {
-    if(!m_irc->m_dccfilesList.no())
+    if(!dxirc::instance()->getDccFilesList().no())
         return 1;
-    for(FXint i=m_irc->m_dccfilesList.no()-1; i>-1; i--)
+    for(FXint i=dxirc::instance()->getDccFilesList().no()-1; i>-1; i--)
     {
-        if(m_irc->m_dccfilesList[i].type == DCC_IN  || m_irc->m_dccfilesList[i].type == DCC_PIN)
+        if(dxirc::instance()->getDccFilesList()[i].type == DCC_IN  || dxirc::instance()->getDccFilesList()[i].type == DCC_PIN)
         {
-            if(m_irc->m_dccfilesList[i].currentPosition >= m_irc->m_dccfilesList[i].size)
+            if(dxirc::instance()->getDccFilesList()[i].currentPosition >= dxirc::instance()->getDccFilesList()[i].size)
             {
-                m_irc->m_dccfilesList.erase(i);
+                dxirc::instance()->getDccFilesList().erase(i);
             }
         }
         else
         {
-            if(m_irc->m_dccfilesList[i].finishedPosition >= m_irc->m_dccfilesList[i].size)
+            if(dxirc::instance()->getDccFilesList()[i].finishedPosition >= dxirc::instance()->getDccFilesList()[i].size)
             {
-                m_irc->m_dccfilesList.erase(i);
+                dxirc::instance()->getDccFilesList().erase(i);
             }
         }
     }
@@ -151,12 +151,12 @@ long DccDialog::onClear(FXObject*, FXSelector, void*)
 
 long DccDialog::onCanceled(FXObject*, FXSelector, void*)
 {
-    if(!m_irc->m_dccfilesList.no())
+    if(!dxirc::instance()->getDccFilesList().no())
         return 1;
-    for(FXint i=m_irc->m_dccfilesList.no()-1; i>-1; i--)
+    for(FXint i=dxirc::instance()->getDccFilesList().no()-1; i>-1; i--)
     {
-        if(m_irc->m_dccfilesList[i].canceled)
-            m_irc->m_dccfilesList.erase(i);
+        if(dxirc::instance()->getDccFilesList()[i].canceled)
+            dxirc::instance()->getDccFilesList().erase(i);
     }
     updateTable();
     return 1;
@@ -167,9 +167,9 @@ long DccDialog::onRightClick(FXObject*, FXSelector, void *ptr)
     FXEvent* event = (FXEvent*)ptr;
     if(event->moved) return 1;
     m_indexOnRight = m_table->rowAtY(event->win_y);
-    if(m_indexOnRight >= m_irc->m_dccfilesList.no())
+    if(m_indexOnRight >= dxirc::instance()->getDccFilesList().no())
         return 1;
-    if(m_irc->m_dccfilesList[m_indexOnRight].canceled)
+    if(dxirc::instance()->getDccFilesList()[m_indexOnRight].canceled)
         return 1;
     FXMenuPane popup(this);
     new FXMenuCommand(&popup, _("&Cancel"), NULL, this, DccDialog_POPUPCANCEL);
@@ -181,7 +181,7 @@ long DccDialog::onRightClick(FXObject*, FXSelector, void *ptr)
 
 long DccDialog::onPopupCancel(FXObject*, FXSelector, void*)
 {
-    m_irc->handle(this, FXSEL(SEL_COMMAND, DccDialog_DCCCANCEL), (void*)(FXival)m_indexOnRight);
+    dxirc::instance()->handle(this, FXSEL(SEL_COMMAND, DccDialog_DCCCANCEL), (void*)(FXival)m_indexOnRight);
     return 1;
 }
 
@@ -189,10 +189,10 @@ long DccDialog::onTableChanged(FXObject*, FXSelector, void *ptr)
 {
     FXTablePos *tp = (FXTablePos*)ptr;
     m_contents->recalc();
-    m_path->setText(m_irc->m_dccfilesList[tp->row].path);
-    m_ip->setText(m_irc->m_dccfilesList[tp->row].ip);
-    m_port->setText(FXStringVal(m_irc->m_dccfilesList[tp->row].port));
-    m_nick->setText(m_irc->m_dccfilesList[tp->row].nick);
+    m_path->setText(dxirc::instance()->getDccFilesList()[tp->row].path);
+    m_ip->setText(dxirc::instance()->getDccFilesList()[tp->row].ip);
+    m_port->setText(FXStringVal(dxirc::instance()->getDccFilesList()[tp->row].port));
+    m_nick->setText(dxirc::instance()->getDccFilesList()[tp->row].nick);
     return 1;
 }
 
@@ -200,7 +200,7 @@ void DccDialog::updateTable()
 {
     FXbool canceled = FALSE;
     FXbool finished = FALSE;
-    if(!m_irc->m_dccfilesList.no())
+    if(!dxirc::instance()->getDccFilesList().no())
     {
         m_buttonClear->disable();
         m_buttonCanceled->disable();
@@ -211,17 +211,17 @@ void DccDialog::updateTable()
     }
     if(!shown())
         return;
-    if(m_table->getNumRows() < m_irc->m_dccfilesList.no())
-        m_table->insertRows(0, m_irc->m_dccfilesList.no()-m_table->getNumRows());
-    if(m_table->getNumRows() > m_irc->m_dccfilesList.no())
-        m_table->removeRows(0, m_table->getNumRows()-m_irc->m_dccfilesList.no());
-    for(FXint i=0; i<m_irc->m_dccfilesList.no(); i++)
+    if(m_table->getNumRows() < dxirc::instance()->getDccFilesList().no())
+        m_table->insertRows(0, dxirc::instance()->getDccFilesList().no()-m_table->getNumRows());
+    if(m_table->getNumRows() > dxirc::instance()->getDccFilesList().no())
+        m_table->removeRows(0, m_table->getNumRows()-dxirc::instance()->getDccFilesList().no());
+    for(FXint i=0; i<dxirc::instance()->getDccFilesList().no(); i++)
     {
-        if(m_irc->m_dccfilesList[i].type == DCC_IN  || m_irc->m_dccfilesList[i].type == DCC_PIN)
+        if(dxirc::instance()->getDccFilesList()[i].type == DCC_IN  || dxirc::instance()->getDccFilesList()[i].type == DCC_PIN)
         {
-            if(m_irc->m_dccfilesList[i].currentPosition >= m_irc->m_dccfilesList[i].size)
+            if(dxirc::instance()->getDccFilesList()[i].currentPosition >= dxirc::instance()->getDccFilesList()[i].size)
             {
-                if(m_irc->m_dccfilesList[i].canceled)
+                if(dxirc::instance()->getDccFilesList()[i].canceled)
                 {
                     m_table->setItemIcon(i, 0, ICO_CANCEL);
                     canceled = TRUE;
@@ -236,7 +236,7 @@ void DccDialog::updateTable()
             }
             else
             {
-                if(m_irc->m_dccfilesList[i].canceled)
+                if(dxirc::instance()->getDccFilesList()[i].canceled)
                 {
                     m_table->setItemIcon(i, 0, ICO_CANCEL);
                     canceled = TRUE;
@@ -248,9 +248,9 @@ void DccDialog::updateTable()
         }
         else
         {
-            if(m_irc->m_dccfilesList[i].finishedPosition >= m_irc->m_dccfilesList[i].size)
+            if(dxirc::instance()->getDccFilesList()[i].finishedPosition >= dxirc::instance()->getDccFilesList()[i].size)
             {
-                if(m_irc->m_dccfilesList[i].canceled)
+                if(dxirc::instance()->getDccFilesList()[i].canceled)
                 {
                     m_table->setItemIcon(i, 0, ICO_CANCEL);
                     canceled = TRUE;
@@ -265,7 +265,7 @@ void DccDialog::updateTable()
             }
             else
             {
-                if(m_irc->m_dccfilesList[i].canceled)
+                if(dxirc::instance()->getDccFilesList()[i].canceled)
                 {
                     m_table->setItemIcon(i, 0, ICO_CANCEL);
                     canceled = TRUE;
@@ -275,34 +275,34 @@ void DccDialog::updateTable()
                 m_table->setItemJustify(i, 0, FXTableItem::LEFT);
             }
         }
-        m_table->setItemText(i, 0, m_irc->m_dccfilesList[i].path.rafter(PATHSEP));
-        m_table->setItemText(i, 1, utils::instance().getFileSize(m_irc->m_dccfilesList[i].size));
-        if(m_irc->m_dccfilesList[i].currentPosition < m_irc->m_dccfilesList[i].size)
+        m_table->setItemText(i, 0, dxirc::instance()->getDccFilesList()[i].path.rafter(PATHSEP));
+        m_table->setItemText(i, 1, utils::instance().getFileSize(dxirc::instance()->getDccFilesList()[i].size));
+        if(dxirc::instance()->getDccFilesList()[i].currentPosition < dxirc::instance()->getDccFilesList()[i].size)
         {
-            m_table->setItemText(i, 2, utils::instance().getFileSize(m_irc->m_dccfilesList[i].currentPosition));
-            m_table->setItemText(i, 3, utils::instance().getPercentPosition(m_irc->m_dccfilesList[i].size, m_irc->m_dccfilesList[i].currentPosition));
+            m_table->setItemText(i, 2, utils::instance().getFileSize(dxirc::instance()->getDccFilesList()[i].currentPosition));
+            m_table->setItemText(i, 3, utils::instance().getPercentPosition(dxirc::instance()->getDccFilesList()[i].size, dxirc::instance()->getDccFilesList()[i].currentPosition));
         }
         else
         {
-            m_table->setItemText(i, 2, utils::instance().getFileSize(m_irc->m_dccfilesList[i].size));
+            m_table->setItemText(i, 2, utils::instance().getFileSize(dxirc::instance()->getDccFilesList()[i].size));
             m_table->setItemText(i, 3, "100%");
         }
-        if(m_irc->m_dccfilesList[i].currentPosition >= m_irc->m_dccfilesList[i].size || m_irc->m_dccfilesList[i].canceled)
+        if(dxirc::instance()->getDccFilesList()[i].currentPosition >= dxirc::instance()->getDccFilesList()[i].size || dxirc::instance()->getDccFilesList()[i].canceled)
         {
             m_table->setItemText(i, 4, "--:--");
             m_table->setItemText(i, 5, "--:--");
         }
         else
         {
-            if(!m_irc->m_dccfilesList[i].currentPosition)
+            if(!dxirc::instance()->getDccFilesList()[i].currentPosition)
             {
                 m_table->setItemText(i, 4, "--:--");
                 m_table->setItemText(i, 5, "--:--");
             }
             else
             {
-                m_table->setItemText(i, 4, utils::instance().getSpeed(m_irc->m_dccfilesList[i].speed));
-                m_table->setItemText(i, 5, utils::instance().getRemaining(m_irc->m_dccfilesList[i].size-m_irc->m_dccfilesList[i].currentPosition, m_irc->m_dccfilesList[i].speed));
+                m_table->setItemText(i, 4, utils::instance().getSpeed(dxirc::instance()->getDccFilesList()[i].speed));
+                m_table->setItemText(i, 5, utils::instance().getRemaining(dxirc::instance()->getDccFilesList()[i].size-dxirc::instance()->getDccFilesList()[i].currentPosition, dxirc::instance()->getDccFilesList()[i].speed));
             }
         }
     }
@@ -310,10 +310,10 @@ void DccDialog::updateTable()
     else m_buttonClear->disable();
     if(canceled) m_buttonCanceled->enable();
     else m_buttonCanceled->disable();
-    m_path->setText(m_irc->m_dccfilesList[m_table->getCurrentRow()].path);
-    m_ip->setText(m_irc->m_dccfilesList[m_table->getCurrentRow()].ip);
-    m_port->setText(FXStringVal(m_irc->m_dccfilesList[m_table->getCurrentRow()].port));
-    m_nick->setText(m_irc->m_dccfilesList[m_table->getCurrentRow()].nick);
+    m_path->setText(dxirc::instance()->getDccFilesList()[m_table->getCurrentRow()].path);
+    m_ip->setText(dxirc::instance()->getDccFilesList()[m_table->getCurrentRow()].ip);
+    m_port->setText(FXStringVal(dxirc::instance()->getDccFilesList()[m_table->getCurrentRow()].port));
+    m_nick->setText(dxirc::instance()->getDccFilesList()[m_table->getCurrentRow()].nick);
     m_group->show();
     m_contents->recalc();
 }

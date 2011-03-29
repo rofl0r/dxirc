@@ -358,10 +358,13 @@ void DccEngine::readData()
     }
     else
     {
-        FXulong pos;
-        m_socket->read(reinterpret_cast<FXchar *>(&pos), 4);
-        pos = ntohl(pos);
-        m_file.finishedPosition = pos;
+        while(m_socket->getBytesAvailable())
+        {
+            FXulong pos;
+            m_socket->read(reinterpret_cast<FXchar*>(&pos), 4);
+            pos = ntohl(pos);
+            m_file.finishedPosition = pos;
+        }
         if(m_file.finishedPosition >= m_file.size)
         {
             closeFile();
@@ -404,7 +407,6 @@ void DccEngine::closeFile()
             m_file.canceled = TRUE;
         else
             FXFile::rename(FXString(m_file.path+".part"), m_file.path);
-        return;
     }
     if(m_file.type == DCC_POUT || m_file.type == DCC_OUT)
     {
@@ -418,7 +420,6 @@ void DccEngine::closeFile()
         }
         if(m_file.finishedPosition < m_file.size)
             m_file.canceled = TRUE;
-        return;
     }
 }
 

@@ -355,6 +355,7 @@ dxirc::dxirc(FXApp *app)
 dxirc::~dxirc()
 {
     m_app->removeTimeout(this, dxirc_STIMEOUT);
+    m_app->removeTimeout(this, dxirc_AWAYTIMEOUT);
     delete ICO_BIG;
     delete ICO_SMALL;
     delete ICO_IRCADMIN;
@@ -415,6 +416,11 @@ dxirc::~dxirc()
 #endif //HAVE_TRAY
     delete m_ircFont;
     _pThis = NULL;
+}
+
+dxirc* dxirc::instance()
+{
+    return _pThis;
 }
 
 void dxirc::create()
@@ -1024,7 +1030,7 @@ long dxirc::onCmdLog(FXObject*, FXSelector, void*)
 long dxirc::onCmdTransfers(FXObject*, FXSelector, void*)
 {
     if(m_transfers == NULL)
-        m_transfers = new DccDialog(m_app, this);
+        m_transfers = new DccDialog(m_app);
     m_transfers->create();
     return 1;
 }
