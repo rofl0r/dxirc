@@ -2445,7 +2445,7 @@ void ConfigDialog::readConfig()
     ircfontspec = set.readStringEntry("SETTINGS", "ircFont", "");
     m_sameCmd = set.readBoolEntry("SETTINGS", "sameCmd", FALSE);
     m_sameList = set.readBoolEntry("SETTINGS", "sameList", FALSE);
-    m_coloredNick = set.readBoolEntry("SETTINGS", "coloredNick", FALSE);
+    m_coloredNick = set.readBoolEntry("SETTINGS", "coloredNick", TRUE);
     if(!ircfontspec.empty())
     {
         m_ircFont = new FXFont(getApp(), ircfontspec);

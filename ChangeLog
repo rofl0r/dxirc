@@ -1,4 +1,4 @@
-Version 0.70.svn
+Version 0.70.0
 - new key bindings Ctrl-f for force commandline focus in current tab
 - tray is default on
 - small issue in save spellchecking settings fixed

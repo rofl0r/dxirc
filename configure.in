@@ -5,7 +5,7 @@ dnl
 
 dnl Initialize
 AC_INIT(src/dxirc.cpp)
-AM_INIT_AUTOMAKE(dxirc,0.70.svn)
+AM_INIT_AUTOMAKE(dxirc,0.80.svn)
 AM_CONFIG_HEADER(config.h)
 
 dnl Is this really necessary?

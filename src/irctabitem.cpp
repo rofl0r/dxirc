@@ -4079,27 +4079,22 @@ long IrcTabItem::onPipeTimeout(FXObject*, FXSelector, void*)
 
 long IrcTabItem::onEggTimeout(FXObject*, FXSelector, void*)
 {
-    FXString pic1 = "     __  __\n  _/__//__/|_\n /_| |_| |/_/|\n |_   _   _|/\n /_| |_| |/_/|\n |_   _   _|/\n   |_|/|_|/\n";
-    FXString pic2 = "\n\n       __  __\n    _/__//__/|_\n   /_| |_| |/_/|\n   |_   _   _|/\n   /_| |_| |/_/|\n   |_   _   _|/\n     |_|/|_|/\n";
-    FXString pic3 = "\n\n\n\n         __  __\n      _/__//__/|_\n     /_| |_| |/_/|\n     |_   _   _|/\n     /_| |_| |/_/|\n     |_   _   _|/\n       |_|/|_|/\n";
     if(m_pics<24)
     {
-        
         getApp()->addTimeout(this, IrcTabItem_ETIME, 222);
+        FXString replace = "\n";
+        FXint max = rand()%30;
+        for(FXint i=0; i<max; i++)
+            replace.append(' ');
+        FXString pic = "\n    ©©©©©©\n   ©      ©\n  ©        ©\n ©          ©\n©©©©©©©©©©©©©©\n©©©©©©©©©©©©©©\n©©©©©©©©©©©©©©\n ©          ©\n  ©        ©\n   ©      ©\n    ©©©©©©";
+        pic.substitute("\n", replace);
+        pic.append('\n');
         m_text->clearText();
-        if((m_pics)%3==0)
-        {
-            m_text->appendStyledText(pic1, 4);
-            m_pics++;
-            return 1;
-        }
-        if((m_pics)%3==1)
-        {
-            m_text->appendStyledText(pic2, 4);
-            m_pics++;
-            return 1;
-        }
-        m_text->appendStyledText(pic3, 4);
+        max = rand()%15;
+        for(FXint i=0; i<max; i++)
+            pic.prepend('\n');
+        max = rand()%7;
+        m_text->appendStyledText(pic, max+10);
         m_pics++;
     }
     return 1;

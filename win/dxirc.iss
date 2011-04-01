@@ -7,7 +7,7 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{11B40D37-A7C9-4720-8741-EEC36F2D07DB}
 AppName=dxirc
-AppVerName=dxirc 0.70.svn
+AppVerName=dxirc 0.80.svn
 AppPublisher=David Vachulka
 AppPublisherURL=http://www.dxirc.org
 AppSupportURL=http://www.dxirc.org
@@ -15,7 +15,7 @@ AppUpdatesURL=http://www.dxirc.org
 DefaultDirName={pf}\dxirc
 DefaultGroupName=dxirc
 LicenseFile=COPYING
-OutputBaseFilename=dxirc-0.70.svn-setup
+OutputBaseFilename=dxirc-0.80.svn-setup
 Compression=lzma
 SolidCompression=yes
 
@@ -73,6 +73,7 @@ Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\dxirc"; Filename: 
 
 [Run]
 Filename: "{app}\dxirc.exe"; Description: "{cm:LaunchProgram,dxirc}"; Flags: nowait postinstall skipifsilent
+
 
 
 
