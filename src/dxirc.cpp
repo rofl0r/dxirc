@@ -3131,9 +3131,9 @@ long dxirc::onNewMsg(FXObject *obj, FXSelector, void*)
     }
     else
     {
-        updateStatus(FXStringFormat(_("New message on %s"), static_cast<dxTabItem*>(obj)->getText().text()));
+        updateStatus(FXStringFormat(_("New message on chat with %s"), static_cast<dxTabItem*>(obj)->getText().text()));
         if(m_notify && m_notifyMessage)
-            showNotify(FXStringFormat(_("New message on %s"), static_cast<dxTabItem*>(obj)->getText().text()));
+            showNotify(FXStringFormat(_("New message on chat with %s"), static_cast<dxTabItem*>(obj)->getText().text()));
     }
     flash(TRUE);
     return 1;
