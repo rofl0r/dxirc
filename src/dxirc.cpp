@@ -2760,8 +2760,8 @@ long dxirc::onTabBook(FXObject *, FXSelector, void *ptr)
         currenttab->makeLastRowVisible();
         if(hasTetrisTab())
         {
-            TetrisTabItem *tetristab = static_cast<TetrisTabItem*>(m_tabbook->childAtIndex(getTabId("tetris")*2));
-            if(tetristab->isPauseEnable() && !tetristab->isPaused()) tetristab->pauseResumeGame();
+            TetrisTabItem *tetristab = static_cast<TetrisTabItem*>(getTabItemById(getTabId("tetris")));
+            if(tetristab && tetristab->isPauseEnable() && !tetristab->isPaused()) tetristab->pauseResumeGame();
         }
         if(currenttab->getType() == SERVER)
             updateStatus(currenttab->getRealServerName()+"-"+currenttab->getNickName());
@@ -2786,15 +2786,15 @@ long dxirc::onTabBook(FXObject *, FXSelector, void *ptr)
         currenttab->makeLastRowVisible();
         if(hasTetrisTab())
         {
-            TetrisTabItem *tetristab = static_cast<TetrisTabItem*>(m_tabbook->childAtIndex(getTabId("tetris")*2));
-            if(tetristab->isPauseEnable() && !tetristab->isPaused()) tetristab->pauseResumeGame();
+            TetrisTabItem *tetristab = static_cast<TetrisTabItem*>(getTabItemById(getTabId("tetris")));
+            if(tetristab && tetristab->isPauseEnable() && !tetristab->isPaused()) tetristab->pauseResumeGame();
         }
         updateStatus((currenttab->getText()[0]=='&' ? "&"+currenttab->getText(): currenttab->getText())+"-"+currenttab->getServerName()+"-"+currenttab->getNickName());
     }
     if(m_tabbook->childAtIndex(index)->getMetaClass()==&TetrisTabItem::metaClass)
     {
         TetrisTabItem *tetristab = static_cast<TetrisTabItem*>(m_tabbook->childAtIndex(index));
-        utils::instance().debugLine(FXStringFormat("OnTabBook(%d), Class: %s", index, tetristab->getClassName()));
+        utils::instance().debugLine(FXStringFormat("OnTabBook(%d), Class: %s, id: %d", index, tetristab->getClassName(), tetristab->getID()));
         tetristab->setFocus();
         tetristab->setGameFocus();
     }
@@ -3750,6 +3750,24 @@ void dxirc::setCurrentTabById(FXint id)
             return;
         }
     }
+}
+
+FXWindow* dxirc::getTabItemById(FXint id)
+{
+    for(FXint i = 0; i < m_tabbook->numChildren(); i+=2)
+    {
+        if(m_tabbook->childAtIndex(i)->getMetaClass()!=&TetrisTabItem::metaClass
+                && static_cast<dxTabItem*>(m_tabbook->childAtIndex(i))->getID() == id)
+        {
+            return m_tabbook->childAtIndex(i);
+        }
+        if(m_tabbook->childAtIndex(i)->getMetaClass()==&TetrisTabItem::metaClass
+                && static_cast<TetrisTabItem*>(m_tabbook->childAtIndex(i))->getID() == id)
+        {
+            return m_tabbook->childAtIndex(i);
+        }
+    }
+    return NULL;
 }
 
 FXbool dxirc::isValidTabId(FXint id)

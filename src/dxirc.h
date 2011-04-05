@@ -199,6 +199,7 @@ class dxirc: public FXMainWindow
         FXint getTabId(FXString);
         FXint getCurrentTabId();
         void setCurrentTabById(FXint id);
+        FXWindow* getTabItemById(FXint id);
         FXbool isValidTabId(FXint id);
         FXbool isIddxTabItem(FXint id);
         FXbool isLastTab(IrcEngine*);
