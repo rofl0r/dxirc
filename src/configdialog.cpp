@@ -31,6 +31,7 @@
 
 #define MAXBUFFER 2000
 #define MAXVALUE  2000
+#define NUM_TEXTSTYLES 6
 #define HEADER "# dxirc smiley settings\n# path is relative to file\n# Example: /home/xxx/smile.png=:)\n"
 
 static FXIcon *createIconFromName(FXApp *app, const FXString& path)
@@ -837,15 +838,16 @@ ConfigDialog::ConfigDialog(FXMainWindow *owner)
     fillSmileys();
     
     new dxEXButton(buttonframe, _("&General"), NULL, switcher, FXSwitcher::ID_OPEN_THIRD, FRAME_RAISED);
-    new dxEXButton(buttonframe, _("&Look"), NULL, switcher, FXSwitcher::ID_OPEN_FOURTH, FRAME_RAISED);
+    new dxEXButton(buttonframe, _("&Look"), NULL, switcher, FXSwitcher::ID_OPEN_FOURTH, FRAME_RAISED);    
     new dxEXButton(buttonframe, _("&Irc Text"), NULL, switcher, FXSwitcher::ID_OPEN_FIRST, FRAME_RAISED);
     new dxEXButton(buttonframe, _("I&gnore"), NULL, switcher, FXSwitcher::ID_OPEN_SECOND, FRAME_RAISED);
     new dxEXButton(buttonframe, _("&DCC"), NULL, switcher, FXSwitcher::ID_OPEN_FIFTH, FRAME_RAISED);
     new dxEXButton(buttonframe, _("N&otification"), NULL, switcher, FXSwitcher::ID_OPEN_SIXTH, FRAME_RAISED);
     new dxEXButton(buttonframe, _("S&mileys"), NULL, switcher, FXSwitcher::ID_OPEN_SEVENTH, FRAME_RAISED);
+    //new dxEXButton(buttonframe, _("L&ogs"), NULL, switcher, FXSwitcher::ID_OPEN_EIGHTH, FRAME_RAISED);
     switcher->setCurrent(2);
 
-    for(int i=0; i<6; i++)
+    for(int i=0; i<NUM_TEXTSTYLES; i++)
     {
         m_textStyle[i].normalForeColor = m_colors.text;
         m_textStyle[i].normalBackColor = m_colors.back;
@@ -959,7 +961,7 @@ long ConfigDialog::onColor(FXObject*, FXSelector, void*)
 {
     m_text->setTextColor(m_colors.text);
     m_text->setBackColor(m_colors.back);
-    for(int i=0; i<6; i++)
+    for(int i=0; i<NUM_TEXTSTYLES; i++)
     {
         m_textStyle[i].normalBackColor = m_colors.back;
     }
@@ -1910,37 +1912,26 @@ long ConfigDialog::onReconnect(FXObject*, FXSelector, void*)
     return 1;
 }
 
-long ConfigDialog::onPathSelect(FXObject*, FXSelector, void*)
-{
-    dxEXDirDialog dirdialog(this,_("Select log directory"));
-    dirdialog.setDirectory(m_logPath);
-    if(dirdialog.execute(PLACEMENT_CURSOR))
-    {
-        m_logPath = dirdialog.getDirectory();
-    }
-    return 1;
+long ConfigDialog::SelectPath(const char* text, FXString* s) {
+	dxEXDirDialog dirdialog(this,_(text));
+	dirdialog.setDirectory(*s);
+	if(dirdialog.execute(PLACEMENT_CURSOR)) {
+		*s = dirdialog.getDirectory();
+	}
+	return 1;
 }
 
-long ConfigDialog::onAutoloadPathSelect(FXObject*, FXSelector, void*)
-{
-    dxEXDirDialog dirdialog(this,_("Select autoload directory"));
-    dirdialog.setDirectory(m_autoloadPath);
-    if(dirdialog.execute(PLACEMENT_CURSOR))
-    {
-        m_autoloadPath = dirdialog.getDirectory();
-    }
-    return 1;
+
+long ConfigDialog::onPathSelect(FXObject*, FXSelector, void*) {
+	return SelectPath("Select log directory", &m_logPath);
 }
 
-long ConfigDialog::onDccPathSelect(FXObject*, FXSelector, void*)
-{
-    dxEXDirDialog dirdialog(this,_("Select directory"));
-    dirdialog.setDirectory(m_dccPath);
-    if(dirdialog.execute(PLACEMENT_CURSOR))
-    {
-        m_dccPath = dirdialog.getDirectory();
-    }
-    return 1;
+long ConfigDialog::onAutoloadPathSelect(FXObject*, FXSelector, void*) {
+	return this->SelectPath("Select autoload directory", &m_autoloadPath);
+}
+
+long ConfigDialog::onDccPathSelect(FXObject*, FXSelector, void*) {
+	return this->SelectPath("Select directory", &m_dccPath);
 }
 
 long ConfigDialog::onDccPortD(FXObject*, FXSelector, void*)

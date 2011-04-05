@@ -101,6 +101,7 @@ class ConfigDialog: public FXDialogBox
         long onLogChanged(FXObject*,FXSelector,void*);
         long onServerWindow(FXObject*,FXSelector,void*);
         long onNickCharChanged(FXObject*,FXSelector,void*);
+	long SelectPath(const char* text, FXString* s);
         long onPathSelect(FXObject*,FXSelector,void*);
         long onAutoloadChanged(FXObject*,FXSelector,void*);
         long onAutoloadPathSelect(FXObject*,FXSelector,void*);
