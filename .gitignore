@@ -9,5 +9,9 @@ po/Makefile.in
 src/.deps/
 src/dxirc
 stamp-h1
+confdefs.h
+conftest.c
+conftest.err
+*.kdev4
 
 
