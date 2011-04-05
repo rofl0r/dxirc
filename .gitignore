@@ -1,0 +1,13 @@
+*.o
+*~
+config.*
+Makefile
+aclocal.*
+autom4te.cache/*
+dxirc.spec
+po/Makefile.in
+src/.deps/
+src/dxirc
+stamp-h1
+
+
