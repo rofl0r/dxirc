@@ -27,6 +27,14 @@
 #include "fxext.h"
 #include "dxtabbook.h"
 
+typedef enum {
+	IT_NONE = 0,
+	IT_BOOL = 1,
+	IT_STRING = 2,
+	IT_INT = 4,
+	IT_COLOR = 8,
+} iniType;
+
 const ColorTheme ColorThemes[]={
 //|--------------------+------------------+------------------+------------------+------------------+------------------+------------------+------------------+------------------+------------------+------------------+------------------+------------------|
 //|        Name        |        Base      |       Border     |       Back       |      Fore        |      Selback     |      Selfore     |      Tipback     |     Tipfore      |      Menuback    |      Menufore    |      Notifyback  |      Notifyfore  |
@@ -219,8 +227,12 @@ class ConfigDialog: public FXDialogBox
         FXbool themeExist(const FXString &ckdTheme);
         FXbool nickExist(const FXString &ckdNick, FXbool user=TRUE);
         FXbool smileyExist(const FXString &ckdSmiley);
+	void InitIni(void);
         void readConfig();
         void saveConfig();
+	void writeEntry(FXSettings* set, iniType type, const FXchar* section, const FXchar* key, void* data);
+	void readEntry(FXSettings* set, iniType type, const FXchar* section, const FXchar* key, void* data);
+
         FXchar* enquote(FXchar* result, const FXchar* text);
         FXchar* dequote(FXchar* text) const;
 };

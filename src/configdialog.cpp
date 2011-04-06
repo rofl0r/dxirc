@@ -34,6 +34,18 @@
 #define NUM_TEXTSTYLES 6
 #define HEADER "# dxirc smiley settings\n# path is relative to file\n# Example: /home/xxx/smile.png=:)\n"
 
+static const FXchar* SETTINGS = "SETTINGS";
+
+
+typedef struct {
+	iniType initype;
+	const FXchar* name;
+	void* data;
+} iniSettings;
+
+static const int mainSettings_size = 200;
+static iniSettings mainSettings[mainSettings_size];
+
 static FXIcon *createIconFromName(FXApp *app, const FXString& path)
 {
     FXIconSource iconsource(app);
@@ -2397,11 +2409,50 @@ FXbool ConfigDialog::smileyExist(const FXString& ckdSmiley)
     return FALSE;
 }
 
+void ConfigDialog::readEntry(FXSettings* set, iniType type, const FXchar* section, const FXchar* key, void* data) {
+	switch (type) {
+		case IT_BOOL:
+			*((FXbool*) data) = set->readBoolEntry(section, key);
+			break;
+		case IT_COLOR:
+			*((FXColor*) data) = set->readColorEntry(section, key);
+			break;
+		case IT_STRING:
+			*((FXString*) data) = set->readStringEntry(section, key);
+			break;
+		case IT_INT:
+			*((FXint*) data) = set->readIntEntry(section, key);
+			break;
+		default:
+			return;
+	}
+}
+
 void ConfigDialog::readConfig()
 {
+	InitIni();
     FXString ircfontspec;
     FXSettings set;
     set.parseFile(utils::instance().getIniFile(), TRUE);
+    
+    
+	FXchar* section = (FXchar*) SETTINGS;
+	for(FXint i=0; i<mainSettings_size; i++) {
+		if (mainSettings[i].initype == IT_NONE) break;
+		readEntry(&set, mainSettings[i].initype, section, mainSettings[i].name, mainSettings[i].data);
+	}
+	
+	/*
+	 * 	set.writeStringEntry(section, "ircFont", m_ircFont->getFont().text());
+	set.writeIntEntry(section,"x", m_owner->getX());
+	set.writeIntEntry(section,"y", m_owner->getY());
+	set.writeIntEntry(section,"w", m_owner->getWidth());
+	set.writeIntEntry(section,"h", m_owner->getHeight());
+	set.writeStringEntry(section, "normalfont", m_font->getFont().text());
+	dccip
+*/
+	/*
+    
     m_themeCurrent.base = set.readColorEntry("SETTINGS", "basecolor", getApp()->getBaseColor());
     m_themeCurrent.back = set.readColorEntry("SETTINGS", "backcolor", getApp()->getBackColor());
     m_themeCurrent.border = set.readColorEntry("SETTINGS", "bordercolor", getApp()->getBorderColor());
@@ -2433,10 +2484,13 @@ void ConfigDialog::readConfig()
     m_colors.error = set.readColorEntry("SETTINGS", "errorColor", FXRGB(255,0,0));
     m_colors.hilight = set.readColorEntry("SETTINGS", "hilightColor", FXRGB(11,154,11));
     m_colors.link = set.readColorEntry("SETTINGS", "linkColor", FXRGB(142,196,210));
-    ircfontspec = set.readStringEntry("SETTINGS", "ircFont", "");
+    
     m_sameCmd = set.readBoolEntry("SETTINGS", "sameCmd", FALSE);
     m_sameList = set.readBoolEntry("SETTINGS", "sameList", FALSE);
     m_coloredNick = set.readBoolEntry("SETTINGS", "coloredNick", TRUE);
+    */
+    
+    ircfontspec = set.readStringEntry("SETTINGS", "ircFont", "");
     if(!ircfontspec.empty())
     {
         m_ircFont = new FXFont(getApp(), ircfontspec);
@@ -2450,6 +2504,7 @@ void ConfigDialog::readConfig()
         m_ircFont = new FXFont(getApp(),fontdescription);
         m_ircFont->create();
     }
+    /*
     m_maxAway = set.readIntEntry("SETTINGS", "maxAway", 200);
     m_logging = set.readBoolEntry("SETTINGS", "logging", FALSE);
     m_serverWindow = set.readBoolEntry("SETTINGS", "serverWindow", TRUE);
@@ -2471,7 +2526,7 @@ void ConfigDialog::readConfig()
     m_dccPath = set.readStringEntry("SETTINGS", "dccPath");
     if(!FXStat::exists(m_dccPath)) m_dccPath = FXSystem::getHomeDirectory();
     m_autoDccChat = set.readBoolEntry("SETTINGS", "autoDccChat", FALSE);
-    m_autoDccFile = set.readBoolEntry("SETTINGS", "autoDccFile", FALSE);
+    m_autoDccFile = set.readBoolEntry("SETTINGS", "autoDccFile", FALSE); */
     FXint usersNum = set.readIntEntry("USERS", "number", 0);
     if(usersNum)
     {
@@ -2516,6 +2571,7 @@ void ConfigDialog::readConfig()
             m_serverList.append(server);
         }
     }
+    /*
 #ifdef HAVE_LUA
     m_autoload = set.readBoolEntry("SETTINGS", "autoload", FALSE);
 #else
@@ -2523,6 +2579,7 @@ void ConfigDialog::readConfig()
 #endif
     m_autoloadPath = set.readStringEntry("SETTINGS", "autoloadPath");
     if(m_autoload && !FXStat::exists(utils::instance().isUtf8(m_autoloadPath.text(), m_autoloadPath.length()) ? m_autoloadPath : utils::instance().localeToUtf8(m_autoloadPath))) m_autoload = FALSE;
+    */
     FXString dccIP = set.readStringEntry("SETTINGS", "dccIP");
     FXRex rex("\\l");
     if(dccIP.empty() || dccIP.contains('.')!=3 || rex.match(dccIP))
@@ -2539,6 +2596,7 @@ void ConfigDialog::readConfig()
         m_dccIP3 = dccIP.section('.',2);
         m_dccIP4 = dccIP.section('.',3);
     }
+    /*
     m_dccPortD = set.readIntEntry("SETTINGS", "dccPortD");
     if(m_dccPortD<0 || m_dccPortD>65536) m_dccPortD = 0;
     m_dccPortH = set.readIntEntry("SETTINGS", "dccPortH");
@@ -2558,6 +2616,7 @@ void ConfigDialog::readConfig()
     m_notifyMessage = set.readBoolEntry("SETTINGS", "notifyMessage", FALSE);
     m_stripColors = set.readBoolEntry("SETTINGS", "stripColors", TRUE);
     m_useSmileys = set.readBoolEntry("SETTINGS", "useSmileys", FALSE);
+    */
     FXint smileysNum = set.readIntEntry("SMILEYS", "number", 0);
     if(smileysNum)
     {
@@ -2571,6 +2630,7 @@ void ConfigDialog::readConfig()
                 m_smileysMap.insert(StringPair(key, value));
         }
     }
+    /*
 #ifdef HAVE_ENCHANT
     if(utils::instance().getLangsNum())
         m_useSpell = set.readBoolEntry("SETTINGS", "useSpell", TRUE);
@@ -2580,149 +2640,190 @@ void ConfigDialog::readConfig()
     m_useSpell = FALSE;
 #endif
     m_oneInstance = set.readBoolEntry("SETTINGS", "oneinstance", FALSE);
+    */
 }
 
-void ConfigDialog::saveConfig()
-{
-    getApp()->reg().setModified(FALSE);
-    FXSettings set;
-    //set.clear();
-    set.writeIntEntry("SERVERS", "number", m_serverList.no());
-    if(m_serverList.no())
-    {
-        for(FXint i=0; i<m_serverList.no(); i++)
-        {
-            set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "hostname", m_serverList[i].hostname.text());
-            set.writeIntEntry(FXStringFormat("SERVER%d", i).text(), "port", m_serverList[i].port);
-            set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "nick", m_serverList[i].nick.text());
-            set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "realname", m_serverList[i].realname.text());
-            set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "hes", utils::instance().encrypt(m_serverList[i].passwd).text());
-            set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "channels", m_serverList[i].channels.text());
-            set.writeStringEntry(FXStringFormat("SERVER%d", i).text(), "commands", m_serverList[i].commands.text());
-            set.writeBoolEntry(FXStringFormat("SERVER%d", i).text(), "autoconnect", m_serverList[i].autoConnect);
-            set.writeBoolEntry(FXStringFormat("SERVER%d", i).text(), "ssl", m_serverList[i].useSsl);
-        }
-    }
-    set.writeBoolEntry("SETTINGS", "statusShown", m_statusShown);
-    set.writeStringEntry("SETTINGS", "commandsList", m_commandsList.text());
-    set.writeStringEntry("SETTINGS", "themePath", m_themePath.text());
-    set.writeStringEntry("SETTINGS", "themesList", m_themesList.text());
-    set.writeColorEntry("SETTINGS", "textColor", m_colors.text);
-    set.writeColorEntry("SETTINGS", "textBackColor", m_colors.back);
-    set.writeColorEntry("SETTINGS", "userColor", m_colors.user);
-    set.writeColorEntry("SETTINGS", "actionsColor", m_colors.action);
-    set.writeColorEntry("SETTINGS", "noticeColor", m_colors.notice);
-    set.writeColorEntry("SETTINGS", "errorColor", m_colors.error);
-    set.writeColorEntry("SETTINGS", "hilightColor", m_colors.hilight);
-    set.writeColorEntry("SETTINGS", "linkColor", m_colors.link);
-    set.writeStringEntry("SETTINGS", "ircFont", m_ircFont->getFont().text());
-    set.writeIntEntry("SETTINGS", "maxAway", m_maxAway);
-    set.writeBoolEntry("SETTINGS", "logging", m_logging);
-    set.writeBoolEntry("SETTINGS", "sameCmd", m_sameCmd);
-    set.writeBoolEntry("SETTINGS", "sameList", m_sameList);
-    set.writeBoolEntry("SETTINGS", "coloredNick", m_coloredNick);
-    set.writeBoolEntry("SETTINGS", "tray", m_useTray);
-    set.writeBoolEntry("SETTINGS", "closeToTray", m_closeToTray);
-    set.writeBoolEntry("SETTINGS", "reconnect", m_reconnect);
-    set.writeIntEntry("SETTINGS", "numberAttempt", m_numberAttempt);
-    set.writeIntEntry("SETTINGS", "delayAttempt", m_delayAttempt);
-    set.writeBoolEntry("SETTINGS", "serverWindow", m_serverWindow);
-    set.writeStringEntry("SETTINGS", "logPath", m_logPath.text());
-    set.writeStringEntry("SETTINGS", "dccPath", m_dccPath.text());
-    set.writeStringEntry("SETTINGS", "nickCompletionChar", m_nickChar.text());
-    set.writeIntEntry("USERS", "number", m_usersList.no());
-    if(m_usersList.no())
-    {
+void ConfigDialog::writeEntry(FXSettings* set, iniType type, const FXchar* section, const FXchar* key, void* data) {
+	switch (type) {
+		case IT_BOOL:
+			set->writeBoolEntry(section, key, *((FXbool*) data));
+			break;
+		case IT_COLOR:
+			set->writeColorEntry(section, key, *((FXColor*) data));
+			break;
+		case IT_STRING:
+			set->writeStringEntry(section, key, ((FXString*) data)->text());
+			break;
+		case IT_INT:
+			set->writeIntEntry(section, key, *((FXint*) data));
+			break;
+		default:
+			return;
+	}
+}
 
-        for(FXint i=0; i<m_usersList.no(); i++)
-        {
-            set.writeStringEntry(FXStringFormat("USER%d", i).text(), "nick", m_usersList[i].nick.text());
-            set.writeStringEntry(FXStringFormat("USER%d", i).text(), "channel", m_usersList[i].channel.text());
-            set.writeStringEntry(FXStringFormat("USER%d", i).text(), "network", m_usersList[i].network.text());
-        }
-    }
-    set.writeIntEntry("FRIENDS", "number", m_friendsList.no());
-    if(m_friendsList.no())
-    {
+void ConfigDialog::InitIni(void) {
+	
+	mainSettings = {
+		{IT_BOOL, "statusShown", (void*) &m_statusShown},
+		{IT_STRING, "commandsList", (void*) &m_commandsList},
+		{IT_STRING, "themePath", (void*) &m_themePath},
+		{IT_STRING, "themesList", (void*) &m_themesList},
+		{IT_COLOR, "textColor", (void*) &m_colors.text},
+		{IT_COLOR,  "textBackColor", (void*) &m_colors.back},
+		{IT_COLOR,  "userColor", (void*) &m_colors.user},
+		{IT_COLOR, "actionsColor", (void*) &m_colors.action},
+		{IT_COLOR, "noticeColor", (void*) &m_colors.notice},
+		{IT_COLOR, "errorColor", (void*) &m_colors.error},
+		{IT_COLOR, "hilightColor", (void*) &m_colors.hilight},
+		{IT_COLOR, "linkColor", (void*) &m_colors.link},
+		{IT_INT, "maxAway", (void*) &m_maxAway},
+		{IT_BOOL, "logging", (void*) &m_logging},
+		{IT_BOOL, "sameCmd", (void*) &m_sameCmd},
+		{IT_BOOL, "sameList", (void*) &m_sameList},
+		{IT_BOOL, "coloredNick", (void*) &m_coloredNick},
+		{IT_BOOL, "tray", (void*) &m_useTray},
+		{IT_BOOL, "closeToTray", (void*) &m_closeToTray},
+		{IT_BOOL, "reconnect", (void*) &m_reconnect},
+		{IT_INT, "numberAttempt", (void*) &m_numberAttempt},
+		{IT_INT, "delayAttempt", (void*) &m_delayAttempt},
+		{IT_BOOL, "serverWindow", (void*) &m_serverWindow},
+		{IT_STRING, "logPath", (void*) &m_logPath},
+		{IT_STRING, "dccPath", (void*) &m_dccPath},
+		{IT_STRING, "nickCompletionChar", (void*) &m_nickChar},
+		
+		{IT_INT, "tabPosition", (void*) &m_tabPosition},
+		{IT_INT, "notifyPosition", (void*) &m_notifyPosition},
+		{IT_COLOR, "basecolor", (void*) &m_themeCurrent.base},
+		{IT_COLOR, "bordercolor", (void*) &m_themeCurrent.border},
+		{IT_COLOR, "backcolor", (void*) &m_themeCurrent.back},
+		{IT_COLOR, "forecolor", (void*) &m_themeCurrent.fore},
+		{IT_COLOR, "hilitecolor", (void*) &m_themeCurrent.hilite},
+		{IT_COLOR, "shadowcolor", (void*) &m_themeCurrent.shadow},
+		{IT_COLOR, "selforecolor", (void*) &m_themeCurrent.selfore},
+		{IT_COLOR, "selbackcolor", (void*) &m_themeCurrent.selback},
+		{IT_COLOR, "tipforecolor", (void*) &m_themeCurrent.tipfore},
+		{IT_COLOR, "tipbackcolor", (void*) &m_themeCurrent.tipback},
+		{IT_COLOR, "notifyforecolor", (void*) &m_themeCurrent.notifyfore},
+		{IT_COLOR, "notifybackcolor", (void*) &m_themeCurrent.notifyback},
+		{IT_COLOR, "selmenutextcolor", (void*) &m_themeCurrent.menufore},
+		{IT_COLOR, "selmenubackcolor", (void*) &m_themeCurrent.menuback},
+		{IT_COLOR, "traycolor", (void*) &m_trayColor},
+		{IT_COLOR, "unreadcolor", (void*) &m_unreadColor},
+		{IT_COLOR, "highlightcolor", (void*) &m_highlightColor},
+		
+		{IT_BOOL, "autoload", (void*) &m_autoload},
+		{IT_STRING, "autoloadPath", (void*) &m_autoloadPath},
+		
+		{IT_INT, "dccPortD", (void*) &m_dccPortD},
+		{IT_INT, "dccPortH", (void*) &m_dccPortH},
+		{IT_INT, "dccTimeout", (void*) &m_dccTimeout},
+		{IT_BOOL, "autoDccChat", (void*) &m_autoDccChat},
+		{IT_BOOL, "autoDccFile", (void*) &m_autoDccFile},
+		{IT_BOOL, "sounds", (void*) &m_sounds},
+		{IT_BOOL, "soundConnect", (void*) &m_soundConnect},
+		{IT_BOOL, "soundDisconnect", (void*) &m_soundDisconnect},
+		{IT_BOOL, "soundMessage", (void*) &m_soundMessage},
+		{IT_STRING, "pathConnect", (void*) &m_pathConnect},
+		{IT_STRING, "pathDisconnect", (void*) &m_pathDisconnect},
+		{IT_STRING, "pathMessage", (void*) &m_pathMessage},
+		{IT_BOOL, "notify", (void*) &m_notify},
+		{IT_BOOL, "notifyConnect", (void*) &m_notifyConnect},
+		{IT_BOOL, "notifyDisconnect", (void*) &m_notifyDisconnect},
+		{IT_BOOL, "notifyMessage", (void*) &m_notifyMessage},
+		{IT_BOOL, "stripColors", (void*) &m_stripColors},
+		{IT_BOOL, "useSmileys", (void*) &m_useSmileys},
+		{IT_BOOL, "useSpell", (void*) &m_useSpell},
+		{IT_BOOL, "oneinstance", (void*) &m_oneInstance},
+		{IT_NONE, "", NULL}
+	};
+}
 
-        for(FXint i=0; i<m_friendsList.no(); i++)
-        {
-            set.writeStringEntry(FXStringFormat("FRIEND%d", i).text(), "nick", m_friendsList[i].nick.text());
-            set.writeStringEntry(FXStringFormat("FRIEND%d", i).text(), "channel", m_friendsList[i].channel.text());
-            set.writeStringEntry(FXStringFormat("FRIEND%d", i).text(), "network", m_friendsList[i].network.text());
-        }
-    }
-    set.writeIntEntry("SETTINGS","x", m_owner->getX());
-    set.writeIntEntry("SETTINGS","y", m_owner->getY());
-    set.writeIntEntry("SETTINGS","w", m_owner->getWidth());
-    set.writeIntEntry("SETTINGS","h", m_owner->getHeight());
-    set.writeIntEntry("SETTINGS", "tabPosition", m_tabPosition);
-    set.writeIntEntry("SETTINGS", "notifyPosition", m_notifyPosition);
-    set.writeColorEntry("SETTINGS", "basecolor", m_themeCurrent.base);
-    set.writeColorEntry("SETTINGS", "bordercolor", m_themeCurrent.border);
-    set.writeColorEntry("SETTINGS", "backcolor", m_themeCurrent.back);
-    set.writeColorEntry("SETTINGS", "forecolor", m_themeCurrent.fore);
-    set.writeColorEntry("SETTINGS", "hilitecolor", m_themeCurrent.hilite);
-    set.writeColorEntry("SETTINGS", "shadowcolor", m_themeCurrent.shadow);
-    set.writeColorEntry("SETTINGS", "selforecolor", m_themeCurrent.selfore);
-    set.writeColorEntry("SETTINGS", "selbackcolor", m_themeCurrent.selback);
-    set.writeColorEntry("SETTINGS", "tipforecolor", m_themeCurrent.tipfore);
-    set.writeColorEntry("SETTINGS", "tipbackcolor", m_themeCurrent.tipback);
-    set.writeColorEntry("SETTINGS", "notifyforecolor", m_themeCurrent.notifyfore);
-    set.writeColorEntry("SETTINGS", "notifybackcolor", m_themeCurrent.notifyback);
-    set.writeColorEntry("SETTINGS", "selmenutextcolor", m_themeCurrent.menufore);
-    set.writeColorEntry("SETTINGS", "selmenubackcolor", m_themeCurrent.menuback);
-    set.writeColorEntry("SETTINGS", "traycolor", m_trayColor);
-    set.writeColorEntry("SETTINGS", "unreadcolor", m_unreadColor);
-    set.writeColorEntry("SETTINGS", "highlightcolor", m_highlightColor);
-    set.writeStringEntry("SETTINGS", "normalfont", m_font->getFont().text());
-    dxStringMap aliases = utils::instance().getAliases();
-    set.writeIntEntry("ALIASES", "number", (FXint)aliases.size());
-    if((FXint)aliases.size())
-    {
-        StringIt it;
-        FXint i;
-        for(i=0, it=aliases.begin(); it!=aliases.end(); it++,i++)
-        {
-            set.writeStringEntry("ALIASES", FXStringFormat("key%d", i).text(), (*it).first.text());
-            set.writeStringEntry("ALIASES", FXStringFormat("value%d", i).text(), (*it).second.text());
-        }
-    }
-    set.writeBoolEntry("SETTINGS", "autoload", m_autoload);
-    set.writeStringEntry("SETTINGS", "autoloadPath", m_autoloadPath.text());
-    if(m_dccIP1.empty() || m_dccIP2.empty() || m_dccIP3.empty() || m_dccIP4.empty()) set.writeStringEntry("SETTINGS", "dccIP", "");
-    else set.writeStringEntry("SETTINGS", "dccIP", FXString(m_dccIP1+"."+m_dccIP2+"."+m_dccIP3+"."+m_dccIP4).text());
-    set.writeIntEntry("SETTINGS", "dccPortD", m_dccPortD);
-    set.writeIntEntry("SETTINGS", "dccPortH", m_dccPortH);
-    set.writeIntEntry("SETTINGS", "dccTimeout", m_dccTimeout);
-    set.writeBoolEntry("SETTINGS", "autoDccChat", m_autoDccChat);
-    set.writeBoolEntry("SETTINGS", "autoDccFile", m_autoDccFile);
-    set.writeBoolEntry("SETTINGS", "sounds", m_sounds);
-    set.writeBoolEntry("SETTINGS", "soundConnect", m_soundConnect);
-    set.writeBoolEntry("SETTINGS", "soundDisconnect", m_soundDisconnect);
-    set.writeBoolEntry("SETTINGS", "soundMessage", m_soundMessage);
-    set.writeStringEntry("SETTINGS", "pathConnect", m_pathConnect.text());
-    set.writeStringEntry("SETTINGS", "pathDisconnect", m_pathDisconnect.text());
-    set.writeStringEntry("SETTINGS", "pathMessage", m_pathMessage.text());
-    set.writeBoolEntry("SETTINGS", "notify", m_notify);
-    set.writeBoolEntry("SETTINGS", "notifyConnect", m_notifyConnect);
-    set.writeBoolEntry("SETTINGS", "notifyDisconnect", m_notifyDisconnect);
-    set.writeBoolEntry("SETTINGS", "notifyMessage", m_notifyMessage);
-    set.writeBoolEntry("SETTINGS", "stripColors", m_stripColors);
-    set.writeBoolEntry("SETTINGS", "useSmileys", m_useSmileys);
-    set.writeIntEntry("SMILEYS", "number", (FXint)m_smileysMap.size());
-    if((FXint)m_smileysMap.size())
-    {
-        StringIt it;
-        FXint i;
-        for(i=0, it=m_smileysMap.begin(); it!=m_smileysMap.end(); it++,i++)
-        {
-            set.writeStringEntry("SMILEYS", FXStringFormat("smiley%d", i).text(), (*it).first.text());
-            set.writeStringEntry("SMILEYS", FXStringFormat("path%d", i).text(), (*it).second.text());
-        }
-    }
-    set.writeBoolEntry("SETTINGS", "useSpell", m_useSpell);
-    set.writeBoolEntry("SETTINGS", "oneinstance", m_oneInstance);
-    set.setModified();
-    set.unparseFile(utils::instance().instance().getIniFile());
+
+void ConfigDialog::saveConfig() {
+	getApp()->reg().setModified(FALSE);
+	InitIni();
+	FXSettings set;
+	//set.clear();
+	set.writeIntEntry("SERVERS", "number", m_serverList.no());
+	if(m_serverList.no()) {
+		for(FXint i=0; i<m_serverList.no(); i++)
+		{
+			const FXchar* section = FXStringFormat("SERVER%d", i).text();
+			writeEntry(&set, IT_STRING, section, "hostname", (void*) &m_serverList[i].hostname);
+			writeEntry(&set, IT_INT, section, "port", (void*) &m_serverList[i].port);
+			writeEntry(&set, IT_STRING, section, "nick", (void*) &m_serverList[i].nick);
+			writeEntry(&set, IT_STRING, section, "realname", (void*) &m_serverList[i].realname);
+			FXString encpwd = utils::instance().encrypt(m_serverList[i].passwd);
+			writeEntry(&set, IT_STRING, section, "hes", (void*) &encpwd);
+			writeEntry(&set, IT_STRING, section, "channels", (void*) &m_serverList[i].channels);
+			writeEntry(&set, IT_STRING, section, "commands", (void*) &m_serverList[i].commands);
+			writeEntry(&set, IT_BOOL, section, "autoconnect", (void*) &m_serverList[i].autoConnect);
+			writeEntry(&set, IT_BOOL, section, "ssl", (void*) &m_serverList[i].useSsl);
+		}
+	}
+    
+	FXchar* section = (FXchar*) SETTINGS;
+	for(FXint i=0; i<mainSettings_size; i++) {
+		if (mainSettings[i].initype == IT_NONE) break;
+		writeEntry(&set, mainSettings[i].initype, section, mainSettings[i].name, mainSettings[i].data);
+	}
+    
+	set.writeStringEntry(section, "ircFont", m_ircFont->getFont().text());
+	
+	set.writeIntEntry("USERS", "number", m_usersList.no());
+	for(FXint i=0; i<m_usersList.no(); i++)
+	{
+		section = (FXchar*) FXStringFormat("USER%d", i).text();
+		set.writeStringEntry(section, "nick", m_usersList[i].nick.text());
+		set.writeStringEntry(section, "channel", m_usersList[i].channel.text());
+		set.writeStringEntry(section, "network", m_usersList[i].network.text());
+	}
+	
+	set.writeIntEntry("FRIENDS", "number", m_friendsList.no());
+	for(FXint i=0; i<m_friendsList.no(); i++)
+	{
+		section = (FXchar*)FXStringFormat("FRIEND%d", i).text();
+		set.writeStringEntry(section, "nick", m_friendsList[i].nick.text());
+		set.writeStringEntry(section, "channel", m_friendsList[i].channel.text());
+		set.writeStringEntry(section, "network", m_friendsList[i].network.text());
+	}
+	section = (FXchar*) SETTINGS;
+	set.writeIntEntry(section,"x", m_owner->getX());
+	set.writeIntEntry(section,"y", m_owner->getY());
+	set.writeIntEntry(section,"w", m_owner->getWidth());
+	set.writeIntEntry(section,"h", m_owner->getHeight());
+	set.writeStringEntry(section, "normalfont", m_font->getFont().text());
+	
+	dxStringMap aliases = utils::instance().getAliases();
+	
+	section = (FXchar*) "ALIASES";
+	set.writeIntEntry(section, "number", (FXint)aliases.size());
+	if((FXint)aliases.size()) {
+		StringIt it;
+		FXint i;
+		for(i=0, it=aliases.begin(); it!=aliases.end(); it++,i++)
+		{
+			set.writeStringEntry(section, FXStringFormat("key%d", i).text(), (*it).first.text());
+			set.writeStringEntry(section, FXStringFormat("value%d", i).text(), (*it).second.text());
+		}
+	}
+	section = (FXchar*) SETTINGS;
+	if(m_dccIP1.empty() || m_dccIP2.empty() || m_dccIP3.empty() || m_dccIP4.empty()) set.writeStringEntry(section, "dccIP", "");
+	else set.writeStringEntry(section, "dccIP", FXString(m_dccIP1+"."+m_dccIP2+"."+m_dccIP3+"."+m_dccIP4).text());
+	
+	section = (FXchar*) "SMILEYS";
+	set.writeIntEntry(section, "number", (FXint)m_smileysMap.size());
+	if((FXint)m_smileysMap.size()) {
+		StringIt it;
+		FXint i;
+		for(i=0, it=m_smileysMap.begin(); it!=m_smileysMap.end(); it++,i++)
+		{
+			set.writeStringEntry(section, FXStringFormat("smiley%d", i).text(), (*it).first.text());
+			set.writeStringEntry(section, FXStringFormat("path%d", i).text(), (*it).second.text());
+		}
+	}
+
+	set.setModified();
+	set.unparseFile(utils::instance().instance().getIniFile());
 }

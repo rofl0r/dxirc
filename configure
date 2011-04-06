@@ -4659,7 +4659,7 @@ $as_echo "$ac_cv_safe_to_define___extensions__" >&6; }
 
 
 
-CXXFLAGS=""
+CXXFLAGS="-std=c++0x"
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether ${MAKE-make} sets \$(MAKE)" >&5
 $as_echo_n "checking whether ${MAKE-make} sets \$(MAKE)... " >&6; }
