@@ -2744,12 +2744,14 @@ void ConfigDialog::saveConfig() {
 	getApp()->reg().setModified(FALSE);
 	InitIni();
 	FXSettings set;
+	FXchar* section;
 	//set.clear();
 	set.writeIntEntry("SERVERS", "number", m_serverList.no());
 	if(m_serverList.no()) {
-		for(FXint i=0; i<m_serverList.no(); i++)
-		{
-			const FXchar* section = FXStringFormat("SERVER%d", i).text();
+		for(FXint i=0; i<m_serverList.no(); i++) {
+			FXString temp = FXStringFormat("SERVER%d", i);
+			section = (FXchar*) temp.text();
+			if(temp == "") abort();
 			writeEntry(&set, IT_STRING, section, "hostname", (void*) &m_serverList[i].hostname);
 			writeEntry(&set, IT_INT, section, "port", (void*) &m_serverList[i].port);
 			writeEntry(&set, IT_STRING, section, "nick", (void*) &m_serverList[i].nick);
@@ -2763,7 +2765,7 @@ void ConfigDialog::saveConfig() {
 		}
 	}
     
-	FXchar* section = (FXchar*) SETTINGS;
+	section = (FXchar*) SETTINGS;
 	for(FXint i=0; i<mainSettings_size; i++) {
 		if (mainSettings[i].initype == IT_NONE) break;
 		writeEntry(&set, mainSettings[i].initype, section, mainSettings[i].name, mainSettings[i].data);
